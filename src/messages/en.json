@@ -1,0 +1,33 @@
+{
+    "Home": {
+      "title": "Welcome to the Home Page",
+      "description": "This is a basic home page created with Next.js and SCSS."
+    },
+    "Auth": {
+      "login": {
+        "title": "Login",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Login",
+        "failed": "Login failed"
+      },
+      "register": {
+        "title": "Register",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "countryCode": "Country Code",
+        "mobile": "Mobile",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "submit": "Register",
+        "failed": "Registration failed"
+      }
+    },
+    "Profile": {
+      "title": "User Profile",
+      "welcome": "Welcome to your profile!",
+      "logout": "Logout"
+    }
+  }
+  
