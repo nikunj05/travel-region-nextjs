@@ -9,6 +9,7 @@
       "email": "Email",
       "password": "Password",
       "submit": "Login",
+      "loading": "Logging in...",
       "failed": "Login failed"
     },
     "register": {

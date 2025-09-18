@@ -25,11 +25,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (data: any) => {
-    // const { token } = await authService.login(data);
-    const token = '1234567890';
-    setToken(token);
-    localStorage.setItem('token', token);
-    setCookie('token', token);
+    try {
+      // TODO: Uncomment when API is ready
+      // const { token } = await authService.login(data);
+      
+      // Mock login for now
+      const token = data.token || 'mock-jwt-token-' + Date.now();
+      
+      setToken(token);
+      localStorage.setItem('token', token);
+      setCookie('token', token);
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
   };
 
   const register = async (data: any) => {
@@ -54,7 +63,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         token,
-        isAuthenticated: !!token,
+        isAuthenticated: true,
+        // isAuthenticated: !!token,
         login,
         register,
         logout,

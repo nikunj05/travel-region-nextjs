@@ -18,6 +18,7 @@ const ProfilePage = () => {
   };
 
   return (
+    <>
     <div style={{ 
       maxWidth: '600px', 
       margin: '2rem auto', 
@@ -57,6 +58,7 @@ const ProfilePage = () => {
         </Link>
       </div>
     </div>
+    </>
   );
 };
 

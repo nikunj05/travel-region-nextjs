@@ -1,0 +1,120 @@
+'use client'
+import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+import hamburgerMenuIcon from '@/assets/images/hamburger-menu-icon.svg'
+import travelRegionsLogo from '@/assets/images/travel-regions-logo.svg'
+import closeBtnIcon from '@/assets/images/close-btn-icon.svg'
+import englishFlagIcon from '@/assets/images/english-flag-icon.svg'
+import arabicFlagIcon from '@/assets/images/arabic-flag-icon.svg'
+
+const Header = () => {
+  const [isSticky, setIsSticky] = useState(false)
+
+  useEffect(() => {
+    const checkHeaderSticky = () => {
+      if (window.scrollY > 5) {
+        setIsSticky(true)
+      } else {
+        setIsSticky(false)
+      }
+    }
+
+    // Check on mount
+    checkHeaderSticky()
+
+    // Add scroll event listener
+    window.addEventListener('scroll', checkHeaderSticky)
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener('scroll', checkHeaderSticky)
+    }
+  }, [])
+
+  return (
+    <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>
+    <div className="container">
+      <nav className="navbar navbar-expand-lg justify-content-between align-items-center py-0">
+        <button className="navbar-toggler d-lg-none p-0 border-0 collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <Image src={hamburgerMenuIcon} width="24" height="24" alt="hamburger icon"
+            className="hamburger-icon" />
+        </button>
+        <a className="navbar-brand p-0 m-0" href="index.html">
+          <Image src={travelRegionsLogo} alt="logo" width="205" height="35" />
+        </a>
+        <div className="collapse navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
+          id="navbarSupportedContent">
+          <button className="navbar-toggler mobile-menu-close-button d-lg-none p-0 border-0" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="true" aria-label="Close menu">
+            <Image src={closeBtnIcon} width="24" height="24" alt="hamburger icon"
+              className="hamburger-icon" />
+          </button>
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              <a className="nav-link" href="#">Home</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#"> Deals & Offers</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#">Blog</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#">FAQs</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#">About Us</a>
+            </li>
+          </ul>
+          <div className="header-button-box d-flex d-lg-none align-items-center ">
+            <button className="button login-btn sign-up-btn d-flex align-items-center">
+              Sign up
+            </button>
+            <button className="button login-btn d-flex align-items-center">
+              Log In
+            </button>
+          </div>
+        </div>
+        <div className="d-flex align-items-center">
+          <div className="header-language-dropdown">
+            <button className="language-btn">
+              <Image src={englishFlagIcon} width="36" height="24" alt="EN" className="flag-icon" />
+              <span className="lang-text">EN</span>
+              <svg className="language-arrow-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335" stroke="white" strokeWidth="0.833333"
+                  strokeMiterlimit="16" />
+              </svg>
+
+            </button>
+
+            <ul className="language-menu">
+              <li data-lang="en">
+                <Image src={englishFlagIcon} width="36" height="24" alt="EN" className="flag"/> EN
+              </li>
+              <li data-lang="ar">
+                <Image src={arabicFlagIcon} width="36" height="24" alt="AR" className="flag" /> AR
+              </li>
+            </ul>
+          </div>
+
+          <div className="header-button-box align-items-center d-none d-lg-flex">
+            <button className="button login-btn sign-up-btn d-flex align-items-center">
+              Sign up
+            </button>
+            <button className="button login-btn d-flex align-items-center">
+              Log In
+            </button>
+          </div>
+        </div>
+      </nav>
+      <div className="mobile-overlay"></div>
+    </div>
+  </header>
+  )
+}
+
+export default Header
