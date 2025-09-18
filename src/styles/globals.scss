@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+
 // @import 'fonts';
 // @import 'variables';
 // @import 'animations';
@@ -45,33 +46,25 @@ body {
 }
 
 // Global class css start
-// .button-primary {
-//   font-size: 20px;
-//   background: transparent;
-//   border-radius: 10px;
-//   color: $brand-color;
-//   font-weight: $font-weight600;
-//   border: 1px solid $brand-color;
-//   display: flex;
-//   outline: 1px solid transparent;
-//   align-items: center;
-//   gap: 10px;
-//   padding: 17.2px 30px;
-//   transition: $transition;
+.button-primary {
+  font-size: 18px;
+  background: $brand-color;
+  border-radius: 4px;
+  color: $color-white;
+  font-weight: $font-weight500;
+  border: 1px solid $brand-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 15px;
+  transition: $transition;
 
-//   svg {
-//     transition: $transition;
-//   }
-
-//   &:hover {
-//     outline-color: $brand-color;
-//     box-shadow: $box-shadow;
-
-//     svg {
-//       transform: translate(4px, -6px);
-//     }
-//   }
-// }
+  &:hover {
+    color: $brand-color;
+    background-color: $color-white;
+  }
+}
 
 // .button-secondary {
 //   font-size: 20px;
@@ -188,42 +181,43 @@ button {
   transition: $transition;
 }
 
-// .form-field {
-//   .form-group {
-//     margin-bottom: 20px;
+.form-field {
+  .form-group {
+    margin-bottom: 20px;
 
-//     &:last-child {
-//       margin-bottom: 0px;
-//     }
+    &:last-child {
+      margin-bottom: 0px;
+    }
 
-//     .form-label {
-//       font-size: 12px;
-//       font-weight: 300;
-//       width: 100%;
-//       margin: 0 0 10px 0;
-//     }
+    .form-label {
+      font-size: 16px;
+      font-weight: $font-weight500;
+      color: $color-black-zinc-950;
+      width: 100%;
+      margin: 0 0 8px 0;
+    }
 
-//     .form-input {
-//       font-size: 20px;
-//       color: $color-black-100;
-//       font-weight: $font-weight400;
-//       width: 100%;
-//       border-width: 0 0 1px 0;
-//       border-style: solid;
-//       border-color: #1111111A;
-//       padding: 0px 0px 5px;
-//       background-color: transparent;
+    .form-input {
+      font-size: 16px;
+      color: $color-black-zinc-950;
+      font-weight: $font-weight400;
+      width: 100%;
+      border: 1px solid #E5E7EB;
+      padding: 13.2px 14px;
+      border-radius: 8px;
+      background-color: transparent;
 
-//       &:focus {
-//         outline: none;
-//       }
+      &:focus {
+        outline: none;
+        border-color: $brand-color;
+      }
 
-//       &::placeholder {
-//         color: #1111114D;
-//       }
-//     }
-//   }
-// }
+      &::placeholder {
+        color: $color-black-zinc-500;
+      }
+    }
+  }
+}
 
 img {
   max-width: 100%;
@@ -1380,6 +1374,3 @@ img {
 }
 
 // footer css end
-
-// Mobile Responsive View Css 
-@import 'responsive';

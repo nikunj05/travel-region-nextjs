@@ -9,9 +9,9 @@ import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import GoogleLoginIcon from "@/assets/images/google_icon.svg";
 import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
 import EyeIconHide from "@/assets/images/eye-hide-icon.svg";
-import style from "./Login.module.scss";
+import style from "./RegisterForm.module.scss";
 
-const LoginForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const t = useTranslations("Auth.login");
   const nav = useTranslations("Navigation");
   const { handleSubmit, isLoading, error } = useLogin();
@@ -145,4 +145,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

@@ -1,0 +1,316 @@
+@use "../../styles/variables" as *;
+
+.userLoginPage {
+  display: flex;
+  height: 100vh;
+
+  .leftPanel {
+    flex: 1;
+    position: relative;
+    background: url("../../assets/images/login-screen-image1.jpg") no-repeat center center / cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #fff;
+    z-index: 0;
+    width: 67%;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
+    .loginlogo {
+      padding-bottom: 15px;
+      position: absolute;
+      top: 40px;
+      left: 40px;
+    }
+
+    .loginContent {
+      .loginheadline {
+        font-size: 56px;
+        font-weight: $font-weight600;
+        margin-bottom: 16px;
+        color: $color-white;
+        text-align: center;
+      }
+
+      .logindescription {
+        color: $color-white-70;
+        margin: 0px;
+        text-align: center;
+      }
+    }
+  }
+
+  .loginrightcontent {
+    width: 33%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    padding: 15px 60px;
+
+    .loginformBox {
+      width: 100%;
+      overflow-y: auto;
+      max-height: 100%;
+      max-width: 550px;
+
+      .loginformheading {
+        font-size: 44px;
+        color: $color-black;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .loginformdesc {
+        font-size: 12px;
+        color: $color-black-zinc-500;
+        margin-bottom: 0px;
+        text-align: center;
+      }
+
+      .loginformdetails {
+        margin: 48px 0 32px;
+
+        .loginformGroup {
+          position: relative;
+
+          .labelwithfpassword {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+
+            .forgotpassword {
+              color: #4D6EAA;
+              text-decoration: none;
+              font-size: 14px;
+
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+
+        .passwordwithicon {
+          position: relative;
+
+          input {
+            padding-right: 45px;
+          }
+
+          .passwordeyeicon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translate(0px, -50%);
+            background: transparent;
+            padding: 0px;
+            border: none;
+            z-index: 1;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .loginformaction {
+        margin-top: 30px;
+
+        .loginformbutton {
+          padding: 11.7px 15px;
+          border-radius: 8px;
+        }
+      }
+
+      .orDivider {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        margin: 0 0 32px;
+        font-size: 14px;
+        gap: 20px;
+        color: $color-black-zinc-500;
+
+        .orDividerline {
+          height: 1px;
+          width: 100%;
+          display: block;
+          border-bottom: 1px solid $color-black-zinc-500;
+        }
+      }
+
+      .socialLogin {
+        display: flex;
+        gap: 15px;
+        padding: 0px 19.5px;
+        justify-content: space-between;
+        margin-bottom: 32px;
+
+        .socialBtn {
+          display: inline-flex;
+          gap: 10px;
+          padding: 0px;
+          font-size: 16px;
+          align-items: center;
+          color: $color-black-zinc-950;
+          border: none;
+          cursor: pointer;
+          background: #fff;
+        }
+      }
+
+      .logingotosignuplink {
+        .signupText {
+          text-align: center;
+          font-size: 14px;
+          margin: 0px;
+
+          .signupLink {
+            color: $brand-color;
+            text-decoration: none;
+            font-weight: $font-weight500;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 1199.55) {
+  .userLoginPage {
+
+    .leftPanel {
+      .loginContent {
+        .loginheadline {
+          font-size: 48px;
+        }
+      }
+    }
+
+    .loginrightcontent {
+      padding: 15px 24px;
+
+      .loginformBox {
+        .loginformheading {
+          font-size: 42px;
+        }
+
+        .loginformdetails {
+          margin: 32px 0 32px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 991.55px) {
+  .userLoginPage {
+
+    .leftPanel {
+      width: 55%;
+
+      .loginContent {
+        .loginheadline {
+          font-size: 36px;
+          margin-bottom: 12px;
+        }
+      }
+    }
+
+    .loginrightcontent {
+      width: 44%;
+
+      .loginformBox {
+        .loginformheading {
+          font-size: 34px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .userLoginPage {
+    flex-direction: column;
+    height: auto;
+
+    .leftPanel {
+      padding: 60px 15px 25px;
+      width: 100%;
+      min-height: 212px;
+
+      .loginlogo {
+        padding-bottom: 20px;
+        top: 16px;
+        left: 50%;
+        transform: translate(-50%, 0px);
+      }
+
+      .loginContent {
+        .loginheadline {
+          font-size: 32px;
+          margin-bottom: 8px;
+        }
+
+        .logindescription {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .loginrightcontent {
+      width: 100%;
+      padding: 20px 15px 40px 15px;
+
+      .loginformBox {
+
+        .loginformheading {
+          font-size: 30px;
+        }
+
+        .loginformdetails {
+          margin: 32px 0 32px;
+        }
+
+        .loginformaction {
+
+          .loginformbutton {
+            padding: 11.2px 15px;
+            border-radius: 4px;
+          }
+        }
+
+        .socialLogin {
+          padding: 0px;
+          gap: 64px;
+          justify-content: center;
+
+          .socialBtn {
+            span {
+              display: none;
+
+            }
+          }
+        }
+      }
+    }
+  }
+}
