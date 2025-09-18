@@ -26,7 +26,7 @@ const RegisterForm: React.FC = () => {
       <main className={`${style.userLoginPage} loginPage`}>
         <div className={style.leftPanel}>
           <div className={style.loginlogo}>
-            <a className="p-0 m-0" href="#">
+            <a className="p-0 m-0" href="/">
               <Image
                 src={travelRegionsLogo}
                 alt="logo"
