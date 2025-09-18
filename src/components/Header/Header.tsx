@@ -31,6 +31,14 @@ const Header = () => {
     setIsLanguageMenuOpen(!isLanguageMenuOpen)
   }
 
+  const handleLoginClick = () => {
+    router.push('/login')
+  }
+
+  const handleSignupClick = () => {
+    router.push('/register')
+  }
+
   useEffect(() => {
     const checkHeaderSticky = () => {
       if (window.scrollY > 5) {
@@ -100,10 +108,10 @@ const Header = () => {
             </li>
           </ul>
           <div className="header-button-box d-flex d-lg-none align-items-center ">
-            <button className="button login-btn sign-up-btn d-flex align-items-center">
+            <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
               Sign up
             </button>
-            <button className="button login-btn d-flex align-items-center">
+            <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
               Log In
             </button>
           </div>
@@ -149,10 +157,10 @@ const Header = () => {
           </div>
 
           <div className="header-button-box align-items-center d-none d-lg-flex">
-            <button className="button login-btn sign-up-btn d-flex align-items-center">
+            <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
               Sign up
             </button>
-            <button className="button login-btn d-flex align-items-center">
+            <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
               Log In
             </button>
           </div>

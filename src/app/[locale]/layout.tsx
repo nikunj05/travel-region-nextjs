@@ -27,9 +27,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <AuthProvider>
-        <Header />
         {children}
-        <Footer />
       </AuthProvider>
     </NextIntlClientProvider>
   );

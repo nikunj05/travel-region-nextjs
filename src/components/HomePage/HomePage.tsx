@@ -16,13 +16,13 @@ const HomePage = () => {
 
   return (
     <>
-      {/* <Header /> */}
+      <Header />
       <Banner />
       <Popular />
       <Travelers />
       <Inspire />
       <Contact />
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };
