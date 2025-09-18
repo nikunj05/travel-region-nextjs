@@ -91,18 +91,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -115,19 +115,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025
@@ -166,18 +166,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -190,19 +190,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025
@@ -241,18 +241,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -265,19 +265,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025
@@ -314,18 +314,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -338,19 +338,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025
@@ -389,18 +389,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -413,19 +413,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025
@@ -464,18 +464,18 @@ const Travelers = () => {
               <p className="testimonial-hotel-name mb-2">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_40000027_4794)">
-                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" stroke-linecap="round" />
+                    <g clipPath="url(#clip0_40000027_4794)">
+                      <path d="M1.33398 14.667H14.6673" stroke="#09090B" strokeLinecap="round" />
                       <path
                         d="M12.0007 6H9.33398C7.67932 6 7.33398 6.34533 7.33398 8V14.6667H14.0007V8C14.0007 6.34533 13.6553 6 12.0007 6Z"
-                        stroke="#09090B" stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
                       <path
                         d="M10 14.6663H2V3.33301C2 1.67834 2.34533 1.33301 4 1.33301H8C9.65467 1.33301 10 1.67834 10 3.33301V5.99967"
-                        stroke="#09090B" stroke-linejoin="round" />
-                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" stroke-linecap="round" />
-                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                        stroke="#09090B" strokeLinejoin="round" />
+                      <path d="M2 4H4M2 6.66667H4M2 9.33333H4" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10 8.66699H11.3333M10 10.667H11.3333" stroke="#09090B" strokeLinecap="round" />
+                      <path d="M10.668 14.667L10.668 12.667" stroke="#09090B" strokeLinecap="round"
+                        strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_40000027_4794">
@@ -488,19 +488,19 @@ const Travelers = () => {
               <p className="testimonial-hotel-name">
                 <i>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14.6673 11.667H1.33398" stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M14.6673 14V10.6667C14.6673 9.40959 14.6673 8.78105 14.2768 8.39052C13.8863 8 13.2577 8 12.0007 8H4.00065C2.74357 8 2.11503 8 1.72451 8.39052C1.33398 8.78105 1.33398 9.40959 1.33398 10.6667V14"
-                      stroke="#27272A" stroke-linecap="round" stroke-linejoin="round" />
+                      stroke="#27272A" strokeLinecap="round" strokeLinejoin="round" />
                     <path
                       d="M7.33333 8V6.8089C7.33333 6.55515 7.29519 6.47027 7.09983 6.37025C6.69297 6.16194 6.1991 6 5.66667 6C5.13423 6 4.64037 6.16194 4.2335 6.37025C4.03814 6.47027 4 6.55515 4 6.8089L4 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M12.0013 8V6.8089C12.0013 6.55515 11.9632 6.47027 11.7678 6.37025C11.3609 6.16194 10.8671 6 10.3346 6C9.8022 6 9.30834 6.16194 8.90147 6.37025C8.70611 6.47027 8.66797 6.55515 8.66797 6.8089L8.66797 8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                     <path
                       d="M14 8V4.90705C14 4.44595 14 4.2154 13.8719 3.99768C13.7438 3.77996 13.5613 3.66727 13.1963 3.44189C11.7246 2.53319 9.93289 2 8 2C6.06711 2 4.27543 2.53319 2.80372 3.44189C2.43869 3.66727 2.25618 3.77996 2.12809 3.99768C2 4.2154 2 4.44595 2 4.90705V8"
-                      stroke="#27272A" stroke-linecap="round" />
+                      stroke="#27272A" strokeLinecap="round" />
                   </svg>
                 </i>
                 <strong>Stayed:</strong> Jan 2025

@@ -1,4 +1,5 @@
-import React from 'react'
+"use client"
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import locationIcon from '@/assets/images/location-icon.svg'
 import downBlackArrowIcon from '@/assets/images/down-black-arrow-icon.svg'
@@ -7,8 +8,98 @@ import plusIcon from '@/assets/images/plus-icon.svg'
 import guestsIcon from '@/assets/images/guests-icon.svg'
 import minusRoundIcon from '@/assets/images/minus-round-icon.svg'
 import plusRoundIcon from '@/assets/images/plus-round-icon.svg'
+import DatePicker from '../DatePicker/DatePicker'
 
 const Banner = () => {
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
+  const [selectedLocation, setSelectedLocation] = useState('Find Location')
+  
+  const [isGuestsDropdownOpen, setIsGuestsDropdownOpen] = useState(false)
+  const [guestCounts, setGuestCounts] = useState({
+    adults: 2,
+    children: 1,
+    pets: 0
+  })
+
+  // Date picker states
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+  const datePickerRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setIsDatePickerOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const toggleLocationDropdown = () => {
+    setIsLocationDropdownOpen(!isLocationDropdownOpen)
+  }
+
+  const handleLocationSelect = (location: string) => {
+    setSelectedLocation(location)
+    setIsLocationDropdownOpen(false)
+  }
+
+  const toggleGuestsDropdown = () => {
+    setIsGuestsDropdownOpen(!isGuestsDropdownOpen)
+  }
+
+  const updateGuestCount = (type: 'adults' | 'children' | 'pets', increment: boolean) => {
+    setGuestCounts(prev => ({
+      ...prev,
+      [type]: Math.max(0, prev[type] + (increment ? 1 : -1))
+    }))
+  }
+
+  const getGuestsDisplayText = () => {
+    const total = guestCounts.adults + guestCounts.children + guestCounts.pets
+    if (total === 0) return 'Add Guests'
+    return `${total} Guest${total > 1 ? 's' : ''}`
+  }
+
+  // Date picker functions
+  const toggleDatePicker = () => {
+    setIsDatePickerOpen(!isDatePickerOpen)
+  }
+
+  const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
+    setCheckInDate(startDate)
+    setCheckOutDate(endDate)
+    if (startDate && endDate) {
+      // Auto-close when both dates are selected
+      setTimeout(() => {
+        setIsDatePickerOpen(false)
+      }, 200)
+    }
+  }
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return ''
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
+  const getCheckInDisplayText = () => {
+    return checkInDate ? formatDate(checkInDate) : 'Add Date'
+  }
+
+  const getCheckOutDisplayText = () => {
+    return checkOutDate ? formatDate(checkOutDate) : 'Add Date'
+  }
+
   return (
     <section className="home-banner-section">
       <div className="container">
@@ -24,21 +115,24 @@ const Banner = () => {
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">Location</h4>
                 <div className="dropdown">
-                  <button className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
-                    data-bs-toggle="dropdown">
+                  <button 
+                    className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
+                    onClick={toggleLocationDropdown}
+                    type="button"
+                  >
                     <div className="filter-dropdown-inner d-flex align-items-center">
                       <Image src={locationIcon} width="20" height="20" alt="location icon" />
-                      Find Location
+                      {selectedLocation}
                     </div>
                     <Image src={downBlackArrowIcon} width="24" height="24" alt="down icon"
                       className="arrow-and-plus-icon" />
                   </button>
-                  <div className="dropdown-menu w-100">
+                  <div className={`dropdown-menu w-100 ${isLocationDropdownOpen ? 'show' : ''}`}>
                     <div className="dropdown-menu-items">
                       <span className="dropdown-header">Recent Searches</span>
                       <ul className="dropdown-menu-list">
                         <li>
-                          <a className="dropdown-item" href="#">
+                          <a className="dropdown-item" href="#" onClick={() => handleLocationSelect('Kuala Lumpur')}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                               xmlns="http://www.w3.org/2000/svg">
                               <path
@@ -201,8 +295,8 @@ const Banner = () => {
                               xmlns="http://www.w3.org/2000/svg">
                               <path
                                 d="M7.01164 1.74642C6.97044 1.6868 6.78533 1.39973 6.78533 1.05469C6.78533 0.666375 7.10014 0.351562 7.48845 0.351562H8.8947C8.66923 1.08755 8.04706 1.6755 7.96597 1.74989M6.78247 3.19083L6.7108 3.86325C6.66964 4.24941 6.9493 4.59577 7.33545 4.63692L8.45038 8.23908M13.494 6.46331C13.494 6.46331 13.7558 6.02916 13.7558 5.73872C13.7558 4.9642 13.0224 4.33631 12.1177 4.33631C11.213 4.33631 10.4796 4.9642 10.4796 5.73872C10.4796 6.02916 10.7415 6.46331 10.7415 6.46331M12.1178 4.28944V3.0457M13.403 4.79339L14.353 3.84337M10.8326 4.79339L9.88255 3.84337M10.4328 5.73867H9.36064M13.8027 5.73867H14.8749M8.79331 12.5039L7.84002 9.04383L9.5863 7.03284L8.1852 3.22392M10.6312 21.1637L9.09758 21.7644M11.8686 20.6791L13.0047 20.2342V19.0159L15.9395 17.8665L15.1213 14.4364M14.7933 13.0612L14.2598 10.8244C14.1343 10.2984 13.861 9.81984 13.4107 9.52045C12.9605 9.22106 12.235 8.7323 12.235 8.7323M13.0719 9.33483L8.74836 12.5556C8.60714 12.6608 8.50377 12.8089 8.45371 12.9777C8.40364 13.1465 8.40958 13.327 8.47063 13.4922L8.68934 14.0839M10.453 12.7701L13.9439 10.1696M9.34944 13.5922L8.68934 14.0839C8.68934 14.0839 8.16538 17.4192 9.35328 23.6101M13.8988 23.6108C14.356 21.2255 14.6136 18.7592 14.6488 18.412M13.0047 17.5023V10.963M10.1297 18.9265L11.5859 11.9767M10.2674 8.93597L9.5863 11.9313M13.4413 9.49575C14.1561 8.90602 14.1193 8.12888 13.4413 7.17773M6.98609 23.6484H17.131M15.3731 15.2776L17.8145 12.0105L15.9395 10.6043L14.6652 12.3096M8.79331 1.75781H6.18359L6.43466 3.16406H8.54122L8.79331 1.75781ZM12.1178 5.55398C11.6836 6.32977 10.7415 6.46327 10.7415 6.46327C10.7415 7.7077 11.3577 8.71655 12.1178 8.71655C12.8779 8.71655 13.494 7.70775 13.494 6.46327C13.494 6.46331 12.5519 6.32981 12.1178 5.55398Z"
-                                stroke="black" stroke-width="0.703125" stroke-miterlimit="10" stroke-linecap="round"
-                                stroke-linejoin="round" />
+                                stroke="black" strokeWidth="0.703125" strokeMiterlimit="10" strokeLinecap="round"
+                                strokeLinejoin="round" />
                             </svg>
                             <div className="destination-suggetion d-flex flex-column">
                               NY City
@@ -255,41 +349,59 @@ const Banner = () => {
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">Check-in Date</h4>
-                <input type="date" className="form-control filter-dropdown" />
-                {/* <div className="filter-dropdown d-flex align-items-center">
-                  <div className="filter-dropdown-inner d-flex align-items-center">
-                    <Image src={calendarIcon} width="20" height="20" alt="calendar icon" />
-                    Add Date
-                  </div>
-                  <Image src={plusIcon} width="24" height="24" alt="plus icon"
-                    className="arrow-and-plus-icon" />
-                </div> */}
+                <div className="dropdown" ref={datePickerRef}>
+                  <button 
+                    className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
+                    onClick={toggleDatePicker}
+                    type="button"
+                  >
+                    <div className="filter-dropdown-inner d-flex align-items-center">
+                      <Image src={calendarIcon} width="20" height="20" alt="calendar icon" />
+                      {getCheckInDisplayText()}
+                    </div>
+                    <Image src={plusIcon} width="24" height="24" alt="plus icon"
+                      className="arrow-and-plus-icon" />
+                  </button>
+                  <DatePicker
+                    isOpen={isDatePickerOpen}
+                    onDateSelect={handleDateSelect}
+                    selectedStartDate={checkInDate}
+                    selectedEndDate={checkOutDate}
+                    minDate={new Date()}
+                  />
+                </div>
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">Check-out Date</h4>
-                <input type="date" className="form-control filter-dropdown" />
-                {/* <div className="filter-dropdown d-flex align-items-center">
+                <button 
+                  className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
+                  onClick={toggleDatePicker}
+                  type="button"
+                >
                   <div className="filter-dropdown-inner d-flex align-items-center">
                     <Image src={calendarIcon} width="20" height="20" alt="calendar icon" />
-                    Add Date
+                    {getCheckOutDisplayText()}
                   </div>
                   <Image src={plusIcon} width="24" height="24" alt="plus icon"
                     className="arrow-and-plus-icon" />
-                </div> */}
+                </button>
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">Guests and Rooms</h4>
                 <div className="dropdown">
-                  <button className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
-                    data-bs-toggle="dropdown">
+                  <button 
+                    className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
+                    onClick={toggleGuestsDropdown}
+                    type="button"
+                  >
                     <div className="filter-dropdown-inner d-flex align-items-center">
                       <Image src={guestsIcon} width="20" height="20" alt="guests icon" />
-                      Add Guests
+                      {getGuestsDisplayText()}
                     </div>
                     <Image src={downBlackArrowIcon} width="24" height="24" alt="down icon"
                       className="arrow-and-plus-icon" />
                   </button>
-                  <div className="dropdown-menu w-100">
+                  <div className={`dropdown-menu w-100 ${isGuestsDropdownOpen ? 'show' : ''}`}>
                     <div className="filter-guest-dropdown-menu">
                       <div className="filter-guest-dropdown-title">Room 1</div>
                       <div className="filter-guest-dropdown-item d-flex justify-content-between align-items-center">
@@ -308,12 +420,18 @@ const Banner = () => {
                           <span className="guest-dropdown-icon">Adults</span>
                         </div>
                         <div className="guest-member-choose d-flex align-items-center">
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('adults', false)}
+                          >
                             <Image src={minusRoundIcon} width="20" height="20" alt="minus icon"
                               className="plus-minus-icon" />
                           </button>
-                          <span className="guest-member-count">2</span>
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <span className="guest-member-count">{guestCounts.adults}</span>
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('adults', true)}
+                          >
                             <Image src={plusRoundIcon} width="20" height="20" alt="plus icon"
                               className="plus-minus-icon" />
                           </button>
@@ -330,12 +448,18 @@ const Banner = () => {
                           <span className="guest-dropdown-icon">Children</span>
                         </div>
                         <div className="guest-member-choose d-flex align-items-center">
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('children', false)}
+                          >
                             <Image src={minusRoundIcon} width="20" height="20" alt="minus icon"
                               className="plus-minus-icon" />
                           </button>
-                          <span className="guest-member-count">1</span>
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <span className="guest-member-count">{guestCounts.children}</span>
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('children', true)}
+                          >
                             <Image src={plusRoundIcon} width="20" height="20" alt="plus icon"
                               className="plus-minus-icon" />
                           </button>
@@ -351,12 +475,18 @@ const Banner = () => {
                           <span className="guest-dropdown-icon">Pets</span>
                         </div>
                         <div className="guest-member-choose d-flex align-items-center">
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('pets', false)}
+                          >
                             <Image src={minusRoundIcon} width="20" height="20" alt="minus icon"
                               className="plus-minus-icon" />
                           </button>
-                          <span className="guest-member-count">0</span>
-                          <button className="increase-decrease-btn p-0 border-0 bg-transparent">
+                          <span className="guest-member-count">{guestCounts.pets}</span>
+                          <button 
+                            className="increase-decrease-btn p-0 border-0 bg-transparent"
+                            onClick={() => updateGuestCount('pets', true)}
+                          >
                             <Image src={plusRoundIcon} width="20" height="20" alt="plus icon"
                               className="plus-minus-icon" />
                           </button>
@@ -364,13 +494,18 @@ const Banner = () => {
                       </div>
                       <button className="add-more-guest d-flex align-items-center">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12.0007 5.3335V18.6668M18.6673 12.0002H5.33398" stroke="#3E5B96" stroke-width="1.25"
-                            stroke-linecap="round" stroke-linejoin="round" />
+                          <path d="M12.0007 5.3335V18.6668M18.6673 12.0002H5.33398" stroke="#3E5B96" strokeWidth="1.25"
+                            strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         Add another Room
                       </button>
                       <div className="guest-filter-action">
-                        <button className="guest-choose-submit-btn">Done</button>
+                        <button 
+                          className="guest-choose-submit-btn"
+                          onClick={() => setIsGuestsDropdownOpen(false)}
+                        >
+                          Done
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -387,7 +522,7 @@ const Banner = () => {
               <button className="btn banner-search-btn">
                 Search
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="white" stroke-width="1.5" />
+                  <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="white" strokeWidth="1.5" />
                 </svg>
               </button>
             </div>

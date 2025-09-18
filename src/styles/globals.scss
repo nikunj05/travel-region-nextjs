@@ -1,7 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
-
-// @import 'fonts';
+@use 'fonts';
 // @import 'variables';
 // @import 'animations';
 body {
@@ -1374,3 +1373,4 @@ img {
 }
 
 // footer css end
+
