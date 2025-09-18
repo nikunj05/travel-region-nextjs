@@ -46,9 +46,9 @@ const RegisterForm: React.FC = () => {
 
         <div className={style.loginrightcontent}>
           <div className={style.loginformBox}>
-            <h2 className={style.loginformheading}>Please Sign in</h2>
+            <h2 className={style.loginformheading}>Create an account</h2>
             <p className={style.loginformdesc}>
-              You need to Sign in first to continue
+              Create an account and get the Deals & Promotions news
             </p>
             <form className={`${style.loginformdetails} form-field`}>
               <div className={`${style.loginformGroup} form-group`}>
@@ -63,14 +63,22 @@ const RegisterForm: React.FC = () => {
                 />
               </div>
               <div className={`${style.loginformGroup} form-group`}>
+                <label className="form-label" htmlFor="loginEmailField">
+                  Mobile Number
+                </label>
+                <input
+                  type="text"
+                  className="form-input form-control"
+                  placeholder="+097 123 456 789"
+                  id="loginEmailField"
+                />
+              </div>
+              <div className={`${style.loginformGroup} form-group`}>
                 <label
                   className={`${style.labelwithfpassword} form-label`}
                   htmlFor="loginPassField"
                 >
                   Password
-                  <a href="#" className={style.forgotpassword}>
-                    Forgot Password?
-                  </a>
                 </label>
                 <div className={style.passwordwithicon}>
                   <input
@@ -96,14 +104,14 @@ const RegisterForm: React.FC = () => {
                   type="submit"
                   className={`${style.loginformbutton} button-primary w-100`}
                 >
-                  Sign in
+                  Sign up
                 </button>
               </div>
             </form>
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
-              Or Sign in with
+              Or Sign up with
               <span className={style.orDividerline}></span>
             </div>
 
@@ -132,9 +140,9 @@ const RegisterForm: React.FC = () => {
 
             <div className={style.logingotosignuplink}>
               <p className={style.signupText}>
-                Don’t have an account? {""}
+                Already have an account? {""}
                 <a href="#" className={style.signupLink}>
-                  Sign up
+                  Sign in
                 </a>
               </p>
             </div>
