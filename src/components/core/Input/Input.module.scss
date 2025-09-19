@@ -1,0 +1,86 @@
+@use "../../../styles/variables" as *;
+
+.inputContainer {
+  width: 100%;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}
+
+.inputLabel {
+  font-size: 16px;
+  font-weight: $font-weight500;
+  color: $color-black-zinc-950;
+  width: 100%;
+  margin: 0 0 8px 0;
+  display: block;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputField {
+  font-size: 16px;
+  color: $color-black-zinc-950;
+  font-weight: $font-weight400;
+  width: 100%;
+  border: 1px solid #E5E7EB;
+  padding: 13.2px 14px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition: $transition;
+
+  &:focus {
+    outline: none;
+    border-color: $brand-color;
+  }
+
+  &::placeholder {
+    color: $color-black-zinc-500;
+  }
+
+  // For password fields with toggle
+  &.passwordField {
+    padding-right: 45px;
+  }
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translate(0px, -50%);
+  background: transparent;
+  padding: 0px;
+  border: none;
+  z-index: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+
+  &:hover {
+    background-color: #f3f4f6;
+    border-radius: 4px;
+  }
+}
+
+.errorMessage {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #dc2626;
+  display: block;
+}
+
+// Label with additional content (like forgot password link)
+.labelWithContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}

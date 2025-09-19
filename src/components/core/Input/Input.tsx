@@ -1,6 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext, FieldError } from "react-hook-form";
+import Image from "next/image";
+import EyeIconHide from "@/assets/images/eye-hide-icon.svg";
+import EyeIconShow from "@/assets/images/eye-show-icon.svg";
+import styles from "./Input.module.scss";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -8,6 +12,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   labelClassName?: string;
   errorClassName?: string;
+  showPasswordToggle?: boolean;
+  labelWithContent?: React.ReactNode;
 }
 
 export const Input = ({
@@ -16,6 +22,9 @@ export const Input = ({
   className = "",
   labelClassName = "",
   errorClassName = "",
+  showPasswordToggle = false,
+  labelWithContent,
+  type,
   ...rest
 }: InputProps) => {
   const {
@@ -23,22 +32,55 @@ export const Input = ({
     formState: { errors },
   } = useFormContext();
 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const error = errors[name] as FieldError | undefined;
 
+  const inputType = showPasswordToggle && type === "password" 
+    ? (isPasswordVisible ? "text" : "password") 
+    : type;
+
   return (
-    <div className="w-full">
+    <div className={`${styles.inputContainer} form-group`}>
       {label && (
-        <label htmlFor={name} className={`block text-sm font-medium text-gray-700 ${labelClassName}`}>
+        <label 
+          htmlFor={name} 
+          className={`${styles.inputLabel} form-label ${labelWithContent ? styles.labelWithContent : ""} ${labelClassName}`}
+        >
           {label}
+          {labelWithContent}
         </label>
       )}
-      <input
-        id={name}
-        {...register(name)}
-        {...rest}
-        className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${className}`}
-      />
-      {error && <p className={`mt-2 text-sm text-red-600 ${errorClassName}`}>{error.message}</p>}
+      <div className={`${styles.inputWrapper} ${showPasswordToggle && type === "password" ? "passwordwithicon" : ""}`}>
+        <input
+          id={name}
+          {...register(name)}
+          type={inputType}
+          {...rest}
+          className={`${styles.inputField} form-input form-control ${
+            showPasswordToggle && type === "password" ? styles.passwordField : ""
+          } ${className}`}
+        />
+        {showPasswordToggle && type === "password" && (
+          <button
+            type="button"
+            className={`${styles.passwordToggle} passwordeyeicon`}
+            onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+          >
+            <Image
+              src={isPasswordVisible ? EyeIconHide : EyeIconShow}
+              alt={isPasswordVisible ? "Hide password" : "Show password"}
+              width="24"
+              height="24"
+              className="passeyeicon"
+            />
+          </button>
+        )}
+      </div>
+      {error && (
+        <p className={`${styles.errorMessage} ${errorClassName}`}>
+          {error.message}
+        </p>
+      )}
     </div>
   );
 };

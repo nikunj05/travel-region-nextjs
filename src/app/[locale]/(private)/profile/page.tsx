@@ -4,10 +4,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from '@/i18/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18/navigation';
-import LanguageSwitcher from '@/components/LanguageSwitcher/LanguageSwitcher';
+import Header from '@/components/Header/Header';
 
-const ProfilePage = () => {
-  const { logout } = useAuth();
+export default function ProfilePage() {
+  const { logout, user, isAuthenticated } = useAuth();
   const router = useRouter();
   const t = useTranslations('Profile');
   const nav = useTranslations('Navigation');
@@ -19,6 +19,7 @@ const ProfilePage = () => {
 
   return (
     <>
+    <Header />
     <div style={{ 
       maxWidth: '600px', 
       margin: '2rem auto', 
@@ -26,7 +27,6 @@ const ProfilePage = () => {
       border: '1px solid #ddd',
       borderRadius: '8px'
     }}>
-      <LanguageSwitcher />
       
       <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>
         {t('title')}
@@ -35,6 +35,29 @@ const ProfilePage = () => {
       <p style={{ textAlign: 'center', fontSize: '1.1rem', marginBottom: '2rem' }}>
         {t('welcome')}
       </p>
+      
+      {user && (
+        <div style={{ 
+          backgroundColor: '#f8f9fa', 
+          padding: '1.5rem', 
+          borderRadius: '8px', 
+          marginBottom: '2rem',
+          border: '1px solid #e9ecef'
+        }}>
+          <h3 style={{ marginBottom: '1rem', color: '#495057' }}>User Information</h3>
+          <div style={{ display: 'grid', gap: '0.5rem' }}>
+            <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Mobile:</strong> {user.mobile}</p>
+            <p><strong>Country Code:</strong> {user.country_code}</p>
+            {user.address && <p><strong>Address:</strong> {user.address}</p>}
+            {user.date_of_birth && <p><strong>Date of Birth:</strong> {user.date_of_birth}</p>}
+            {user.gender && <p><strong>Gender:</strong> {user.gender}</p>}
+            {user.nationality && <p><strong>Nationality:</strong> {user.nationality}</p>}
+            {user.passport_number && <p><strong>Passport Number:</strong> {user.passport_number}</p>}
+          </div>
+        </div>
+      )}
       
       <div style={{ textAlign: 'center' }}>
         <button 
@@ -62,4 +85,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+

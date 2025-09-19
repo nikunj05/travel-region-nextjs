@@ -3,8 +3,8 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18/routing";
 import { AuthProvider } from "@/context/AuthContext";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default async function LocaleLayout({
   children,
@@ -28,6 +28,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages}>
       <AuthProvider>
         {children}
+        <ToastContainer />
       </AuthProvider>
     </NextIntlClientProvider>
   );

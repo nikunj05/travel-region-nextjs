@@ -5,6 +5,7 @@ import { useRouter } from '@/i18/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginFormData } from '@/schemas/loginSchema';
+import { toast } from 'react-toastify';
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,20 +19,14 @@ export const useLogin = () => {
     setError(null);
     
     try {
-      // TODO: Uncomment when API is ready
-      // await login(data);
-      
-      // Mock login for now - simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Use AuthContext login function (it will handle token generation)
       await login(data);
-      
-      console.log('Mock login successful');
+      toast.success('Login successful');
       router.push('/profile');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
-      setError(t('failed'));
+      const errorMessage = error?.response?.data?.message || error?.message || t('failed');
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

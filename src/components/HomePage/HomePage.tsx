@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './HomePage.module.scss';
 import { useTranslations } from 'next-intl';
-import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 import Header from '../Header/Header';
 import Banner from '../LandingPage/Banner';
 import Travelers from '../LandingPage/Travelers';
@@ -16,13 +15,11 @@ const HomePage = () => {
 
   return (
     <>
-      <Header />
       <Banner />
       <Popular />
       <Travelers />
       <Inspire />
       <Contact />
-      <Footer />
     </>
   );
 };

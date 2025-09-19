@@ -4,22 +4,19 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { loginSchema, LoginFormData } from "@/schemas/loginSchema";
 import { useLogin } from "@/hooks/useLogin";
+import { Form } from "@/components/core/Form/Form";
+import { Input } from "@/components/core/Input/Input";
 import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import GoogleLoginIcon from "@/assets/images/google_icon.svg";
 import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
-import EyeIconHide from "@/assets/images/eye-hide-icon.svg";
 import style from "./Login.module.scss";
+import Link from "next/link";
 
 const LoginForm: React.FC = () => {
   const t = useTranslations("Auth.login");
   const nav = useTranslations("Navigation");
   const { handleSubmit, isLoading, error } = useLogin();
-
-  const defaultValues: LoginFormData = {
-    email: "",
-    password: "",
-  };
 
   return (
     <>
@@ -50,56 +47,57 @@ const LoginForm: React.FC = () => {
             <p className={style.loginformdesc}>
               You need to Sign in first to continue
             </p>
-            <form className={`${style.loginformdetails} form-field`}>
+            <Form<LoginFormData>
+              defaultValues={{
+                email: "",
+                password: "",
+              }}
+              onSubmit={handleSubmit}
+              schema={loginSchema}
+              className={`${style.loginformdetails} form-field`}
+            >
               <div className={`${style.loginformGroup} form-group`}>
-                <label className="form-label" htmlFor="loginEmailField">
-                  Email
-                </label>
-                <input
+                <Input
+                  name="email"
+                  label="Email"
                   type="email"
                   className="form-input form-control"
                   placeholder="example@gmail.com"
-                  id="loginEmailField"
+                  labelClassName="form-label"
                 />
               </div>
               <div className={`${style.loginformGroup} form-group`}>
-                <label
-                  className={`${style.labelwithfpassword} form-label`}
-                  htmlFor="loginPassField"
-                >
-                  Password
-                  <a href="#" className={style.forgotpassword}>
-                    Forgot Password?
-                  </a>
-                </label>
-                <div className={style.passwordwithicon}>
-                  <input
-                    type="password"
-                    className="form-input form-control"
-                    placeholder="•••••••••••••••••"
-                    required
-                    id="loginPassField"
-                  />
-                  <a className={style.passwordeyeicon}>
-                    <Image
-                      src={EyeIconHide}
-                      alt="eye icon"
-                      width="24"
-                      height="24"
-                      className={style.passeyeicon}
-                    />
-                  </a>
-                </div>
+                <Input
+                  name="password"
+                  label="Password"
+                  type="password"
+                  showPasswordToggle={true}
+                  className="form-input form-control"
+                  placeholder="•••••••••••••••••"
+                  labelClassName={`${style.labelwithfpassword} form-label`}
+                  labelWithContent={
+                    <a href="#" className={style.forgotpassword}>
+                      Forgot Password?
+                    </a>
+                  }
+                  required
+                />
               </div>
+              {error && (
+                <div className="text-red-600 text-sm mb-4">
+                  {error}
+                </div>
+              )}
               <div className={style.loginformaction}>
                 <button
                   type="submit"
+                  disabled={isLoading}
                   className={`${style.loginformbutton} button-primary w-100`}
                 >
-                  Sign in
+                  {isLoading ? "Signing in..." : "Sign in"}
                 </button>
               </div>
-            </form>
+            </Form>
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
@@ -133,9 +131,9 @@ const LoginForm: React.FC = () => {
             <div className={style.logingotosignuplink}>
               <p className={style.signupText}>
                 Don’t have an account? {""}
-                <a href="#" className={style.signupLink}>
+                <Link href="/register" className={style.signupLink}>
                   Sign up
-                </a>
+                </Link>
               </p>
             </div>
           </div>

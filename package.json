@@ -19,6 +19,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.56.1",
     "react-slick": "^0.31.0",
+    "react-toastify": "^11.0.5",
     "sass": "^1.92.1",
     "slick-carousel": "^1.8.1",
     "yup": "^1.6.1"

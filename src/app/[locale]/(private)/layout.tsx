@@ -1,24 +1,51 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from '@/i18/navigation';
-import { useEffect, ReactNode } from 'react';
+import Footer from "@/components/Footer/Footer";
+import Header from "@/components/Header/Header";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "@/i18/navigation";
+import { useEffect, ReactNode } from "react";
 
 const PrivateLayout = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token, isInitialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
+    // Only redirect if auth is initialized and user is not authenticated
+    if (isInitialized && !isAuthenticated) {
+      router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isInitialized, router]);
 
-  if (!isAuthenticated) {
-    return null; // or a loading spinner
+  // Show loading while auth is initializing
+  if (!isInitialized) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "1.2rem",
+        }}
+      >
+        Loading...
+      </div>
+    );
   }
 
-  return <>{children}</>;
+  // If not authenticated after initialization, don't render children
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return (
+    <>
+      <Header />
+      {children}
+      <Footer />
+    </>
+  );
 };
 
 export default PrivateLayout;
