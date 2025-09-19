@@ -1,0 +1,272 @@
+// Ensure dropdown parent has relative positioning
+.dropdown:has(.locationpicker-dropdown) {
+  position: relative;
+}
+
+.locationpicker-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: $color-white;
+  border-radius: 12px;
+  border: 1px solid #F4F4F5;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  margin-top: 8px;
+  width: 100%;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.locationpicker-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #F4F4F5;
+
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-950;
+  }
+
+  .locationpicker-search {
+    .location-search-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      font-size: 14px;
+      color: $color-black-zinc-950;
+      background: $color-white;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $brand-color;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      &::placeholder {
+        color: $color-black-zinc-500;
+      }
+    }
+  }
+}
+
+.locationpicker-content {
+  .locationpicker-section {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .locationpicker-section-header {
+      display: block;
+      font-size: 14px;
+      font-weight: $font-weight600;
+      color: $color-black-zinc-600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .locationpicker-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 4px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .locationpicker-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: $transition;
+      text-align: left;
+      gap: 12px;
+
+      &:hover {
+        background-color: #F8FAFC;
+      }
+
+      &:focus {
+        outline: none;
+        background-color: #EFF6FF;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      }
+
+      svg {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+      }
+
+      .location-name {
+        font-size: 14px;
+        font-weight: $font-weight500;
+        color: $color-black-zinc-950;
+        margin: 0;
+      }
+
+      .destination-suggestion {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .location-name {
+          font-size: 14px;
+          font-weight: $font-weight500;
+          color: $color-black-zinc-950;
+          margin: 0;
+        }
+
+        .location-country {
+          font-size: 12px;
+          font-weight: $font-weight400;
+          color: $color-black-zinc-500;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .locationpicker-no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: $color-black-zinc-500;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .locationpicker-dropdown {
+    padding: 12px;
+    max-height: 350px;
+  }
+
+  .locationpicker-header {
+    h3 {
+      font-size: 16px;
+    }
+
+    .locationpicker-search {
+      .location-search-input {
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+    }
+  }
+
+  .locationpicker-content {
+    .locationpicker-section {
+      margin-bottom: 20px;
+
+      .locationpicker-item {
+        padding: 10px 14px;
+        gap: 10px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+
+        .location-name {
+          font-size: 13px;
+        }
+
+        .destination-suggestion {
+          .location-name {
+            font-size: 13px;
+          }
+
+          .location-country {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .locationpicker-dropdown {
+    padding: 12px;
+    max-height: 300px;
+  }
+
+  .locationpicker-header {
+    h3 {
+      font-size: 15px;
+    }
+
+    .locationpicker-search {
+      .location-search-input {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .locationpicker-content {
+    .locationpicker-section {
+      margin-bottom: 16px;
+
+      .locationpicker-section-header {
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      .locationpicker-item {
+        padding: 8px 12px;
+        gap: 8px;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        .location-name {
+          font-size: 12px;
+        }
+
+        .destination-suggestion {
+          .location-name {
+            font-size: 12px;
+          }
+
+          .location-country {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+
+    .locationpicker-no-results {
+      padding: 30px 15px;
+
+      p {
+        font-size: 12px;
+      }
+    }
+  }
+}

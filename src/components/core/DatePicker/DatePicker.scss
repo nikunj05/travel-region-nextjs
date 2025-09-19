@@ -1,0 +1,261 @@
+@use "../../styles/variables" as *;
+
+// Ensure dropdown parent has relative positioning
+.dropdown:has(.datepicker-dropdown) {
+  position: relative;
+}
+
+.datepicker-dropdown {
+  position: absolute;
+  top: 100%;
+  left: -42px;
+  background: $color-white;
+  border-radius: 24px;
+  border: 1px solid #f4f4f5;
+  padding: 24px 16px 32px 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  margin-top: 0px;
+  min-width: 600px;
+  width: max-content;
+}
+
+.datepicker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: relative;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: $font-weight500;
+    color: $color-black-zinc-950;
+  }
+
+  .datepicker-navigation {
+    display: flex;
+    gap: 10px;
+
+    .nav-button {
+      background: $color-white;
+      border: 1px solid $border-color;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: $color-black-zinc-600;
+      transition: $transition;
+
+      &:hover {
+        background-color: $brand-color;
+        color: $color-white;
+        border-color: $brand-color;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+.datepicker-calendars {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.calendar-month {
+  min-width: 280px;
+}
+
+.calendar-header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-950;
+  }
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0px;
+  margin-bottom: 0px;
+
+  .calendar-weekday {
+    font-size: 12px;
+    font-weight: $font-weight400;
+    color: $color-black-zinc-300;
+    text-align: center;
+    padding: 12px 10.32px;
+  }
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0px;
+
+  .calendar-day {
+    aspect-ratio: 1;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: $font-weight400;
+    color: $color-black-zinc-500;
+    cursor: pointer;
+    border-radius: 0px;
+    transition: $transition;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    width: 50px;
+    height: 44px;
+
+    &:before {
+      content: '';
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border-radius: 50%;
+      position: absolute;
+      z-index: -1;
+      transition: $transition;
+    }
+
+    &:hover:not(.disabled) {
+      background-color: transparent;
+      font-weight: $font-weight600;
+      color: $color-white;
+
+      &:before {
+        background: $brand-color;
+      }
+    }
+
+    &.other-month {
+      color: $color-black-zinc-500;
+      opacity: 0.5;
+    }
+
+    &.selected {
+      background-color: transparent;
+      color: $color-white;
+      font-weight: $font-weight600;
+
+      &:before {
+        background: $brand-color;
+      }
+    }
+
+    &.in-range {
+      background-color: transparent;
+      color: $color-black-zinc-500;
+
+      &:before {
+        background: #E9ECF5;
+      }
+    }
+
+    &.disabled {
+      color: $color-black-zinc-300;
+      cursor: not-allowed;
+
+      &::before {
+        display: none;
+      }
+
+      &:hover {
+        background: none;
+        color: $color-black-zinc-300;
+      }
+    }
+
+    // Special styling for start and end dates
+    &.selected:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &.selected:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .datepicker-dropdown {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .datepicker-calendars {
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .calendar-month {
+    min-width: 260px;
+  }
+
+  .calendar-days {
+    gap: 2px;
+
+    .calendar-day {
+      min-height: 32px;
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .datepicker-dropdown {
+    padding: 16px;
+    left: -10px;
+    min-width: calc(100vw - 40px);
+    width: calc(100vw - 40px);
+  }
+
+  .calendar-month {
+    min-width: 240px;
+  }
+
+  .datepicker-header {
+    h3 {
+      font-size: 16px;
+    }
+
+    .datepicker-navigation {
+      .nav-button {
+        width: 28px;
+        height: 28px;
+
+        svg {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
+}
