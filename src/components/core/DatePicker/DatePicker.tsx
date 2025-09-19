@@ -19,6 +19,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectingCheckout, setSelectingCheckout] = useState(false);
+  const [navigationHistory, setNavigationHistory] = useState<Date[]>([new Date()]);
 
   const monthNames = [
     "January",
@@ -121,6 +122,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + (direction === "next" ? 1 : -1));
     setCurrentMonth(newMonth);
+    
+    if (direction === "next") {
+      // Add to navigation history when going forward
+      setNavigationHistory(prev => [...prev, newMonth]);
+    } else {
+      // Remove from navigation history when going back
+      setNavigationHistory(prev => prev.slice(0, -1));
+    }
   };
 
   const getNextMonth = () => {
@@ -129,17 +138,50 @@ const DatePicker: React.FC<DatePickerProps> = ({
     return nextMonth;
   };
 
-  const renderCalendar = (date: Date) => {
+  const renderCalendar = (date: Date, isFirstCalendar: boolean = false) => {
     const days = getDaysInMonth(date);
     const month = date.getMonth();
     const year = date.getFullYear();
+    
+    // Show navigation arrows only on the right calendar (second calendar)
+    const showNavigation = !isFirstCalendar;
+    // Show previous arrow only if we have navigation history (user has navigated forward)
+    const showPrevArrow = showNavigation && navigationHistory.length > 1;
+    // Show next arrow by default on right calendar
+    const showNextArrow = showNavigation;
 
     return (
       <div className="calendar-month">
-        <div className="calendar-header">
+        <div className="calendar-header d-flex justify-content-between align-items-center">
           <h4>
             {monthNames[month]} {year}
           </h4>
+          {showNavigation && (
+            <div className="calendar-header-buttons">
+              {showPrevArrow && (
+                <button
+                  className="nav-button prev"
+                  onClick={() => navigateMonth("prev")}
+                  type="button"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
+              {showNextArrow && (
+                <button
+                  className="nav-button next"
+                  onClick={() => navigateMonth("next")}
+                  type="button"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
         </div>
         <div className="calendar-weekdays">
           {dayNames.map((day) => (
@@ -182,7 +224,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     <div className="datepicker-dropdown">
       <div className="datepicker-header">
         <h3>Select Date</h3>
-        <div className="datepicker-navigation">
+        {/* <div className="datepicker-navigation">
           <button
             className="nav-button prev"
             onClick={() => navigateMonth("prev")}
@@ -225,11 +267,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
               />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
       <div className="datepicker-calendars">
-        {renderCalendar(currentMonth)}
-        {renderCalendar(getNextMonth())}
+        {renderCalendar(currentMonth, true)}
+        {renderCalendar(getNextMonth(), false)}
       </div>
     </div>
   );
