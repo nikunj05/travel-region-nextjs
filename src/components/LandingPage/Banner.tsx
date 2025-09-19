@@ -11,6 +11,7 @@ import plusRoundIcon from '@/assets/images/plus-round-icon.svg'
 import DatePicker from '../core/DatePicker/DatePicker'
 import LocationPicker from '../core/LocationPicker/LocationPicker'
 import GuestsPicker from '../core/GuestsPicker/GuestsPicker'
+import Link from 'next/link'
 
 interface Location {
   id: string
@@ -209,12 +210,15 @@ const Banner = () => {
                   Free Cancellation
                 </label>
               </div>
+              <Link href="/search-result" className='text-decoration-none'>
+
               <button className="btn banner-search-btn">
                 Search
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="white" strokeWidth="1.5" />
                 </svg>
               </button>
+              </Link>
             </div>
           </div>
         </div>
