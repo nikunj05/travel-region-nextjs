@@ -1,6 +1,7 @@
 @use "variables" as *;
 @use "mixins" as *;
 @use 'fonts';
+
 // @use 'responsive';
 // @import 'variables';
 // @import 'animations';
@@ -840,6 +841,12 @@ img {
 
     .slick-slide {
       margin: 0 16px;
+      height: auto;
+
+      &>div {
+        display: flex;
+        height: 100%;
+      }
     }
 
     .slick-list {
@@ -851,7 +858,7 @@ img {
       border-radius: 24px;
       padding: 24px;
       min-height: 320px;
-      display: flex;
+      display: flex !important;
       gap: 44px;
       flex-direction: column;
       justify-content: flex-start;
@@ -1374,4 +1381,3 @@ img {
 }
 
 // footer css end
-

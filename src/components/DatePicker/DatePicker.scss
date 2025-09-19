@@ -8,14 +8,14 @@
 .datepicker-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  left: -42px;
   background: $color-white;
-  border-radius: 12px;
-  border: 1px solid #F4F4F5;
-  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid #f4f4f5;
+  padding: 24px 16px 32px 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   z-index: 2;
-  margin-top: 8px;
+  margin-top: 0px;
   min-width: 600px;
   width: max-content;
 }
@@ -24,14 +24,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #F4F4F5;
+
+  position: relative;
 
   h3 {
     margin: 0;
-    font-size: 18px;
-    font-weight: $font-weight600;
+    font-size: 20px;
+    font-weight: $font-weight500;
     color: $color-black-zinc-950;
   }
 
@@ -70,6 +69,8 @@
   display: flex;
   gap: 40px;
   justify-content: center;
+  margin-top: 16px;
+  padding-top: 16px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -83,11 +84,11 @@
 
 .calendar-header {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 32px;
 
   h4 {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: $font-weight600;
     color: $color-black-zinc-950;
   }
@@ -96,22 +97,22 @@
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 0px;
+  margin-bottom: 0px;
 
   .calendar-weekday {
     font-size: 12px;
-    font-weight: $font-weight500;
-    color: $color-black-zinc-600;
+    font-weight: $font-weight400;
+    color: $color-black-zinc-300;
     text-align: center;
-    padding: 8px 4px;
+    padding: 12px 10.32px;
   }
 }
 
 .calendar-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 0px;
 
   .calendar-day {
     aspect-ratio: 1;
@@ -119,19 +120,37 @@
     background: none;
     font-size: 14px;
     font-weight: $font-weight400;
-    color: $color-black-zinc-950;
+    color: $color-black-zinc-500;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 0px;
     transition: $transition;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 36px;
+    padding: 5px;
+    width: 50px;
+    height: 44px;
+
+    &:before {
+      content: '';
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border-radius: 50%;
+      position: absolute;
+      z-index: -1;
+      transition: $transition;
+    }
 
     &:hover:not(.disabled) {
-      background-color: #EFF6FF;
-      color: $brand-color;
+      background-color: transparent;
+      font-weight: $font-weight600;
+      color: $color-white;
+
+      &:before {
+        background: $brand-color;
+      }
     }
 
     &.other-month {
@@ -140,29 +159,35 @@
     }
 
     &.selected {
-      background-color: $brand-color;
+      background-color: transparent;
       color: $color-white;
       font-weight: $font-weight600;
 
-      &:hover {
-        background-color: $brand-color;
-        color: $color-white;
+      &:before {
+        background: $brand-color;
       }
     }
 
     &.in-range {
-      background-color: #EFF6FF;
-      color: $brand-color;
+      background-color: transparent;
+      color: $color-black-zinc-500;
+
+      &:before {
+        background: #E9ECF5;
+      }
     }
 
     &.disabled {
-      color: $color-black-zinc-500;
-      opacity: 0.3;
+      color: $color-black-zinc-300;
       cursor: not-allowed;
+
+      &::before {
+        display: none;
+      }
 
       &:hover {
         background: none;
-        color: $color-black-zinc-500;
+        color: $color-black-zinc-300;
       }
     }
 
