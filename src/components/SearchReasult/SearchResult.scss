@@ -680,7 +680,38 @@
             }
           }
         }
+
+        .hotel-results {
+          .hotel-card {
+            gap: 15px;
+            margin-bottom: 24px;
+
+            .hotel-images {
+              min-width: 250px;
+            }
+
+            .property-card-action {
+              .hotel-footer {
+                min-width: 120px;
+
+                .hotel-price {
+                  margin-bottom: 24px;
+
+                  .price-amount {
+                    font-size: 26px;
+                  }
+                }
+
+                .view-details-button {
+                  padding: 8.7px 15px;
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+        }
       }
+
     }
 
     .search-bar-main {

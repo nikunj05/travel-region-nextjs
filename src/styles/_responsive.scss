@@ -78,7 +78,7 @@
   }
 
   .padding-top-100 {
-    padding-top: 94px;
+    padding-top: 0px;
   }
 
   // Global css end
@@ -1075,6 +1075,28 @@
 }
 
 @media (max-width: 575.55px) {
+
+  .container,
+  .container-fluid,
+  .container-xxl,
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm {
+    padding-right: 20px !important;
+    padding-left: 20px !important;
+  }
+
+  .row {
+    margin-right: calc(-0.83333 * var(--bs-gutter-x));
+    margin-left: calc(-0.83333 * var(--bs-gutter-x));
+  }
+
+  .row>* {
+    padding-right: calc(var(--bs-gutter-x) * 0.83333);
+    padding-left: calc(var(--bs-gutter-x) * 0.83333);
+  }
+
   .mobile_side_menu {
     width: 320px;
   }

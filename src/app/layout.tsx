@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/globals.scss";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "../styles/_responsive.scss";
 
 export const metadata: Metadata = {
   title: "Travel Region",
@@ -14,9 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
