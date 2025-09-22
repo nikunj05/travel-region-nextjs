@@ -19,6 +19,7 @@ import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
 import ParkingIcon from "@/assets/images/parking-icon.svg";
 import PoolIcon from "@/assets/images/pool-icon.svg";
+import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import "./SearchResult.scss";
 
 interface Location {
@@ -691,6 +692,25 @@ const SearchResult = () => {
                     </div>
                   </div>
                   <div className="search-header-right">
+                    <div className="mobile-filter-button d-lg-none ">
+                      <button className="filter-button button-primary ">
+                        <Image
+                          src={FilterBtnIcon}
+                          alt="filter icon"
+                          width={20}
+                          height={20}
+                          className="sort-filter-icon"
+                        />
+                        Filter
+                        <Image
+                          src={downBlackArrowIcon}
+                          alt="arrow icon"
+                          width={20}
+                          height={20}
+                          className="sort-filter-icon"
+                        />
+                      </button>
+                    </div>
                     <div className="sort-by-select-option">
                       <span className="sort-by-tag">Sort by</span>
                       <select className="sort-dropdown">
