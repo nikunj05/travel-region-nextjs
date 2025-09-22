@@ -1,5 +1,6 @@
+import HotelDetails from "@/components/HotelDetails/HotelDetails";
 
 
-export default function HotelDetails() {
-  return <div>HotelDetails</div>;
+export default function HotelDetailsPage() {
+  return  <HotelDetails />
 }
