@@ -42,7 +42,12 @@ const Header = () => {
 
   useEffect(() => {
     const checkHeaderSticky = () => {
-      if (window.scrollY > 5) {
+      // On search-result path: always sticky
+      if (pathname === '/search-result') {
+        setIsSticky(true)
+      } 
+      // On other paths: sticky only on scroll
+      else if (window.scrollY > 5) {
         setIsSticky(true)
       } else {
         setIsSticky(false)
@@ -68,7 +73,7 @@ const Header = () => {
       window.removeEventListener('scroll', checkHeaderSticky)
       document.removeEventListener('click', handleClickOutside)
     }
-  }, [])
+  }, [pathname])
 
   return (
     <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>

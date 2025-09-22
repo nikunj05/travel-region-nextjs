@@ -4,6 +4,7 @@ import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
+import { Select } from "../core/Select";
 import locationIcon from "@/assets/images/location-icon.svg";
 import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
 import calendarIcon from "@/assets/images/calendar-icon.svg";
@@ -70,6 +71,15 @@ const SearchResult = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("Recommended");
+
+  // Sort options for the dropdown
+  const sortOptions = [
+    { value: "Recommended", label: "Recommended" },
+    { value: "Price: Low to High", label: "Price: Low to High" },
+    { value: "Price: High to Low", label: "Price: High to Low" },
+    { value: "Rating", label: "Rating" },
+  ];
 
   // Reset filter states when mobile modal opens
   const handleMobileFilterOpen = () => {
@@ -742,13 +752,13 @@ const SearchResult = () => {
                       </button>
                     </div>
                     <div className="sort-by-select-option">
-                      <span className="sort-by-tag">Sort by</span>
-                      <select className="sort-dropdown">
-                        <option>Recommended</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Rating</option>
-                      </select>
+                      <Select
+                        options={sortOptions}
+                        value={sortBy}
+                        onChange={setSortBy}
+                        label="Sort by"
+                        className="sort-dropdown"
+                      />
                     </div>
                   </div>
                 </div>

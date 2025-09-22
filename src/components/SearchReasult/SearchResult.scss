@@ -373,35 +373,27 @@
 
         .search-header-right {
           .sort-by-select-option {
-            display: flex;
-            flex-direction: column;
-            padding: 6px 12px;
-            border-radius: 9px;
-            border: 1px solid $border-color;
             min-width: 250px;
 
-            .sort-by-tag {
-              font-size: 12px;
-              width: 100%;
-              color: $color-black-zinc-500;
-            }
-
+            // Override the Select component styles to match the original design
             .sort-dropdown {
-              padding: 0px;
-              display: flex;
-              border: none;
-              font-size: 20px;
-              padding-right: 25px;
-              cursor: pointer;
-              appearance: none;
-              background-image: url('../../assets/images/down-black-arrow-icon.svg');
-              background-repeat: no-repeat;
-              background-position: right center;
-              color: $color-black-zinc-950;
+              .selectWrapper {
+                padding: 6px 12px;
+                border-radius: 9px;
+                border: 1px solid $border-color;
+                min-width: 250px;
+              }
 
-              &:focus {
-                outline: none;
-                border-color: $brand-color;
+              .selectLabel {
+                font-size: 12px;
+                width: 100%;
+                color: $color-black-zinc-500;
+                margin-bottom: 4px;
+              }
+
+              .selectText {
+                font-size: 20px;
+                color: $color-black-zinc-950;
               }
             }
           }
