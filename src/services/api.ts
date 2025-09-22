@@ -20,7 +20,10 @@ import axios, {
   // Request interceptor
   axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      const token = localStorage.getItem('token');
+      let token: string | null = null;
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('token');
+      }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

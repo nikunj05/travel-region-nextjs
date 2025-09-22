@@ -10,6 +10,7 @@ import closeBtnIcon from '@/assets/images/close-btn-icon.svg'
 import englishFlagIcon from '@/assets/images/english-flag-icon.svg'
 import arabicFlagIcon from '@/assets/images/arabic-flag-icon.svg'
 import Link from 'next/link'
+import { useSettingsStore } from '@/store/settingsStore'
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false)
@@ -75,6 +76,8 @@ const Header = () => {
     }
   }, [pathname])
 
+  const dynamicLogo = useSettingsStore((s) => s.setting?.logo)
+
   return (
     <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>
     <div className="container">
@@ -86,7 +89,11 @@ const Header = () => {
             className="hamburger-icon" />
         </button>
         <a className="navbar-brand p-0 m-0" href="/">
-          <Image src={travelRegionsLogo} alt="logo" width="205" height="35" />
+          {dynamicLogo ? (
+            <Image src={dynamicLogo} alt="logo" width={205} height={35} priority />
+          ) : (
+            <Image src={travelRegionsLogo} alt="logo" width={205} height={35} />
+          )}
         </a>
         <div className="collapse navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
           id="navbarSupportedContent">

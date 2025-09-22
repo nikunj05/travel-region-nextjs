@@ -6,6 +6,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/_rtl.scss";
+import { settingsService } from "@/services/settingsService";
+import SettingsHydrator from "@/components/SettingsHydrator";
 
 // Function to determine text direction based on locale
 function getTextDirection(locale: string): 'ltr' | 'rtl' {
@@ -27,7 +29,7 @@ export default async function LocaleLayout({
   const { locale } = await params;
 
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as "en" | "ar")) {
     notFound();
   }
 
@@ -39,11 +41,19 @@ export default async function LocaleLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
 
+  // Fetch settings on server (cached, revalidate hourly)
+  const settingsRes = await settingsService.getSettingsCached();
+  const setting = settingsRes.data.setting;
+
   return (
     <html lang={lang} dir={direction}>
+      <head>
+        <link rel="icon" href={setting.favicon} />
+      </head>
       <body>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
+            <SettingsHydrator setting={setting} />
             {children}
             <ToastContainer />
           </AuthProvider>

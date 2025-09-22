@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Image from 'next/image'
 import footerLogoWhite from '@/assets/images/footer-logo-white.png'
@@ -12,8 +13,11 @@ import americanExpress from '@/assets/images/american-express.svg'
 import payPal from '@/assets/images/pay-pal.svg'
 import stripe from '@/assets/images/stripe.svg'
 import unionPay from '@/assets/images/union-pay.svg'
+import { useSettingsStore } from '@/store/settingsStore'
 
 const Footer = () => {
+
+  const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
   return (
         <footer className="page-footer section-space-tb">
     <div className="container">
