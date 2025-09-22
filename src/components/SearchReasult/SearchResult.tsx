@@ -69,6 +69,19 @@ const SearchResult = () => {
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Reset filter states when mobile modal opens
+  const handleMobileFilterOpen = () => {
+    setIsMobileFilterOpen(true);
+    // Ensure all sections are open when modal opens
+    setIsPriceRangeOpen(true);
+    setIsStarRatingOpen(true);
+    setIsGuestRatingOpen(true);
+    setIsAmenitiesOpen(true);
+    setIsPropertyTypeOpen(true);
+    setIsLocationTypeOpen(true);
+  };
 
   // Filter sidebar dropdown states
   const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(true);
@@ -111,6 +124,18 @@ const SearchResult = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Lock body scroll when mobile filter modal is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileFilterOpen]);
 
   // Static hotel data
   const hotels: Hotel[] = [
@@ -265,6 +290,259 @@ const SearchResult = () => {
   const getTotalGuests = () => {
     return guestCounts.adults + guestCounts.children + guestCounts.pets;
   };
+
+  // Reusable renderer for all filter sections (used in sidebar and mobile modal)
+  const renderFilters = (isMobile = false) => (
+    <>
+      <div className={`filter-mapview-btn ${isMobile ? 'd-none' : ''}`}>
+        <button className="map-view-button button-primary w-100">
+          <svg
+            width="25"
+            height="24"
+            viewBox="0 0 25 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.75345 4.19584L4.52558 4.90813C3.53739 5.48137 3.04329 5.768 2.77164 6.24483C2.5 6.72165 2.5 7.30233 2.5 8.46368V16.6283C2.5 18.1542 2.5 18.9172 2.84226 19.3418C3.07001 19.6244 3.38916 19.8143 3.742 19.8773C4.27226 19.9719 4.92148 19.5953 6.21987 18.8421C7.10156 18.3306 7.95011 17.7994 9.00487 17.9435C9.48466 18.009 9.94231 18.2366 10.8576 18.6917L14.6715 20.588C15.4964 20.9982 15.504 21 16.4214 21H18.5C20.3856 21 21.3284 21 21.9142 20.4013C22.5 19.8026 22.5 18.8389 22.5 16.9117V10.1715C22.5 8.24423 22.5 7.2806 21.9142 6.68188C21.3284 6.08316 20.3856 6.08316 18.5 6.08316H16.4214C15.504 6.08316 15.4964 6.08139 14.6715 5.6712L11.3399 4.01463C9.94884 3.32297 9.25332 2.97714 8.51238 3.00117C7.77143 3.02521 7.09877 3.41542 5.75345 4.19584Z"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8.5 3L8.5 17.5"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15.5 6.5L15.5 20.5"
+              stroke="white"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Map View
+        </button>
+      </div>
+      <div className={`filter-header ${isMobile ? 'd-none' : ''}`}>
+        <h3>Filter by</h3>
+        <button className="clear-filters">Clear</button>
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
+        >
+          Price Range
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isPriceRangeOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isPriceRangeOpen && (
+          <div className="price-range">
+            <div className="pricing-range-slider d-flex align-items-center justify-content-between">
+              <span>$500</span>
+              <span>$1500</span>
+            </div>
+            <div className="price-slider">
+              <div className="slider-track"></div>
+              <div className="slider-thumb"></div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsStarRatingOpen(!isStarRatingOpen)}
+        >
+          Star Rating
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isStarRatingOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isStarRatingOpen && (
+          <div className="filter-options">
+            {[5, 4, 3, 2, 1].map((stars) => (
+              <label key={stars} className="filter-option">
+                <input type="checkbox" defaultChecked={stars === 5} />
+                <span className="checkmark"></span>
+                <span className="stars">
+                  {stars}
+                  <span>
+                    <Image
+                      src={StarFill}
+                      width="16"
+                      height="16"
+                      alt="star icon"
+                    />
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsGuestRatingOpen(!isGuestRatingOpen)}
+        >
+          Guest Rating
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isGuestRatingOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isGuestRatingOpen && (
+          <div className="filter-options">
+            <label className="filter-option">
+              <input
+                type="radio"
+                name="guest-rating"
+                defaultChecked
+              />
+              <span className="radio-mark"></span>
+              Excellent
+            </label>
+            <label className="filter-option">
+              <input type="radio" name="guest-rating" />
+              <span className="radio-mark"></span>
+              Very Good
+            </label>
+            <label className="filter-option">
+              <input type="radio" name="guest-rating" />
+              <span className="radio-mark"></span>
+              Good
+            </label>
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
+        >
+          Amenities
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isAmenitiesOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isAmenitiesOpen && (
+          <div className="filter-options">
+            {["Wi-Fi", "Parking", "Pet Friendly", "Breakfast"].map(
+              (amenity) => (
+                <label key={amenity} className="filter-option">
+                  <input
+                    type="checkbox"
+                    defaultChecked={amenity === "Wi-Fi"}
+                  />
+                  <span className="checkmark"></span>
+                  {amenity}
+                </label>
+              )
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsPropertyTypeOpen(!isPropertyTypeOpen)}
+        >
+          Property Type
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isPropertyTypeOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isPropertyTypeOpen && (
+          <div className="filter-options">
+            {["Hotel", "Resort", "Apartment", "Villa"].map((type) => (
+              <label key={type} className="filter-option">
+                <input
+                  type="radio"
+                  name="property-type"
+                  defaultChecked={type === "Hotel"}
+                />
+                <span className="radio-mark"></span>
+                {type}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsLocationTypeOpen(!isLocationTypeOpen)}
+        >
+          Location Type
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${
+              isLocationTypeOpen ? "open" : ""
+            }`}
+          />
+        </div>
+        {isLocationTypeOpen && (
+          <div className="filter-options">
+            <label className="filter-option">
+              <input type="checkbox" defaultChecked />
+              <span className="checkmark"></span>
+              Near Beach
+            </label>
+            <label className="filter-option">
+              <input type="checkbox" />
+              <span className="checkmark"></span>
+              City Center
+            </label>
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <main className="padding-top-100">
@@ -433,255 +711,7 @@ const SearchResult = () => {
           <div className="container">
             <div className="search-content">
               {/* Left Filter Sidebar */}
-              <div className="filter-sidebar">
-                <div className="filter-mapview-btn">
-                  <button className="map-view-button button-primary w-100">
-                    <svg
-                      width="25"
-                      height="24"
-                      viewBox="0 0 25 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M5.75345 4.19584L4.52558 4.90813C3.53739 5.48137 3.04329 5.768 2.77164 6.24483C2.5 6.72165 2.5 7.30233 2.5 8.46368V16.6283C2.5 18.1542 2.5 18.9172 2.84226 19.3418C3.07001 19.6244 3.38916 19.8143 3.742 19.8773C4.27226 19.9719 4.92148 19.5953 6.21987 18.8421C7.10156 18.3306 7.95011 17.7994 9.00487 17.9435C9.48466 18.009 9.94231 18.2366 10.8576 18.6917L14.6715 20.588C15.4964 20.9982 15.504 21 16.4214 21H18.5C20.3856 21 21.3284 21 21.9142 20.4013C22.5 19.8026 22.5 18.8389 22.5 16.9117V10.1715C22.5 8.24423 22.5 7.2806 21.9142 6.68188C21.3284 6.08316 20.3856 6.08316 18.5 6.08316H16.4214C15.504 6.08316 15.4964 6.08139 14.6715 5.6712L11.3399 4.01463C9.94884 3.32297 9.25332 2.97714 8.51238 3.00117C7.77143 3.02521 7.09877 3.41542 5.75345 4.19584Z"
-                        stroke="white"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M8.5 3L8.5 17.5"
-                        stroke="white"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M15.5 6.5L15.5 20.5"
-                        stroke="white"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                    Map View
-                  </button>
-                </div>
-                <div className="filter-header">
-                  <h3>Filter by</h3>
-                  <button className="clear-filters">Clear</button>
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
-                  >
-                    Price Range
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isPriceRangeOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isPriceRangeOpen && (
-                    <div className="price-range">
-                      <div className="pricing-range-slider d-flex align-items-center justify-content-between">
-                        <span>$500</span>
-                        <span>$1500</span>
-                      </div>
-                      <div className="price-slider">
-                        <div className="slider-track"></div>
-                        <div className="slider-thumb"></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsStarRatingOpen(!isStarRatingOpen)}
-                  >
-                    Star Rating
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isStarRatingOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isStarRatingOpen && (
-                    <div className="filter-options">
-                      {[5, 4, 3, 2, 1].map((stars) => (
-                        <label key={stars} className="filter-option">
-                          <input type="checkbox" defaultChecked={stars === 5} />
-                          <span className="checkmark"></span>
-                          <span className="stars">
-                            {stars}
-                            <span>
-                              <Image
-                                src={StarFill}
-                                width="16"
-                                height="16"
-                                alt="star icon"
-                              />
-                            </span>
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsGuestRatingOpen(!isGuestRatingOpen)}
-                  >
-                    Guest Rating
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isGuestRatingOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isGuestRatingOpen && (
-                    <div className="filter-options">
-                      <label className="filter-option">
-                        <input
-                          type="radio"
-                          name="guest-rating"
-                          defaultChecked
-                        />
-                        <span className="radio-mark"></span>
-                        Excellent
-                      </label>
-                      <label className="filter-option">
-                        <input type="radio" name="guest-rating" />
-                        <span className="radio-mark"></span>
-                        Very Good
-                      </label>
-                      <label className="filter-option">
-                        <input type="radio" name="guest-rating" />
-                        <span className="radio-mark"></span>
-                        Good
-                      </label>
-                    </div>
-                  )}
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
-                  >
-                    Amenities
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isAmenitiesOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isAmenitiesOpen && (
-                    <div className="filter-options">
-                      {["Wi-Fi", "Parking", "Pet Friendly", "Breakfast"].map(
-                        (amenity) => (
-                          <label key={amenity} className="filter-option">
-                            <input
-                              type="checkbox"
-                              defaultChecked={amenity === "Wi-Fi"}
-                            />
-                            <span className="checkmark"></span>
-                            {amenity}
-                          </label>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsPropertyTypeOpen(!isPropertyTypeOpen)}
-                  >
-                    Property Type
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isPropertyTypeOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isPropertyTypeOpen && (
-                    <div className="filter-options">
-                      {["Hotel", "Resort", "Apartment", "Villa"].map((type) => (
-                        <label key={type} className="filter-option">
-                          <input
-                            type="radio"
-                            name="property-type"
-                            defaultChecked={type === "Hotel"}
-                          />
-                          <span className="radio-mark"></span>
-                          {type}
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="filter-section">
-                  <div
-                    className="filter-title"
-                    onClick={() => setIsLocationTypeOpen(!isLocationTypeOpen)}
-                  >
-                    Location Type
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="20"
-                      height="20"
-                      alt="down arrow"
-                      className={`dropdown-arrow ${
-                        isLocationTypeOpen ? "open" : ""
-                      }`}
-                    />
-                  </div>
-                  {isLocationTypeOpen && (
-                    <div className="filter-options">
-                      <label className="filter-option">
-                        <input type="checkbox" defaultChecked />
-                        <span className="checkmark"></span>
-                        Near Beach
-                      </label>
-                      <label className="filter-option">
-                        <input type="checkbox" />
-                        <span className="checkmark"></span>
-                        City Center
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <div className="filter-sidebar">{renderFilters(false)}</div>
 
               {/* Right Side Results */}
               <div className="result-right-side">
@@ -693,7 +723,7 @@ const SearchResult = () => {
                   </div>
                   <div className="search-header-right">
                     <div className="mobile-filter-button d-lg-none ">
-                      <button className="filter-button button-primary ">
+                      <button className="filter-button button-primary " onClick={handleMobileFilterOpen}>
                         <Image
                           src={FilterBtnIcon}
                           alt="filter icon"
@@ -893,6 +923,26 @@ const SearchResult = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Filter Modal */}
+        {isMobileFilterOpen && (
+          <div className="mobile-filter-modal" role="dialog" aria-modal="true">
+            <div className="mobile-filter-backdrop" onClick={() => setIsMobileFilterOpen(false)}></div>
+            <div className="mobile-filter-panel">
+              <div className="mobile-filter-header">
+                <h3>Filter</h3>
+                <button className="close-btn" aria-label="Close filters" onClick={() => setIsMobileFilterOpen(false)}>×</button>
+              </div>
+              <div className="mobile-filter-body">
+                {renderFilters(true)}
+              </div>
+              <div className="mobile-filter-footer">
+                <button className="reset-btn">Reset</button>
+                <button className="apply-btn button-primary" onClick={() => setIsMobileFilterOpen(false)}>Show hotels</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
