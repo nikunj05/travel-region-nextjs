@@ -502,6 +502,17 @@
       padding-top: 16px;
     }
   }
+
+  .pagination {
+    gap: 10px;
+
+    .pagination-arrow,
+    .pagination-page {
+      width: 34px;
+      height: 34px;
+      font-size: 16px;
+    }
+  }
 }
 
 

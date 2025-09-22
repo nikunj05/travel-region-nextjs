@@ -21,6 +21,7 @@ import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
 import ParkingIcon from "@/assets/images/parking-icon.svg";
 import PoolIcon from "@/assets/images/pool-icon.svg";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
+import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
 
 interface Location {
@@ -304,7 +305,7 @@ const SearchResult = () => {
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
   const renderFilters = (isMobile = false) => (
     <>
-      <div className={`filter-mapview-btn ${isMobile ? 'd-none' : ''}`}>
+      <div className={`filter-mapview-btn ${isMobile ? "d-none" : ""}`}>
         <button className="map-view-button button-primary w-100">
           <svg
             width="25"
@@ -338,7 +339,7 @@ const SearchResult = () => {
           Map View
         </button>
       </div>
-      <div className={`filter-header ${isMobile ? 'd-none' : ''}`}>
+      <div className={`filter-header ${isMobile ? "d-none" : ""}`}>
         <h3>Filter by</h3>
         <button className="clear-filters">Clear</button>
       </div>
@@ -354,9 +355,7 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isPriceRangeOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isPriceRangeOpen ? "open" : ""}`}
           />
         </div>
         {isPriceRangeOpen && (
@@ -384,9 +383,7 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isStarRatingOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isStarRatingOpen ? "open" : ""}`}
           />
         </div>
         {isStarRatingOpen && (
@@ -423,19 +420,13 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isGuestRatingOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isGuestRatingOpen ? "open" : ""}`}
           />
         </div>
         {isGuestRatingOpen && (
           <div className="filter-options">
             <label className="filter-option">
-              <input
-                type="radio"
-                name="guest-rating"
-                defaultChecked
-              />
+              <input type="radio" name="guest-rating" defaultChecked />
               <span className="radio-mark"></span>
               Excellent
             </label>
@@ -464,9 +455,7 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isAmenitiesOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isAmenitiesOpen ? "open" : ""}`}
           />
         </div>
         {isAmenitiesOpen && (
@@ -474,10 +463,7 @@ const SearchResult = () => {
             {["Wi-Fi", "Parking", "Pet Friendly", "Breakfast"].map(
               (amenity) => (
                 <label key={amenity} className="filter-option">
-                  <input
-                    type="checkbox"
-                    defaultChecked={amenity === "Wi-Fi"}
-                  />
+                  <input type="checkbox" defaultChecked={amenity === "Wi-Fi"} />
                   <span className="checkmark"></span>
                   {amenity}
                 </label>
@@ -498,9 +484,7 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isPropertyTypeOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isPropertyTypeOpen ? "open" : ""}`}
           />
         </div>
         {isPropertyTypeOpen && (
@@ -531,9 +515,7 @@ const SearchResult = () => {
             width="20"
             height="20"
             alt="down arrow"
-            className={`dropdown-arrow ${
-              isLocationTypeOpen ? "open" : ""
-            }`}
+            className={`dropdown-arrow ${isLocationTypeOpen ? "open" : ""}`}
           />
         </div>
         {isLocationTypeOpen && (
@@ -733,15 +715,20 @@ const SearchResult = () => {
                   </div>
                   <div className="search-header-right">
                     <div className="mobile-filter-button d-lg-none ">
-                      <button className="filter-button button-primary " onClick={handleMobileFilterOpen}>
-                        <Image
-                          src={FilterBtnIcon}
-                          alt="filter icon"
-                          width={20}
-                          height={20}
-                          className="sort-filter-icon"
-                        />
-                        Filter
+                      <button
+                        className="filter-button button-primary "
+                        onClick={handleMobileFilterOpen}
+                      >
+                        <span className="filter-icon-with-text">
+                          <Image
+                            src={FilterBtnIcon}
+                            alt="filter icon"
+                            width={20}
+                            height={20}
+                            className="sort-filter-icon"
+                          />
+                          Filter
+                        </span>
                         <Image
                           src={downBlackArrowIcon}
                           alt="arrow icon"
@@ -790,99 +777,104 @@ const SearchResult = () => {
                           ))}
                         </div>
                       </div>
-
-                      <div className="hotel-info">
-                        <a href="#" className="hotel-name">
-                          {hotel.name}
-                        </a>
-                        <div className="hotel-rating">
-                          <div className="rating-stars d-flex align-items-center">
-                            <Image
-                              src={ReviewStarFill}
-                              alt="star icon"
-                              width="16"
-                              height="16"
-                            />
-                            <Image
-                              src={ReviewStarFill}
-                              alt="star icon"
-                              width="16"
-                              height="16"
-                            />
-                            <Image
-                              src={ReviewStarFill}
-                              alt="star icon"
-                              width="16"
-                              height="16"
-                            />
-                            <Image
-                              src={ReviewStarFill}
-                              alt="star icon"
-                              width="16"
-                              height="16"
-                            />
-                            <Image
-                              src={ReviewStarFill}
-                              alt="star icon"
-                              width="16"
-                              height="16"
-                            />
-                          </div>
-                          <span className="rating-reviews d-flex align-items-center">
-                            <span className="rating-score">{hotel.rating}</span>
-                            ({hotel.reviewCount} Reviews)
-                          </span>
-                        </div>
-
-                        <div className="hotel-location">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
-                              fill="#6F8DC1"
-                            />
-                          </svg>
-
-                          <span>{hotel.location}</span>
-                        </div>
-
-                        <div className="hotel-amenities">
-                          {hotel.ame.map((amenity, index) => (
-                            <div className="amenity-tag d-flex align-items-center">
+                      <div className="hotel-info-with-action-card d-flex">
+                        <div className="hotel-info">
+                          <a href="#" className="hotel-name">
+                            {hotel.name}
+                          </a>
+                          <div className="hotel-rating">
+                            <div className="rating-stars d-flex align-items-center">
                               <Image
-                                src={amenity.icon}
+                                src={ReviewStarFill}
+                                alt="star icon"
                                 width="16"
                                 height="16"
-                                alt={amenity.name}
                               />
-                              <span key={index} className="amenity-tag-name">
-                                {amenity.name}
-                              </span>
+                              <Image
+                                src={ReviewStarFill}
+                                alt="star icon"
+                                width="16"
+                                height="16"
+                              />
+                              <Image
+                                src={ReviewStarFill}
+                                alt="star icon"
+                                width="16"
+                                height="16"
+                              />
+                              <Image
+                                src={ReviewStarFill}
+                                alt="star icon"
+                                width="16"
+                                height="16"
+                              />
+                              <Image
+                                src={ReviewStarFill}
+                                alt="star icon"
+                                width="16"
+                                height="16"
+                              />
                             </div>
-                          ))}
-                        </div>
-
-                        <p className="hotel-description">{hotel.description}</p>
-                      </div>
-                      <div className="property-card-action">
-                        <div className="hotel-footer">
-                          <div className="hotel-price">
-                            <span className="price-amount">
-                              <span className="property-currency">
-                                {hotel.currency} {""}
+                            <span className="rating-reviews d-flex align-items-center">
+                              <span className="rating-score">
+                                {hotel.rating}
                               </span>
-                              {hotel.price}
+                              ({hotel.reviewCount} Reviews)
                             </span>
-                            <span className="price-period">Per night</span>
                           </div>
-                          <button className="view-details-button button-primary w-100">
-                            View Details
-                          </button>
+
+                          <div className="hotel-location">
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
+                                fill="#6F8DC1"
+                              />
+                            </svg>
+
+                            <span>{hotel.location}</span>
+                          </div>
+
+                          <div className="hotel-amenities">
+                            {hotel.ame.map((amenity, index) => (
+                              <div className="amenity-tag d-flex align-items-center">
+                                <Image
+                                  src={amenity.icon}
+                                  width="16"
+                                  height="16"
+                                  alt={amenity.name}
+                                />
+                                <span key={index} className="amenity-tag-name">
+                                  {amenity.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+
+                          <p className="hotel-description">
+                            {hotel.description}
+                          </p>
+                        </div>
+                        <div className="property-card-action">
+                          <div className="hotel-footer">
+                            <div className="hotel-price">
+                              <span className="price-amount">
+                                <span className="property-currency">
+                                  {hotel.currency} {""}
+                                </span>
+                                {hotel.price}
+                              </span>
+                              <span className="price-period">Per night</span>
+                            </div>
+                            <button className="view-details-button button-primary w-100">
+                              View Details
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -937,18 +929,35 @@ const SearchResult = () => {
         {/* Mobile Filter Modal */}
         {isMobileFilterOpen && (
           <div className="mobile-filter-modal" role="dialog" aria-modal="true">
-            <div className="mobile-filter-backdrop" onClick={() => setIsMobileFilterOpen(false)}></div>
+            <div
+              className="mobile-filter-backdrop"
+              onClick={() => setIsMobileFilterOpen(false)}
+            ></div>
             <div className="mobile-filter-panel">
               <div className="mobile-filter-header">
                 <h3>Filter</h3>
-                <button className="close-btn" aria-label="Close filters" onClick={() => setIsMobileFilterOpen(false)}>×</button>
+                <button
+                  className="close-btn"
+                  aria-label="Close filters"
+                  onClick={() => setIsMobileFilterOpen(false)}
+                >
+                  <Image
+                    src={ClosePopupIcon}
+                    width="24"
+                    height="24"
+                    alt="close icon"
+                  />
+                </button>
               </div>
-              <div className="mobile-filter-body">
-                {renderFilters(true)}
-              </div>
+              <div className="mobile-filter-body">{renderFilters(true)}</div>
               <div className="mobile-filter-footer">
-                <button className="reset-btn">Reset</button>
-                <button className="apply-btn button-primary" onClick={() => setIsMobileFilterOpen(false)}>Show hotels</button>
+                <button className="reset-btn button-primary">Reset</button>
+                <button
+                  className="apply-btn button-primary"
+                  onClick={() => setIsMobileFilterOpen(false)}
+                >
+                  Show hotels
+                </button>
               </div>
             </div>
           </div>

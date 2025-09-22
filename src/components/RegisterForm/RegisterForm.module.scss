@@ -13,7 +13,7 @@
     padding: 40px;
     color: #fff;
     z-index: 0;
-    width: 67%;
+    width: 60%;
 
     &::before {
       content: "";
@@ -51,18 +51,18 @@
   }
 
   .loginrightcontent {
-    width: 33%;
+    width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     background: #fff;
-    padding: 24px 60px;
+    padding: 15px 50px;
 
     .loginformBox {
       width: 100%;
       overflow-y: auto;
       max-height: 100%;
-      max-width: 550px;
+      max-width: 950px;
 
       .loginformheading {
         font-size: 44px;
@@ -79,18 +79,19 @@
       }
 
       .loginformdetails {
-        margin: 48px 0 32px;
+        margin: 32px 0 32px;
 
         .loginformGroup {
           position: relative;
+          width: 100%;
 
           .mobileInputGroup {
             display: flex;
             gap: 12px;
-            align-items: flex-end;
+            align-items: flex-start;
 
             .countryCodeInput {
-              flex: 0 0 120px;
+              flex: 0 0 110px;
               min-width: 100px;
             }
 
@@ -152,7 +153,7 @@
         align-items: center;
         flex-wrap: nowrap;
         white-space: nowrap;
-        margin: 0 0 32px;
+        margin: 0 0 24px;
         font-size: 14px;
         gap: 20px;
         color: $color-black-zinc-500;
@@ -170,7 +171,7 @@
         gap: 15px;
         padding: 0px 19.5px;
         justify-content: space-between;
-        margin-bottom: 32px;
+        margin-bottom: 24px;
 
         .socialBtn {
           display: inline-flex;

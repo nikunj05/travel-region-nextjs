@@ -61,34 +61,54 @@ const RegisterForm: React.FC = () => {
               className={`${style.loginformdetails} form-field`}
             >
               <div className={`${style.loginformGroup} form-group`}>
-                <Input
-                  name="first_name"
-                  label="First Name"
-                  type="text"
-                  className="form-input form-control"
-                  placeholder="Enter your first name"
-                  labelClassName="form-label"
-                />
+                <div className={style.mobileInputGroup}>
+                  <div className={`${style.loginformGroup}`}>
+                    <Input
+                      name="first_name"
+                      label="First Name"
+                      type="text"
+                      className="form-input form-control"
+                      placeholder="Enter your first name"
+                      labelClassName="form-label"
+                    />
+                  </div>
+                  <div className={`${style.loginformGroup} form-group`}>
+                    <Input
+                      name="last_name"
+                      label="Last Name"
+                      type="text"
+                      className="form-input form-control"
+                      placeholder="Enter your last name"
+                      labelClassName="form-label"
+                    />
+                  </div>
+                </div>
               </div>
               <div className={`${style.loginformGroup} form-group`}>
-                <Input
-                  name="last_name"
-                  label="Last Name"
-                  type="text"
-                  className="form-input form-control"
-                  placeholder="Enter your last name"
-                  labelClassName="form-label"
-                />
-              </div>
-              <div className={`${style.loginformGroup} form-group`}>
-                <Input
-                  name="email"
-                  label="Email"
-                  type="email"
-                  className="form-input form-control"
-                  placeholder="example@gmail.com"
-                  labelClassName="form-label"
-                />
+                <div className={style.mobileInputGroup}>
+                  <div className={`${style.loginformGroup} `}>
+                    <Input
+                      name="email"
+                      label="Email"
+                      type="email"
+                      className="form-input form-control"
+                      placeholder="example@gmail.com"
+                      labelClassName="form-label"
+                    />
+                  </div>
+                  <div className={`${style.loginformGroup} form-group`}>
+                    <Input
+                      name="password"
+                      label="Password"
+                      type="password"
+                      showPasswordToggle={true}
+                      className="form-input form-control"
+                      placeholder="•••••••••••••••••"
+                      labelClassName="form-label"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
               <div className={`${style.loginformGroup} form-group`}>
                 <div className={style.mobileInputGroup}>
@@ -98,7 +118,7 @@ const RegisterForm: React.FC = () => {
                       label="Country Code"
                       type="text"
                       className="form-input form-control"
-                      placeholder="+1"
+                      placeholder="1"
                       labelClassName="form-label"
                     />
                   </div>
@@ -114,22 +134,9 @@ const RegisterForm: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className={`${style.loginformGroup} form-group`}>
-                <Input
-                  name="password"
-                  label="Password"
-                  type="password"
-                  showPasswordToggle={true}
-                  className="form-input form-control"
-                  placeholder="•••••••••••••••••"
-                  labelClassName="form-label"
-                  required
-                />
-              </div>
+
               {error && (
-                <div className="text-red-600 text-sm mb-4">
-                  {error}
-                </div>
+                <div className="text-red-600 text-sm mb-4">{error}</div>
               )}
               <div className={style.loginformaction}>
                 <button

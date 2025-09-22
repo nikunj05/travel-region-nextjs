@@ -1438,14 +1438,8 @@ img {
   }
 
   .active {
-    background: #3b5998; // your blue color
+    background: $brand-color;
     color: #fff;
     font-weight: 600;
-  }
-
-  .pagination-dots {
-    color: #71717a;
-    font-size: 14px;
-    padding: 0 4px;
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import DropdownArror from "@/assets/images/down-black-arrow-icon.svg";
 import styles from "./Select.module.scss";
 
 export interface SelectOption {
@@ -36,7 +37,10 @@ export const Select = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -66,20 +70,24 @@ export const Select = ({
     }
   };
 
-  const selectedOption = options.find(option => option.value === selectedValue);
+  const selectedOption = options.find(
+    (option) => option.value === selectedValue
+  );
   const displayText = selectedOption ? selectedOption.label : placeholder;
 
   return (
     <div className={`${styles.selectContainer} ${className}`}>
-      {label && (
-        <label className={`${styles.selectLabel} ${labelClassName}`}>
-          {label}
-        </label>
-      )}
-      <div 
+      <div
         ref={selectRef}
-        className={`${styles.selectWrapper} ${isOpen ? styles.open : ""} ${disabled ? styles.disabled : ""}`}
+        className={`${styles.selectWrapper} ${isOpen ? styles.open : ""} ${
+          disabled ? styles.disabled : ""
+        }`}
       >
+        {label && (
+          <label className={`${styles.selectLabel} ${labelClassName}`}>
+            {label}
+          </label>
+        )}
         <button
           type="button"
           className={styles.selectButton}
@@ -88,14 +96,16 @@ export const Select = ({
         >
           <span className={styles.selectText}>{displayText}</span>
           <Image
-            src="/assets/images/down-black-arrow-icon.svg"
+            src={DropdownArror}
             alt="Dropdown arrow"
-            width={16}
-            height={16}
-            className={`${styles.selectArrow} ${isOpen ? styles.arrowOpen : ""}`}
+            width={20}
+            height={20}
+            className={`${styles.selectArrow} ${
+              isOpen ? styles.arrowOpen : ""
+            }`}
           />
         </button>
-        
+
         {isOpen && (
           <ul className={styles.selectDropdown}>
             {options.map((option) => (
