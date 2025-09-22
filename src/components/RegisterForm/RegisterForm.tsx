@@ -49,7 +49,10 @@ const RegisterForm: React.FC = () => {
             </p>
             <Form<RegisterFormData>
               defaultValues={{
+                first_name: "",
+                last_name: "",
                 email: "",
+                country_code: "",
                 mobile: "",
                 password: "",
               }}
@@ -57,6 +60,26 @@ const RegisterForm: React.FC = () => {
               schema={registerSchema}
               className={`${style.loginformdetails} form-field`}
             >
+              <div className={`${style.loginformGroup} form-group`}>
+                <Input
+                  name="first_name"
+                  label="First Name"
+                  type="text"
+                  className="form-input form-control"
+                  placeholder="Enter your first name"
+                  labelClassName="form-label"
+                />
+              </div>
+              <div className={`${style.loginformGroup} form-group`}>
+                <Input
+                  name="last_name"
+                  label="Last Name"
+                  type="text"
+                  className="form-input form-control"
+                  placeholder="Enter your last name"
+                  labelClassName="form-label"
+                />
+              </div>
               <div className={`${style.loginformGroup} form-group`}>
                 <Input
                   name="email"
@@ -68,14 +91,28 @@ const RegisterForm: React.FC = () => {
                 />
               </div>
               <div className={`${style.loginformGroup} form-group`}>
-                <Input
-                  name="mobile"
-                  label="Mobile Number"
-                  type="text"
-                  className="form-input form-control"
-                  placeholder="+097 123 456 789"
-                  labelClassName="form-label"
-                />
+                <div className={style.mobileInputGroup}>
+                  <div className={style.countryCodeInput}>
+                    <Input
+                      name="country_code"
+                      label="Country Code"
+                      type="text"
+                      className="form-input form-control"
+                      placeholder="+1"
+                      labelClassName="form-label"
+                    />
+                  </div>
+                  <div className={style.mobileNumberInput}>
+                    <Input
+                      name="mobile"
+                      label="Mobile Number"
+                      type="text"
+                      className="form-input form-control"
+                      placeholder="123 456 789"
+                      labelClassName="form-label"
+                    />
+                  </div>
+                </div>
               </div>
               <div className={`${style.loginformGroup} form-group`}>
                 <Input

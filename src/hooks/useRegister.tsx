@@ -17,25 +17,13 @@ export const useRegister = () => {
 
   const handleSubmit = async (data: RegisterFormData) => {
     console.log('useRegister handleSubmit called with data:', data);
-    const first_name = "test";
-    const last_name = "test";
-    const country_code = "2";
-
-    const payload = {
-      first_name,
-      last_name,
-      country_code,
-      email: data.email,
-      mobile: data.mobile,
-      password: data.password,
-    };
-
+   
     setIsLoading(true);
     setError(null);
     
     try {
       console.log('Calling AuthContext register function...');
-      await register(payload);
+      await register(data);
       
       console.log('Register successful, redirecting to login...');
       setSuccess(true);

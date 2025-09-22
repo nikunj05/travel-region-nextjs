@@ -9,6 +9,7 @@ import travelRegionsLogo from '@/assets/images/travel-regions-logo.svg'
 import closeBtnIcon from '@/assets/images/close-btn-icon.svg'
 import englishFlagIcon from '@/assets/images/english-flag-icon.svg'
 import arabicFlagIcon from '@/assets/images/arabic-flag-icon.svg'
+import Link from 'next/link'
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false)
@@ -92,19 +93,19 @@ const Header = () => {
           </button>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link" href="#">Home</a>
+              <Link className="nav-link" href="/">Home</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#"> Deals & Offers</a>
+              <Link className="nav-link" href="/deals&offers"> Deals & Offers</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">Blog</a>
+              <Link className="nav-link" href="/blogs">Blog</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">FAQs</a>
+              <Link className="nav-link" href="/faqs">FAQs</Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">About Us</a>
+              <Link className="nav-link" href="/about-us">About Us</Link>
             </li>
           </ul>
           <div className="header-button-box d-flex d-lg-none align-items-center ">

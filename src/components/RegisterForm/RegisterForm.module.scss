@@ -84,6 +84,21 @@
         .loginformGroup {
           position: relative;
 
+          .mobileInputGroup {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+
+            .countryCodeInput {
+              flex: 0 0 120px;
+              min-width: 100px;
+            }
+
+            .mobileNumberInput {
+              flex: 1;
+            }
+          }
+
           .labelwithfpassword {
             display: flex;
             justify-content: space-between;
@@ -286,6 +301,19 @@
 
         .loginformdetails {
           margin: 32px 0 32px;
+
+          .loginformGroup {
+            .mobileInputGroup {
+              flex-direction: column;
+              gap: 0;
+
+              .countryCodeInput,
+              .mobileNumberInput {
+                flex: 1;
+                width: 100%;
+              }
+            }
+          }
         }
 
         .loginformaction {
