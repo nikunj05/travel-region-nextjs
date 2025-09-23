@@ -1,0 +1,32 @@
+@use "../../../styles/variables" as *;
+
+
+.formSelectContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.formSelectLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+  margin-bottom: 4px;
+}
+
+.formSelectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.formSelect {
+  width: 100%;
+}
+
+.errorMessage {
+  color: $error-color;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 0;
+}

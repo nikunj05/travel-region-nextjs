@@ -6,6 +6,8 @@ import { registerSchema, RegisterFormData } from "@/schemas/registerSchema";
 import { useRegister } from "@/hooks/useRegister";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
+import { FormSelect, CustomSelectOption } from "@/components/core/FormSelect";
+import { COUNTRY_CODES } from "@/constants";
 import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import GoogleLoginIcon from "@/assets/images/google_icon.svg";
@@ -52,7 +54,7 @@ const RegisterForm: React.FC = () => {
                 first_name: "",
                 last_name: "",
                 email: "",
-                country_code: "",
+                country_code: "+1",
                 mobile: "",
                 password: "",
               }}
@@ -113,12 +115,12 @@ const RegisterForm: React.FC = () => {
               <div className={`${style.loginformGroup} form-group`}>
                 <div className={style.mobileInputGroup}>
                   <div className={style.countryCodeInput}>
-                    <Input
+                    <FormSelect
                       name="country_code"
                       label="Country Code"
-                      type="text"
+                      options={COUNTRY_CODES}
+                      placeholder="Select country code"
                       className="form-input form-control"
-                      placeholder="1"
                       labelClassName="form-label"
                     />
                   </div>
