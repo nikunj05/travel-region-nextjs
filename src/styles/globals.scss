@@ -1444,6 +1444,41 @@ img {
   }
 }
 
+.breadcrumbs {
+  padding: 32px 0px;
+
+  ol {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    gap: 24px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+
+      a {
+        color: $color-black-zinc-500;
+        text-decoration: none;
+        transition: $transition;
+        font-size: 18px;
+
+        &:hover {
+          color: #000;
+        }
+      }
+
+      &:last-child {
+        font-weight: $font-weight500;
+        color: $color-black-zinc-950;
+      }
+    }
+  }
+}
+
 .select-with-input-field {
   .form-group {
     .form-input {
