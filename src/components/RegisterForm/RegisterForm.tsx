@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
+import { Controller } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { registerSchema, RegisterFormData } from "@/schemas/registerSchema";
 import { useRegister } from "@/hooks/useRegister";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
-import { FormSelect, CustomSelectOption } from "@/components/core/FormSelect";
+import { Select } from "@/components/core/Select/Select";
 import { COUNTRY_CODES } from "@/constants";
 import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
@@ -54,7 +55,7 @@ const RegisterForm: React.FC = () => {
                 first_name: "",
                 last_name: "",
                 email: "",
-                country_code: "+1",
+                country_code: "",
                 mobile: "",
                 password: "",
               }}
@@ -62,93 +63,105 @@ const RegisterForm: React.FC = () => {
               schema={registerSchema}
               className={`${style.loginformdetails} form-field`}
             >
-              <div className={`${style.loginformGroup} form-group`}>
-                <div className={style.mobileInputGroup}>
-                  <div className={`${style.loginformGroup}`}>
-                    <Input
-                      name="first_name"
-                      label="First Name"
-                      type="text"
-                      className="form-input form-control"
-                      placeholder="Enter your first name"
-                      labelClassName="form-label"
-                    />
+              {(methods) => (
+                <>
+                  <div className={`${style.loginformGroup} form-group`}>
+                    <div className={style.mobileInputGroup}>
+                      <div className={`${style.loginformGroup}`}>
+                        <Input
+                          name="first_name"
+                          label="First Name"
+                          type="text"
+                          className="form-input form-control"
+                          placeholder="Enter your first name"
+                          labelClassName="form-label"
+                        />
+                      </div>
+                      <div className={`${style.loginformGroup} form-group`}>
+                        <Input
+                          name="last_name"
+                          label="Last Name"
+                          type="text"
+                          className="form-input form-control"
+                          placeholder="Enter your last name"
+                          labelClassName="form-label"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className={`${style.loginformGroup} form-group`}>
-                    <Input
-                      name="last_name"
-                      label="Last Name"
-                      type="text"
-                      className="form-input form-control"
-                      placeholder="Enter your last name"
-                      labelClassName="form-label"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={`${style.loginformGroup} form-group`}>
-                <div className={style.mobileInputGroup}>
-                  <div className={`${style.loginformGroup} `}>
-                    <Input
-                      name="email"
-                      label="Email"
-                      type="email"
-                      className="form-input form-control"
-                      placeholder="example@gmail.com"
-                      labelClassName="form-label"
-                    />
+                    <div className={style.mobileInputGroup}>
+                      <div className={`${style.loginformGroup} `}>
+                        <Input
+                          name="email"
+                          label="Email"
+                          type="email"
+                          className="form-input form-control"
+                          placeholder="example@gmail.com"
+                          labelClassName="form-label"
+                        />
+                      </div>
+                      <div className={`${style.loginformGroup} form-group`}>
+                        <Input
+                          name="password"
+                          label="Password"
+                          type="password"
+                          showPasswordToggle={true}
+                          className="form-input form-control"
+                          placeholder="•••••••••••••••••"
+                          labelClassName="form-label"
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className={`${style.loginformGroup} form-group`}>
-                    <Input
-                      name="password"
-                      label="Password"
-                      type="password"
-                      showPasswordToggle={true}
-                      className="form-input form-control"
-                      placeholder="•••••••••••••••••"
-                      labelClassName="form-label"
-                      required
-                    />
+                    <div className={style.mobileInputGroup}>
+                      <div className={style.countryCodeInput}>
+                        <Controller
+                          name="country_code"
+                          control={methods.control}
+                          render={({ field }) => (
+                            <Select
+                              options={COUNTRY_CODES.map((c) => ({
+                                value: c.value,
+                                label: `+${c.label}`,
+                              }))}
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="+971"
+                              labelClassName="form-label"
+                            />
+                          )}
+                        />
+                      </div>
+                      <div className={style.mobileNumberInput}>
+                        <Input
+                          name="mobile"
+                          label="Mobile Number"
+                          type="text"
+                          className="form-input form-control"
+                          placeholder="Enter Mobile Number"
+                          labelClassName="form-label"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className={`${style.loginformGroup} form-group`}>
-                <div className={style.mobileInputGroup}>
-                  <div className={style.countryCodeInput}>
-                    <FormSelect
-                      name="country_code"
-                      label="Country Code"
-                      options={COUNTRY_CODES}
-                      placeholder="Select country code"
-                      className="form-input form-control"
-                      labelClassName="form-label"
-                    />
-                  </div>
-                  <div className={style.mobileNumberInput}>
-                    <Input
-                      name="mobile"
-                      label="Mobile Number"
-                      type="text"
-                      className="form-input form-control"
-                      placeholder="123 456 789"
-                      labelClassName="form-label"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {error && (
-                <div className="text-red-600 text-sm mb-4">{error}</div>
+                  {error && (
+                    <div className="text-red-600 text-sm mb-4">{error}</div>
+                  )}
+                  <div className={style.loginformaction}>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className={`${style.loginformbutton} button-primary w-100`}
+                    >
+                      {isLoading ? "Signing up..." : "Sign up"}
+                    </button>
+                  </div>
+                </>
               )}
-              <div className={style.loginformaction}>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className={`${style.loginformbutton} button-primary w-100`}
-                >
-                  {isLoading ? "Signing up..." : "Sign up"}
-                </button>
-              </div>
             </Form>
 
             <div className={style.orDivider}>

@@ -75,11 +75,7 @@ const LoginForm: React.FC = () => {
                   className="form-input form-control"
                   placeholder="•••••••••••••••••"
                   labelClassName={`${style.labelwithfpassword} form-label`}
-                  labelWithContent={
-                    <a href="#" className={style.forgotpassword}>
-                      Forgot Password?
-                    </a>
-                  }
+                
                   required
                 />
               </div>
@@ -98,6 +94,7 @@ const LoginForm: React.FC = () => {
                 </button>
               </div>
             </Form>
+            <Link href="/forgot-password" className={style.forgotpassword}>Forgot Password?</Link>
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
