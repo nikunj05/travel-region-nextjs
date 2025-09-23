@@ -55,7 +55,7 @@ const RegisterForm: React.FC = () => {
                 first_name: "",
                 last_name: "",
                 email: "",
-                country_code: "",
+                country_code: "971",
                 mobile: "",
                 password: "",
               }}
@@ -116,6 +116,7 @@ const RegisterForm: React.FC = () => {
                     </div>
                   </div>
                   <div className={`${style.loginformGroup} form-group`}>
+                    <label className="form-label">Contact Number</label>
                     <div className={style.mobileInputGroup}>
                       <div className={style.countryCodeInput}>
                         <Controller
@@ -130,7 +131,6 @@ const RegisterForm: React.FC = () => {
                               value={field.value}
                               onChange={field.onChange}
                               placeholder="+971"
-                              labelClassName="form-label"
                             />
                           )}
                         />
@@ -138,11 +138,9 @@ const RegisterForm: React.FC = () => {
                       <div className={style.mobileNumberInput}>
                         <Input
                           name="mobile"
-                          label="Mobile Number"
                           type="text"
                           className="form-input form-control"
                           placeholder="Enter Mobile Number"
-                          labelClassName="form-label"
                         />
                       </div>
                     </div>
