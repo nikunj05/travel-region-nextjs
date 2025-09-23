@@ -44,7 +44,7 @@ const Header = () => {
   useEffect(() => {
     const checkHeaderSticky = () => {
       // On search-result path: always sticky
-      if (pathname === '/search-result') {
+      if (pathname === '/search-result' || pathname === '/hotel-details') {
         setIsSticky(true)
       } 
       // On other paths: sticky only on scroll
