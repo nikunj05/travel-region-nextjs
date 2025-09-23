@@ -115,9 +115,13 @@ const RegisterForm: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className={`${style.loginformGroup} form-group`}>
-                    <label className="form-label">Contact Number</label>
-                    <div className={style.mobileInputGroup}>
+                  <div
+                    className={`${style.loginformGroup} form-group select-with-input-field`}
+                  >
+                    <label className="form-label">Mobile Number</label>
+                    <div
+                      className={`${style.selectwithinputfield} select-with-input`}
+                    >
                       <div className={style.countryCodeInput}>
                         <Controller
                           name="country_code"

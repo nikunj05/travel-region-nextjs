@@ -1443,3 +1443,11 @@ img {
     font-weight: 600;
   }
 }
+
+.select-with-input-field {
+  .form-group {
+    .form-input {
+      padding-left: 110px !important;
+    }
+  }
+}

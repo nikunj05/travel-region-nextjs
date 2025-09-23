@@ -118,6 +118,36 @@
           }
         }
 
+        .selectwithinputfield {
+          display: flex;
+          position: relative;
+
+
+          .countryCodeInput {
+            z-index: 1;
+            align-items: center;
+            width: 92px;
+            height: calc(100% - 4px);
+            display: flex;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+
+            .selectContainer {
+              display: flex;
+              height: 100%;
+            }
+          }
+
+          .mobileNumberInput {
+            width: 100%;
+
+            .inputContainer {
+              padding: 50px;
+            }
+          }
+        }
+
         .passwordwithicon {
           position: relative;
 
@@ -137,6 +167,7 @@
             cursor: pointer;
           }
         }
+
       }
 
       .loginformaction {
