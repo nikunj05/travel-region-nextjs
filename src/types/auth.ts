@@ -35,6 +35,20 @@ export interface RegisterResponse {
   };
 }
 
+// Reset Password Request
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}
+
+// Reset Password Response
+export interface ResetPasswordResponse {
+  status: boolean;
+  message: string;
+}
+
 // Auth Error Response
 export interface AuthErrorResponse {
   status: boolean;
