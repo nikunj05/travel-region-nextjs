@@ -142,7 +142,7 @@ const RegisterForm: React.FC = () => {
                       <div className={style.mobileNumberInput}>
                         <Input
                           name="mobile"
-                          type="text"
+                          type="number"
                           className="form-input form-control"
                           placeholder="Enter Mobile Number"
                         />

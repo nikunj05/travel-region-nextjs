@@ -175,14 +175,14 @@ const HotelDetails = () => {
                           cy="12"
                           r="10"
                           stroke="#09090B"
-                          stroke-width="1.5"
+                          strokeWidth="1.5"
                         />
                         <path
                           d="M16 12L8 12M16 12C16 12.7002 14.0057 14.0085 13.5 14.5M16 12C16 11.2998 14.0057 9.99153 13.5 9.5"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Check-in
@@ -203,14 +203,14 @@ const HotelDetails = () => {
                           cy="12"
                           r="10"
                           stroke="#09090B"
-                          stroke-width="1.5"
+                          strokeWidth="1.5"
                         />
                         <path
                           d="M8 12L16 12M8 12C8 11.2998 9.9943 9.99153 10.5 9.5M8 12C8 12.7002 9.9943 14.0085 10.5 14.5"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Check-out
@@ -229,21 +229,21 @@ const HotelDetails = () => {
                         <path
                           d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z"
                           stroke="#09090B"
-                          stroke-width="1.5"
+                          strokeWidth="1.5"
                         />
                         <path
                           d="M12.2422 17V12C12.2422 11.5286 12.2422 11.2929 12.0957 11.1464C11.9493 11 11.7136 11 11.2422 11"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M11.992 8H12.001"
                           stroke="#09090B"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Additional Facts
@@ -272,30 +272,30 @@ const HotelDetails = () => {
                       <path
                         d="M22 21H21C19.5486 21 18.278 20.1411 18 19C17.722 20.1411 16.4514 21 15 21C13.5486 21 12.278 20.1411 12 19C11.722 20.1411 10.4514 21 9 21C7.54863 21 6.27796 20.1411 6 19C5.72204 20.1411 4.45137 21 3 21H2"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M19 3L18.7351 3.0883C17.4151 3.52832 16.755 3.74832 16.3775 4.2721C16 4.79587 16 5.49159 16 6.88304V17"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M11 3L10.7351 3.0883C9.41505 3.52832 8.75503 3.74832 8.37752 4.2721C8 4.79587 8 5.49159 8 6.88304V17"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M8 7H16M8 11H16M8 15H16"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Pool
@@ -311,15 +311,15 @@ const HotelDetails = () => {
                       <path
                         d="M2 14C2 10.2288 2 8.34315 3.17157 7.17157C4.34315 6 6.22876 6 10 6H14C17.7712 6 19.6569 6 20.8284 7.17157C22 8.34315 22 10.2288 22 14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14Z"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                       />
                       <path
                         d="M9 3L12 6L16 2"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     TV
@@ -335,37 +335,37 @@ const HotelDetails = () => {
                       <path
                         d="M3 12V17M3 17H5C6.41421 17 7.12132 17 7.56066 17.4393C8 17.8787 8 18.5858 8 20V21M3 17V21"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M4 7L9.31672 4.08345C10.6334 3.36115 11.2918 3 12 3C12.7082 3 13.3666 3.36115 14.6833 4.08345L20 7"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M18 6V10M6 6V10"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M21 12V17M21 17H19C17.5858 17 16.8787 17 16.4393 17.4393C16 17.8787 16 18.5858 16 20V21M21 17V21"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M7 14H12M12 14H17M12 14V21M12 21H11M12 21H13"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Restaurant
@@ -381,30 +381,30 @@ const HotelDetails = () => {
                       <path
                         d="M12 18.5H12.0118"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M8.25 15.5C10.25 13.5 13.75 13.5 15.75 15.5"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M18.5 12.5C14.7324 9.16667 9.5 9.16667 5.5 12.5"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M2 9.5C8.31579 4.16669 15.6842 4.16668 22 9.49989"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Wi-Fi
@@ -435,23 +435,23 @@ const HotelDetails = () => {
                       <path
                         d="M7.47095 17.263L12 20.9742C11.6197 21.3637 11.255 21.7646 10.7178 21.9214C10.4486 22 10.1597 22 9.58202 22H6.64577C5.12431 22 3.69593 21.514 3.15891 19.9348C2.65447 18.4514 3.35188 15.9891 5.23816 16C5.93452 16.0041 6.44666 16.4237 7.47095 17.263Z"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M12 21L16.5 10"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M17.6201 3.42328L16.1328 9.00041C16.0552 9.29151 16.1929 9.59708 16.4623 9.73182C16.7637 9.8825 17.1303 9.77151 17.2975 9.47896L20.1612 4.46745C20.5949 3.70849 20.2258 2.7425 19.3965 2.46608C18.6392 2.21363 17.8258 2.65192 17.6201 3.42328Z"
                         stroke="#2B7FFF"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Golf Course
@@ -464,7 +464,7 @@ const HotelDetails = () => {
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <g clip-path="url(#clip0_620_27212)">
+                      <g clipPath="url(#clip0_620_27212)">
                         <path
                           d="M8.25 7.75C8.25 8.74456 8.64509 9.69839 9.34835 10.4017C10.0516 11.1049 11.0054 11.5 12 11.5C12.9946 11.5 13.9484 11.1049 14.6517 10.4017C15.3549 9.69839 15.75 8.74456 15.75 7.75C15.75 6.75544 15.3549 5.80161 14.6517 5.09835C13.9484 4.39509 12.9946 4 12 4C11.0054 4 10.0516 4.39509 9.34835 5.09835C8.64509 5.80161 8.25 6.75544 8.25 7.75Z"
                           fill="#2B7FFF"
@@ -497,28 +497,28 @@ const HotelDetails = () => {
                       <path
                         d="M20.3611 1.25H2.13889C1.90314 1.25 1.67705 1.34365 1.51035 1.51035C1.34365 1.67705 1.25 1.90314 1.25 2.13889V20.3611C1.25 20.5969 1.34365 20.823 1.51035 20.9897C1.67705 21.1564 1.90314 21.25 2.13889 21.25H20.3611C20.5969 21.25 20.823 21.1564 20.9897 20.9897C21.1564 20.823 21.25 20.5969 21.25 20.3611V2.13889C21.25 1.90314 21.1564 1.67705 20.9897 1.51035C20.823 1.34365 20.5969 1.25 20.3611 1.25Z"
                         stroke="#2B7FFF"
-                        stroke-width="1.33333"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.33333"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M4.58398 21.25V9.91667C4.58398 9.73986 4.65422 9.57029 4.77925 9.44526C4.90427 9.32024 5.07384 9.25 5.25065 9.25H14.584C14.7608 9.25 14.9304 9.32024 15.0554 9.44526C15.1804 9.57029 15.2507 9.73986 15.2507 9.91667V21.25M9.91732 9.25V21.25"
                         stroke="#2B7FFF"
-                        stroke-width="1.33333"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.33333"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M18.2493 13.2507C18.1609 13.2507 18.0762 13.2155 18.0136 13.153C17.9511 13.0905 17.916 13.0057 17.916 12.9173C17.916 12.8289 17.9511 12.7441 18.0136 12.6816C18.0762 12.6191 18.1609 12.584 18.2493 12.584M18.2493 13.2507C18.3378 13.2507 18.4225 13.2155 18.4851 13.153C18.5476 13.0905 18.5827 13.0057 18.5827 12.9173C18.5827 12.8289 18.5476 12.7441 18.4851 12.6816C18.4225 12.6191 18.3378 12.584 18.2493 12.584M18.2493 16.584C18.1609 16.584 18.0762 16.5489 18.0136 16.4864C17.9511 16.4238 17.916 16.3391 17.916 16.2507C17.916 16.1622 17.9511 16.0775 18.0136 16.0149C18.0762 15.9524 18.1609 15.9173 18.2493 15.9173M18.2493 16.584C18.3378 16.584 18.4225 16.5489 18.4851 16.4864C18.5476 16.4238 18.5827 16.3391 18.5827 16.2507C18.5827 16.1622 18.5476 16.0775 18.4851 16.0149C18.4225 15.9524 18.3378 15.9173 18.2493 15.9173"
                         stroke="#2B7FFF"
-                        stroke-width="1.33333"
+                        strokeWidth="1.33333"
                       />
                       <path
                         d="M7.25 5.91602H12.5833"
                         stroke="#2B7FFF"
-                        stroke-width="1.33333"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.33333"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Elevator
@@ -619,8 +619,8 @@ const HotelDetails = () => {
                     <path
                       d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
                       stroke="#FB2C36"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
                     />
                   </svg>
                   Favorite
@@ -636,15 +636,15 @@ const HotelDetails = () => {
                     <path
                       d="M18 7C18.7745 7.16058 19.3588 7.42859 19.8284 7.87589C21 8.99181 21 10.7879 21 14.38C21 17.9721 21 19.7681 19.8284 20.8841C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8841C3 19.7681 3 17.9721 3 14.38C3 10.7879 3 8.99181 4.17157 7.87589C4.64118 7.42859 5.2255 7.16058 6 7"
                       stroke="#2B7FFF"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
                     />
                     <path
                       d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886"
                       stroke="#2B7FFF"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                   Share

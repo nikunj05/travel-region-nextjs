@@ -56,4 +56,24 @@ export const authService = {
       throw error;
     }
   },
+  
+  // Social login: exchanges social identity for backend token
+  socialAuth: async (
+    data: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      social_media_id: string;
+    }
+  ): Promise<LoginResponse> => {
+    try {
+      const response = await api.post<LoginResponse, typeof data>(
+        '/social-auth',
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

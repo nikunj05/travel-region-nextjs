@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterFormData } from '@/schemas/registerSchema';
 import { toast } from 'react-toastify';
+import { formatApiErrorMessage, formatApiErrorMessages } from '@/lib/formatApiError';
 
 export const useRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,9 +32,14 @@ export const useRegister = () => {
       router.push('/login');
     } catch (error) {
       console.error('Register failed:', error);
-      const errorMessage = t('failed') || 'Registration failed';
+      const errorMessages = formatApiErrorMessages(error);
+      const errorMessage = errorMessages.join(' ') || t('failed');
       setError(errorMessage);
-      toast.error(errorMessage);
+      
+      // Show separate toasts for each error message
+      errorMessages.forEach((msg) => {
+        toast.error(msg);
+      });
     } finally {
       setIsLoading(false);
     }

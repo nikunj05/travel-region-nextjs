@@ -13,7 +13,7 @@ const PrivateLayout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Only redirect if auth is initialized and user is not authenticated
     if (isInitialized && !isAuthenticated) {
-      router.push("/login");
+      router.replace("/login");
     }
   }, [isAuthenticated, isInitialized, router]);
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { formatApiErrorMessage } from '@/lib/formatApiError';
 import { ForgotPasswordFormData } from '@/schemas/forgotPasswordSchema';
 import { authService } from '@/services/authService';
 
@@ -17,7 +18,7 @@ export const useForgotPassword = () => {
       const successMessage = (response as any)?.message || 'Reset link sent to your email';
       toast.success(successMessage);
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message ;
+      const errorMessage = formatApiErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

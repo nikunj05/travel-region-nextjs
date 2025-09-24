@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../styles/_rtl.scss";
 import { settingsService } from "@/services/settingsService";
 import SettingsHydrator from "@/components/SettingsHydrator";
+import NextAuthSessionProvider from "@/context/NextAuthSessionProvider";
 
 // Function to determine text direction based on locale
 function getTextDirection(locale: string): 'ltr' | 'rtl' {
@@ -52,11 +53,13 @@ export default async function LocaleLayout({
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AuthProvider>
-            <SettingsHydrator setting={setting} />
-            {children}
-            <ToastContainer />
-          </AuthProvider>
+          <NextAuthSessionProvider>
+            <AuthProvider>
+              <SettingsHydrator setting={setting} />
+              {children}
+              <ToastContainer />
+            </AuthProvider>
+          </NextAuthSessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

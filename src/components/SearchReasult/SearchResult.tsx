@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "@/i18/navigation";
 import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
@@ -52,6 +53,7 @@ interface Hotel {
 }
 
 const SearchResult = () => {
+  const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState<Location | null>({
     id: "1",
     name: "Bangkok",
@@ -317,23 +319,23 @@ const SearchResult = () => {
             <path
               d="M5.75345 4.19584L4.52558 4.90813C3.53739 5.48137 3.04329 5.768 2.77164 6.24483C2.5 6.72165 2.5 7.30233 2.5 8.46368V16.6283C2.5 18.1542 2.5 18.9172 2.84226 19.3418C3.07001 19.6244 3.38916 19.8143 3.742 19.8773C4.27226 19.9719 4.92148 19.5953 6.21987 18.8421C7.10156 18.3306 7.95011 17.7994 9.00487 17.9435C9.48466 18.009 9.94231 18.2366 10.8576 18.6917L14.6715 20.588C15.4964 20.9982 15.504 21 16.4214 21H18.5C20.3856 21 21.3284 21 21.9142 20.4013C22.5 19.8026 22.5 18.8389 22.5 16.9117V10.1715C22.5 8.24423 22.5 7.2806 21.9142 6.68188C21.3284 6.08316 20.3856 6.08316 18.5 6.08316H16.4214C15.504 6.08316 15.4964 6.08139 14.6715 5.6712L11.3399 4.01463C9.94884 3.32297 9.25332 2.97714 8.51238 3.00117C7.77143 3.02521 7.09877 3.41542 5.75345 4.19584Z"
               stroke="white"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M8.5 3L8.5 17.5"
               stroke="white"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
             <path
               d="M15.5 6.5L15.5 20.5"
               stroke="white"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
           Map View
@@ -681,15 +683,15 @@ const SearchResult = () => {
                     <path
                       d="M17.5 17.5586L22 22.0586"
                       stroke="white"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       d="M20 11.0586C20 6.08803 15.9706 2.05859 11 2.05859C6.02944 2.05859 2 6.08803 2 11.0586C2 16.0292 6.02944 20.0586 11 20.0586C15.9706 20.0586 20 16.0292 20 11.0586Z"
                       stroke="white"
-                      stroke-width="1.5"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 </button>
@@ -764,9 +766,8 @@ const SearchResult = () => {
                         </div>
                         <div className="thumbnail-images">
                           {hotel.thumbnailImages.map((img, index) => (
-                            <div className="thumbnail-image">
+                            <div key={`${hotel.id}-thumb-${index}`} className="thumbnail-image">
                               <Image
-                                key={index}
                                 width={66}
                                 height={52}
                                 src={img}
@@ -842,14 +843,14 @@ const SearchResult = () => {
 
                           <div className="hotel-amenities">
                             {hotel.ame.map((amenity, index) => (
-                              <div className="amenity-tag d-flex align-items-center">
+                              <div key={`${hotel.id}-amenity-${index}`} className="amenity-tag d-flex align-items-center">
                                 <Image
                                   src={amenity.icon}
                                   width="16"
                                   height="16"
                                   alt={amenity.name}
                                 />
-                                <span key={index} className="amenity-tag-name">
+                                <span className="amenity-tag-name">
                                   {amenity.name}
                                 </span>
                               </div>
@@ -871,7 +872,7 @@ const SearchResult = () => {
                               </span>
                               <span className="price-period">Per night</span>
                             </div>
-                            <button className="view-details-button button-primary w-100">
+                            <button className="view-details-button button-primary w-100" onClick={() => router.push('/hotel-details')} >
                               View Details
                             </button>
                           </div>
@@ -892,8 +893,8 @@ const SearchResult = () => {
                       <path
                         d="M15 6L9 12L15 18"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-miterlimit="16"
+                      strokeWidth="1.5"
+                      strokeMiterlimit="16"
                       />
                     </svg>
                   </button>
@@ -915,8 +916,8 @@ const SearchResult = () => {
                       <path
                         d="M9.00005 6L15 12L9 18"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-miterlimit="16"
+                      strokeWidth="1.5"
+                      strokeMiterlimit="16"
                       />
                     </svg>
                   </button>

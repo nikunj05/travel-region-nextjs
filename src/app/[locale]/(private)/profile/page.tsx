@@ -4,7 +4,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from '@/i18/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18/navigation';
-import Header from '@/components/Header/Header';
 
 export default function ProfilePage() {
   const { logout, user, isAuthenticated } = useAuth();
@@ -18,8 +17,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <>
-    <Header />
+    <main className="padding-top-100">
     <div style={{ 
       maxWidth: '600px', 
       margin: '2rem auto', 
@@ -81,7 +79,7 @@ export default function ProfilePage() {
         </Link>
       </div>
     </div>
-    </>
+    </main>
   );
 };
 

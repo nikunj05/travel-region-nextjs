@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { formatApiErrorMessage } from '@/lib/formatApiError';
 import { ResetPasswordFormData } from '@/schemas/resetPasswordSchema';
 import { authService } from '@/services/authService';
+import { useRouter } from 'next/router';
 
 function extractTokenFromPath(pathname: string): string | null {
   if (!pathname) return null;
@@ -35,6 +37,8 @@ export const useResetPassword = () => {
     }
   }, [initialToken]);
 
+  const router = useRouter();
+
   const handleSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
     setError(null);
@@ -51,8 +55,9 @@ export const useResetPassword = () => {
       });
       const message = (response as any)?.message || 'Password reset successful';
       toast.success(message);
+      router.push('/login');
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || 'Password reset failed';
+      const errorMessage = formatApiErrorMessage(error) || 'Password reset failed';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

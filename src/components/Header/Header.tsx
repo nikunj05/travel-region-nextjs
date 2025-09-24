@@ -11,6 +11,7 @@ import englishFlagIcon from '@/assets/images/english-flag-icon.svg'
 import arabicFlagIcon from '@/assets/images/arabic-flag-icon.svg'
 import Link from 'next/link'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useAuth } from '@/hooks/useAuth'
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false)
@@ -44,7 +45,7 @@ const Header = () => {
   useEffect(() => {
     const checkHeaderSticky = () => {
       // On search-result path: always sticky
-      if (pathname === '/search-result' || pathname === '/hotel-details') {
+      if (pathname === '/search-result' || pathname === '/hotel-details' || pathname === '/profile') {
         setIsSticky(true)
       } 
       // On other paths: sticky only on scroll
@@ -77,6 +78,8 @@ const Header = () => {
   }, [pathname])
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo)
+  console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
+  const { isAuthenticated } = useAuth()
 
   return (
     <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>
@@ -120,14 +123,16 @@ const Header = () => {
               <Link className="nav-link" href="/about-us">About Us</Link>
             </li>
           </ul>
-          <div className="header-button-box d-flex d-lg-none align-items-center ">
-            <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
-              Sign up
-            </button>
-            <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
-              Log In
-            </button>
-          </div>
+          {!isAuthenticated && (
+            <div className="header-button-box d-flex d-lg-none align-items-center ">
+              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
+                Sign up
+              </button>
+              <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
+                Log In
+              </button>
+            </div>
+          )}
         </div>
         <div className="d-flex align-items-center">
           <div className={`header-language-dropdown ${isLanguageMenuOpen ? 'open' : ''}`}>
@@ -169,14 +174,16 @@ const Header = () => {
             </ul>
           </div>
 
-          <div className="header-button-box align-items-center d-none d-lg-flex">
-            <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
-              Sign up
-            </button>
-            <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
-              Log In
-            </button>
-          </div>
+          {!isAuthenticated && (
+            <div className="header-button-box align-items-center d-none d-lg-flex">
+              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
+                Sign up
+              </button>
+              <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
+                Log In
+              </button>
+            </div>
+          )}
         </div>
       </nav>
       <div className="mobile-overlay"></div>

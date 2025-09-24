@@ -12,12 +12,12 @@ import GoogleLoginIcon from "@/assets/images/google_icon.svg";
 import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
 import style from "./Login.module.scss";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 const LoginForm: React.FC = () => {
   const t = useTranslations("Auth.login");
   const nav = useTranslations("Navigation");
   const { handleSubmit, isLoading, error } = useLogin();
-
   return (
     <>
       <main className={`${style.userLoginPage} loginPage`}>
@@ -104,7 +104,15 @@ const LoginForm: React.FC = () => {
             </div>
 
             <div className={style.socialLogin}>
-              <button className={style.socialBtn}>
+              <button
+                className={style.socialBtn}
+                onClick={() =>
+                  signIn("google", {
+                    callbackUrl: `/google-auth-success`,
+                  })
+                }
+                type="button"
+              >
                 <Image
                   src={GoogleLoginIcon}
                   alt="google icon"

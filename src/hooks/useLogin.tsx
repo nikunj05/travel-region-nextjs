@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginFormData } from '@/schemas/loginSchema';
 import { toast } from 'react-toastify';
+import { formatApiErrorMessage } from '@/lib/formatApiError';
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ export const useLogin = () => {
       router.push('/profile');
     } catch (error: any) {
       console.error('Login failed:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || t('failed');
+      const errorMessage = formatApiErrorMessage(error) || t('failed');
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
