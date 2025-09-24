@@ -79,7 +79,7 @@
       }
 
       .loginformdetails {
-        margin: 48px 0 32px;
+        margin: 48px 0 24px;
 
         .loginformGroup {
           position: relative;
@@ -90,15 +90,8 @@
             align-items: center;
             gap: 15px;
 
-            .forgotpassword {
-              color: #4D6EAA;
-              text-decoration: none;
-              font-size: 14px;
 
-              &:hover {
-                text-decoration: underline;
-              }
-            }
+
           }
         }
 
@@ -120,6 +113,18 @@
             z-index: 1;
             cursor: pointer;
           }
+        }
+      }
+
+      .forgotpass {
+        text-align: right;
+        margin-bottom: 24px;
+
+        .forgotpassword {
+          color: #4D6EAA;
+          text-decoration: none;
+          font-weight: $font-weight500;
+          font-size: 16px;
         }
       }
 
@@ -286,6 +291,12 @@
 
         .loginformdetails {
           margin: 32px 0 32px;
+        }
+
+        .forgotpass {
+          .forgotpassword {
+            font-size: 14px;
+          }
         }
 
         .loginformaction {

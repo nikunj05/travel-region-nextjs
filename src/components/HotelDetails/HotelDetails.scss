@@ -407,6 +407,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 32px;
+      margin-bottom: 36px;
 
       .room-card {
         display: flex;
@@ -421,6 +422,27 @@
 
           img {
             border-radius: 8px;
+          }
+
+          .hotel-best-value {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-size: 14px;
+            font-weight: $font-weight600;
+            color: $color-white;
+            background: #2B7FFF;
+            width: 100%;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+          }
+
+          .hotel-image-action {
+            padding: 0 20px;
+            position: absolute;
+            top: 50%;
+            right: 0px;
           }
         }
 

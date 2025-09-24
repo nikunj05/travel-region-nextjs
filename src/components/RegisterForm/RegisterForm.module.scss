@@ -127,7 +127,7 @@
             z-index: 1;
             align-items: center;
             width: 92px;
-            height: calc(100% - 4px);
+            height: calc(52px - 4px);
             display: flex;
             position: absolute;
             top: 2px;
@@ -287,6 +287,15 @@
         .loginformheading {
           font-size: 34px;
         }
+
+        .loginformdetails {
+          .loginformGroup {
+            .mobileInputGroup {
+              flex-direction: column;
+              gap: 20px;
+            }
+          }
+        }
       }
     }
   }
@@ -336,14 +345,18 @@
 
           .loginformGroup {
             .mobileInputGroup {
-              flex-direction: column;
-              gap: 0;
 
               .countryCodeInput,
               .mobileNumberInput {
                 flex: 1;
                 width: 100%;
               }
+            }
+          }
+
+          .selectwithinputfield {
+            .countryCodeInput {
+              height: calc(48px - 4px);
             }
           }
         }

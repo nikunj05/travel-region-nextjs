@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import "./HotelDetails.scss";
 
@@ -703,6 +703,40 @@ const HotelDetails = () => {
                       />
                     </button>
                   </div>
+                  <div className="hotel-card-total-image d-flex align-items-center">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 14.9787C5.10725 16.0691 5.34963 16.803 5.89743 17.3508C6.87997 18.3333 8.46135 18.3333 11.6241 18.3333C14.7869 18.3333 16.3682 18.3333 17.3508 17.3508C18.3333 16.3682 18.3333 14.7869 18.3333 11.6241C18.3333 8.46135 18.3333 6.87997 17.3508 5.89743C16.803 5.34963 16.0691 5.10725 14.9787 5"
+                        stroke="white"
+                        stroke-width="1.25"
+                      />
+                      <path
+                        d="M1.66602 8.33268C1.66602 5.18999 1.66602 3.61864 2.64233 2.64233C3.61864 1.66602 5.18999 1.66602 8.33268 1.66602C11.4754 1.66602 13.0467 1.66602 14.023 2.64233C14.9993 3.61864 14.9993 5.18999 14.9993 8.33268C14.9993 11.4754 14.9993 13.0467 14.023 14.023C13.0467 14.9993 11.4754 14.9993 8.33268 14.9993C5.18999 14.9993 3.61864 14.9993 2.64233 14.023C1.66602 13.0467 1.66602 11.4754 1.66602 8.33268Z"
+                        stroke="white"
+                        stroke-width="1.25"
+                      />
+                      <path
+                        d="M1.66602 9.26477C2.18186 9.19922 2.70338 9.16682 3.22578 9.16797C5.43573 9.1271 7.59155 9.72962 9.30858 10.868C10.901 11.9238 12.02 13.3769 12.4993 14.9993"
+                        stroke="white"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M10.8338 5.83398H10.8413"
+                        stroke="white"
+                        stroke-width="1.66667"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    4
+                  </div>
                 </div>
                 <div className="room-card-details">
                   <h3>Premium Double Room</h3>
@@ -724,7 +758,9 @@ const HotelDetails = () => {
                     <p>Reserve now, pay later</p>
                     <p>Fully refundable</p>
                   </div>
-                  <a href="#">More Details &gt;</a>
+                  <a className="hotel-more-details" href="#">
+                    More Details &gt;
+                  </a>
                 </div>
                 <div className="room-card-booking">
                   <div className="price-info">
@@ -742,7 +778,7 @@ const HotelDetails = () => {
         </section>
 
         {/* Reviews */}
-        <section id="reviews" className="hotel-section">
+        {/* <section id="reviews" className="hotel-section">
           <h2>Reviews</h2>
           <div className="reviews-list">
             {[
@@ -771,15 +807,15 @@ const HotelDetails = () => {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
 
         {/* Map */}
-        <section id="map" className="hotel-section">
+        {/* <section id="map" className="hotel-section">
           <h2>Map</h2>
           <div className="map-container">
             <Image src={mapImage} alt="Map" />
           </div>
-        </section>
+        </section> */}
       </div>
     </main>
   );

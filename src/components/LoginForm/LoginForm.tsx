@@ -75,14 +75,11 @@ const LoginForm: React.FC = () => {
                   className="form-input form-control"
                   placeholder="•••••••••••••••••"
                   labelClassName={`${style.labelwithfpassword} form-label`}
-                
                   required
                 />
               </div>
               {error && (
-                <div className="text-red-600 text-sm mb-4">
-                  {error}
-                </div>
+                <div className="text-red-600 text-sm mb-4">{error}</div>
               )}
               <div className={style.loginformaction}>
                 <button
@@ -94,7 +91,11 @@ const LoginForm: React.FC = () => {
                 </button>
               </div>
             </Form>
-            <Link href="/forgot-password" className={style.forgotpassword}>Forgot Password?</Link>
+            <div className={style.forgotpass}>
+              <Link href="/forgot-password" className={style.forgotpassword}>
+                Forgot Password?
+              </Link>
+            </div>
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
