@@ -421,7 +421,7 @@
           overflow: hidden;
 
           img {
-            border-radius: 8px;
+            border-radius: 8px 8px 0 0;
           }
 
           .hotel-best-value {
@@ -442,60 +442,226 @@
             padding: 0 20px;
             position: absolute;
             top: 50%;
-            right: 0px;
+            left: 0%;
+            transform: 0px;
+            width: 100%;
+            transform: translate(0%, -50%);
+          }
+
+          .hotel-card-total-image {
+            position: absolute;
+            bottom: 2px;
+            right: 5px;
+            font-size: 16px;
+            color: $color-white;
+            gap: 4px;
+            border-radius: 4px;
+            background: #000000CC;
+            backdrop-filter: blur(4px);
+            padding: 6px 13px;
           }
         }
 
         .room-card-details {
-          flex-grow: 1;
+          padding: 12px;
 
-          h3 {
-            margin-top: 0;
+          .hotel-room-name {
+            font-size: 20px;
+            font-weight: $font-weight600;
+            color: $color-black-zinc-950;
+            margin-bottom: 10px;
           }
 
-          ul {
-            list-style: none;
-            padding: 0;
-            color: #2B7FFF;
-          }
-
-          .room-specs,
-          .room-policies {
-            display: flex;
-            gap: 15px;
-            margin: 10px 0;
+          .hotel-details-rating {
+            gap: 8px;
+            font-size: 12px;
             color: $color-black-zinc-500;
-          }
-        }
+            margin-bottom: 24px;
 
-        .room-card-booking {
-          text-align: right;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
+            .hotel-details-rating-star {
+              gap: 2px;
+            }
+
+            .rating-value-wrapper {
+              gap: 4px;
+
+              .rating-value {
+                font-size: 12px;
+                color: $color-black;
+                font-weight: $font-weight500;
+              }
+            }
+          }
+
+          .room-card-amenities-list {
+            text-align: left;
+            margin: 24px 0;
+
+            .amenities-item {
+              row-gap: 6px;
+              column-gap: 16px;
+              margin: 0;
+              flex-wrap: wrap;
+              padding: 0;
+              list-style: none;
+              display: flex;
+
+              li {
+                width: auto;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 16px;
+                color: $color-blue;
+              }
+            }
+          }
+
+          .room-card-specs {
+            margin: 24px 0;
+
+            .card-specs-item {
+              row-gap: 8px;
+              column-gap: 16px;
+              column-gap: 16px;
+              margin: 0;
+              padding: 0;
+              list-style: none;
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+
+              li {
+                width: auto;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 16px;
+                color: $color-black-zinc-800;
+              }
+            }
+          }
+
+          .room-card-policies-list {
+            margin: 24px 0;
+
+            .policies-item {
+              row-gap: 6px;
+              column-gap: 16px;
+              margin: 0;
+              padding: 0;
+              list-style: none;
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+
+              li {
+                width: auto;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 16px;
+                color: $color-black-zinc-800;
+              }
+            }
+          }
+
+          .rooms-card-refund {
+            margin-bottom: 12px;
+
+            .refund-item {
+              gap: 4px;
+              font-size: 16px;
+              color: $color-black-zinc-950;
+            }
+
+            .refund-valid-date {
+              font-size: 12px;
+              color: $color-black-zinc-500;
+            }
+          }
+
+          .hotel-room-more-details {
+            text-align: left;
+            margin-bottom: 24px;
+
+            .hotel-more-details-link {
+              gap: 10px;
+              font-size: 18px;
+              font-weight: $font-weight500;
+              color: $brand-color;
+              text-decoration: none;
+            }
+          }
 
           .price-info {
+            text-align: left;
+
             .discount {
-              background-color: #ff4d4d;
-              color: white;
-              padding: 2px 5px;
-              border-radius: 3px;
-              font-size: 12px;
+              background-color: #FF6467;
+              color: $color-white;
+              padding: 8px 16px;
+              border-radius: 4px;
+              line-height: 20px;
+              font-size: 14px;
+              border-radius: 4px;
+              display: inline-block;
+              font-weight: $font-weight600;
+              margin-bottom: 10px;
             }
 
             .nightly-price {
               display: block;
-              margin: 5px 0;
+              margin-bottom: 2px;
+              font-size: 16px;
+              color: $color-black-zinc-700;
             }
 
             .total-price {
               font-size: 20px;
+              line-height: 28px;
               font-weight: $font-weight600;
+              color: $color-black-zinc-950;
+              margin-bottom: 2px;
+              display: flex;
+              gap: 5px;
+              align-items: baseline;
 
-              s {
-                font-weight: $font-weight400;
-                color: $color-black-zinc-500;
+              span {
+                font-size: 12px;
+                font-weight: $font-weight500;
+                text-decoration: line-through;
               }
+            }
+
+            .hotel-room-number {
+              font-size: 14px;
+              display: block;
+              color: $color-black-zinc-400;
+              margin-bottom: 10px;
+            }
+          }
+
+          .total-taxes-fees {
+            font-size: 12px;
+            gap: 15px;
+
+            .taxes-fees {
+              gap: 4px;
+              color: #00A63E;
+            }
+
+            .hotel-room-left {
+              color: #E7000B;
+            }
+          }
+
+          .hotel-room-booking-action {
+            margin-top: 40px;
+
+            .room-booking-btn {
+              font-size: 16px;
+              padding: 13.2px 15px;
             }
           }
         }
@@ -503,47 +669,24 @@
     }
   }
 
+  .hotel-map-section {
+    margin: 44px 0;
 
-  #reviews {
-    .reviews-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .review-card {
-      border: 1px solid $border-color;
-      border-radius: 10px;
-      padding: 20px;
-
-      .review-rating {
-        font-weight: $font-weight600;
-        margin-bottom: 10px;
-      }
-
-      .reviewer-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 15px;
-
-        img {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-        }
-
-        span {
-          color: $color-black-zinc-500;
-        }
+    .map-container {
+      img {
+        width: 100%;
+        border-radius: 8px;
       }
     }
   }
 
-  #map {
-    .map-container img {
-      width: 100%;
-      border-radius: 10px;
+  .nearby-hotel-section {
+    .hotel-section-title {
+      margin-bottom: 32px;
     }
+  }
+
+  .hotel-faq-section {
+    margin-top: 36px;
   }
 }

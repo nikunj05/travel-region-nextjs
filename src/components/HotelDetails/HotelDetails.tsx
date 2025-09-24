@@ -3,33 +3,25 @@ import React, { useState } from "react";
 import Image from "next/image";
 import "./HotelDetails.scss";
 
-//-Asstes
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
 import thumbnailImages1 from "@/assets/images/hotel-details-img2.jpg";
 import thumbnailImages2 from "@/assets/images/hotel-details-img3.jpg";
 import thumbnailImages3 from "@/assets/images/hotel-details-img4.jpg";
 import thumbnailImages4 from "@/assets/images/hotel-details-img5.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
-import locationFillIcon from "@/assets/images/location-fill-icon.svg";
-import poolIcon from "@/assets/images/pool-icon.svg";
-import tvIcon from "@/assets/images/breackfast-icon.svg";
-import restaurantIcon from "@/assets/images/breackfast-icon.svg";
-import wifiIcon from "@/assets/images/breackfast-icon.svg";
-import bathtubIcon from "@/assets/images/breackfast-icon.svg";
-import golfIcon from "@/assets/images/breackfast-icon.svg";
-import nightclubIcon from "@/assets/images/breackfast-icon.svg";
-import elevatorIcon from "@/assets/images/breackfast-icon.svg";
-import user1 from "@/assets/images/testimonials-slider-user-img1.png";
-import user2 from "@/assets/images/testimonials-slider-user-img2.png";
-import user3 from "@/assets/images/testimonials-slider-user-img3.png";
-import mapImage from "@/assets/images/contact-us-image.jpg";
+import mapImage from "@/assets/images/map-image.jpg";
 import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
 import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
 import LocationAddressIcon from "@/assets/images/map-icon.svg";
 import FilterComponents from "../FilterComponents/FilterComponents";
-import HotelDetailsImage from "@/assets/images/hotel-details-img2.jpg";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
+import HotelDetailsCardImage from "@/assets/images/hotel-card-image.jpg";
+import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
+import SelfParking from "@/assets/images/parking-icon.svg";
+import ReviewSlider from "../common/ReviewSlider/ReviewSlider";
+import NearByHotels from "../common/NearbyHotels/NearbyHotels";
+import FaqSection from "../common/FaqSection/FaqSection";
 
 const HotelDetails = () => {
   const handleTabClick = (
@@ -675,7 +667,7 @@ const HotelDetails = () => {
               <div className="room-card" key={i}>
                 <div className="room-card-image">
                   <Image
-                    src={HotelDetailsImage}
+                    src={HotelDetailsCardImage}
                     width={378}
                     height={203}
                     alt="Premium Double Room"
@@ -739,38 +731,329 @@ const HotelDetails = () => {
                   </div>
                 </div>
                 <div className="room-card-details">
-                  <h3>Premium Double Room</h3>
-                  <div className="rating">
-                    <Image src={starFillIcon} alt="star" /> 4.5 (120 Reviews)
-                  </div>
-                  <ul>
-                    <li>Free continental breakfast</li>
-                    <li>Free self parking</li>
-                  </ul>
-                  <div className="room-specs">
-                    <span>1 Double Bed</span>
-                    <span>274 sq ft</span>
-                    <span>Free Wi-fi</span>
-                    <span>1 bedroom</span>
-                    <span>Sleeps 3</span>
-                  </div>
-                  <div className="room-policies">
-                    <p>Reserve now, pay later</p>
-                    <p>Fully refundable</p>
-                  </div>
-                  <a className="hotel-more-details" href="#">
-                    More Details &gt;
-                  </a>
-                </div>
-                <div className="room-card-booking">
-                  <div className="price-info">
-                    <span className="discount">$51 off</span>
-                    <span className="nightly-price">$40 nightly</span>
-                    <span className="total-price">
-                      $349 Total <s>$400</s>
+                  <h3 className="hotel-room-name">Premium Double Room</h3>
+                  <div className="hotel-details-rating d-flex align-items-center">
+                    <div className="hotel-details-rating-star d-flex align-items-center">
+                      <Image
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                      <Image
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                      <Image
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                      <Image
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                      <Image
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                    </div>
+                    <span className="rating-value-wrapper d-flex align-items-center">
+                      <span className="rating-value">4.5</span> (120 Reviews)
                     </span>
                   </div>
-                  <button className="button-primary">Book Now</button>
+
+                  <div className="room-card-amenities-list">
+                    <ul className="amenities-item d-flex">
+                      <li>
+                        <Image
+                          src={FreeBreackfast}
+                          width={20}
+                          height={20}
+                          alt="Free continental breakfast"
+                        />
+                        Free continental breakfast
+                      </li>
+                      <li>
+                        <Image
+                          src={SelfParking}
+                          width={20}
+                          height={20}
+                          alt="Free continental breakfast"
+                        />
+                        Free self parking
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="room-card-specs">
+                    <ul className="card-specs-item d-flex align-items-center">
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1.66602 15.8327V10.8327C1.66602 10.4577 1.7424 10.1174 1.89518 9.81185C2.04796 9.50629 2.24935 9.23546 2.49935 8.99935V6.66602C2.49935 5.97157 2.7424 5.38129 3.22852 4.89518C3.71463 4.40907 4.3049 4.16602 4.99935 4.16602H8.33268C8.65213 4.16602 8.95074 4.22518 9.22852 4.34352C9.50629 4.46185 9.76324 4.6249 9.99935 4.83268C10.2355 4.62435 10.4924 4.46129 10.7702 4.34352C11.048 4.22574 11.3466 4.16657 11.666 4.16602H14.9993C15.6938 4.16602 16.2841 4.40907 16.7702 4.89518C17.2563 5.38129 17.4993 5.97157 17.4993 6.66602V8.99935C17.7493 9.23546 17.9507 9.50629 18.1035 9.81185C18.2563 10.1174 18.3327 10.4577 18.3327 10.8327V15.8327H16.666V14.166H3.33268V15.8327H1.66602ZM10.8327 8.33268H15.8327V6.66602C15.8327 6.4299 15.7527 6.23213 15.5927 6.07268C15.4327 5.91324 15.2349 5.83324 14.9993 5.83268H11.666C11.4299 5.83268 11.2321 5.91268 11.0727 6.07268C10.9132 6.23268 10.8332 6.43046 10.8327 6.66602V8.33268ZM4.16602 8.33268H9.16602V6.66602C9.16602 6.4299 9.08602 6.23213 8.92602 6.07268C8.76602 5.91324 8.56824 5.83324 8.33268 5.83268H4.99935C4.76324 5.83268 4.56546 5.91268 4.40602 6.07268C4.24657 6.23268 4.16657 6.43046 4.16602 6.66602V8.33268ZM3.33268 12.4993H16.666V10.8327C16.666 10.5966 16.586 10.3988 16.426 10.2393C16.266 10.0799 16.0682 9.9999 15.8327 9.99935H4.16602C3.9299 9.99935 3.73213 10.0793 3.57268 10.2393C3.41324 10.3993 3.33324 10.5971 3.33268 10.8327V12.4993Z"
+                            fill="#27272A"
+                          />
+                        </svg>
+                        1 Double Bed
+                      </li>
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_40000469_6427)">
+                            <path
+                              d="M2.51 0C1.1324 0 0 1.1322 0 2.51C0 3.7134 0.8634 4.7292 2 4.9672V15.0528C0.8634 15.2908 0 16.3068 0 17.5102C0 18.888 1.1322 20.02 2.51 20.02C3.7194 20.02 4.728 19.1452 4.9582 18H15.0492C15.2796 19.1464 16.2998 20.02 17.5102 20.02C18.8402 20.02 19.9312 18.9624 20.0058 17.6496C20.0151 17.6037 20.0198 17.557 20.0198 17.5102C20.0198 17.4634 20.0151 17.4167 20.0058 17.3708C19.9406 16.2234 19.099 15.2712 18 15.0492V4.9708C19.099 4.7488 19.9406 3.7968 20.006 2.6496C20.0153 2.60372 20.02 2.55702 20.02 2.5102C20.02 2.46338 20.0153 2.41668 20.006 2.3708C19.931 1.058 18.8402 0 17.51 0C16.3068 0 15.2908 0.8634 15.0528 2H4.954C4.716 0.8648 3.712 0 2.51 0ZM2.51 1.4C3.1314 1.4 3.62 1.8888 3.62 2.51C3.62 3.1314 3.1314 3.62 2.51 3.62C1.889 3.62 1.4 3.1314 1.4 2.51C1.4 1.889 1.8888 1.4 2.51 1.4ZM17.51 1.4C18.1314 1.4 18.62 1.8888 18.62 2.51C18.62 3.1314 18.1314 3.62 17.51 3.62C16.8888 3.62 16.4 3.1314 16.4 2.51C16.4 1.889 16.8888 1.4 17.51 1.4ZM4.8436 3.4H15.1676C15.2936 3.72671 15.486 4.02378 15.7325 4.27248C15.979 4.52117 16.2744 4.71611 16.6 4.845V15.175C16.2777 15.3026 15.985 15.4948 15.7399 15.7399C15.4948 15.985 15.3026 16.2777 15.175 16.6H4.835C4.70762 16.2751 4.51436 15.9802 4.2674 15.7336C4.02043 15.4871 3.7251 15.2944 3.4 15.1676V4.8524C3.7286 4.72439 4.02678 4.52905 4.27536 4.27891C4.52395 4.02877 4.71744 3.72939 4.8434 3.4H4.8436ZM2.51 16.4C3.1312 16.4 3.6198 16.8888 3.6198 17.51C3.6198 18.1314 3.1312 18.62 2.5098 18.62C1.889 18.62 1.4 18.1314 1.4 17.51C1.4 16.889 1.8888 16.4 2.51 16.4ZM17.51 16.4C18.1312 16.4 18.6198 16.8888 18.6198 17.51C18.6198 18.1314 18.1312 18.62 17.5098 18.62C16.8886 18.62 16.3998 18.1314 16.3998 17.51C16.3998 16.8888 16.8888 16.4 17.51 16.4Z"
+                              fill="#27272A"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_40000469_6427">
+                              <rect width="20" height="20" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        274 sq ft
+                      </li>
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 17.4987C9.41667 17.4987 8.92361 17.2973 8.52083 16.8945C8.11806 16.4918 7.91667 15.9987 7.91667 15.4154C7.91667 14.832 8.11806 14.339 8.52083 13.9362C8.92361 13.5334 9.41667 13.332 10 13.332C10.5833 13.332 11.0764 13.5334 11.4792 13.9362C11.8819 14.339 12.0833 14.832 12.0833 15.4154C12.0833 15.9987 11.8819 16.4918 11.4792 16.8945C11.0764 17.2973 10.5833 17.4987 10 17.4987ZM5.29167 12.7904L3.54167 10.9987C4.36111 10.1793 5.32306 9.53009 6.4275 9.0512C7.53194 8.57231 8.72278 8.33259 10 8.33203C11.2772 8.33148 12.4683 8.57453 13.5733 9.0612C14.6783 9.54787 15.64 10.2076 16.4583 11.0404L14.7083 12.7904C14.0972 12.1793 13.3889 11.7001 12.5833 11.3529C11.7778 11.0056 10.9167 10.832 10 10.832C9.08333 10.832 8.22222 11.0056 7.41667 11.3529C6.61111 11.7001 5.90278 12.1793 5.29167 12.7904ZM1.75 9.2487L0 7.4987C1.27778 6.19314 2.77083 5.17231 4.47917 4.4362C6.1875 3.70009 8.02778 3.33203 10 3.33203C11.9722 3.33203 13.8125 3.70009 15.5208 4.4362C17.2292 5.17231 18.7222 6.19314 20 7.4987L18.25 9.2487C17.1806 8.17925 15.9411 7.34259 14.5317 6.7387C13.1222 6.13481 11.6117 5.83259 10 5.83203C8.38833 5.83148 6.87806 6.1337 5.46917 6.7387C4.06028 7.3437 2.82056 8.18037 1.75 9.2487Z"
+                            fill="#27272A"
+                          />
+                        </svg>
+                        Free Wi-Fi
+                      </li>
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M15 16.6673C15.9205 16.6673 16.6667 15.9212 16.6667 15.0007V5.00065C16.6667 4.08018 15.9205 3.33398 15 3.33398"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M3.33398 5.70577V14.2929C3.33398 15.6205 3.33398 16.2843 3.72107 16.7473C4.10814 17.2103 4.76244 17.329 6.07103 17.5665L8.57107 18.0203C10.3924 18.3508 11.3032 18.5161 11.9019 18.0173C12.5007 17.5185 12.5007 16.5945 12.5007 14.7467V5.25206C12.5007 3.40416 12.5007 2.48021 11.9019 1.98142C11.3032 1.48263 10.3924 1.64791 8.57107 1.97847L6.07103 2.43219C4.76244 2.66968 4.10814 2.78842 3.72107 3.25138C3.33398 3.71434 3.33398 4.37816 3.33398 5.70577Z"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M9.58398 9.99857V9.99023"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        1 bedroom
+                      </li>
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                          />
+                        </svg>
+                        Sleeps 3
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="room-card-policies-list">
+                    <ul className="policies-item d-flex">
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Reserve now, pay later
+                      </li>
+                      <li>
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
+                            stroke="#27272A"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Free welcome drink
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="rooms-card-refund">
+                    <div className="refund-item d-flex align-items-center">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
+                          stroke="#09090B"
+                          stroke-width="1.25"
+                        />
+                        <path
+                          d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
+                          stroke="#09090B"
+                          stroke-width="1.25"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M9.99203 6.66602H9.99951"
+                          stroke="#09090B"
+                          stroke-width="1.66667"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      Fully refundable
+                    </div>
+                    <span className="refund-valid-date">Before 8 Aug</span>
+                  </div>
+
+                  <div className="hotel-room-more-details">
+                    <a
+                      className="hotel-more-details-link d-inline-flex align-items-center"
+                      href="#"
+                    >
+                      More Details
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7.50004 5L12.5 10L7.5 15"
+                          stroke="#3E5B96"
+                          stroke-width="1.25"
+                          stroke-miterlimit="16"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                  <div className="price-info">
+                    <div className="discount-price">
+                      <span className="discount">$51 off</span>
+                    </div>
+                    <span className="nightly-price">$40 nightly</span>
+                    <span className="total-price">
+                      $349 Total <span>$400</span>
+                    </span>
+                    <div className="hotel-room-number">for 1 room</div>
+                  </div>
+                  <div className="total-taxes-fees d-flex align-items-center justify-content-between">
+                    <div className="taxes-fees d-flex align-items-center">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
+                          stroke="#00C950"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      Totals with taxes and fees
+                    </div>
+                    <div className="hotel-room-left">We have 5 left</div>
+                  </div>
+                  <div className="hotel-room-booking-action">
+                    <button className="button-primary room-booking-btn w-100">
+                      Book Now
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -778,44 +1061,29 @@ const HotelDetails = () => {
         </section>
 
         {/* Reviews */}
-        {/* <section id="reviews" className="hotel-section">
-          <h2>Reviews</h2>
-          <div className="reviews-list">
-            {[
-              { user: user1, name: "Steven" },
-              { user: user2, name: "Maria" },
-              { user: user3, name: "John" },
-            ].map((review, i) => (
-              <div className="review-card" key={i}>
-                <div className="review-rating">
-                  <Image src={starFillIcon} alt="star" /> 4.9 Rating
-                </div>
-                <p>
-                  The staff at Prime-Park Hotel truly ‘went the extra mile’,
-                  arranging for boxed breakfast to be available for us, and
-                  arranging transport for us, checking.
-                </p>
-                <a href="#">See More</a>
-                <div className="reviewer-info">
-                  <Image src={review.user} alt={review.name} />
-                  <div>
-                    <strong>{review.name}</strong>
-                    <span>United Arab Emirates</span>
-                  </div>
-                  <span>25 June 2025</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section> */}
+        <section id="reviews" className="hotel-review-section">
+          <h2 className="hotel-section-title">Reviews</h2>
+          <ReviewSlider />
+        </section>
 
         {/* Map */}
-        {/* <section id="map" className="hotel-section">
-          <h2>Map</h2>
+        <section id="map" className="hotel-map-section">
+          <h2 className="hotel-section-title">Map</h2>
           <div className="map-container">
-            <Image src={mapImage} alt="Map" />
+            <Image src={mapImage} width={1201} height={344} alt="Map" />
           </div>
-        </section> */}
+        </section>
+        <section className="nearby-hotel-section">
+          <h2 className="hotel-section-title">Similar Hotels Nearby</h2>
+          <div className="near-hotel-container">
+            <NearByHotels />
+          </div>
+        </section>
+        <section className="hotel-faq-section">
+          <div className="faq-container">
+            <FaqSection />
+          </div>
+        </section>
       </div>
     </main>
   );

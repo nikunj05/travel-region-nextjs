@@ -1,0 +1,325 @@
+.nearby-hotels-slider {
+  margin-bottom: 16px;
+
+  .slick-track {
+    display: flex !important;
+  }
+
+  .slick-slide {
+    margin: 0 16px;
+    height: auto;
+
+    &>div {
+      display: flex;
+      height: 100%;
+    }
+  }
+
+  .slick-list {
+    margin: 0 -16px;
+  }
+
+  .nearby-hotels-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 0px;
+    display: flex;
+    border: 1px solid $border-color;
+    gap: 0px;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: auto;
+
+
+    .nearby-hotels-card-img {
+      img {
+        border-radius: 8px 8px 0 0;
+      }
+    }
+
+    .nearby-hotels-card-details {
+      padding: 12px;
+
+      .hotel-room-name {
+        font-size: 20px;
+        font-weight: $font-weight600;
+        color: $color-black;
+        line-height: 28px;
+        margin-bottom: 4px;
+      }
+
+      .hotel-details-rating {
+        gap: 8px;
+        font-size: 12px;
+        color: $color-black-zinc-500;
+        margin-bottom: 0px;
+
+        .hotel-details-rating-star {
+          gap: 2px;
+        }
+
+        .rating-value-wrapper {
+          gap: 4px;
+
+          .rating-value {
+            font-size: 12px;
+            color: $color-black;
+            font-weight: $font-weight500;
+          }
+        }
+      }
+
+      .nearby-hotels-price-info {
+        text-align: left;
+        margin: 20px 0;
+
+        .nightly-price {
+          display: block;
+          margin-bottom: 2px;
+          font-size: 16px;
+          color: $color-black-zinc-700;
+        }
+
+        .total-price {
+          font-size: 20px;
+          line-height: 28px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-950;
+          margin-bottom: 0px;
+          display: flex;
+          gap: 1px;
+          align-items: baseline;
+
+          span {
+            font-size: 12px;
+            font-weight: $font-weight400;
+            color: $color-black-zinc-500;
+          }
+        }
+
+        .hotel-room-number {
+          font-size: 14px;
+          display: block;
+          color: $color-black-zinc-400;
+          margin-bottom: 0px;
+        }
+      }
+
+      .nearby-hotels-room-action {
+        .room-booking-btn {
+          font-size: 16px;
+          padding: 13.2px 15px;
+          color: $brand-color;
+          background-color: $color-white;
+
+          &:hover {
+            background: $brand-color;
+            color: $color-white;
+          }
+        }
+      }
+    }
+  }
+}
+
+.testimonial-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+
+  .testimonial-dots {
+    .slick-dots {
+      position: static;
+      display: flex !important;
+      gap: 8px;
+
+      li {
+        margin: 0;
+        width: auto;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        button {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #A2B4D7;
+          text-indent: -9999px;
+          padding: 0;
+          border: none;
+
+          &::before {
+            display: none;
+          }
+        }
+
+        &.slick-active,
+        &:hover {
+          button {
+            background: $brand-color;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  .testimonial-arrows {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+
+    .slick-prev,
+    .slick-next {
+      position: static;
+      background: $color-white;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      border: 1px solid $brand-color;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      transform: none;
+      margin: 0px;
+
+      svg {
+        path {
+          stroke: $brand-color;
+          transition: $transition;
+        }
+      }
+
+      &:hover {
+        background: $brand-color;
+
+        svg {
+          path {
+            stroke: $color-white;
+          }
+        }
+      }
+
+      &:before {
+        display: none;
+      }
+    }
+  }
+}
+
+
+@media (max-width: 991.55px) {
+  .review-slider {
+    .slick-list {
+      margin: 0 -8px;
+    }
+
+    .testimonial-card {
+      border-radius: 16px;
+      padding: 16px;
+      gap: 24px;
+      margin: 0 8px;
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .review-slider {
+    margin-bottom: 20px;
+
+    .testimonial-card {
+      border-radius: 12px;
+      padding: 24px;
+      gap: 24px;
+
+      .testimonial-header {
+        .testimonial-header-user {
+          gap: 8px;
+        }
+
+        .testimonial-avatar {
+          width: 40px;
+          height: 40px;
+        }
+
+        .testimonial-user-content {
+          .testimonial-user-title {
+            font-size: 14px;
+          }
+
+          .testimonial-user-state {
+            font-size: 12px;
+          }
+        }
+
+        .testimonial-card-rating {
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+
+          span {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .testimonial-text {
+        font-size: 14px;
+      }
+
+      .testimonial-footer {
+        font-size: 12px;
+
+        .testimonial-hotel-name {
+          gap: 6px;
+
+          svg {
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+    }
+  }
+
+  .testimonial-actions {
+    .testimonial-dots {
+      .slick-dots {
+        li {
+          button {
+            width: 7px;
+            height: 7px;
+          }
+
+          &.slick-active,
+          &:hover {
+            button {
+              width: 10px;
+              height: 10px;
+            }
+          }
+        }
+      }
+    }
+
+    .testimonial-arrows {
+      gap: 8px;
+
+      .slick-prev,
+      .slick-next {
+        width: 24px;
+        height: 24px;
+
+        svg {
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+  }
+}
