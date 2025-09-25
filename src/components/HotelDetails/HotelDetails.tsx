@@ -125,8 +125,8 @@ const HotelDetails = () => {
                 </div>
                 <div className="thambnail-image-item">
                   <Image src={thumbnailImages4} alt="Thumbnail 4" />
-                  <a 
-                    href="#" 
+                  <a
+                    href="#"
                     className="show-all-photos"
                     onClick={(e) => {
                       e.preventDefault();
@@ -141,31 +141,33 @@ const HotelDetails = () => {
 
             <div className="tabbing-conetnt">
               {/* Tabs */}
-              <div className="hotel-tabs">
-                <a
-                  href="#overview"
-                  onClick={(e) => handleTabClick(e, "overview")}
-                >
-                  Overview
-                </a>
-                <a
-                  href="#amenities"
-                  onClick={(e) => handleTabClick(e, "amenities")}
-                >
-                  Amenities
-                </a>
-                <a href="#rooms" onClick={(e) => handleTabClick(e, "rooms")}>
-                  Rooms
-                </a>
-                <a
-                  href="#reviews"
-                  onClick={(e) => handleTabClick(e, "reviews")}
-                >
-                  Reviews
-                </a>
-                <a href="#map" onClick={(e) => handleTabClick(e, "map")}>
-                  Map
-                </a>
+              <div className="tabbing-tabs-container">
+                <div className="hotel-tabs">
+                  <a
+                    href="#overview"
+                    onClick={(e) => handleTabClick(e, "overview")}
+                  >
+                    Overview
+                  </a>
+                  <a
+                    href="#amenities"
+                    onClick={(e) => handleTabClick(e, "amenities")}
+                  >
+                    Amenities
+                  </a>
+                  <a href="#rooms" onClick={(e) => handleTabClick(e, "rooms")}>
+                    Rooms
+                  </a>
+                  <a
+                    href="#reviews"
+                    onClick={(e) => handleTabClick(e, "reviews")}
+                  >
+                    Reviews
+                  </a>
+                  <a href="#map" onClick={(e) => handleTabClick(e, "map")}>
+                    Map
+                  </a>
+                </div>
               </div>
 
               {/* Overview */}
@@ -1653,89 +1655,86 @@ const HotelDetails = () => {
                   </ul>
                 </div>
                 <div className="modal-room-review-section"></div>
-                  <h2 className="hotel-section-title">Reviews</h2>
-                  <ReviewSlider slidesToShowDesktop={2} />
+                <h2 className="hotel-section-title">Reviews</h2>
+                <ReviewSlider slidesToShowDesktop={2} />
+              </div>
+              <div className="modal-room-pricing">
+                <div className="modal-room-refund">
+                  <div className="refund-item d-flex align-items-center">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
+                        stroke="#09090B"
+                        stroke-width="1.25"
+                      />
+                      <path
+                        d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
+                        stroke="#09090B"
+                        stroke-width="1.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9.99203 6.66602H9.99951"
+                        stroke="#09090B"
+                        stroke-width="1.66667"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Fully refundable
+                  </div>
+                  <span className="refund-valid-date">Before 8 Aug</span>
                 </div>
-                <div className="modal-room-pricing">
-                  <div className="modal-room-refund">
-                    <div className="refund-item d-flex align-items-center">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
-                          stroke="#09090B"
-                          stroke-width="1.25"
-                        />
-                        <path
-                          d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
-                          stroke="#09090B"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                        <path
-                          d="M9.99203 6.66602H9.99951"
-                          stroke="#09090B"
-                          stroke-width="1.66667"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                      Fully refundable
-                    </div>
-                    <span className="refund-valid-date">Before 8 Aug</span>
+                <div className="modal-room-price-info">
+                  <div className="discount-price">
+                    <span className="discount">$51 off</span>
                   </div>
-                  <div className="modal-room-price-info">
-                    <div className="discount-price">
-                      <span className="discount">$51 off</span>
-                    </div>
-                    <span className="nightly-price">$40 nightly</span>
-                    <span className="total-price">
-                      $349 Total <span>$400</span>
-                    </span>
-                    <div className="hotel-room-number">for 1 room</div>
+                  <span className="nightly-price">$40 nightly</span>
+                  <span className="total-price">
+                    $349 Total <span>$400</span>
+                  </span>
+                  <div className="hotel-room-number">for 1 room</div>
+                </div>
+                <div className="total-taxes-fees d-flex align-items-center justify-content-between">
+                  <div className="taxes-fees d-flex align-items-center">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
+                        stroke="#00C950"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Totals with taxes and fees
                   </div>
-                  <div className="total-taxes-fees d-flex align-items-center justify-content-between">
-                    <div className="taxes-fees d-flex align-items-center">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
-                          stroke="#00C950"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                      Totals with taxes and fees
-                    </div>
-                    <div className="hotel-room-left">We have 5 left</div>
-                  </div>
-                  <div className="modal-room-booking-action">
-                    <button className="button-primary room-booking-btn w-100">
-                      Book Now
-                    </button>
-                  </div>
+                  <div className="hotel-room-left">We have 5 left</div>
+                </div>
+                <div className="modal-room-booking-action">
+                  <button className="button-primary room-booking-btn w-100">
+                    Book Now
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
       )}
 
       {/* Image Modal */}
-      <ImageModal 
-        isOpen={isImageModalOpen} 
-        onClose={handleCloseImageModal} 
-      />
+      <ImageModal isOpen={isImageModalOpen} onClose={handleCloseImageModal} />
     </main>
   );
 };

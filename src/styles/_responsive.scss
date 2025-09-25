@@ -513,6 +513,19 @@
       font-size: 16px;
     }
   }
+
+  .breadcrumbs {
+    padding: 20px 0px;
+
+    ol {
+      column-gap: 16px;
+
+      li {
+        gap: 16px;
+        font-size: 16px;
+      }
+    }
+  }
 }
 
 
@@ -1083,6 +1096,25 @@
       }
     }
   }
+
+  .breadcrumbs {
+    padding: 15px 0;
+
+    ol {
+      column-gap: 10px;
+      column-gap: 10px;
+
+      li {
+        font-size: 14px;
+        gap: 10px;
+
+        .breadcrumb-arrow-icon {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 575.55px) {
@@ -1121,4 +1153,6 @@
       }
     }
   }
+
+
 }

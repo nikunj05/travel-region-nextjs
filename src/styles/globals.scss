@@ -1451,21 +1451,24 @@ img {
   ol {
     list-style: none;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     padding: 0;
     margin: 0;
     gap: 24px;
+    row-gap: 8px;
 
     li {
       display: flex;
       align-items: center;
       gap: 24px;
+      font-size: 18px;
 
       a {
         color: $color-black-zinc-500;
         text-decoration: none;
         transition: $transition;
-        font-size: 18px;
+
 
         &:hover {
           color: #000;
