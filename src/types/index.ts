@@ -2,6 +2,7 @@
 export * from './user';
 export * from './auth';
 export * from './settings';
+export * from './blog';
 
 // NextAuth type augmentation
 declare module 'next-auth' {

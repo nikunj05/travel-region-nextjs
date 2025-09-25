@@ -1,0 +1,442 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "sass:color";
+
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.image-modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  .image-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+
+    .hotel-name {
+      font-size: 24px;
+      font-weight: $font-weight600;
+      color: $color-black;
+      margin: 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .reserve-btn {
+        background: $brand-color;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: $font-weight500;
+        cursor: pointer;
+        transition: $transition;
+
+        &:hover {
+          background: color.adjust($brand-color, $lightness: -10%);
+        }
+      }
+
+      .close-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        color: $color-black;
+        font-weight: $font-weight500;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 4px;
+        transition: $transition;
+
+        &:hover {
+          background: #f3f4f6;
+        }
+      }
+    }
+  }
+
+  .category-navigation {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    overflow-x: auto;
+
+    .category-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: $transition;
+      min-width: 120px;
+
+      &:hover {
+        border-color: #e5e7eb;
+      }
+
+      &.active {
+        border-color: $brand-color;
+        background: rgba($brand-color, 0.05);
+
+        .category-name {
+          color: $brand-color;
+          font-weight: $font-weight600;
+        }
+      }
+
+      .category-thumbnail {
+        width: 80px;
+        height: 60px;
+        border-radius: 6px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .category-name {
+        font-size: 12px;
+        color: $color-black;
+        text-align: center;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+
+    .image-item {
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: $transition;
+
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .grid-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+// Image Viewer within Modal Styles
+.image-viewer-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  border-radius: 12px;
+  overflow: hidden;
+
+  .image-viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: #f8f9fa;
+    color: $color-black;
+    border-bottom: 1px solid #e5e7eb;
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: $color-black;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: $transition;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .image-counter {
+      font-size: 16px;
+      font-weight: 500;
+      color: $color-black;
+    }
+
+    .close-viewer-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: $color-black;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: $transition;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .main-image-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px 80px 100px;
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e5e7eb;
+      color: $color-black;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: $transition;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: white;
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      &.nav-arrow-left {
+        left: 20px;
+      }
+
+      &.nav-arrow-right {
+        right: 20px;
+      }
+    }
+
+    .main-image-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .main-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .thumbnail-strip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    overflow-x: auto;
+    border-top: 1px solid #e5e7eb;
+
+    .thumbnail-item {
+      width: 80px;
+      height: 60px;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: $transition;
+      border: 2px solid transparent;
+
+      &:hover {
+        transform: scale(1.05);
+        border-color: #e5e7eb;
+      }
+
+      &.active {
+        border-color: $brand-color;
+        transform: scale(1.05);
+      }
+
+      .thumbnail-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .image-modal {
+    .image-modal-header {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    .category-navigation {
+      padding: 16px;
+      gap: 12px;
+
+      .category-btn {
+        min-width: 100px;
+        padding: 8px;
+
+        .category-thumbnail {
+          width: 60px;
+          height: 45px;
+        }
+
+        .category-name {
+          font-size: 11px;
+        }
+      }
+    }
+
+    .image-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+  }
+
+  // Image viewer responsive
+  .image-viewer {
+    .image-viewer-header {
+      padding: 15px 20px;
+
+      .back-btn, .close-viewer-btn {
+        font-size: 14px;
+        padding: 6px 10px;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .image-counter {
+        font-size: 14px;
+      }
+    }
+
+    .main-image-container {
+      padding: 60px 20px 100px;
+
+      .nav-arrow {
+        width: 50px;
+        height: 50px;
+
+        &.nav-arrow-left {
+          left: 15px;
+        }
+
+        &.nav-arrow-right {
+          right: 15px;
+        }
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+
+    .thumbnail-strip {
+      padding: 15px;
+      gap: 8px;
+
+      .thumbnail-item {
+        width: 60px;
+        height: 45px;
+      }
+    }
+  }
+}

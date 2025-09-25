@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -9,7 +9,7 @@ import testimonialsSliderUserImg2 from "@/assets/images/testimonials-slider-user
 import testimonialsSliderUserImg3 from "@/assets/images/testimonials-slider-user-img3.png";
 import "./ReviewSlider.scss";
 
-const ReviewSlider = () => {
+const ReviewSlider = ({ slidesToShowDesktop = 3 }: { slidesToShowDesktop?: number }) => {
   const sliderRef = useRef<Slider>(null);
   const dotsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,7 +27,7 @@ const ReviewSlider = () => {
   };
 
   const settings = {
-    slidesToShow: 3,
+    slidesToShow: slidesToShowDesktop,
     slidesToScroll: 1,
     arrows: false,
     dots: true,
@@ -35,6 +35,8 @@ const ReviewSlider = () => {
     autoplay: false,
     onInit: handleSliderUpdate,
     onReInit: handleSliderUpdate,
+    afterChange: handleSliderUpdate,
+    swipeToSlide: true,
     responsive: [
       {
         breakpoint: 992,
@@ -50,6 +52,36 @@ const ReviewSlider = () => {
       },
     ],
   };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const ro = new ResizeObserver(() => {
+      const slider: any = sliderRef.current;
+      try {
+        slider?.innerSlider?.onWindowResized?.();
+      } catch {}
+      handleSliderUpdate();
+    });
+
+    ro.observe(container);
+    // Kick once on mount to ensure proper layout (e.g., when inside a modal)
+    setTimeout(() => {
+      const slider: any = sliderRef.current;
+      try {
+        slider?.innerSlider?.onWindowResized?.();
+        slider?.slickGoTo?.(0, true);
+      } catch {}
+      handleSliderUpdate();
+    }, 0);
+
+    return () => {
+      try {
+        ro.disconnect();
+      } catch {}
+    };
+  }, []);
 
   return (
     <div ref={containerRef}>

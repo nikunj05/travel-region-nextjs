@@ -122,7 +122,15 @@ const LoginForm: React.FC = () => {
                 />
                 <span> Google</span>
               </button>
-              <button className={style.socialBtn}>
+              <button
+                className={style.socialBtn}
+                onClick={() =>
+                  signIn("facebook", {
+                    callbackUrl: `/facebook-auth-success`,
+                  })
+                }
+                type="button"
+              >
                 <Image
                   src={FacebookLoginIcon}
                   alt="facebook icon"

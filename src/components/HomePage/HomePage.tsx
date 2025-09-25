@@ -5,7 +5,7 @@ import Header from '../Header/Header';
 import Banner from '../LandingPage/Banner';
 import Travelers from '../LandingPage/Travelers';
 import Popular from '../LandingPage/PopularSection';
-import Inspire from '../LandingPage/Inspire';
+import DashboardBlogs from '../LandingPage/DashboardBlogs';
 import Contact from '../LandingPage/Contact';
 import Footer from '../Footer/Footer';
 
@@ -18,7 +18,7 @@ const HomePage = () => {
       <Banner />
       <Popular />
       <Travelers />
-      <Inspire />
+      <DashboardBlogs />
       <Contact />
     </>
   );

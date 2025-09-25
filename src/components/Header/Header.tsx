@@ -45,7 +45,7 @@ const Header = () => {
   useEffect(() => {
     const checkHeaderSticky = () => {
       // On search-result path: always sticky
-      if (pathname === '/search-result' || pathname === '/hotel-details' || pathname === '/profile') {
+      if (pathname === '/search-result' || pathname === '/hotel-details' || pathname === '/profile' || pathname === '/blogs') {
         setIsSticky(true)
       } 
       // On other paths: sticky only on scroll
@@ -78,7 +78,7 @@ const Header = () => {
   }, [pathname])
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo)
-  console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
+  // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
   const { isAuthenticated } = useAuth()
 
   return (

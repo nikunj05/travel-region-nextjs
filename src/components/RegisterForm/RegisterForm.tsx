@@ -110,7 +110,6 @@ const RegisterForm: React.FC = () => {
                           className="form-input form-control"
                           placeholder="•••••••••••••••••"
                           labelClassName="form-label"
-                          required
                         />
                       </div>
                     </div>

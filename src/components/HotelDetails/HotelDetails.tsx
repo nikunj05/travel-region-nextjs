@@ -24,10 +24,12 @@ import NearByHotels from "../common/NearbyHotels/NearbyHotels";
 import FaqSection from "../common/FaqSection/FaqSection";
 import RoomInfoImage from "@/assets/images/room-information-image.jpg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
+import ImageModal from "../common/ImageModal/ImageModal";
 
 const HotelDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const handleOpenModal = (roomId: number) => {
     setSelectedRoom(roomId);
@@ -37,6 +39,14 @@ const HotelDetails = () => {
   const handleCloseModal = () => {
     setSelectedRoom(null);
     setIsModalOpen(false);
+  };
+
+  const handleOpenImageModal = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setIsImageModalOpen(false);
   };
 
   const handleTabClick = (
@@ -115,7 +125,14 @@ const HotelDetails = () => {
                 </div>
                 <div className="thambnail-image-item">
                   <Image src={thumbnailImages4} alt="Thumbnail 4" />
-                  <a href="#" className="show-all-photos">
+                  <a 
+                    href="#" 
+                    className="show-all-photos"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenImageModal();
+                    }}
+                  >
                     Show all 34 photos
                   </a>
                 </div>
@@ -1635,9 +1652,9 @@ const HotelDetails = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="modal-room-review-section">
+                <div className="modal-room-review-section"></div>
                   <h2 className="hotel-section-title">Reviews</h2>
-                  <ReviewSlider />
+                  <ReviewSlider slidesToShowDesktop={2} />
                 </div>
                 <div className="modal-room-pricing">
                   <div className="modal-room-refund">
@@ -1712,8 +1729,13 @@ const HotelDetails = () => {
               </div>
             </div>
           </div>
-        </div>
       )}
+
+      {/* Image Modal */}
+      <ImageModal 
+        isOpen={isImageModalOpen} 
+        onClose={handleCloseImageModal} 
+      />
     </main>
   );
 };
