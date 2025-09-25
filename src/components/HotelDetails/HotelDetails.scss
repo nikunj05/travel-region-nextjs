@@ -689,4 +689,317 @@
   .hotel-faq-section {
     margin-top: 36px;
   }
+
+  // room information Modal
+
+  .room-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9;
+
+    .room-modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 790px;
+      width: 90%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .room-modal-header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      padding: 0 0 24px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      z-index: 2;
+
+
+      .room-modal-close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+      }
+
+      .room-modal-title {
+        font-size: 16px;
+        font-weight: $font-weight500;
+        color: $color-black-zinc-900;
+        margin: 0px;
+      }
+    }
+
+
+    .room-modal-body {
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+
+      .room-modal-images {
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+
+        img {
+          border-radius: 24px;
+          height: auto;
+          max-height: 362px;
+        }
+
+        .hotel-image-action {
+          padding: 0 20px;
+          position: absolute;
+          top: 50%;
+          left: 0%;
+          transform: 0px;
+          width: 100%;
+          transform: translate(0%, -50%);
+        }
+      }
+
+      .modal-room-title {
+        font-size: 20px;
+        font-weight: $font-weight600;
+        color: $color-black-zinc-950;
+        margin-bottom: 10px;
+        margin-top: 24px;
+      }
+
+      .modal-room-rating {
+        gap: 8px;
+        font-size: 12px;
+        color: $color-black-zinc-500;
+        margin-bottom: 24px;
+
+        .modal-room-rating-star {
+          gap: 2px;
+        }
+
+        .rating-value-wrapper {
+          gap: 4px;
+
+          .rating-value {
+            font-size: 12px;
+            color: $color-black;
+            font-weight: $font-weight500;
+          }
+        }
+      }
+
+      .modal-room-facility-list {
+        margin: 24px 0;
+
+        .facility-item {
+          margin: 0px;
+          list-style-type: none;
+          padding: 24px;
+          border-radius: 8px;
+          gap: 20px;
+          background-color: #F3F4F6;
+
+          li {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            gap: 6px;
+            flex: 1;
+            font-size: 12px;
+            padding: 0 12px;
+            color: $color-black-zinc-800;
+          }
+        }
+      }
+
+      .modal-room-amenities-list {
+        text-align: left;
+        margin-bottom: 20px;
+
+        .amenities-item {
+          row-gap: 6px;
+          column-gap: 16px;
+          margin: 0;
+          flex-direction: column;
+          flex-wrap: wrap;
+          padding: 0;
+          list-style: none;
+          display: flex;
+
+          li {
+            width: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: $color-blue;
+          }
+        }
+      }
+
+      .modal-room-policies-list {
+        margin-bottom: 20px;
+
+        .policies-item {
+          row-gap: 6px;
+          column-gap: 16px;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: start;
+          flex-direction: column;
+
+          li {
+            width: auto;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 16px;
+            color: $color-black-zinc-800;
+          }
+        }
+      }
+
+      .modal-room-specs-list {
+        margin: 0;
+
+        .card-specs-item {
+          row-gap: 16px;
+          column-gap: 16px;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: start;
+
+          li {
+            width: 100%;
+            display: flex;
+            align-items: start;
+            gap: 4px;
+            font-size: 16px;
+            color: $color-black-zinc-800;
+          }
+        }
+      }
+
+      .modal-room-review-section {
+        margin: 24px 0;
+
+        .hotel-section-title {
+          font-size: 24px;
+        }
+      }
+
+      .modal-room-pricing {
+        padding: 20px;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+
+        .modal-room-refund {
+          margin-bottom: 14px;
+
+          .refund-item {
+            gap: 4px;
+            font-size: 16px;
+            color: $color-black-zinc-950;
+          }
+
+          .refund-valid-date {
+            font-size: 12px;
+            color: $color-black-zinc-500;
+          }
+        }
+
+        .modal-room-price-info {
+          text-align: left;
+
+          .discount {
+            background-color: #FF6467;
+            color: $color-white;
+            padding: 6.5px 16px;
+            border-radius: 4px;
+            line-height: 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: $font-weight600;
+            margin-bottom: 10px;
+          }
+
+          .nightly-price {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 16px;
+            color: $color-black-zinc-700;
+          }
+
+          .total-price {
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: $font-weight600;
+            color: $color-black-zinc-950;
+            margin-bottom: 2px;
+            display: flex;
+            gap: 5px;
+            align-items: baseline;
+
+            span {
+              font-size: 12px;
+              font-weight: $font-weight500;
+              text-decoration: line-through;
+            }
+          }
+
+          .hotel-room-number {
+            font-size: 14px;
+            display: block;
+            color: $color-black-zinc-400;
+            margin-bottom: 10px;
+          }
+        }
+
+        .total-taxes-fees {
+          font-size: 12px;
+          gap: 15px;
+
+          .taxes-fees {
+            gap: 4px;
+            color: #00A63E;
+          }
+
+          .hotel-room-left {
+            color: #E7000B;
+          }
+        }
+
+        .modal-room-booking-action {
+          margin-top: 14px;
+
+          .room-booking-btn {
+            font-size: 16px;
+            padding: 9.2px 15px;
+          }
+        }
+      }
+    }
+  }
 }
