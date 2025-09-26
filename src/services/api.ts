@@ -27,6 +27,27 @@ import axios, {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+
+      // Add Accept-Language header
+      let locale: string = 'en'; // default locale
+      if (typeof window !== 'undefined') {
+        // Try to get locale from localStorage first
+        const storedLocale = localStorage.getItem('NEXT_LOCALE');
+        console.log("==> API storedLocale", storedLocale);
+        
+        if (storedLocale && ['en', 'ar'].includes(storedLocale)) {
+          locale = storedLocale;
+          console.log("==> Using stored locale:", locale);
+        } else {
+          // Fallback to browser language detection
+          const browserLang = navigator.language.split('-')[0];
+          locale = ['en', 'ar'].includes(browserLang) ? browserLang : 'en';
+          console.log("==> Using browser/fallback locale:", locale);
+        }
+      }
+      config.headers['Accept-Language'] = locale;
+      console.log("==> Setting Accept-Language header:", locale);
+
       return config;
     },
     (error: AxiosError) => {
@@ -38,25 +59,25 @@ import axios, {
   export const api = {
     get: <TResponse>(url: string, config?: AxiosRequestConfig) =>
       axiosInstance.get<TResponse>(url, config),
-  
+
     post: <TResponse, TRequest = unknown>(
       url: string,
       data?: TRequest,
       config?: AxiosRequestConfig
     ) => axiosInstance.post<TResponse>(url, data, config),
-  
+
     put: <TResponse, TRequest = unknown>(
       url: string,
       data?: TRequest,
       config?: AxiosRequestConfig
     ) => axiosInstance.put<TResponse>(url, data, config),
-  
+
     patch: <TResponse, TRequest = unknown>(
       url: string,
       data?: TRequest,
       config?: AxiosRequestConfig
     ) => axiosInstance.patch<TResponse>(url, data, config),
-  
+
     delete: <TResponse>(url: string, config?: AxiosRequestConfig) =>
       axiosInstance.delete<TResponse>(url, config),
   };

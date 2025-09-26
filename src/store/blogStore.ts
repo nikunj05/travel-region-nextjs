@@ -1,6 +1,6 @@
 'use client'
 import { create } from 'zustand'
-import { Blog, BlogFilters, BlogPagination } from '@/types/blog'
+import { Blog, BlogFilters, BlogPagination, BlogCategory } from '@/types/blog'
 import { blogService } from '@/services/blogService'
 
 interface BlogState {
@@ -17,9 +17,19 @@ interface BlogState {
   detailLoading: boolean
   detailError: string | null
 
+  // Categories and Tags state
+  categories: BlogCategory[]
+  tags: string[]
+  categoriesLoading: boolean
+  tagsLoading: boolean
+  categoriesError: string | null
+  tagsError: string | null
+
   // Actions
   fetchBlogs: (filters?: BlogFilters) => Promise<void>
   fetchBlogById: (id: number) => Promise<void>
+  fetchCategories: () => Promise<void>
+  fetchTags: () => Promise<void>
   clearCurrentBlog: () => void
   clearErrors: () => void
 }
@@ -36,6 +46,14 @@ export const useBlogStore = create<BlogState>((set, get) => ({
   relatedBlogs: [],
   detailLoading: false,
   detailError: null,
+
+  // Categories and Tags initial state
+  categories: [],
+  tags: [],
+  categoriesLoading: false,
+  tagsLoading: false,
+  categoriesError: null,
+  tagsError: null,
 
   // Fetch blogs with filters and pagination (default 15 blogs)
   fetchBlogs: async (filters?: BlogFilters) => {
@@ -84,11 +102,49 @@ export const useBlogStore = create<BlogState>((set, get) => ({
     })
   },
 
+  // Fetch categories
+  fetchCategories: async () => {
+    set({ categoriesLoading: true, categoriesError: null })
+    
+    try {
+      const response = await blogService.getBlogCategories()
+      set({ 
+        categories: response.data.categories,
+        categoriesLoading: false 
+      })
+    } catch (error) {
+      set({ 
+        categoriesError: error instanceof Error ? error.message : 'Failed to fetch categories',
+        categoriesLoading: false 
+      })
+    }
+  },
+
+  // Fetch tags
+  fetchTags: async () => {
+    set({ tagsLoading: true, tagsError: null })
+    
+    try {
+      const response = await blogService.getBlogTags()
+      set({ 
+        tags: response.data.tags,
+        tagsLoading: false 
+      })
+    } catch (error) {
+      set({ 
+        tagsError: error instanceof Error ? error.message : 'Failed to fetch tags',
+        tagsLoading: false 
+      })
+    }
+  },
+
   // Clear all errors
   clearErrors: () => {
     set({ 
       error: null, 
-      detailError: null 
+      detailError: null,
+      categoriesError: null,
+      tagsError: null
     })
   },
 }))

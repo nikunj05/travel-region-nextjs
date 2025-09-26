@@ -21,6 +21,9 @@ export interface Blog {
   content: string;
   image: string;
   full_image_url: string;
+  author: string ;
+  author_image?: string | null;
+  full_author_image_url: string;
   read_time: number;
   is_featured: number;
   tags: string[];
@@ -62,5 +65,33 @@ export interface GetBlogDetailResponse {
   data: {
     blog: Blog;
     related_blogs: Blog[];
+  };
+}
+
+export interface GetBlogTagsResponse {
+  status: boolean;
+  message: string;
+  data: {
+    tags: string[];
+  };
+}
+
+export interface GetBlogCategoriesResponse {
+  status: boolean;
+  message: string;
+  data: {
+    categories: BlogCategory[];
+  };
+}
+
+export interface AddCommentRequest {
+  comment: string;
+}
+
+export interface AddCommentResponse {
+  status: boolean;
+  message: string;
+  data: {
+    comment: BlogComment;
   };
 }

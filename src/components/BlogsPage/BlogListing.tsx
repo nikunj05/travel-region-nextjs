@@ -5,27 +5,9 @@ import './BlogListing.scss'
 import { useBlogStore } from '@/store/blogStore'
 import { formatDateWithReadTime } from '@/lib/dateUtils'
 import BlogContent from '@/components/common/BlogContent/BlogContent'
+import { useRouter } from '@/i18/navigation'
 
-const categories = [
-  { id: 'all', name: 'All Articles' },
-  { id: 'destinations', name: 'Destinations' },
-  { id: 'travel-tips', name: 'Travel Tips' },
-  { id: 'offers', name: 'Offers' },
-  { id: 'inspiration', name: 'Inspiration' },
-  { id: 'hotel', name: 'Hotel' },
-  { id: 'culture', name: 'Culture' },
-  { id: 'halal-food', name: 'Halal Food' }
-]
-
-const tags = [
-  '#luxury_hotels',
-  '#budget_travel',
-  '#beach_resort',
-  '#city_breaks',
-  '#family_friendly',
-  '#halal',
-  '#lastminute_deal'
-]
+// Static sort options remain the same
 
 const sortOptions = [
   { value: 'recommended', label: 'Sort by Recommended' },
@@ -35,21 +17,73 @@ const sortOptions = [
 ]
 
 const BlogListing = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [sortBy, setSortBy] = useState('recommended')
   const [currentPage, setCurrentPage] = useState(1)
   const blogsPerPage = 8
 
-  const { blogs, pagination, loading, error, fetchBlogs } = useBlogStore()
+  const { 
+    blogs, 
+    pagination, 
+    loading, 
+    error, 
+    fetchBlogs,
+    categories,
+    tags,
+    categoriesLoading,
+    tagsLoading,
+    categoriesError,
+    tagsError,
+    fetchCategories,
+    fetchTags
+  } = useBlogStore()
+  const router = useRouter()
 
+  // Fetch categories and tags on component mount
   useEffect(() => {
-    fetchBlogs({ page: currentPage, per_page: blogsPerPage })
-  }, [fetchBlogs, currentPage])
+    fetchCategories()
+    fetchTags()
+  }, [fetchCategories, fetchTags])
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId)
+  // Fetch blogs with current filters
+  useEffect(() => {
+    const filters: any = { 
+      page: currentPage, 
+      per_page: blogsPerPage 
+    }
+
+    // Add category filter if any categories are selected
+    if (selectedCategories.length > 0) {
+      filters.category_id = selectedCategories.join(',')
+    }
+
+    // Add tags filter if any tags are selected
+    if (selectedTags.length > 0) {
+      filters.tags = selectedTags.join(',')
+    }
+
+    fetchBlogs(filters)
+  }, [fetchBlogs, currentPage, selectedCategories, selectedTags])
+
+  const handleCategoryToggle = (categoryId: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    )
     setCurrentPage(1) // Reset to first page when filtering
+  }
+
+  const handleAllArticlesToggle = () => {
+    if (selectedCategories.length === categories.length) {
+      // If all categories are selected, deselect all
+      setSelectedCategories([])
+    } else {
+      // Select all categories
+      setSelectedCategories(categories.map(cat => cat.id.toString()))
+    }
+    setCurrentPage(1)
   }
 
   const handleTagToggle = (tag: string) => {
@@ -78,6 +112,10 @@ const BlogListing = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const handleBlogClick = (blogId: number) => {
+    router.push(`/blogs/${blogId}`)
+  }
+
   return (
     <div className="blog-listing-section section-space-tb">
       <div className="container">
@@ -88,38 +126,70 @@ const BlogListing = () => {
           <div className="blog-filters-sidebar">
             {/* Quick Filters */}
             <div className="filter-section">
-              <h3 className="filter-title">Quick Filters:</h3>
-              <div className="filter-options" role="radiogroup" aria-label="Quick Filters">
-                {categories.map(category => (
-                  <label key={category.id} className="filter-option">
+              <h3 className="filter-title">Categories:</h3>
+              {categoriesLoading ? (
+                <div className="loading-state">
+                  <p>Loading categories...</p>
+                </div>
+              ) : categoriesError ? (
+                <div className="error-state">
+                  <p>Error loading categories: {categoriesError}</p>
+                </div>
+              ) : (
+                <div className="filter-options" role="group" aria-label="Category Filters">
+                  {/* All Articles checkbox */}
+                  <label className="filter-option all-articles-option">
                     <input
-                      type="radio"
-                      name="blog-category"
-                      checked={selectedCategory === category.id}
-                      onChange={() => handleCategoryChange(category.id)}
-                      className="filter-radio"
-                      aria-checked={selectedCategory === category.id}
+                      type="checkbox"
+                      checked={selectedCategories.length === categories.length && categories.length > 0}
+                      onChange={handleAllArticlesToggle}
+                      className="filter-checkbox"
+                      aria-checked={selectedCategories.length === categories.length && categories.length > 0}
                     />
-                    <span className="filter-label">{category.name}</span>
+                    <span className="filter-label">All Articles</span>
                   </label>
-                ))}
-              </div>
+                  
+                  {/* Dynamic categories */}
+                  {categories.map(category => (
+                    <label key={category.id} className="filter-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(category.id.toString())}
+                        onChange={() => handleCategoryToggle(category.id.toString())}
+                        className="filter-checkbox"
+                        aria-checked={selectedCategories.includes(category.id.toString())}
+                      />
+                      <span className="filter-label">{category.name}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Tags */}
             <div className="filter-section">
               <h3 className="filter-title">Tags:</h3>
-              <div className="tags-container">
-                {tags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => handleTagToggle(tag)}
-                    className={`tag-button ${selectedTags.includes(tag) ? 'active' : ''}`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
+              {tagsLoading ? (
+                <div className="loading-state">
+                  <p>Loading tags...</p>
+                </div>
+              ) : tagsError ? (
+                <div className="error-state">
+                  <p>Error loading tags: {tagsError}</p>
+                </div>
+              ) : (
+                <div className="tags-container">
+                  {tags.map(tag => (
+                    <button
+                      key={tag}
+                      onClick={() => handleTagToggle(tag)}
+                      className={`tag-button ${selectedTags.includes(tag) ? 'active' : ''}`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -160,7 +230,11 @@ const BlogListing = () => {
               {!loading && !error && blogs && blogs.length > 0 && (
                 <>
                   {blogs.map(blog => (
-                    <div key={blog.id} className="blog-card">
+                    <div 
+                      key={blog.id} 
+                      className="blog-card"
+                      onClick={() => handleBlogClick(blog.id)}
+                    >
                       <div className="blog-card-image">
                         <Image
                           src={blog.full_image_url}

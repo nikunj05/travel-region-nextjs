@@ -4,14 +4,20 @@ import Image from 'next/image'
 import { useBlogStore } from '@/store/blogStore'
 import { formatDateWithReadTime } from '@/lib/dateUtils'
 import BlogContent from '@/components/common/BlogContent/BlogContent'
+import { useRouter } from '@/i18/navigation'
 import './FeaturedBlogs.scss'
 
 const FeaturedBlogs = () => {
   const { blogs, fetchBlogs, loading, error } = useBlogStore()
+  const router = useRouter()
 
   useEffect(() => {
     fetchBlogs()
   }, [fetchBlogs])
+
+  const handleBlogClick = (blogId: number) => {
+    router.push(`/blogs/${blogId}`)
+  }
 
   if (loading) {
     return (
@@ -67,7 +73,7 @@ const FeaturedBlogs = () => {
         <div className="featured-blogs-layout">
           {/* Main Featured Blog */}
           <div className="featured-main-blog">
-            <div className="featured-blog-card">
+            <div className="featured-blog-card" onClick={() => handleBlogClick(featuredBlog.id)} style={{ cursor: 'pointer' }}>
               <div className="featured-blog-image">
                 <Image 
                   src={featuredBlog.full_image_url} 
@@ -99,7 +105,7 @@ const FeaturedBlogs = () => {
           {/* Sidebar Blogs */}
           <div className="featured-sidebar-blogs">
             {sidebarBlogs.map((blog) => (
-              <div key={blog.id} className="sidebar-blog-item">
+              <div key={blog.id} className="sidebar-blog-item" onClick={() => handleBlogClick(blog.id)} style={{ cursor: 'pointer' }}>
                 <div className="sidebar-blog-image">
                   <Image 
                     src={blog.full_image_url} 

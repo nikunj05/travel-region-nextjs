@@ -1,5 +1,5 @@
 import { api } from './api';
-import { GetBlogsResponse, BlogFilters, GetBlogDetailResponse } from '@/types/blog';
+import { GetBlogsResponse, BlogFilters, GetBlogDetailResponse, GetBlogTagsResponse, GetBlogCategoriesResponse, AddCommentRequest, AddCommentResponse } from '@/types/blog';
 
 export const blogService = {
   /**
@@ -50,6 +50,47 @@ export const blogService = {
   getBlogById: async (id: number): Promise<GetBlogDetailResponse> => {
     try {
       const response = await api.get<GetBlogDetailResponse>(`/blogs/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get all blog tags
+   * @returns Promise<GetBlogTagsResponse>
+   */
+  getBlogTags: async (): Promise<GetBlogTagsResponse> => {
+    try {
+      const response = await api.get<GetBlogTagsResponse>('/blog-tags');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get all blog categories
+   * @returns Promise<GetBlogCategoriesResponse>
+   */
+  getBlogCategories: async (): Promise<GetBlogCategoriesResponse> => {
+    try {
+      const response = await api.get<GetBlogCategoriesResponse>('/blog-categories');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Add a comment to a blog
+   * @param blogId - Blog ID
+   * @param commentData - Comment data containing the comment text
+   * @returns Promise<AddCommentResponse>
+   */
+  addComment: async (blogId: number, commentData: AddCommentRequest): Promise<AddCommentResponse> => {
+    try {
+      const response = await api.post<AddCommentResponse, AddCommentRequest>(`/blogs/${blogId}/comment`, commentData);
       return response.data;
     } catch (error) {
       throw error;

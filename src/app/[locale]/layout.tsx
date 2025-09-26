@@ -9,6 +9,7 @@ import "../../styles/_rtl.scss";
 import { settingsService } from "@/services/settingsService";
 import SettingsHydrator from "@/components/SettingsHydrator";
 import NextAuthSessionProvider from "@/context/NextAuthSessionProvider";
+import LocaleHydrator from "@/context/LocaleHydrator";
 
 // Function to determine text direction based on locale
 function getTextDirection(locale: string): 'ltr' | 'rtl' {
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <NextAuthSessionProvider>
             <AuthProvider>
+              <LocaleHydrator locale={locale} />
               <SettingsHydrator setting={setting} />
               {children}
               <ToastContainer />

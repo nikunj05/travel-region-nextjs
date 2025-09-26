@@ -4,9 +4,11 @@ import Image from 'next/image'
 import { useBlogStore } from '@/store/blogStore'
 import { formatDateWithReadTime } from '@/lib/dateUtils'
 import BlogContent from '@/components/common/BlogContent/BlogContent'
+import { useRouter } from '@/i18/navigation'
 
 const DashboardBlogs = () => {
   const { blogs, fetchBlogs, loading, error } = useBlogStore()
+  const router = useRouter()
 
   useEffect(() => {
     fetchBlogs() // This will fetch 15 blogs by default
@@ -15,6 +17,10 @@ const DashboardBlogs = () => {
   useEffect(() => {
     console.log('All Blogs:', blogs)
   }, [blogs])
+
+  const handleBlogClick = (blogId: number) => {
+    router.push(`/blogs/${blogId}`)
+  }
 
   if (loading) {
     return <div className="container"><p>Loading blogs...</p></div>
@@ -36,16 +42,16 @@ const DashboardBlogs = () => {
         <p className="section-description mx-width-790">Dive into inspiring stories, smart travel hacks, and detailed guides
           from real explorers who’ve been there and done that.</p>
       </div>
-      <div className="blog-single-card d-flex align-items-start">
+      <div className="blog-single-card d-flex align-items-start" onClick={() => handleBlogClick(blogs[0].id)} style={{ cursor: 'pointer' }}>
         <div className="blog-single-image">
-          <a href="#" className="blog-card-items-img">
-            <Image src={blogs[0].full_image_url} width={688} height={391} alt="7 Hidden Gems in the Maldives"
+          <div className="blog-card-items-img">
+            <Image src={blogs[0].full_image_url} width={688} height={391} alt={blogs[0].title}
               className="blog-card-image" />
-          </a>
+          </div>
         </div>
         <div className="blog-card-content">
           <span className="blog-card-date">{blogs[0] && formatDateWithReadTime(blogs[0].created_at, blogs[0].read_time)}</span>
-          <a href="#" className="blog-card-title">{blogs[0]?.title}</a>
+          <div className="blog-card-title">{blogs[0]?.title}</div>
           <BlogContent 
             content={blogs[0]?.content || ''} 
             maxLength={550}
@@ -55,15 +61,15 @@ const DashboardBlogs = () => {
       </div>
       <div className="blog-card-listing d-grid">
         {blogs.slice(1, 4).map((blog, index) => (
-          <div key={blog.id} className="blog-card-items">
-            <a href="#" className="blog-card-items-img">
+          <div key={blog.id} className="blog-card-items" onClick={() => handleBlogClick(blog.id)} style={{ cursor: 'pointer' }}>
+            <div className="blog-card-items-img">
               <Image src={blog.full_image_url} width={379} height={215} alt={blog.title} />
-            </a>
+            </div>
             <div className="blog-card-details">
               <div className="blog-card-details-date">{formatDateWithReadTime(blog.created_at, blog.read_time)}</div>
-              <a href="#" className="blog-card-details-title">
+              <div className="blog-card-details-title">
                 {blog.title}
-              </a>
+              </div>
             </div>
           </div>
         ))}
