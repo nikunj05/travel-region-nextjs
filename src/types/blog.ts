@@ -57,6 +57,8 @@ export interface BlogFilters {
   tags?: string; // Comma-separated string like "tag1,tag2,tag3"
   page?: number;
   per_page?: number;
+  sort_by?: string; // Sort field like "created_at" or "created_at,read_time"
+  sort_order?: string; // Sort order like "asc" or "desc"
 }
 
 export interface GetBlogDetailResponse {

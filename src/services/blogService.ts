@@ -4,7 +4,7 @@ import { GetBlogsResponse, BlogFilters, GetBlogDetailResponse, GetBlogTagsRespon
 export const blogService = {
   /**
    * Get blogs with optional filters
-   * @param filters - Optional filters for blogs (is_featured, category_id, tags, page, per_page)
+   * @param filters - Optional filters for blogs (is_featured, category_id, tags, page, per_page, sort_by, sort_order)
    * @returns Promise<GetBlogsResponse>
    */
   getBlogs: async (filters?: BlogFilters): Promise<GetBlogsResponse> => {
@@ -30,6 +30,14 @@ export const blogService = {
       
       if (filters?.per_page !== undefined) {
         params.append('per_page', filters.per_page.toString());
+      }
+
+      if (filters?.sort_by) {
+        params.append('sort_by', filters.sort_by);
+      }
+      
+      if (filters?.sort_order) {
+        params.append('sort_order', filters.sort_order);
       }
 
       // Build the URL with query parameters
