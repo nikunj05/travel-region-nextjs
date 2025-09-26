@@ -105,7 +105,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
                 </div>
 
                 {/* Comments Section Skeleton */}
-                <div className="comments-section">
+                {/* <div className="comments-section">
                   <div className="comment-input">
                     <Skeleton height={40} style={{ marginBottom: '8px' }} />
                     <Skeleton width={80} height={32} borderRadius={16} />
@@ -133,7 +133,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Right Sidebar Skeleton */}
@@ -287,7 +287,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
 
               {/* Related Articles */}
               <div className="related-articles">
-                <h3 className="related-title">Other Articles:</h3>
+                <h3 className="related-title">Releted Blogs:</h3>
                 <div className="related-cards">
                   {relatedBlogs.slice(0, 2).map((blog) => (
                     <div 
@@ -312,7 +312,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
               </div>
 
               {/* Comments Section */}
-              <div className="comments-section">
+              {/* <div className="comments-section">
                 <div className="comment-input">
                   <input
                     type="text"
@@ -398,7 +398,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Right Sidebar */}
