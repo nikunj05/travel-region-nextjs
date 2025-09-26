@@ -1654,9 +1654,10 @@ const HotelDetails = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="modal-room-review-section"></div>
-                <h2 className="hotel-section-title">Reviews</h2>
-                <ReviewSlider slidesToShowDesktop={2} />
+                <div className="modal-room-review-section">
+                  <h2 className="hotel-section-title">Reviews</h2>
+                  <ReviewSlider slidesToShowDesktop={2} />
+                </div>
               </div>
               <div className="modal-room-pricing">
                 <div className="modal-room-refund">

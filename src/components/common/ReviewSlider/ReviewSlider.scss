@@ -204,10 +204,9 @@
       margin: 0 -8px;
     }
 
-    .testimonial-card {
+    .review-card {
       border-radius: 16px;
       padding: 16px;
-      gap: 24px;
       margin: 0 8px;
     }
   }
@@ -217,10 +216,18 @@
   .review-slider {
     margin-bottom: 20px;
 
-    .testimonial-card {
-      border-radius: 12px;
-      padding: 24px;
-      gap: 24px;
+    .slick-list {
+      margin: 0 0px;
+    }
+
+    .slick-slide {
+      margin: 0 0px;
+    }
+
+    .review-card {
+      border-radius: 6px;
+      padding: 12px;
+      margin: 0 0px;
 
       .testimonial-header {
         .testimonial-header-user {

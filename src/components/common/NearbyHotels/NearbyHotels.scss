@@ -213,7 +213,7 @@
 
 
 @media (max-width: 991.55px) {
-  .review-slider {
+  .nearby-hotels-slider {
     .slick-list {
       margin: 0 -8px;
     }
@@ -228,59 +228,56 @@
 }
 
 @media (max-width: 767.55px) {
-  .review-slider {
+  .nearby-hotels-slider {
     margin-bottom: 20px;
 
-    .testimonial-card {
-      border-radius: 12px;
-      padding: 24px;
-      gap: 24px;
+    .slick-list {
+      margin: 0 0px;
+    }
 
-      .testimonial-header {
-        .testimonial-header-user {
-          gap: 8px;
+    .slick-slide {
+      margin: 0 0px;
+    }
+
+    .nearby-hotels-card {
+      .nearby-hotels-card-img {
+        img {
+          width: 100%;
+        }
+      }
+
+      .nearby-hotels-card-details {
+        padding: 8px;
+
+        .hotel-room-name {
+          font-size: 18px;
+          line-height: normal;
+          margin-bottom: 10px;
         }
 
-        .testimonial-avatar {
-          width: 40px;
-          height: 40px;
-        }
+        .nearby-hotels-price-info {
+          margin: 16px 0;
 
-        .testimonial-user-content {
-          .testimonial-user-title {
-            font-size: 14px;
+          .nightly-price {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 16px;
+            color: $color-black-zinc-700;
           }
 
-          .testimonial-user-state {
+          .total-price {
+            line-height: normal;
+          }
+
+          .hotel-room-number {
             font-size: 12px;
           }
         }
 
-        .testimonial-card-rating {
-          svg {
-            width: 16px;
-            height: 16px;
-          }
-
-          span {
+        .nearby-hotels-room-action {
+          .room-booking-btn {
             font-size: 14px;
-          }
-        }
-      }
-
-      .testimonial-text {
-        font-size: 14px;
-      }
-
-      .testimonial-footer {
-        font-size: 12px;
-
-        .testimonial-hotel-name {
-          gap: 6px;
-
-          svg {
-            width: 14px;
-            height: 14px;
+            padding: 10.7px 15px;
           }
         }
       }
