@@ -1260,7 +1260,22 @@
         }
       }
     }
+  }
+}
 
+@media (max-width: 575.55px) {
+  .search-result-page {
+    .search-bar-main {
+      .search-bar {
+        .search-bar-container {
+          .search-field {
+            .datepicker-dropdown {
+              min-width: fit-content;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
