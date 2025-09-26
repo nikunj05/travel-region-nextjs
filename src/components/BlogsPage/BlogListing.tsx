@@ -12,16 +12,14 @@ import { useRouter } from "@/i18/navigation";
 // Static sort options remain the same
 
 const sortOptions = [
-  { value: "recommended", label: "Sort by Recommended" },
   { value: "newest", label: "Sort by Newest" },
   { value: "oldest", label: "Sort by Oldest" },
-  { value: "popular", label: "Sort by Most Popular" },
 ];
 
 const BlogListing = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState("recommended");
+  const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 8;
 
@@ -65,8 +63,17 @@ const BlogListing = () => {
       filters.tags = selectedTags.join(",");
     }
 
+    // Add sorting parameters
+    if (sortBy === "newest") {
+      filters.sort_by = "created_at";
+      filters.sort_order = "desc";
+    } else if (sortBy === "oldest") {
+      filters.sort_by = "created_at";
+      filters.sort_order = "asc";
+    }
+
     fetchBlogs(filters);
-  }, [fetchBlogs, currentPage, selectedCategories, selectedTags]);
+  }, [fetchBlogs, currentPage, selectedCategories, selectedTags, sortBy]);
 
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories((prev) =>
@@ -97,7 +104,7 @@ const BlogListing = () => {
 
   const handleSortChange = (sortValue: string) => {
     setSortBy(sortValue);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when sorting changes
   };
 
   // Calculate total pages from API pagination
