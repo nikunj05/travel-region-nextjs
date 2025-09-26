@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth'
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false)
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   
   // Language switching logic
   const locale = useLocale()
@@ -32,6 +33,14 @@ const Header = () => {
 
   const toggleLanguageMenu = () => {
     setIsLanguageMenuOpen(!isLanguageMenuOpen)
+  }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
   }
 
   const handleLoginClick = () => {
@@ -77,6 +86,20 @@ const Header = () => {
     }
   }, [pathname])
 
+  // Handle mobile menu body class toggle
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('mobile_menu_open')
+    } else {
+      document.body.classList.remove('mobile_menu_open')
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('mobile_menu_open')
+    }
+  }, [isMobileMenuOpen])
+
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo)
   // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
   const { isAuthenticated } = useAuth()
@@ -85,8 +108,8 @@ const Header = () => {
     <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>
     <div className="container">
       <nav className="navbar navbar-expand-lg justify-content-between align-items-center py-0">
-        <button className="navbar-toggler d-lg-none p-0 border-0 collapsed" type="button" data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        <button className="navbar-toggler d-lg-none p-0 border-0 collapsed" type="button" 
+          onClick={toggleMobileMenu} aria-controls="navbarSupportedContent" aria-expanded={isMobileMenuOpen}
           aria-label="Toggle navigation">
           <Image src={hamburgerMenuIcon} width="24" height="24" alt="hamburger icon"
             className="hamburger-icon" />
@@ -98,37 +121,37 @@ const Header = () => {
             <Image src={travelRegionsLogo} alt="logo" width={205} height={35} />
           )}
         </a>
-        <div className="collapse navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
+        <div className="navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
           id="navbarSupportedContent">
           <button className="navbar-toggler mobile-menu-close-button d-lg-none p-0 border-0" type="button"
-            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            onClick={closeMobileMenu} aria-controls="navbarSupportedContent"
             aria-expanded="true" aria-label="Close menu">
-            <Image src={closeBtnIcon} width="24" height="24" alt="hamburger icon"
+            <Image src={closeBtnIcon} width="24" height="24" alt="close icon"
               className="hamburger-icon" />
           </button>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" href="/">Home</Link>
+              <Link className="nav-link" href="/" onClick={closeMobileMenu}>Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" href="/deals&offers"> Deals & Offers</Link>
+              <Link className="nav-link" href="/deals&offers" onClick={closeMobileMenu}> Deals & Offers</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" href="/blogs">Blog</Link>
+              <Link className="nav-link" href="/blogs" onClick={closeMobileMenu}>Blog</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" href="/faqs">FAQs</Link>
+              <Link className="nav-link" href="/faqs" onClick={closeMobileMenu}>FAQs</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" href="/about-us">About Us</Link>
+              <Link className="nav-link" href="/about-us" onClick={closeMobileMenu}>About Us</Link>
             </li>
           </ul>
           {!isAuthenticated && (
             <div className="header-button-box d-flex d-lg-none align-items-center ">
-              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
+              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={() => { handleSignupClick(); closeMobileMenu(); }}>
                 Sign up
               </button>
-              <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
+              <button className="button login-btn d-flex align-items-center" onClick={() => { handleLoginClick(); closeMobileMenu(); }}>
                 Log In
               </button>
             </div>
@@ -186,7 +209,7 @@ const Header = () => {
           )}
         </div>
       </nav>
-      <div className="mobile-overlay"></div>
+      <div className="mobile-overlay" onClick={closeMobileMenu}></div>
     </div>
   </header>
   )

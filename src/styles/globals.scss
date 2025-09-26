@@ -448,6 +448,11 @@ img {
       }
     }
   }
+
+  // Hide mobile menu on desktop
+  .mobile_side_menu {
+    display: none;
+  }
 }
 
 // header css end
