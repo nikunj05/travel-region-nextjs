@@ -1,6 +1,8 @@
 'use client'
 import React, { useEffect } from 'react'
 import Image from 'next/image'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { useBlogStore } from '@/store/blogStore'
 import { formatDateWithReadTime } from '@/lib/dateUtils'
 import BlogContent from '@/components/common/BlogContent/BlogContent'
@@ -19,18 +21,57 @@ const FeaturedBlogs = () => {
     router.push(`/blogs/${blogId}`)
   }
 
-  if (loading) {
-    return (
-      <main className="padding-top-100">
+  // Skeleton Loading Component
+  const SkeletonLoader = () => (
+    <main className="padding-top-100">
       <div className="container">
         <div className="featured-reads-section section-space-tb">
-          <div className="loading-state">
-            <p>Loading featured blogs...</p>
-          </div>
+          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+            <h1 className="section-title text-start">Featured Reads</h1>
+            
+            <div className="featured-blogs-layout">
+              {/* Main Featured Blog Skeleton */}
+              <div className="featured-main-blog">
+                <div className="featured-blog-card">
+                  <div className="featured-blog-image">
+                    <Skeleton height={300} />
+                  </div>
+                  <div className="featured-blog-content">
+                    <div className="blog-meta">
+                      <Skeleton width={80} height={24} borderRadius={20} />
+                      <Skeleton width={120} height={16} />
+                    </div>
+                    <Skeleton height={32} style={{ marginBottom: '16px' }} />
+                    <Skeleton count={3} height={16} style={{ marginBottom: '8px' }} />
+                    <Skeleton width="60%" height={16} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar Blogs Skeleton */}
+              <div className="featured-sidebar-blogs">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className="sidebar-blog-item">
+                    <div className="sidebar-blog-image">
+                      <Skeleton width={120} height={120} borderRadius={8} />
+                    </div>
+                    <div className="sidebar-blog-content">
+                      <Skeleton width={60} height={20} borderRadius={12} style={{ marginBottom: '8px' }} />
+                      <Skeleton count={2} height={16} style={{ marginBottom: '4px' }} />
+                      <Skeleton width="80%" height={16} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </SkeletonTheme>
         </div>
       </div>
-      </main>
-    )
+    </main>
+  )
+
+  if (loading) {
+    return <SkeletonLoader />
   }
 
   if (error) {
