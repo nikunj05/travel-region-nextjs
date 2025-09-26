@@ -27,7 +27,7 @@ interface BlogState {
 
   // Actions
   fetchBlogs: (filters?: BlogFilters) => Promise<void>
-  fetchBlogById: (id: number) => Promise<void>
+  fetchBlogBySlug: (slug: string) => Promise<void>
   fetchCategories: () => Promise<void>
   fetchTags: () => Promise<void>
   clearCurrentBlog: () => void
@@ -74,12 +74,12 @@ export const useBlogStore = create<BlogState>((set, get) => ({
     }
   },
 
-  // Fetch single blog by ID
-  fetchBlogById: async (id: number) => {
+  // Fetch single blog by slug
+  fetchBlogBySlug: async (slug: string) => {
     set({ detailLoading: true, detailError: null })
     
     try {
-      const response = await blogService.getBlogById(id)
+      const response = await blogService.getBlogBySlug(slug)
       set({ 
         currentBlog: response.data.blog,
         relatedBlogs: response.data.related_blogs,

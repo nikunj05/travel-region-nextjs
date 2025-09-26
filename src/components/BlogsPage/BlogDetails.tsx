@@ -10,24 +10,24 @@ import { useRouter } from "@/i18/navigation";
 import userImage from "@/assets/images/testimonials-slider-user-img3.png";
 import suitcaseTravel from "@/assets/images/property-image.jpg";
 
-const BlogDetails = ({ blogId }: { blogId: string }) => {
+const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
   const {
     currentBlog,
     relatedBlogs,
     detailLoading,
     detailError,
-    fetchBlogById,
+    fetchBlogBySlug,
   } = useBlogStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (blogId) {
-      fetchBlogById(parseInt(blogId));
+    if (blogSlug) {
+      fetchBlogBySlug(blogSlug);
     }
-  }, [blogId, fetchBlogById]);
+  }, [blogSlug, fetchBlogBySlug]);
 
-  const handleRelatedBlogClick = (relatedBlogId: number) => {
-    router.push(`/blogs/${relatedBlogId}`);
+  const handleRelatedBlogClick = (relatedBlogSlug: string) => {
+    router.push(`/blogs/${relatedBlogSlug}`);
   };
 
   // Skeleton Loading Component
@@ -293,7 +293,7 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
                     <div 
                       key={blog.id} 
                       className="related-card" 
-                      onClick={() => handleRelatedBlogClick(blog.id)}
+                      onClick={() => handleRelatedBlogClick(blog.slug)}
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="related-card-image">

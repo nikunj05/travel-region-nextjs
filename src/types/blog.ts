@@ -27,6 +27,7 @@ export interface Blog {
   read_time: number;
   is_featured: number;
   tags: string[];
+  slug: string;
   created_at: string;
   updated_at: string;
   category: BlogCategory;
