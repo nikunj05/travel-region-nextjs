@@ -1,218 +1,335 @@
-'use client'
-import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
-import { useLocale } from 'next-intl'
-import { useRouter, usePathname } from '@/i18/navigation'
-import { useTransition } from 'react'
-import hamburgerMenuIcon from '@/assets/images/hamburger-menu-icon.svg'
-import travelRegionsLogo from '@/assets/images/travel-regions-logo.svg'
-import closeBtnIcon from '@/assets/images/close-btn-icon.svg'
-import englishFlagIcon from '@/assets/images/english-flag-icon.svg'
-import arabicFlagIcon from '@/assets/images/arabic-flag-icon.svg'
-import Link from 'next/link'
-import { useSettingsStore } from '@/store/settingsStore'
-import { useAuth } from '@/hooks/useAuth'
+"use client";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18/navigation";
+import { useTransition } from "react";
+import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
+import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
+import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
+import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
+import arabicFlagIcon from "@/assets/images/arabic-flag-icon.svg";
+import Link from "next/link";
+import { useSettingsStore } from "@/store/settingsStore";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
-  const [isSticky, setIsSticky] = useState(false)
-  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
+  const [isSticky, setIsSticky] = useState(false);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   // Language switching logic
-  const locale = useLocale()
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isPending, startTransition] = useTransition()
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   const handleLanguageChange = (newLocale: string) => {
     startTransition(() => {
-      router.replace(pathname, { locale: newLocale })
-    })
-    setIsLanguageMenuOpen(false)
-  }
+      router.replace(pathname, { locale: newLocale });
+    });
+    setIsLanguageMenuOpen(false);
+  };
 
   const toggleLanguageMenu = () => {
-    setIsLanguageMenuOpen(!isLanguageMenuOpen)
-  }
+    setIsLanguageMenuOpen(!isLanguageMenuOpen);
+  };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-  }
+    setIsMobileMenuOpen(false);
+  };
 
   const handleLoginClick = () => {
-    router.push('/login')
-  }
+    router.push("/login");
+  };
 
   const handleSignupClick = () => {
-    router.push('/register')
-  }
+    router.push("/register");
+  };
 
   useEffect(() => {
     const checkHeaderSticky = () => {
       // On search-result path: always sticky
-      if (pathname === '/search-result' || pathname === '/hotel-details' || pathname === '/profile' || pathname === '/blogs' || pathname.startsWith('/blogs/')) {
-        setIsSticky(true)
-      } 
+      if (
+        pathname === "/search-result" ||
+        pathname === "/hotel-details" ||
+        pathname === "/profile" ||
+        // pathname === "/blogs" ||
+        pathname.startsWith("/blogs/")
+      ) {
+        setIsSticky(true);
+      }
       // On other paths: sticky only on scroll
       else if (window.scrollY > 5) {
-        setIsSticky(true)
+        setIsSticky(true);
       } else {
-        setIsSticky(false)
+        setIsSticky(false);
       }
-    }
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (!target.closest('.header-language-dropdown')) {
-        setIsLanguageMenuOpen(false)
+      const target = event.target as Element;
+      if (!target.closest(".header-language-dropdown")) {
+        setIsLanguageMenuOpen(false);
       }
-    }
+    };
 
     // Check on mount
-    checkHeaderSticky()
+    checkHeaderSticky();
 
     // Add event listeners
-    window.addEventListener('scroll', checkHeaderSticky)
-    document.addEventListener('click', handleClickOutside)
+    window.addEventListener("scroll", checkHeaderSticky);
+    document.addEventListener("click", handleClickOutside);
 
     // Cleanup event listeners on unmount
     return () => {
-      window.removeEventListener('scroll', checkHeaderSticky)
-      document.removeEventListener('click', handleClickOutside)
-    }
-  }, [pathname])
+      window.removeEventListener("scroll", checkHeaderSticky);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [pathname]);
 
   // Handle mobile menu body class toggle
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.classList.add('mobile_menu_open')
+      document.body.classList.add("mobile_menu_open");
     } else {
-      document.body.classList.remove('mobile_menu_open')
+      document.body.classList.remove("mobile_menu_open");
     }
 
     // Cleanup on unmount
     return () => {
-      document.body.classList.remove('mobile_menu_open')
-    }
-  }, [isMobileMenuOpen])
+      document.body.classList.remove("mobile_menu_open");
+    };
+  }, [isMobileMenuOpen]);
 
-  const dynamicLogo = useSettingsStore((s) => s.setting?.logo)
+  const dynamicLogo = useSettingsStore((s) => s.setting?.logo);
   // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
   return (
-    <header id="siteHeader" className={`header ${isSticky ? 'header_sticky' : ''}`}>
-    <div className="container">
-      <nav className="navbar navbar-expand-lg justify-content-between align-items-center py-0">
-        <button className="navbar-toggler d-lg-none p-0 border-0 collapsed" type="button" 
-          onClick={toggleMobileMenu} aria-controls="navbarSupportedContent" aria-expanded={isMobileMenuOpen}
-          aria-label="Toggle navigation">
-          <Image src={hamburgerMenuIcon} width="24" height="24" alt="hamburger icon"
-            className="hamburger-icon" />
-        </button>
-        <a className="navbar-brand p-0 m-0" href="/">
-          {dynamicLogo ? (
-            <Image src={dynamicLogo} alt="logo" width={205} height={35} priority />
-          ) : (
-            <Image src={travelRegionsLogo} alt="logo" width={205} height={35} />
-          )}
-        </a>
-        <div className="navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
-          id="navbarSupportedContent">
-          <button className="navbar-toggler mobile-menu-close-button d-lg-none p-0 border-0" type="button"
-            onClick={closeMobileMenu} aria-controls="navbarSupportedContent"
-            aria-expanded="true" aria-label="Close menu">
-            <Image src={closeBtnIcon} width="24" height="24" alt="close icon"
-              className="hamburger-icon" />
+    <header
+      id="siteHeader"
+      className={`header ${isSticky ? "header_sticky" : ""}`}
+    >
+      <div className="container">
+        <nav className="navbar navbar-expand-lg justify-content-between align-items-center py-0">
+          <button
+            className="navbar-toggler d-lg-none p-0 border-0 collapsed"
+            type="button"
+            onClick={toggleMobileMenu}
+            aria-controls="navbarSupportedContent"
+            aria-expanded={isMobileMenuOpen}
+            aria-label="Toggle navigation"
+          >
+            <Image
+              src={hamburgerMenuIcon}
+              width="24"
+              height="24"
+              alt="hamburger icon"
+              className="hamburger-icon"
+            />
           </button>
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <Link className="nav-link" href="/" onClick={closeMobileMenu}>Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/deals&offers" onClick={closeMobileMenu}> Deals & Offers</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/blogs" onClick={closeMobileMenu}>Blog</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/faqs" onClick={closeMobileMenu}>FAQs</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/about-us" onClick={closeMobileMenu}>About Us</Link>
-            </li>
-          </ul>
-          {!isAuthenticated && (
-            <div className="header-button-box d-flex d-lg-none align-items-center ">
-              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={() => { handleSignupClick(); closeMobileMenu(); }}>
-                Sign up
-              </button>
-              <button className="button login-btn d-flex align-items-center" onClick={() => { handleLoginClick(); closeMobileMenu(); }}>
-                Log In
-              </button>
-            </div>
-          )}
-        </div>
-        <div className="d-flex align-items-center">
-          <div className={`header-language-dropdown ${isLanguageMenuOpen ? 'open' : ''}`}>
-            <button 
-              className="language-btn" 
-              onClick={toggleLanguageMenu}
-              disabled={isPending}
-            >
-              <Image 
-                src={locale === 'ar' ? arabicFlagIcon : englishFlagIcon} 
-                width="36" 
-                height="24" 
-                alt={locale === 'ar' ? 'AR' : 'EN'} 
-                className="flag-icon" 
+          <a className="navbar-brand p-0 m-0" href="/">
+            {dynamicLogo ? (
+              <Image
+                src={dynamicLogo}
+                alt="logo"
+                width={205}
+                height={35}
+                priority
               />
-              <span className="lang-text">{locale === 'ar' ? 'AR' : 'EN'}</span>
-              <svg className="language-arrow-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335" stroke="white" strokeWidth="0.833333"
-                  strokeMiterlimit="16" />
-              </svg>
+            ) : (
+              <Image
+                src={travelRegionsLogo}
+                alt="logo"
+                width={205}
+                height={35}
+              />
+            )}
+          </a>
+          <div
+            className="navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
+            id="navbarSupportedContent"
+          >
+            <button
+              className="navbar-toggler mobile-menu-close-button d-lg-none p-0 border-0"
+              type="button"
+              onClick={closeMobileMenu}
+              aria-controls="navbarSupportedContent"
+              aria-expanded="true"
+              aria-label="Close menu"
+            >
+              <Image
+                src={closeBtnIcon}
+                width="24"
+                height="24"
+                alt="close icon"
+                className="hamburger-icon"
+              />
             </button>
-
-            <ul className="language-menu">
-              <li 
-                data-lang="en" 
-                onClick={() => handleLanguageChange('en')}
-                style={{ cursor: 'pointer' }}
-              >
-                <Image src={englishFlagIcon} width="36" height="24" alt="EN" className="flag"/> EN
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <Link className="nav-link" href="/" onClick={closeMobileMenu}>
+                  Home
+                </Link>
               </li>
-              <li 
-                data-lang="ar" 
-                onClick={() => handleLanguageChange('ar')}
-                style={{ cursor: 'pointer' }}
-              >
-                <Image src={arabicFlagIcon} width="36" height="24" alt="AR" className="flag" /> AR
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  href="/deals&offers"
+                  onClick={closeMobileMenu}
+                >
+                  {" "}
+                  Deals & Offers
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  href="/blogs"
+                  onClick={closeMobileMenu}
+                >
+                  Blog
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  href="/faqs"
+                  onClick={closeMobileMenu}
+                >
+                  FAQs
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  href="/about-us"
+                  onClick={closeMobileMenu}
+                >
+                  About Us
+                </Link>
               </li>
             </ul>
+            {!isAuthenticated && (
+              <div className="header-button-box d-flex d-lg-none align-items-center ">
+                <button
+                  className="button login-btn sign-up-btn d-flex align-items-center"
+                  onClick={() => {
+                    handleSignupClick();
+                    closeMobileMenu();
+                  }}
+                >
+                  Sign up
+                </button>
+                <button
+                  className="button login-btn d-flex align-items-center"
+                  onClick={() => {
+                    handleLoginClick();
+                    closeMobileMenu();
+                  }}
+                >
+                  Log In
+                </button>
+              </div>
+            )}
           </div>
+          <div className="d-flex align-items-center">
+            <div
+              className={`header-language-dropdown ${
+                isLanguageMenuOpen ? "open" : ""
+              }`}
+            >
+              <button
+                className="language-btn"
+                onClick={toggleLanguageMenu}
+                disabled={isPending}
+              >
+                <Image
+                  src={locale === "ar" ? arabicFlagIcon : englishFlagIcon}
+                  width="36"
+                  height="24"
+                  alt={locale === "ar" ? "AR" : "EN"}
+                  className="flag-icon"
+                />
+                <span className="lang-text">
+                  {locale === "ar" ? "AR" : "EN"}
+                </span>
+                <svg
+                  className="language-arrow-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335"
+                    stroke="white"
+                    strokeWidth="0.833333"
+                    strokeMiterlimit="16"
+                  />
+                </svg>
+              </button>
 
-          {!isAuthenticated && (
-            <div className="header-button-box align-items-center d-none d-lg-flex">
-              <button className="button login-btn sign-up-btn d-flex align-items-center" onClick={handleSignupClick}>
-                Sign up
-              </button>
-              <button className="button login-btn d-flex align-items-center" onClick={handleLoginClick}>
-                Log In
-              </button>
+              <ul className="language-menu">
+                <li
+                  data-lang="en"
+                  onClick={() => handleLanguageChange("en")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={englishFlagIcon}
+                    width="36"
+                    height="24"
+                    alt="EN"
+                    className="flag"
+                  />{" "}
+                  EN
+                </li>
+                <li
+                  data-lang="ar"
+                  onClick={() => handleLanguageChange("ar")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={arabicFlagIcon}
+                    width="36"
+                    height="24"
+                    alt="AR"
+                    className="flag"
+                  />{" "}
+                  AR
+                </li>
+              </ul>
             </div>
-          )}
-        </div>
-      </nav>
-      <div className="mobile-overlay" onClick={closeMobileMenu}></div>
-    </div>
-  </header>
-  )
-}
 
-export default Header
+            {!isAuthenticated && (
+              <div className="header-button-box align-items-center d-none d-lg-flex">
+                <button
+                  className="button login-btn sign-up-btn d-flex align-items-center"
+                  onClick={handleSignupClick}
+                >
+                  Sign up
+                </button>
+                <button
+                  className="button login-btn d-flex align-items-center"
+                  onClick={handleLoginClick}
+                >
+                  Log In
+                </button>
+              </div>
+            )}
+          </div>
+        </nav>
+        <div className="mobile-overlay" onClick={closeMobileMenu}></div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;

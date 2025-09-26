@@ -8,6 +8,7 @@ import { useBlogStore } from "@/store/blogStore";
 import { formatDateWithReadTime } from "@/lib/dateUtils";
 import BlogContent from "@/components/common/BlogContent/BlogContent";
 import { useRouter } from "@/i18/navigation";
+import { Select } from "../core/Select";
 
 // Static sort options remain the same
 
@@ -136,8 +137,8 @@ const BlogListing = () => {
               <Skeleton width={80} height={24} borderRadius={20} />
               <Skeleton width={120} height={16} />
             </div>
-            <Skeleton height={24} style={{ marginBottom: '12px' }} />
-            <Skeleton count={3} height={16} style={{ marginBottom: '8px' }} />
+            <Skeleton height={24} style={{ marginBottom: "12px" }} />
+            <Skeleton count={3} height={16} style={{ marginBottom: "8px" }} />
             <Skeleton width="70%" height={16} />
           </div>
         </div>
@@ -149,12 +150,12 @@ const BlogListing = () => {
     <div className="filter-options" role="group" aria-label="Category Filters">
       <div className="filter-option all-articles-option">
         <Skeleton width={20} height={20} borderRadius={4} />
-        <Skeleton width={80} height={16} style={{ marginLeft: '8px' }} />
+        <Skeleton width={80} height={16} style={{ marginLeft: "8px" }} />
       </div>
       {Array.from({ length: 5 }).map((_, index) => (
         <div key={index} className="filter-option">
           <Skeleton width={20} height={20} borderRadius={4} />
-          <Skeleton width={100} height={16} style={{ marginLeft: '8px' }} />
+          <Skeleton width={100} height={16} style={{ marginLeft: "8px" }} />
         </div>
       ))}
     </div>
@@ -163,7 +164,13 @@ const BlogListing = () => {
   const TagsSkeleton = () => (
     <div className="tags-container">
       {Array.from({ length: 8 }).map((_, index) => (
-        <Skeleton key={index} width={60} height={32} borderRadius={16} style={{ margin: '4px' }} />
+        <Skeleton
+          key={index}
+          width={60}
+          height={32}
+          borderRadius={16}
+          style={{ margin: "4px" }}
+        />
       ))}
     </div>
   );
@@ -171,7 +178,18 @@ const BlogListing = () => {
   return (
     <div className="blog-listing-section section-space-tb">
       <div className="container">
-        <h2 className="section-title text-start">Latest From The Blog</h2>
+        <div className="blog-listing-header">
+          <h2 className="section-title text-start">Latest From The Blog</h2>
+          <div className="blog-sort-by-select-option">
+            <Select
+              options={sortOptions}
+              value={sortBy}
+              onChange={setSortBy}
+              label="Sort by"
+              className="sort-dropdown"
+            />
+          </div>
+        </div>
 
         <div className="blog-listing-layout">
           {/* Left Sidebar - Filters */}
@@ -266,7 +284,7 @@ const BlogListing = () => {
           {/* Right Content - Blog Grid */}
           <div className="blog-content-area">
             {/* Sort Options */}
-            <div className="blog-sort-bar">
+            {/* <div className="blog-sort-bar">
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
@@ -278,7 +296,7 @@ const BlogListing = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
             {/* Blog Grid */}
             {loading ? (
@@ -311,6 +329,11 @@ const BlogListing = () => {
                             alt={blog.title}
                             className="blog-img"
                           />
+                          <div className="blog-card-overlay">
+                            <button className="blog-list-read-more-btn">
+                              Read More
+                            </button>
+                          </div>
                         </div>
                         <div className="blog-card-content">
                           <div className="blog-meta">

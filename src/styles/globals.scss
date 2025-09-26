@@ -1495,3 +1495,53 @@ img {
     }
   }
 }
+
+// Common Banner Section
+.banner-section-common {
+  background: url("../assets/images/blog-list-banner-image.jpg") no-repeat center center/cover;
+  // height: 100vh;
+  height: 100%;
+  min-height: 600px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 120px 0 80px 0;
+  width: 100%;
+  align-items: center;
+
+  .banner-content {
+    position: relative;
+
+    .heading_section {
+      margin-bottom: 0px;
+
+      .section-title {
+        font-size: 56px;
+        font-weight: $font-weight600;
+        color: $color-white;
+      }
+
+      .section-description {
+        font-size: 18px;
+        color: $color-white;
+      }
+    }
+  }
+}
+
+.read-more-btn {
+  margin: 0px 15px;
+  padding: 0px;
+  text-decoration: none;
+  color: $color-blue;
+  font-size: 16px;
+  font-weight: $font-weight400;
+  border: none;
+  background-color: transparent;
+  transition: $transition;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
