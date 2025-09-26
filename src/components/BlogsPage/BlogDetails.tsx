@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import "./BlogDetails.scss";
 import { useBlogStore } from "@/store/blogStore";
 import { formatDateWithReadTime } from "@/lib/dateUtils";
@@ -28,16 +30,135 @@ const BlogDetails = ({ blogId }: { blogId: string }) => {
     router.push(`/blogs/${relatedBlogId}`);
   };
 
-  if (detailLoading) {
-    return (
-      <main className="padding-top-100">
-        <div className="blog-details-loading">
-          <div className="container">
-            <p>Loading blog details...</p>
-          </div>
+  // Skeleton Loading Component
+  const BlogDetailsSkeleton = () => (
+    <main className="padding-top-100">
+      <div className="blog-details-section section-space-tb">
+        <div className="container">
+          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+            {/* Blog Header Skeleton */}
+            <div className="blog-header-full">
+              <Skeleton height={48} style={{ marginBottom: '24px' }} />
+              
+              <div className="blog-meta">
+                <div className="blog-meta-left">
+                  <Skeleton width={150} height={16} style={{ marginBottom: '12px' }} />
+                  <div className="blog-author">
+                    <Skeleton width={32} height={32} borderRadius={16} />
+                    <Skeleton width={100} height={16} style={{ marginLeft: '8px' }} />
+                  </div>
+                </div>
+                
+                <div className="blog-meta-right">
+                  <Skeleton width={80} height={24} borderRadius={20} />
+                  <div className="social-actions">
+                    <Skeleton width={60} height={32} borderRadius={16} />
+                    <Skeleton width={50} height={32} borderRadius={16} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Image Skeleton */}
+            <div className="blog-main-image-full">
+              <Skeleton height={500} />
+            </div>
+
+            {/* Two Column Layout Skeleton */}
+            <div className="blog-content-layout">
+              {/* Left Column - Main Content */}
+              <div className="blog-main-content">
+                {/* Blog Content Skeleton */}
+                <div className="blog-content">
+                  <Skeleton count={8} height={20} style={{ marginBottom: '12px' }} />
+                  <Skeleton count={6} height={20} style={{ marginBottom: '12px' }} />
+                  <Skeleton count={7} height={20} style={{ marginBottom: '12px' }} />
+                  <Skeleton width="60%" height={20} />
+                </div>
+
+                {/* Author Bio Skeleton */}
+                <div className="author-bio">
+                  <div className="author-info">
+                    <Skeleton width={60} height={60} borderRadius={30} />
+                    <div className="author-details">
+                      <Skeleton width={150} height={24} style={{ marginBottom: '8px' }} />
+                      <Skeleton count={3} height={16} style={{ marginBottom: '4px' }} />
+                      <Skeleton width="80%" height={16} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Related Articles Skeleton */}
+                <div className="related-articles">
+                  <Skeleton width={150} height={24} style={{ marginBottom: '16px' }} />
+                  <div className="related-cards">
+                    {Array.from({ length: 2 }).map((_, index) => (
+                      <div key={index} className="related-card">
+                        <div className="related-card-image">
+                          <Skeleton width={200} height={150} />
+                        </div>
+                        <Skeleton count={2} height={16} style={{ marginTop: '8px' }} />
+                        <Skeleton width="70%" height={16} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Comments Section Skeleton */}
+                <div className="comments-section">
+                  <div className="comment-input">
+                    <Skeleton height={40} style={{ marginBottom: '8px' }} />
+                    <Skeleton width={80} height={32} borderRadius={16} />
+                  </div>
+
+                  <div className="comments-header">
+                    <Skeleton width={120} height={24} />
+                    <Skeleton width={100} height={32} borderRadius={16} />
+                  </div>
+
+                  <div className="comments-list">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="comment-item">
+                        <div className="comment-avatar">
+                          <Skeleton width={40} height={40} borderRadius={20} />
+                        </div>
+                        <div className="comment-content">
+                          <div className="comment-header">
+                            <Skeleton width={100} height={16} />
+                            <Skeleton width={80} height={14} />
+                          </div>
+                          <Skeleton count={2} height={16} style={{ marginTop: '8px' }} />
+                          <Skeleton width="60%" height={16} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Sidebar Skeleton */}
+              <div className="blog-sidebar">
+                <div className="sidebar-ad">
+                  <Skeleton width={150} height={24} style={{ marginBottom: '8px' }} />
+                  <Skeleton width={200} height={16} style={{ marginBottom: '16px' }} />
+                  <div className="ad-image">
+                    <Skeleton width={200} height={150} />
+                  </div>
+                  <div className="ad-cta">
+                    <Skeleton width={120} height={20} style={{ marginBottom: '8px' }} />
+                    <Skeleton width={180} height={40} borderRadius={20} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </SkeletonTheme>
         </div>
-      </main>
-    );
+      </div>
+    </main>
+  );
+
+  if (detailLoading) {
+    return <BlogDetailsSkeleton />;
   }
 
   if (detailError || !currentBlog) {
