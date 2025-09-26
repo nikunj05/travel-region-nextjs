@@ -17,8 +17,8 @@ const FeaturedBlogs = () => {
     fetchBlogs()
   }, [fetchBlogs])
 
-  const handleBlogClick = (blogId: number) => {
-    router.push(`/blogs/${blogId}`)
+  const handleBlogClick = (blogSlug: string) => {
+    router.push(`/blogs/${blogSlug}`)
   }
 
   // Skeleton Loading Component
@@ -114,7 +114,7 @@ const FeaturedBlogs = () => {
         <div className="featured-blogs-layout">
           {/* Main Featured Blog */}
           <div className="featured-main-blog">
-            <div className="featured-blog-card" onClick={() => handleBlogClick(featuredBlog.id)} style={{ cursor: 'pointer' }}>
+            <div className="featured-blog-card" onClick={() => handleBlogClick(featuredBlog.slug)} style={{ cursor: 'pointer' }}>
               <div className="featured-blog-image">
                 <Image 
                   src={featuredBlog.full_image_url} 
@@ -146,7 +146,7 @@ const FeaturedBlogs = () => {
           {/* Sidebar Blogs */}
           <div className="featured-sidebar-blogs">
             {sidebarBlogs.map((blog) => (
-              <div key={blog.id} className="sidebar-blog-item" onClick={() => handleBlogClick(blog.id)} style={{ cursor: 'pointer' }}>
+              <div key={blog.id} className="sidebar-blog-item" onClick={() => handleBlogClick(blog.slug)} style={{ cursor: 'pointer' }}>
                 <div className="sidebar-blog-image">
                   <Image 
                     src={blog.full_image_url} 

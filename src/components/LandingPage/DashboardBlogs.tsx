@@ -18,8 +18,8 @@ const DashboardBlogs = () => {
     console.log('All Blogs:', blogs)
   }, [blogs])
 
-  const handleBlogClick = (blogId: number) => {
-    router.push(`/blogs/${blogId}`)
+  const handleBlogClick = (blogSlug: string) => {
+    router.push(`/blogs/${blogSlug}`)
   }
 
   if (loading) {
@@ -42,7 +42,7 @@ const DashboardBlogs = () => {
         <p className="section-description mx-width-790">Dive into inspiring stories, smart travel hacks, and detailed guides
           from real explorers who’ve been there and done that.</p>
       </div>
-      <div className="blog-single-card d-flex align-items-start" onClick={() => handleBlogClick(blogs[0].id)} style={{ cursor: 'pointer' }}>
+      <div className="blog-single-card d-flex align-items-start" onClick={() => handleBlogClick(blogs[0].slug)} style={{ cursor: 'pointer' }}>
         <div className="blog-single-image">
           <div className="blog-card-items-img">
             <Image src={blogs[0].full_image_url} width={688} height={391} alt={blogs[0].title}
@@ -61,7 +61,7 @@ const DashboardBlogs = () => {
       </div>
       <div className="blog-card-listing d-grid">
         {blogs.slice(1, 4).map((blog, index) => (
-          <div key={blog.id} className="blog-card-items" onClick={() => handleBlogClick(blog.id)} style={{ cursor: 'pointer' }}>
+          <div key={blog.id} className="blog-card-items" onClick={() => handleBlogClick(blog.slug)} style={{ cursor: 'pointer' }}>
             <div className="blog-card-items-img">
               <Image src={blog.full_image_url} width={379} height={215} alt={blog.title} />
             </div>

@@ -3,8 +3,8 @@ import React from "react";
 import { use } from "react";
 
 
-export default function BlogDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default function BlogDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolved = use(params);
 
-  return <BlogDetails blogId={resolved.id} />;
+  return <BlogDetails blogSlug={resolved.slug} />;
 }

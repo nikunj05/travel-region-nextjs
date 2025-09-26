@@ -119,8 +119,8 @@ const BlogListing = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleBlogClick = (blogId: number) => {
-    router.push(`/blogs/${blogId}`);
+  const handleBlogClick = (blogSlug: string) => {
+    router.push(`/blogs/${blogSlug}`);
   };
 
   // Skeleton Components
@@ -301,7 +301,7 @@ const BlogListing = () => {
                       <div
                         key={blog.id}
                         className="blog-card"
-                        onClick={() => handleBlogClick(blog.id)}
+                        onClick={() => handleBlogClick(blog.slug)}
                       >
                         <div className="blog-card-image">
                           <Image

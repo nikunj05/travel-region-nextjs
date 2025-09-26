@@ -51,13 +51,13 @@ export const blogService = {
   },
 
   /**
-   * Get a single blog by ID
-   * @param id - Blog ID
+   * Get a single blog by slug
+   * @param slug - Blog slug
    * @returns Promise<GetBlogDetailResponse>
    */
-  getBlogById: async (id: number): Promise<GetBlogDetailResponse> => {
+  getBlogBySlug: async (slug: string): Promise<GetBlogDetailResponse> => {
     try {
-      const response = await api.get<GetBlogDetailResponse>(`/blogs/${id}`);
+      const response = await api.get<GetBlogDetailResponse>(`/blogs/${slug}`);
       return response.data;
     } catch (error) {
       throw error;
