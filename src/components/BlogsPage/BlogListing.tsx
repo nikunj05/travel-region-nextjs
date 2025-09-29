@@ -7,6 +7,8 @@ import "./BlogListing.scss";
 import { useBlogStore } from "@/store/blogStore";
 import { formatDateWithReadTime } from "@/lib/dateUtils";
 import BlogContent from "@/components/common/BlogContent/BlogContent";
+import FilterBtnIcon from "@/assets/images/filter-icon.svg";
+import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
 import { useRouter } from "@/i18/navigation";
 import { Select } from "../core/Select";
 
@@ -121,6 +123,7 @@ const BlogListing = () => {
   };
 
   const handleBlogClick = (blogSlug: string) => {
+    console.log("Blog clicked:", blogSlug);
     router.push(`/blogs/${blogSlug}`);
   };
 
@@ -180,14 +183,37 @@ const BlogListing = () => {
       <div className="container">
         <div className="blog-listing-header">
           <h2 className="section-title text-start">Latest From The Blog</h2>
-          <div className="blog-sort-by-select-option">
-            <Select
-              options={sortOptions}
-              value={sortBy}
-              onChange={setSortBy}
-              label="Sort by"
-              className="sort-dropdown"
-            />
+          <div className="blog-sort-bar d-flex align-items-center">
+            <div className="mobile-filter-button d-md-none ">
+              <button className="filter-button button-primary ">
+                <span className="filter-icon-with-text">
+                  <Image
+                    src={FilterBtnIcon}
+                    alt="filter icon"
+                    width={20}
+                    height={20}
+                    className="sort-filter-icon"
+                  />
+                  Filter
+                </span>
+                <Image
+                  src={downBlackArrowIcon}
+                  alt="arrow icon"
+                  width={20}
+                  height={20}
+                  className="sort-filter-icon"
+                />
+              </button>
+            </div>
+            <div className="blog-sort-by-select-option">
+              <Select
+                options={sortOptions}
+                value={sortBy}
+                onChange={setSortBy}
+                label="Sort by"
+                className="sort-dropdown"
+              />
+            </div>
           </div>
         </div>
 

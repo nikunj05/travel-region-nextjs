@@ -8,7 +8,8 @@ import { useBlogStore } from "@/store/blogStore";
 import { formatDateWithReadTime } from "@/lib/dateUtils";
 import { useRouter } from "@/i18/navigation";
 import userImage from "@/assets/images/testimonials-slider-user-img3.png";
-import suitcaseTravel from "@/assets/images/property-image.jpg";
+import suitcaseTravel from "@/assets/images/blog-travel-ad-image.jpg";
+import RelatedBlog from "../common/RelatedBlog/RelatedBlog";
 
 const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
   const {
@@ -33,22 +34,30 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
   // Skeleton Loading Component
   const BlogDetailsSkeleton = () => (
     <main className="padding-top-100">
-      <div className="blog-details-section section-space-tb">
+      <div className="blog-details-section">
         <div className="container">
           <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
             {/* Blog Header Skeleton */}
             <div className="blog-header-full">
-              <Skeleton height={48} style={{ marginBottom: '24px' }} />
-              
+              <Skeleton height={48} style={{ marginBottom: "24px" }} />
+
               <div className="blog-meta">
                 <div className="blog-meta-left">
-                  <Skeleton width={150} height={16} style={{ marginBottom: '12px' }} />
+                  <Skeleton
+                    width={150}
+                    height={16}
+                    style={{ marginBottom: "12px" }}
+                  />
                   <div className="blog-author">
                     <Skeleton width={32} height={32} borderRadius={16} />
-                    <Skeleton width={100} height={16} style={{ marginLeft: '8px' }} />
+                    <Skeleton
+                      width={100}
+                      height={16}
+                      style={{ marginLeft: "8px" }}
+                    />
                   </div>
                 </div>
-                
+
                 <div className="blog-meta-right">
                   <Skeleton width={80} height={24} borderRadius={20} />
                   <div className="social-actions">
@@ -70,9 +79,21 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
               <div className="blog-main-content">
                 {/* Blog Content Skeleton */}
                 <div className="blog-content">
-                  <Skeleton count={8} height={20} style={{ marginBottom: '12px' }} />
-                  <Skeleton count={6} height={20} style={{ marginBottom: '12px' }} />
-                  <Skeleton count={7} height={20} style={{ marginBottom: '12px' }} />
+                  <Skeleton
+                    count={8}
+                    height={20}
+                    style={{ marginBottom: "12px" }}
+                  />
+                  <Skeleton
+                    count={6}
+                    height={20}
+                    style={{ marginBottom: "12px" }}
+                  />
+                  <Skeleton
+                    count={7}
+                    height={20}
+                    style={{ marginBottom: "12px" }}
+                  />
                   <Skeleton width="60%" height={20} />
                 </div>
 
@@ -81,8 +102,16 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                   <div className="author-info">
                     <Skeleton width={60} height={60} borderRadius={30} />
                     <div className="author-details">
-                      <Skeleton width={150} height={24} style={{ marginBottom: '8px' }} />
-                      <Skeleton count={3} height={16} style={{ marginBottom: '4px' }} />
+                      <Skeleton
+                        width={150}
+                        height={24}
+                        style={{ marginBottom: "8px" }}
+                      />
+                      <Skeleton
+                        count={3}
+                        height={16}
+                        style={{ marginBottom: "4px" }}
+                      />
                       <Skeleton width="80%" height={16} />
                     </div>
                   </div>
@@ -90,14 +119,22 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
 
                 {/* Related Articles Skeleton */}
                 <div className="related-articles">
-                  <Skeleton width={150} height={24} style={{ marginBottom: '16px' }} />
+                  <Skeleton
+                    width={150}
+                    height={24}
+                    style={{ marginBottom: "16px" }}
+                  />
                   <div className="related-cards">
                     {Array.from({ length: 2 }).map((_, index) => (
                       <div key={index} className="related-card">
                         <div className="related-card-image">
                           <Skeleton width={200} height={150} />
                         </div>
-                        <Skeleton count={2} height={16} style={{ marginTop: '8px' }} />
+                        <Skeleton
+                          count={2}
+                          height={16}
+                          style={{ marginTop: "8px" }}
+                        />
                         <Skeleton width="70%" height={16} />
                       </div>
                     ))}
@@ -139,13 +176,25 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
               {/* Right Sidebar Skeleton */}
               <div className="blog-sidebar">
                 <div className="sidebar-ad">
-                  <Skeleton width={150} height={24} style={{ marginBottom: '8px' }} />
-                  <Skeleton width={200} height={16} style={{ marginBottom: '16px' }} />
+                  <Skeleton
+                    width={150}
+                    height={24}
+                    style={{ marginBottom: "8px" }}
+                  />
+                  <Skeleton
+                    width={200}
+                    height={16}
+                    style={{ marginBottom: "16px" }}
+                  />
                   <div className="ad-image">
                     <Skeleton width={200} height={150} />
                   </div>
                   <div className="ad-cta">
-                    <Skeleton width={120} height={20} style={{ marginBottom: '8px' }} />
+                    <Skeleton
+                      width={120}
+                      height={20}
+                      style={{ marginBottom: "8px" }}
+                    />
                     <Skeleton width={180} height={40} borderRadius={20} />
                   </div>
                 </div>
@@ -175,7 +224,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
 
   return (
     <main className="padding-top-100">
-      <div className="blog-details-section section-space-tb">
+      <div className="blog-details-section section-space-b">
         <div className="container">
           {/* Blog Header - Full Width */}
           <div className="blog-header-full">
@@ -211,26 +260,42 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 </span>
                 <div className="social-actions">
                   <button className="social-btn share-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
-                        d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 9.5913 6.63214 11.1174 7.75736 12.2426C8.88258 13.3679 10.4087 14 12 14C13.5913 14 15.1174 13.3679 16.2426 12.2426C17.3679 11.1174 18 9.5913 18 8Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
+                        d="M18 7C18.7745 7.16058 19.3588 7.42859 19.8284 7.87589C21 8.99181 21 10.7879 21 14.38C21 17.9721 21 19.7681 19.8284 20.8841C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8841C3 19.7681 3 17.9721 3 14.38C3 10.7879 3 8.99181 4.17157 7.87589C4.64118 7.42859 5.2255 7.16058 6 7"
+                        stroke="#09090B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
                       />
                       <path
-                        d="M6 22V18C6 16.9391 6.42143 15.9217 7.17157 15.1716C7.92172 14.4214 8.93913 14 10 14H14C15.0609 14 16.0783 14.4214 16.8284 15.1716C17.5786 15.9217 18 16.9391 18 18V22"
-                        stroke="currentColor"
-                        strokeWidth="2"
+                        d="M12.0253 2.00052L12 14M12.0253 2.00052C11.8627 1.99379 11.6991 2.05191 11.5533 2.17492C10.6469 2.94006 9 4.92886 9 4.92886M12.0253 2.00052C12.1711 2.00657 12.3162 2.06476 12.4468 2.17508C13.3531 2.94037 15 4.92886 15 4.92886"
+                        stroke="#09090B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       />
                     </svg>
                     Share
                   </button>
-                  <button className="social-btn like-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <button className="social-btn like-btn d-none">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
-                        d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
+                        d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"
+                        stroke="#09090B"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
                       />
                     </svg>
                     Like
@@ -257,11 +322,11 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
             <div className="blog-main-content">
               {/* Blog Content */}
               <div className="blog-content">
-                <p dangerouslySetInnerHTML={{ __html: currentBlog.content }} /> 
+                <p dangerouslySetInnerHTML={{ __html: currentBlog.content }} />
               </div>
 
               {/* Author Bio */}
-              <div className="author-bio">
+              {/* <div className="author-bio">
                 <div className="author-info">
                   <div className="author-avatar-large">
                     <Image
@@ -283,18 +348,18 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Related Articles */}
-              <div className="related-articles">
+              {/* <div className="related-articles">
                 <h3 className="related-title">Releted Blogs:</h3>
                 <div className="related-cards">
                   {relatedBlogs.slice(0, 2).map((blog) => (
-                    <div 
-                      key={blog.id} 
-                      className="related-card" 
+                    <div
+                      key={blog.id}
+                      className="related-card"
                       onClick={() => handleRelatedBlogClick(blog.slug)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     >
                       <div className="related-card-image">
                         <Image
@@ -309,7 +374,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
 
               {/* Comments Section */}
               {/* <div className="comments-section">
@@ -411,18 +476,23 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 <div className="ad-image">
                   <Image
                     src={suitcaseTravel}
-                    width={200}
-                    height={150}
+                    width={276}
+                    height={335}
                     alt="Travel"
                     className="ad-img"
                   />
                 </div>
                 <div className="ad-cta">
-                  <h2 className="ad-cta-text">TIME TO TRAVEL</h2>
-                  <button className="ad-btn">Find Hotels in Maldives</button>
+                  <button className="ad-btn button-primary">
+                    Find Hotels in Maldives
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="related-blogs-section">
+            <h2 className="related-blogs-title">Related Post</h2>
+            <RelatedBlog />
           </div>
         </div>
       </div>

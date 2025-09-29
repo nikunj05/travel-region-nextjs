@@ -148,15 +148,23 @@
   .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: #666;
+    color: $color-black-zinc-500;
   }
 
   .error-state {
     color: #ff6b6b;
   }
+}
 
-  // Responsive Design
-  @media (max-width: 768px) {
+// Responsive Design
+@media (max-width: 991.55px) {
+  .featured-reads-section {
+    .section-title {
+      margin-bottom: 32px;
+      font-size: 32px;
+
+    }
+
     .featured-blogs-layout {
       grid-template-columns: 1fr;
       gap: 30px;
@@ -171,27 +179,85 @@
     }
 
     .sidebar-blog-item {
-      flex-direction: column;
-      text-align: center;
-
       .sidebar-blog-image {
         width: 100%;
         height: 200px;
       }
     }
   }
+}
 
-  @media (max-width: 480px) {
-    .featured-blog-content {
-      padding: 20px;
 
-      .featured-blog-title {
-        font-size: 1.25rem;
+@media (max-width: 767.55px) {
+  .featured-reads-section {
+    .section-title {
+      font-size: 24px;
+    }
+
+    .featured-blogs-layout {
+      gap: 20px;
+    }
+
+    .featured-main-blog {
+      .featured-blog-card {
+        .featured-blog-image {
+          border-radius: 8px;
+
+          .featured-blog-img {
+            border-radius: 8px;
+          }
+        }
+
+        .featured-blog-content {
+          .blog-meta {
+            gap: 12px;
+            margin-bottom: 12px;
+
+            .blog-category {
+              font-size: 14px;
+            }
+
+            .blog-date-read {
+              font-size: 12px;
+            }
+          }
+
+          .featured-blog-title {
+            margin-bottom: 12px;
+            font-size: 20px;
+          }
+
+          .featured-blog-description {
+            font-size: 16px;
+          }
+        }
       }
     }
 
-    .sidebar-blog-item {
-      padding: 12px;
+    .featured-sidebar-blogs {
+      .sidebar-blog-item {
+        gap: 12px;
+
+        .sidebar-blog-image {
+          border-radius: 4px;
+          width: 93px;
+          height: 60px;
+
+          .sidebar-blog-img {
+            border-radius: 4px;
+          }
+        }
+
+        .sidebar-blog-content {
+          .sidebar-blog-category {
+            margin-bottom: 6px;
+          }
+
+          .sidebar-blog-title {
+            font-size: 14px;
+          }
+        }
+      }
     }
   }
 }

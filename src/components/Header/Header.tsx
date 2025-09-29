@@ -59,6 +59,7 @@ const Header = () => {
         pathname === "/hotel-details" ||
         pathname === "/profile" ||
         // pathname === "/blogs" ||
+        pathname === "/booking-review" ||
         pathname.startsWith("/blogs/")
       ) {
         setIsSticky(true);
