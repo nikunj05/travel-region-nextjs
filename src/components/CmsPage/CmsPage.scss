@@ -1,0 +1,55 @@
+.cms-page {
+  .cms-toc {
+    position: sticky;
+    top: 100px;
+    padding-right: 12px;
+  }
+
+  .cms-toc-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280; /* gray-500 */
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+
+  .cms-toc-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .cms-toc-item {
+    margin-bottom: 10px;
+  }
+
+  .cms-toc-link {
+    font-size: 14px;
+    color: #6b7280; /* gray-500 */
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .cms-toc-item.level-3 .cms-toc-link {
+    padding-left: 12px;
+    font-size: 13px;
+  }
+
+  .cms-toc-link:hover {
+    color: #111827; /* gray-900 */
+  }
+
+  .cms-toc-link.active {
+    color: #111827;
+    font-weight: 600;
+  }
+
+  .cms-content {
+    h1, h2, h3, h4 {
+      scroll-margin-top: 150px;
+    }
+  }
+}
+
+

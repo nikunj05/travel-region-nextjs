@@ -14,10 +14,18 @@ import payPal from '@/assets/images/pay-pal.svg'
 import stripe from '@/assets/images/stripe.svg'
 import unionPay from '@/assets/images/union-pay.svg'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { useCmsStore } from '@/store/cmsStore'
 
 const Footer = () => {
 
   const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
+  const { pages, fetchPages } = useCmsStore()
+
+  useEffect(() => {
+    fetchPages()
+  }, [fetchPages])
   return (
         <footer className="page-footer section-space-tb">
     <div className="container">
@@ -43,9 +51,13 @@ const Footer = () => {
             <div className="quick-link">
               <h4 className="usefull-link-heading">About</h4>
               <ul className="footer-link">
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Our Story</a></li>
-                <li><a href="#">Our Promise</a></li>
+                {pages
+                  .filter(p => ['about-us','privacy-policy','terms-conditions'].includes(p.slug))
+                  .map(p => (
+                    <li key={p.id}>
+                      <Link href={`/${p.slug}`}>{p.title}</Link>
+                    </li>
+                  ))}
               </ul>
             </div>
             <div className="quick-link">

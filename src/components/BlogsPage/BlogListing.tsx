@@ -11,6 +11,7 @@ import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
 import { useRouter } from "@/i18/navigation";
 import { Select } from "../core/Select";
+import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 
 // Static sort options remain the same
 
@@ -24,6 +25,7 @@ const BlogListing = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const blogsPerPage = 8;
 
   const {
@@ -42,6 +44,18 @@ const BlogListing = () => {
     fetchTags,
   } = useBlogStore();
   const router = useRouter();
+
+  // Lock body scroll when mobile filter modal is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileFilterOpen]);
 
   // Fetch categories and tags on component mount
   useEffect(() => {
@@ -178,14 +192,109 @@ const BlogListing = () => {
     </div>
   );
 
+  // Reusable renderer for all filter sections (used in sidebar and mobile modal)
+  const renderFilters = () => (
+    <>
+      {/* Quick Filters */}
+      <div className="filter-section">
+        <h3 className="filter-title">Categories:</h3>
+        {categoriesLoading ? (
+          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+            <CategoriesSkeleton />
+          </SkeletonTheme>
+        ) : categoriesError ? (
+          <div className="error-state">
+            <p>Error loading categories: {categoriesError}</p>
+          </div>
+        ) : (
+          <div
+            className="filter-options"
+            role="group"
+            aria-label="Category Filters"
+          >
+            {/* All Articles checkbox */}
+            <label className="filter-option all-articles-option">
+              <input
+                type="checkbox"
+                checked={
+                  selectedCategories.length === categories.length &&
+                  categories.length > 0
+                }
+                onChange={handleAllArticlesToggle}
+                className="filter-checkbox"
+                aria-checked={
+                  selectedCategories.length === categories.length &&
+                  categories.length > 0
+                }
+              />
+              <span className="filter-label">All Articles</span>
+            </label>
+
+            {/* Dynamic categories */}
+            {categories.map((category) => (
+              <label key={category.id} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={selectedCategories.includes(
+                    category.id.toString()
+                  )}
+                  onChange={() =>
+                    handleCategoryToggle(category.id.toString())
+                  }
+                  className="filter-checkbox"
+                  aria-checked={selectedCategories.includes(
+                    category.id.toString()
+                  )}
+                />
+                <span className="filter-label">{category.name}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Tags */}
+      <div className="filter-section">
+        <h3 className="filter-title">Tags:</h3>
+        {tagsLoading ? (
+          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+            <TagsSkeleton />
+          </SkeletonTheme>
+        ) : tagsError ? (
+          <div className="error-state">
+            <p>Error loading tags: {tagsError}</p>
+          </div>
+        ) : (
+          <div className="tags-container">
+            {tags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleTagToggle(tag)}
+                className={`tag-button ${
+                  selectedTags.includes(tag) ? "active" : ""
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
+
   return (
+    <>
     <div className="blog-listing-section section-space-tb">
       <div className="container">
         <div className="blog-listing-header">
           <h2 className="section-title text-start">Latest From The Blog</h2>
           <div className="blog-sort-bar d-flex align-items-center">
             <div className="mobile-filter-button d-md-none ">
-              <button className="filter-button button-primary ">
+              <button
+                className="filter-button button-primary "
+                onClick={() => setIsMobileFilterOpen(true)}
+              >
                 <span className="filter-icon-with-text">
                   <Image
                     src={FilterBtnIcon}
@@ -219,92 +328,8 @@ const BlogListing = () => {
 
         <div className="blog-listing-layout">
           {/* Left Sidebar - Filters */}
-          <div className="blog-filters-sidebar">
-            {/* Quick Filters */}
-            <div className="filter-section">
-              <h3 className="filter-title">Categories:</h3>
-              {categoriesLoading ? (
-                <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-                  <CategoriesSkeleton />
-                </SkeletonTheme>
-              ) : categoriesError ? (
-                <div className="error-state">
-                  <p>Error loading categories: {categoriesError}</p>
-                </div>
-              ) : (
-                <div
-                  className="filter-options"
-                  role="group"
-                  aria-label="Category Filters"
-                >
-                  {/* All Articles checkbox */}
-                  <label className="filter-option all-articles-option">
-                    <input
-                      type="checkbox"
-                      checked={
-                        selectedCategories.length === categories.length &&
-                        categories.length > 0
-                      }
-                      onChange={handleAllArticlesToggle}
-                      className="filter-checkbox"
-                      aria-checked={
-                        selectedCategories.length === categories.length &&
-                        categories.length > 0
-                      }
-                    />
-                    <span className="filter-label">All Articles</span>
-                  </label>
-
-                  {/* Dynamic categories */}
-                  {categories.map((category) => (
-                    <label key={category.id} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={selectedCategories.includes(
-                          category.id.toString()
-                        )}
-                        onChange={() =>
-                          handleCategoryToggle(category.id.toString())
-                        }
-                        className="filter-checkbox"
-                        aria-checked={selectedCategories.includes(
-                          category.id.toString()
-                        )}
-                      />
-                      <span className="filter-label">{category.name}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Tags */}
-            <div className="filter-section">
-              <h3 className="filter-title">Tags:</h3>
-              {tagsLoading ? (
-                <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-                  <TagsSkeleton />
-                </SkeletonTheme>
-              ) : tagsError ? (
-                <div className="error-state">
-                  <p>Error loading tags: {tagsError}</p>
-                </div>
-              ) : (
-                <div className="tags-container">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => handleTagToggle(tag)}
-                      className={`tag-button ${
-                        selectedTags.includes(tag) ? "active" : ""
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="blog-filters-sidebar d-none d-md-block">
+            {renderFilters()}
           </div>
 
           {/* Right Content - Blog Grid */}
@@ -454,6 +479,53 @@ const BlogListing = () => {
         </div>
       </div>
     </div>
+  
+    {/* Mobile Filter Modal */}
+    {isMobileFilterOpen && (
+      <div className="mobile-filter-modal" role="dialog" aria-modal="true">
+        <div
+          className="mobile-filter-backdrop"
+          onClick={() => setIsMobileFilterOpen(false)}
+        ></div>
+        <div className="mobile-filter-panel">
+          <div className="mobile-filter-header">
+            <h3>Filter</h3>
+            <button
+              className="close-btn"
+              aria-label="Close filters"
+              onClick={() => setIsMobileFilterOpen(false)}
+            >
+              <Image
+                src={ClosePopupIcon}
+                width={24}
+                height={24}
+                alt="close icon"
+              />
+            </button>
+          </div>
+          <div className="mobile-filter-body">{renderFilters()}</div>
+          <div className="mobile-filter-footer">
+            <button
+              className="reset-btn button-primary"
+              onClick={() => {
+                setSelectedCategories([]);
+                setSelectedTags([]);
+                setCurrentPage(1);
+              }}
+            >
+              Reset
+            </button>
+            <button
+              className="apply-btn button-primary"
+              onClick={() => setIsMobileFilterOpen(false)}
+            >
+              Show results
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

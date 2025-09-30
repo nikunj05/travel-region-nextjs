@@ -9,7 +9,19 @@ import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import "./RelatedBlog.scss";
 
-const RelatedBlog = () => {
+type RelatedBlogItem = {
+  id: string | number;
+  title: string;
+  slug: string;
+  full_image_url: string;
+};
+
+interface RelatedBlogProps {
+  blogs?: RelatedBlogItem[];
+  onBlogClick?: (slug: string) => void;
+}
+
+const RelatedBlog: React.FC<RelatedBlogProps> = ({ blogs = [], onBlogClick }) => {
   const sliderRef = useRef<Slider>(null);
   const dotsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,81 +66,36 @@ const RelatedBlog = () => {
   return (
     <div ref={containerRef}>
       <Slider ref={sliderRef} {...settings} className="related-blogs-slider">
-        <div className="related-blog-card">
-          <a href="#" className="related-blog-card-img">
-            <Image
-              src={RelatedBlogImage}
-              width={276}
-              height={176}
-              alt="blog image"
-            />
-          </a>
-          <div className="related-blog-card-details">
-            <a href="#" className="related-blog-name">
-              Limited-Time Hotel Deals You Can’t Miss This Season
+        {(blogs && blogs.length ? blogs : [
+          { id: 1, title: 'Limited-Time Hotel Deals You Can’t Miss This Season', slug: '#', full_image_url: '' },
+          { id: 2, title: 'Top Beach Destinations for Your Next Getaway', slug: '#', full_image_url: '' },
+          { id: 3, title: 'How to Save on Hotels Without Compromise', slug: '#', full_image_url: '' },
+          { id: 4, title: 'Weekend Escapes Under $200', slug: '#', full_image_url: '' },
+        ]).map((blog) => (
+          <div key={blog.id} className="related-blog-card">
+            <a
+              href="#"
+              className="related-blog-card-img"
+              onClick={(e) => { e.preventDefault(); onBlogClick && blog.slug !== '#' && onBlogClick(blog.slug); }}
+            >
+              <Image
+                src={blog.full_image_url || RelatedBlogImage}
+                width={276}
+                height={176}
+                alt={blog.title}
+              />
             </a>
+            <div className="related-blog-card-details">
+              <a
+                href="#"
+                className="related-blog-name"
+                onClick={(e) => { e.preventDefault(); onBlogClick && blog.slug !== '#' && onBlogClick(blog.slug); }}
+              >
+                {blog.title}
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="related-blog-card">
-          <a href="#" className="related-blog-card-img">
-            <Image
-              src={RelatedBlogImage}
-              width={276}
-              height={176}
-              alt="blog image"
-            />
-          </a>
-          <div className="related-blog-card-details">
-            <a href="#" className="related-blog-name">
-              Limited-Time Hotel Deals You Can’t Miss This Season
-            </a>
-          </div>
-        </div>
-        <div className="related-blog-card">
-          <a href="#" className="related-blog-card-img">
-            <Image
-              src={RelatedBlogImage}
-              width={276}
-              height={176}
-              alt="blog image"
-            />
-          </a>
-          <div className="related-blog-card-details">
-            <a href="#" className="related-blog-name">
-              Limited-Time Hotel Deals You Can’t Miss This Season
-            </a>
-          </div>
-        </div>
-        <div className="related-blog-card">
-          <a href="#" className="related-blog-card-img">
-            <Image
-              src={RelatedBlogImage}
-              width={276}
-              height={176}
-              alt="blog image"
-            />
-          </a>
-          <div className="related-blog-card-details">
-            <a href="#" className="related-blog-name">
-              Limited-Time Hotel Deals You Can’t Miss This Season
-            </a>
-          </div>
-        </div>
-        <div className="related-blog-card">
-          <a href="#" className="related-blog-card-img">
-            <Image
-              src={RelatedBlogImage}
-              width={276}
-              height={176}
-              alt="blog image"
-            />
-          </a>
-          <div className="related-blog-card-details">
-            <a href="#" className="related-blog-name">
-              Limited-Time Hotel Deals You Can’t Miss This Season
-            </a>
-          </div>
-        </div>
+        ))}
       </Slider>
       <div className="testimonial-actions">
         <div className="testimonial-dots" ref={dotsRef}></div>

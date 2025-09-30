@@ -1,3 +1,5 @@
+import FaqPage from "@/components/common/FaqPage/FaqPage";
+
 export default function FAQs() {
-  return <div>FAQs</div>;
+  return <FaqPage />;
 }
