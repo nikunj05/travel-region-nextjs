@@ -4,16 +4,14 @@
   min-height: 100vh;
   background-color: #ffffff;
 
-  .faq-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+  .faq-main-content {
+    padding-top: 70px;
     display: flex;
     gap: 40px;
 
     // Left Sidebar
     .faq-sidebar {
-      width: 280px;
+      width: 270px;
       flex-shrink: 0;
 
       .sidebar-categories {
@@ -24,26 +22,23 @@
         .category-item {
           background: none;
           border: none;
-          padding: 16px 0;
+          padding: 0px;
+          margin-bottom: 20px;
           text-align: left;
           font-size: 16px;
-          font-weight: 500;
-          color: #374151;
+          font-weight: $font-weight400;
+          color: $color-black-zinc-500;
           cursor: pointer;
-          transition: all 0.2s ease;
-          border-bottom: 1px solid #f3f4f6;
+          transition: $transition;
 
-          &:hover {
-            color: #2563eb;
-          }
-
+          &:hover,
           &.active {
-            color: #2563eb;
-            font-weight: 600;
+            color: $brand-color;
+            font-weight: $font-weight600;
           }
 
           &:last-child {
-            border-bottom: none;
+            margin-bottom: 0px;
           }
         }
       }
@@ -56,13 +51,15 @@
 
       // Search Bar
       .search-container {
-        margin-bottom: 40px;
+        margin-bottom: 56px;
 
         .search-bar {
           position: relative;
-          max-width: 500px;
+          max-width: 100%;
 
           svg {
+            width: 24px;
+            height: 24px;
             position: absolute;
             left: 16px;
             top: 50%;
@@ -72,22 +69,21 @@
 
           input {
             width: 100%;
-            padding: 16px 16px 16px 48px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            background-color: #f9fafb;
+            padding: 13.2px 16px 13.2px 50px;
+            border: 1px solid $border-color;
+            border-radius: 8px;
+            background-color: transparent;
             font-size: 16px;
-            color: #374151;
+            font-weight: $font-weight400;
+            color: $color-black-zinc-950;
 
             &::placeholder {
-              color: #9ca3af;
+              color: $color-black-zinc-500;
             }
 
             &:focus {
               outline: none;
-              border-color: #2563eb;
-              background-color: #ffffff;
-              box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+              border-color: $brand-color;
             }
           }
         }
@@ -96,18 +92,17 @@
       // FAQ Sections
       .faq-sections {
         .faq-section {
-          margin-bottom: 48px;
+          margin-bottom: 56px;
 
           &:last-child {
             margin-bottom: 0;
           }
 
           .section-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2563eb;
-            margin-bottom: 24px;
-            line-height: 1.2;
+            font-size: 24px;
+            font-weight: $font-weight600;
+            color: $brand-color;
+            margin-bottom: 32px;
           }
 
           .faq-items {
@@ -116,30 +111,27 @@
             gap: 16px;
 
             .faq-item {
-              background-color: #f9fafb;
+              background-color: #F3F4F6;
               border-radius: 12px;
               overflow: hidden;
-              transition: all 0.2s ease;
-
-              &:hover {
-                background-color: #f3f4f6;
-              }
+              transition: $transition;
 
               .faq-question {
                 width: 100%;
                 background: none;
                 border: none;
-                padding: 20px 24px;
+                padding: 24px 16px;
                 text-align: left;
-                font-size: 18px;
-                font-weight: 600;
-                color: #374151;
+                font-size: 20px;
+                font-weight: $font-weight500;
+                color: $color-black-zinc-800;
                 cursor: pointer;
                 display: flex;
+                line-height: normal;
                 justify-content: space-between;
                 align-items: center;
                 gap: 16px;
-                transition: all 0.2s ease;
+                transition: $transition;
 
                 .icon {
                   flex-shrink: 0;
@@ -150,10 +142,10 @@
               }
 
               .faq-answer {
-                padding: 0 24px 20px 24px;
+                padding: 0 63px 24px 16px;
                 font-size: 16px;
-                line-height: 1.6;
-                color: #6b7280;
+                color: $color-black-zinc-500;
+                margin-top: -16px;
                 background: transparent;
               }
             }

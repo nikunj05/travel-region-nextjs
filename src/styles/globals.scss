@@ -1510,6 +1510,10 @@ img {
   width: 100%;
   align-items: center;
 
+  &.faq-banner-section {
+    background: url("../assets/images/faq-page-banner-image.jpg") no-repeat center center/cover;
+  }
+
   .banner-content {
     position: relative;
 
@@ -1525,6 +1529,18 @@ img {
       .section-description {
         font-size: 18px;
         color: $color-white;
+      }
+    }
+
+    .banner-common-button {
+      margin-top: 32px;
+
+      &:hover {
+        svg {
+          path {
+            fill: $brand-color;
+          }
+        }
       }
     }
   }
