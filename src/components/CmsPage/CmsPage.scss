@@ -1,55 +1,234 @@
-.cms-page {
-  .cms-toc {
-    position: sticky;
-    top: 100px;
-    padding-right: 12px;
+.privacy-policy-page {
+  .privacy-policy-content {
+    gap: 40px;
+    padding-top: 24px;
+    display: flex;
+
+    .privacy-policy-sidebar {
+      flex-shrink: 0;
+      width: 276px;
+
+      // .privacy-policy-sidebar-inner {
+
+      // }
+
+      .side-bar-content {
+        position: sticky;
+        position: -webkit-sticky;
+        top: 126px;
+
+        .pvc-sidebar-list {
+          list-style: none;
+          padding-left: 0;
+          margin: 0;
+
+          .pvc-sidebar-item {
+            margin-bottom: 20px;
+
+            .pvc-sidebar-link {
+              font-size: 16px;
+              color: $color-black-zinc-500;
+              text-decoration: none;
+              display: inline-block;
+              transition: $transition;
+
+              &:hover,
+              &.active {
+                color: $brand-color;
+                font-weight: $font-weight600;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .privacy-policy-main {
+      flex: 1;
+      min-width: 0;
+    }
   }
 
-  .cms-toc-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #6b7280; /* gray-500 */
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: .02em;
-  }
 
-  .cms-toc-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
 
-  .cms-toc-item {
-    margin-bottom: 10px;
-  }
+  .privacy-policy-main {
+    .policy-content-wrapper {
 
-  .cms-toc-link {
-    font-size: 14px;
-    color: #6b7280; /* gray-500 */
-    text-decoration: none;
-    display: inline-block;
-  }
+      h1,
+      h2,
+      h3,
+      h4 {
+        scroll-margin-top: 150px;
+      }
 
-  .cms-toc-item.level-3 .cms-toc-link {
-    padding-left: 12px;
-    font-size: 13px;
-  }
+      p {
+        font-size: 18px;
+        color: $color-black-zinc-500;
+        margin-bottom: 56px;
 
-  .cms-toc-link:hover {
-    color: #111827; /* gray-900 */
-  }
+        strong {
+          font-size: 24px;
+          color: $color-black-zinc-950;
+          font-weight: $font-weight600;
+          display: block;
+          margin-bottom: 16px;
 
-  .cms-toc-link.active {
-    color: #111827;
-    font-weight: 600;
-  }
+          &+br {
+            display: none;
+          }
+        }
 
-  .cms-content {
-    h1, h2, h3, h4 {
-      scroll-margin-top: 150px;
+        a {
+          color: $brand-color;
+
+          &:hover {
+            text-decoration: none;
+          }
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
     }
   }
 }
 
 
+@media (max-width: 991.55px) {
+  .privacy-policy-page {
+    .privacy-policy-content {
+      flex-direction: column;
+      gap: 32px;
+      padding-top: 32px;
+
+      .privacy-policy-sidebar {
+        width: 100%;
+        // .privacy-policy-sidebar-inner {
+
+        // }
+
+        .side-bar-content {
+          width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+
+          .pvc-sidebar-list {
+            display: flex;
+            border-bottom: 2px solid $border-color;
+            flex-direction: row;
+            align-items: start;
+            width: 100%;
+            min-width: -moz-fit-content;
+            min-width: fit-content;
+            position: static;
+
+            .pvc-sidebar-item {
+              margin-bottom: 0px;
+
+              .pvc-sidebar-link {
+                padding: 0 16px 16px;
+                font-size: 15px;
+                margin: 0px;
+                white-space: nowrap;
+                position: relative;
+                transition: $transition;
+
+                &:before {
+                  content: '';
+                  position: absolute;
+                  left: 0;
+                  width: 100%;
+                  height: 2px;
+                  top: 100%;
+                  left: 0px;
+                  background-color: transparent;
+                  transition: $transition;
+                }
+
+                &:hover,
+                &.active {
+                  color: $brand-color;
+                  font-weight: $font-weight600;
+
+                  &:before {
+                    background-color: $brand-color;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .privacy-policy-main {
+      .policy-content-wrapper {
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+          scroll-margin-top: 80px;
+        }
+
+        p {
+          margin-bottom: 40px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .privacy-policy-page {
+    .privacy-policy-content {
+      gap: 20px;
+      padding-top: 20px;
+
+      .privacy-policy-sidebar {
+        .side-bar-content {
+          .pvc-sidebar-list {
+            .pvc-sidebar-item {
+              .pvc-sidebar-link {
+                padding: 0 15px 16px;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .privacy-policy-main {
+      .policy-content-wrapper {
+
+        h1,
+        h2,
+        h3,
+        h4,
+        p {
+          scroll-margin-top: 40px;
+        }
+
+        p {
+          font-size: 16px;
+          margin-bottom: 36px;
+
+          strong {
+            font-size: 20px;
+            line-height: normal;
+          }
+        }
+      }
+    }
+  }
+}

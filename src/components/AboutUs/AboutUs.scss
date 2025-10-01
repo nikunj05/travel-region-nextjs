@@ -1,123 +1,220 @@
+// .about-us-page {
+//   .about-hero {
+//     .founder-image-wrapper {
+//       position: relative;
+//       border-radius: 12px;
+//       overflow: hidden;
+//     }
+
+//     .founder-image {
+//       width: 100%;
+//       height: auto;
+//       object-fit: cover;
+//       border-radius: 12px;
+//     }
+//   }
+
+//   .section-title {
+//     font-size: 32px;
+//     font-weight: 700;
+//     color: #111827;
+//   }
+
+//   .why-we-exist-section {
+//     background-color: #f9fafb;
+
+//     .why-card {
+//       background: #fff;
+//       padding: 24px;
+//       border-radius: 12px;
+//       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+//       height: 100%;
+
+//       .why-card-title {
+//         font-size: 20px;
+//         font-weight: 600;
+//         color: #111827;
+//         margin-bottom: 12px;
+//       }
+
+//       .why-card-description {
+//         font-size: 14px;
+//         color: #6b7280;
+//         line-height: 1.6;
+//         margin: 0;
+//       }
+//     }
+//   }
+
+//   .highlights-section {
+//     .highlight-card {
+//       .highlight-number {
+//         font-size: 36px;
+//         font-weight: 700;
+//         color: #111827;
+//         margin-bottom: 8px;
+//       }
+
+//       .highlight-label {
+//         font-size: 14px;
+//         color: #6b7280;
+//         margin: 0;
+//       }
+//     }
+//   }
+
+//   .partners-section {
+//     background-color: #f9fafb;
+
+//     .partners-grid {
+//       display: grid;
+//       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+//       gap: 24px;
+//       align-items: center;
+//       justify-items: center;
+
+//       .partner-logo-wrapper {
+//         display: flex;
+//         align-items: center;
+//         justify-content: center;
+//         padding: 16px;
+//         background: #fff;
+//         border-radius: 8px;
+//         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+//         .partner-logo {
+//           width: auto;
+//           height: auto;
+//           max-width: 150px;
+//           object-fit: contain;
+//         }
+//       }
+//     }
+//   }
+
+//   .explore-section {
+//     .explore-title {
+//       font-size: 32px;
+//       font-weight: 700;
+//       color: #111827;
+//       margin-bottom: 16px;
+//     }
+
+//     .explore-subtitle {
+//       font-size: 18px;
+//       color: #6b7280;
+//       font-style: italic;
+//     }
+
+//     .explore-image-wrapper {
+//       position: relative;
+//       border-radius: 12px;
+//       overflow: hidden;
+//     }
+
+//     .explore-image {
+//       width: 100%;
+//       height: auto;
+//       object-fit: cover;
+//       border-radius: 12px;
+//     }
+//   }
+// }
+
+
+
+
+// New css start
+
+
 .about-us-page {
-  .about-hero {
-    .founder-image-wrapper {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .founder-image {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-radius: 12px;
-    }
+  .about-us-section-title {
+    font-size: 48px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-950;
+    margin-bottom: 48px;
   }
 
-  .section-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #111827;
-  }
+  .our-story-section {
+    .about-our-story-content {
 
-  .why-we-exist-section {
-    background-color: #f9fafb;
-
-    .why-card {
-      background: #fff;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      height: 100%;
-
-      .why-card-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: #111827;
-        margin-bottom: 12px;
+      .about-our-story-description {
+        font-size: 18px;
+        color: $color-black-zinc-500;
+        margin: 48px 0;
       }
 
-      .why-card-description {
-        font-size: 14px;
-        color: #6b7280;
-        line-height: 1.6;
-        margin: 0;
-      }
-    }
-  }
+      .about-self-info {
+        .about-self-name {
+          font-size: 24px;
+          color: $color-black-zinc-950;
+          font-weight: $font-weight600;
+          margin-bottom: 8px;
+        }
 
-  .highlights-section {
-    .highlight-card {
-      .highlight-number {
-        font-size: 36px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 8px;
-      }
-
-      .highlight-label {
-        font-size: 14px;
-        color: #6b7280;
-        margin: 0;
-      }
-    }
-  }
-
-  .partners-section {
-    background-color: #f9fafb;
-
-    .partners-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 24px;
-      align-items: center;
-      justify-items: center;
-
-      .partner-logo-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-        .partner-logo {
-          width: auto;
-          height: auto;
-          max-width: 150px;
-          object-fit: contain;
+        .about-self-title {
+          font-size: 20px;
+          color: $color-black-zinc-800;
+          margin: 0;
+          ;
         }
       }
     }
   }
 
-  .explore-section {
-    .explore-title {
-      font-size: 32px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 16px;
-    }
+  .why-we-exist-section {
+    .why-exist-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
 
-    .explore-subtitle {
-      font-size: 18px;
-      color: #6b7280;
-      font-style: italic;
-    }
+      .why-exist-card {
+        padding: 24px;
+        border-radius: 12px;
+        background: radial-gradient(123.26% 223.81% at -16.24% -23.26%, rgba(255, 100, 103, 0.5) 0%, rgba(254, 242, 242, 0.5) 45.9%);
 
-    .explore-image-wrapper {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-    }
+        .why-exist-icon {
+          width: 64px;
+          height: 64px;
+          background-color: $color-white;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
-    .explore-image {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-radius: 12px;
+        .why-exist-title {
+          font-size: 24px;
+          color: $color-black-zinc-950;
+          font-weight: $font-weight600;
+          margin: 24px 0;
+        }
+
+        .why-exist-description {
+          font-size: 20px;
+          color: $color-black-zinc-800;
+          margin: 0px;
+        }
+
+        &.vision-card {
+          background: radial-gradient(123.26% 223.81% at -16.24% -23.26%, rgba(81, 162, 255, 0.5) 0%, rgba(219, 234, 254, 0.5) 45.9%);
+        }
+
+        &.mission-card {
+          background: radial-gradient(123.26% 223.81% at -16.24% -23.26%, rgba(253, 199, 0, 0.5) 0%, rgba(254, 249, 194, 0.5) 45.9%);
+        }
+      }
     }
   }
-}
 
+  .hotel-partner-cards {
+    margin-top: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+
+    .hotel-partner-card {}
+  }
+}

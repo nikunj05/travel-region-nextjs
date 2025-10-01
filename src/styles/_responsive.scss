@@ -540,6 +540,17 @@
           font-size: 16px;
         }
       }
+
+      .banner-common-button {
+        margin-top: 24px;
+        font-size: 16px;
+        padding: 11.2px 15px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
   }
 }
@@ -1134,15 +1145,42 @@
 
   .banner-section-common {
     min-height: 240px;
-    padding: 45px 0 24px;
+    padding: 45px 0 30px;
     background-position: 100% 100%;
 
     .banner-content {
+      .banner-bradcumb-menu {
+        margin-bottom: 12px;
+
+        .banner-bradcumb-inner {
+          padding: 2px 10px;
+
+          .banner-bradcumb-list {
+            gap: 4px;
+
+            .banner-bradcumb-item {
+              font-size: 12px;
+            }
+
+            .banner-bradcumb-arrow {
+              svg {
+                width: 14px;
+                height: 14px;
+              }
+            }
+          }
+        }
+      }
+
       .heading_section {
         .section-title {
           font-size: 30px;
           margin-bottom: 12px;
         }
+      }
+
+      .banner-common-button {
+        margin-top: 12px;
       }
     }
   }

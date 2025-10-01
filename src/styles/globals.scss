@@ -378,7 +378,7 @@ img {
     .language-menu {
       position: absolute;
       top: 100%;
-      left: 0;
+      right: 0;
       background: #fff;
       border: 1px solid $border-color;
       border-radius: 2px;
@@ -1514,6 +1514,44 @@ img {
     background: url("../assets/images/faq-page-banner-image.jpg") no-repeat center center/cover;
   }
 
+  &.privacy-policy-banner-section {
+    background: url("../assets/images/privacy-banner-image.jpg") no-repeat center center/cover;
+
+    .banner-content {
+      .heading_section {
+        .section-description {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+  }
+
+  &.terms-condition-banner-section {
+    background: url("../assets/images/terms-condition-banner-image.jpg") no-repeat center center/cover;
+
+    .banner-content {
+      .heading_section {
+        .section-title {
+          color: $color-black-zinc-800;
+        }
+
+        .section-description {
+          color: $color-black-zinc-500;
+        }
+      }
+
+      .banner-bradcumb-menu {
+        .banner-bradcumb-inner {
+          background: #00000033;
+        }
+      }
+    }
+  }
+
+  &.about-us-banner-section {
+    background: url("../assets/images/about-us-banner-section.jpg") no-repeat center center/cover;
+  }
+
   .banner-content {
     position: relative;
 
@@ -1539,6 +1577,47 @@ img {
         svg {
           path {
             fill: $brand-color;
+          }
+        }
+      }
+    }
+
+    .banner-bradcumb-menu {
+      margin-bottom: 16px;
+      align-items: center;
+
+      .banner-bradcumb-inner {
+        display: inline-flex;
+        padding: 4px 12px;
+        backdrop-filter: blur(29.600000381469727px);
+        background: #FFFFFF33;
+        border-radius: 100px;
+
+        .banner-bradcumb-list {
+          list-style-type: none;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          .banner-bradcumb-item {
+            font-size: 14px;
+            font-weight: $font-weight400;
+            color: $color-white-70;
+            text-decoration: none;
+
+            .banner-bradcumb-arrow {
+              display: flex;
+            }
+
+            .banner-bradcumb-link {
+              color: inherit;
+              text-decoration: none;
+            }
+
+            &.current-page {
+              font-weight: $font-weight500;
+              color: $color-white;
+            }
           }
         }
       }
