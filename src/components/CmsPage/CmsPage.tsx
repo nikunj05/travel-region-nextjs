@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { useCmsStore } from '@/store/cmsStore'
+import AboutUs from '@/components/AboutUs/AboutUs'
 import './CmsPage.scss'
 
 interface CmsPageProps {
@@ -10,7 +11,6 @@ interface CmsPageProps {
 
 export default function CmsPage({ slug }: CmsPageProps) {
   const locale = useLocale()
-//   console.log(locale)
   const { currentPage, detailLoading, detailError, fetchPageBySlug, clearCurrentPage } = useCmsStore()
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
     }
   }, [slug, fetchPageBySlug, clearCurrentPage])
 
-  const html = currentPage?.content[locale as 'en' | 'ar'] || currentPage?.content?.en || ''
+  const html = currentPage?.content || ''
 
   const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([])
   const [processedHtml, setProcessedHtml] = useState<string>(html)
@@ -144,6 +144,12 @@ export default function CmsPage({ slug }: CmsPageProps) {
   if (detailError) return <div className="container section-space-tb">{detailError}</div>
   if (!currentPage) return null
 
+  // Render About Us page with special layout
+  if (currentPage.about_us) {
+    return <AboutUs page={currentPage} />
+  }
+
+  // Render Terms/Privacy Policy with sidebar TOC
   return (
     <div className="container section-space-tb cms-page">
       <div className="row">

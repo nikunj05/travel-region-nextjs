@@ -1,0 +1,123 @@
+.about-us-page {
+  .about-hero {
+    .founder-image-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .founder-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  }
+
+  .section-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .why-we-exist-section {
+    background-color: #f9fafb;
+
+    .why-card {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      height: 100%;
+
+      .why-card-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 12px;
+      }
+
+      .why-card-description {
+        font-size: 14px;
+        color: #6b7280;
+        line-height: 1.6;
+        margin: 0;
+      }
+    }
+  }
+
+  .highlights-section {
+    .highlight-card {
+      .highlight-number {
+        font-size: 36px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+      }
+
+      .highlight-label {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+      }
+    }
+  }
+
+  .partners-section {
+    background-color: #f9fafb;
+
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 24px;
+      align-items: center;
+      justify-items: center;
+
+      .partner-logo-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        .partner-logo {
+          width: auto;
+          height: auto;
+          max-width: 150px;
+          object-fit: contain;
+        }
+      }
+    }
+  }
+
+  .explore-section {
+    .explore-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    .explore-subtitle {
+      font-size: 18px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .explore-image-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .explore-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  }
+}
+
