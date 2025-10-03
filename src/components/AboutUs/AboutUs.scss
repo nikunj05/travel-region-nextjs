@@ -162,7 +162,6 @@
           font-size: 20px;
           color: $color-black-zinc-800;
           margin: 0;
-          ;
         }
       }
     }
@@ -327,13 +326,170 @@
 
         .about-self-info {
           .about-self-name {
-
             margin-bottom: 8px;
             font-size: 20px;
 
           }
 
           .about-self-title {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .why-we-exist-section {
+      .why-exist-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .hotel-partner-cards {
+      margin-top: 40px;
+      gap: 32px;
+
+      .hotel-partner-card {
+        min-width: 95px;
+      }
+    }
+
+    .few-highlights-section {
+      .few-highlights-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .about-us-page {
+    .about-us-section-title {
+      font-size: 24px;
+      margin-bottom: 32px;
+    }
+
+    .our-story-section {
+      .about-our-storyimage {
+        text-align: center;
+        margin-bottom: 32px;
+
+        img {
+          height: auto;
+          max-height: 400px;
+        }
+      }
+
+      .about-our-story-content {
+        .about-us-section-title {
+          font-size: 24px;
+          margin-bottom: 20px;
+        }
+
+        .about-our-story-description {
+          margin: 20px 0 16px;
+        }
+
+        .about-self-info {
+          .about-self-name {
+            font-size: 18px;
+            margin-bottom: 2px;
+          }
+
+          .about-self-title {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    .why-we-exist-section {
+      .why-exist-cards {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 32px;
+
+        .why-exist-card {
+          padding: 12px;
+          border-radius: 8px;
+          background: radial-gradient(123.26% 223.81% at -16.24% -23.26%, rgba(255, 100, 103, 0.5) 0%, rgba(254, 242, 242, 0.5) 45.9%);
+
+          .why-exist-icon {
+            width: 32px;
+            height: 32px;
+
+            img {
+              width: 16px;
+              height: 16px;
+            }
+          }
+
+          .why-exist-title {
+            font-size: 20px;
+            margin: 20px 0;
+          }
+
+          .why-exist-description {
+            font-size: 16px;
+          }
+
+          &.vision-card {
+            background: radial-gradient(115.38% 220.51% at -14.7% -15.38%, rgba(81, 162, 255, 0.5) 0%, rgba(219, 234, 254, 0.5) 41.84%);
+          }
+
+          &.mission-card {
+            background: radial-gradient(111.17% 208.57% at -8.41% -11.17%, rgba(253, 199, 0, 0.5) 0%, rgba(254, 249, 194, 0.5) 39.92%);
+          }
+        }
+      }
+    }
+
+    .hotel-partner-cards {
+      margin-top: 32px;
+      gap: 20px;
+
+      .hotel-partner-card {
+        min-width: 80px;
+      }
+    }
+
+    .few-highlights-section {
+      .few-highlights-cards {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 32px;
+
+        .few-highlights-card {
+          padding: 12px;
+          border-radius: 8px;
+          background: url('../../assets/images/red-highlight-card-mobile.png') no-repeat;
+          background-size: auto;
+
+          &.blue-highlight-card {
+            background: url('../../assets/images/blue-highlight-card-mobile.png') no-repeat;
+            background-size: auto;
+          }
+
+          &.yellow-highlight-card {
+            background: url('../../assets/images/yellow-highlight-card-mobile.png') no-repeat;
+            background-size: auto;
+          }
+
+          &.violet-highlight-card {
+            background: url('../../assets/images/violet-highlight-card-mobile.png') no-repeat;
+            background-size: auto;
+          }
+
+          .few-highlights-icon {
+            img {
+              width: 32px;
+              height: 32px;
+            }
+          }
+
+          .few-highlights-title {
+            font-size: 20px;
+            margin: 16px 0;
+          }
+
+          .few-highlights-description {
             font-size: 16px;
           }
         }
