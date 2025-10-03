@@ -39,6 +39,8 @@ export default function CmsPage({ slug }: CmsPageProps) {
       setHeadings([]);
       return;
     }
+    
+    // Only process HTML on client side to avoid hydration mismatch
     if (typeof window === "undefined") {
       setProcessedHtml(html);
       setHeadings([]);
@@ -178,92 +180,96 @@ export default function CmsPage({ slug }: CmsPageProps) {
   // Render Terms/Privacy Policy with sidebar TOC
   return (
     <div className="privacy-policy-page section-space-b">
-      <section className="banner-section-common privacy-policy-banner-section d-none">
-        <div className="container">
-          <div className="banner-content">
-            <div className="banner-bradcumb-menu text-center">
-              <div className="banner-bradcumb-inner">
-                <ul className="banner-bradcumb-list p-0 m-0">
-                  <li className="banner-bradcumb-item">
-                    <a href="/" className="banner-bradcumb-link">
-                      Home
-                    </a>
-                  </li>
-                  <span className="banner-bradcumb-arrow">
-                    <svg
-                      width="19"
-                      height="18"
-                      viewBox="0 0 19 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
-                        stroke="white"
-                        stroke-width="1.125"
-                        stroke-miterlimit="16"
-                      />
-                    </svg>
-                  </span>
-                  <li className="banner-bradcumb-item current-page">
-                    Privacy & Policy
-                  </li>
-                </ul>
+      {slug === 'privacy-policy' && (
+        <section className="banner-section-common privacy-policy-banner-section">
+          <div className="container">
+            <div className="banner-content">
+              <div className="banner-bradcumb-menu text-center">
+                <div className="banner-bradcumb-inner">
+                  <ul className="banner-bradcumb-list p-0 m-0">
+                    <li className="banner-bradcumb-item">
+                      <a href="/" className="banner-bradcumb-link">
+                        Home
+                      </a>
+                    </li>
+                    <span className="banner-bradcumb-arrow">
+                      <svg
+                        width="19"
+                        height="18"
+                        viewBox="0 0 19 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
+                          stroke="white"
+                          stroke-width="1.125"
+                          stroke-miterlimit="16"
+                        />
+                      </svg>
+                    </span>
+                    <li className="banner-bradcumb-item current-page">
+                      Privacy & Policy
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="heading_section text-center">
+                <h1 className="section-title">Privacy & Policy</h1>
+                <p className="section-description">
+                  Your privacy is important to us. This page explains how we
+                  collect, <br /> use, and protect your personal information.
+                </p>
               </div>
             </div>
-            <div className="heading_section text-center">
-              <h1 className="section-title">Privacy & Policy</h1>
-              <p className="section-description">
-                Your privacy is important to us. This page explains how we
-                collect, <br /> use, and protect your personal information.
-              </p>
-            </div>
           </div>
-        </div>
-      </section>
-      <section className="banner-section-common terms-condition-banner-section">
-        <div className="container">
-          <div className="banner-content">
-            <div className="banner-bradcumb-menu text-center">
-              <div className="banner-bradcumb-inner">
-                <ul className="banner-bradcumb-list p-0 m-0">
-                  <li className="banner-bradcumb-item">
-                    <a href="/" className="banner-bradcumb-link">
-                      Home
-                    </a>
-                  </li>
-                  <span className="banner-bradcumb-arrow">
-                    <svg
-                      width="19"
-                      height="18"
-                      viewBox="0 0 19 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
-                        stroke="white"
-                        stroke-width="1.125"
-                        stroke-miterlimit="16"
-                      />
-                    </svg>
-                  </span>
-                  <li className="banner-bradcumb-item current-page">
-                    Terms & Conditions
-                  </li>
-                </ul>
+        </section>
+      )}
+      {slug === 'terms-conditions' && (
+        <section className="banner-section-common terms-condition-banner-section">
+          <div className="container">
+            <div className="banner-content">
+              <div className="banner-bradcumb-menu text-center">
+                <div className="banner-bradcumb-inner">
+                  <ul className="banner-bradcumb-list p-0 m-0">
+                    <li className="banner-bradcumb-item">
+                      <a href="/" className="banner-bradcumb-link">
+                        Home
+                      </a>
+                    </li>
+                    <span className="banner-bradcumb-arrow">
+                      <svg
+                        width="19"
+                        height="18"
+                        viewBox="0 0 19 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
+                          stroke="white"
+                          stroke-width="1.125"
+                          stroke-miterlimit="16"
+                        />
+                      </svg>
+                    </span>
+                    <li className="banner-bradcumb-item current-page">
+                      Terms & Conditions
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div className="heading_section text-center">
+                <h1 className="section-title">Terms & Conditions</h1>
+                <p className="section-description">
+                  Please read these terms carefully before using our hotel booking
+                  services.
+                </p>
               </div>
             </div>
-            <div className="heading_section text-center">
-              <h1 className="section-title">Terms & Conditions</h1>
-              <p className="section-description">
-                Please read these terms carefully before using our hotel booking
-                services.
-              </p>
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
       <div className="container">
         <div className="privacy-policy-content">
           <aside className="privacy-policy-sidebar">

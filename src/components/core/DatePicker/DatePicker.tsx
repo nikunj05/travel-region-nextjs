@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./DatePicker.scss";
 
 interface DatePickerProps {
@@ -15,11 +15,23 @@ const DatePicker: React.FC<DatePickerProps> = ({
   onDateSelect,
   selectedStartDate,
   selectedEndDate,
-  minDate = new Date(),
+  minDate,
 }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isClient, setIsClient] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
   const [selectingCheckout, setSelectingCheckout] = useState(false);
-  const [navigationHistory, setNavigationHistory] = useState<Date[]>([new Date()]);
+  const [navigationHistory, setNavigationHistory] = useState<Date[]>([]);
+
+  // Initialize client-side state after hydration
+  useEffect(() => {
+    setIsClient(true);
+    const now = new Date();
+    setCurrentMonth(now);
+    setNavigationHistory([now]);
+  }, []);
+
+  // Use provided minDate or current date, but only after client hydration
+  const effectiveMinDate = minDate || (isClient ? new Date() : null);
 
   const monthNames = [
     "January",
@@ -79,6 +91,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const isDateDisabled = (date: Date) => {
+    if (!effectiveMinDate) return false;
     // Compare dates by setting time to 00:00:00 to avoid time comparison issues
     const dateOnly = new Date(
       date.getFullYear(),
@@ -86,9 +99,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
       date.getDate()
     );
     const minDateOnly = new Date(
-      minDate.getFullYear(),
-      minDate.getMonth(),
-      minDate.getDate()
+      effectiveMinDate.getFullYear(),
+      effectiveMinDate.getMonth(),
+      effectiveMinDate.getDate()
     );
     return dateOnly < minDateOnly;
   };
@@ -119,6 +132,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const navigateMonth = (direction: "prev" | "next") => {
+    if (!currentMonth) return;
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + (direction === "next" ? 1 : -1));
     setCurrentMonth(newMonth);
@@ -133,6 +147,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const getNextMonth = () => {
+    if (!currentMonth) return new Date();
     const nextMonth = new Date(currentMonth);
     nextMonth.setMonth(nextMonth.getMonth() + 1);
     return nextMonth;
@@ -218,7 +233,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     );
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !isClient || !currentMonth) return null;
 
   return (
     <div className="datepicker-dropdown">

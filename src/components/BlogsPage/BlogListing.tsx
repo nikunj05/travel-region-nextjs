@@ -192,95 +192,94 @@ const BlogListing = () => {
     </div>
   );
 
-  // Reusable renderer for all filter sections (used in sidebar and mobile modal)
-  const renderFilters = () => (
-    <>
-      {/* Quick Filters */}
-      <div className="filter-section">
-        <h3 className="filter-title">Categories:</h3>
-        {categoriesLoading ? (
-          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-            <CategoriesSkeleton />
-          </SkeletonTheme>
-        ) : categoriesError ? (
-          <div className="error-state">
-            <p>Error loading categories: {categoriesError}</p>
-          </div>
-        ) : (
-          <div
-            className="filter-options"
-            role="group"
-            aria-label="Category Filters"
-          >
-            {/* All Articles checkbox */}
-            <label className="filter-option all-articles-option">
+  // Reusable renderer for categories only (used in sidebar and mobile modal)
+  const renderCategories = () => (
+    <div className="filter-section">
+      <h3 className="filter-title">Categories:</h3>
+      {categoriesLoading ? (
+        <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+          <CategoriesSkeleton />
+        </SkeletonTheme>
+      ) : categoriesError ? (
+        <div className="error-state">
+          <p>Error loading categories: {categoriesError}</p>
+        </div>
+      ) : (
+        <div
+          className="filter-options"
+          role="group"
+          aria-label="Category Filters"
+        >
+          {/* All Articles checkbox */}
+          <label className="filter-option all-articles-option">
+            <input
+              type="checkbox"
+              checked={
+                selectedCategories.length === categories.length &&
+                categories.length > 0
+              }
+              onChange={handleAllArticlesToggle}
+              className="filter-checkbox"
+              aria-checked={
+                selectedCategories.length === categories.length &&
+                categories.length > 0
+              }
+            />
+            <span className="filter-label">All Articles</span>
+          </label>
+
+          {/* Dynamic categories */}
+          {categories.map((category) => (
+            <label key={category.id} className="filter-option">
               <input
                 type="checkbox"
-                checked={
-                  selectedCategories.length === categories.length &&
-                  categories.length > 0
+                checked={selectedCategories.includes(
+                  category.id.toString()
+                )}
+                onChange={() =>
+                  handleCategoryToggle(category.id.toString())
                 }
-                onChange={handleAllArticlesToggle}
                 className="filter-checkbox"
-                aria-checked={
-                  selectedCategories.length === categories.length &&
-                  categories.length > 0
-                }
+                aria-checked={selectedCategories.includes(
+                  category.id.toString()
+                )}
               />
-              <span className="filter-label">All Articles</span>
+              <span className="filter-label">{category.name}</span>
             </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
-            {/* Dynamic categories */}
-            {categories.map((category) => (
-              <label key={category.id} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={selectedCategories.includes(
-                    category.id.toString()
-                  )}
-                  onChange={() =>
-                    handleCategoryToggle(category.id.toString())
-                  }
-                  className="filter-checkbox"
-                  aria-checked={selectedCategories.includes(
-                    category.id.toString()
-                  )}
-                />
-                <span className="filter-label">{category.name}</span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Tags */}
-      <div className="filter-section">
-        <h3 className="filter-title">Tags:</h3>
-        {tagsLoading ? (
-          <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-            <TagsSkeleton />
-          </SkeletonTheme>
-        ) : tagsError ? (
-          <div className="error-state">
-            <p>Error loading tags: {tagsError}</p>
-          </div>
-        ) : (
-          <div className="tags-container">
-            {tags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => handleTagToggle(tag)}
-                className={`tag-button ${
-                  selectedTags.includes(tag) ? "active" : ""
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+  // Renderer for tags section
+  const renderTags = () => (
+    <div className="filter-section">
+      <h3 className="filter-title">Tags:</h3>
+      {tagsLoading ? (
+        <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+          <TagsSkeleton />
+        </SkeletonTheme>
+      ) : tagsError ? (
+        <div className="error-state">
+          <p>Error loading tags: {tagsError}</p>
+        </div>
+      ) : (
+        <div className="tags-container">
+          {tags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => handleTagToggle(tag)}
+              className={`tag-button ${
+                selectedTags.includes(tag) ? "active" : ""
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 
   return (
@@ -326,10 +325,16 @@ const BlogListing = () => {
           </div>
         </div>
 
+        {/* Tags Section - Below header, visible on mobile */}
+        <div className="blog-tags-section d-md-none">
+          {renderTags()}
+        </div>
+
         <div className="blog-listing-layout">
           {/* Left Sidebar - Filters */}
           <div className="blog-filters-sidebar d-none d-md-block">
-            {renderFilters()}
+            {renderCategories()}
+            {renderTags()}
           </div>
 
           {/* Right Content - Blog Grid */}
@@ -503,7 +508,7 @@ const BlogListing = () => {
               />
             </button>
           </div>
-          <div className="mobile-filter-body">{renderFilters()}</div>
+          <div className="mobile-filter-body">{renderCategories()}</div>
           <div className="mobile-filter-footer">
             <button
               className="reset-btn button-primary"

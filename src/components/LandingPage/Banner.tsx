@@ -88,6 +88,7 @@ const Banner = () => {
 
   const formatDate = (date: Date | null) => {
     if (!date) return ''
+    // Use a consistent format that doesn't depend on locale
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric',
@@ -161,7 +162,7 @@ const Banner = () => {
                     onDateSelect={handleDateSelect}
                     selectedStartDate={checkInDate}
                     selectedEndDate={checkOutDate}
-                    minDate={new Date()}
+                    minDate={undefined}
                   />
                 </div>
               </div>

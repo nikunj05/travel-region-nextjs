@@ -11,6 +11,49 @@
     }
   }
 
+  .blog-tags-section {
+    margin-bottom: 32px;
+
+    .filter-section {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+
+      .filter-title {
+        font-size: 18px;
+        font-weight: $font-weight500;
+        color: $color-black-zinc-950;
+        margin-bottom: 20px;
+      }
+
+      .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 10px;
+        row-gap: 15px;
+
+        .tag-button {
+          color: #6F8DC1;
+          font-size: 16px;
+          font-weight: $font-weight500;
+          cursor: pointer;
+          text-decoration: underline;
+          background: transparent;
+          border: none;
+          padding: 0;
+          margin: 0;
+          transition: $transition;
+
+          &:hover,
+          &.active {
+            color: $brand-color;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+
   .section-title {
     font-size: 48px;
     font-weight: $font-weight600;

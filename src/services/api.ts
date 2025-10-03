@@ -22,7 +22,11 @@ import axios, {
     (config: InternalAxiosRequestConfig) => {
       let token: string | null = null;
       if (typeof window !== 'undefined') {
-        token = localStorage.getItem('token');
+        try {
+          token = localStorage.getItem('token');
+        } catch (error) {
+          console.warn('Failed to access localStorage:', error);
+        }
       }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -31,18 +35,23 @@ import axios, {
       // Add Accept-Language header
       let locale: string = 'en'; // default locale
       if (typeof window !== 'undefined') {
-        // Try to get locale from localStorage first
-        const storedLocale = localStorage.getItem('NEXT_LOCALE');
-        console.log("==> API storedLocale", storedLocale);
-        
-        if (storedLocale && ['en', 'ar'].includes(storedLocale)) {
-          locale = storedLocale;
-          console.log("==> Using stored locale:", locale);
-        } else {
-          // Fallback to browser language detection
-          const browserLang = navigator.language.split('-')[0];
-          locale = ['en', 'ar'].includes(browserLang) ? browserLang : 'en';
-          console.log("==> Using browser/fallback locale:", locale);
+        try {
+          // Try to get locale from localStorage first
+          const storedLocale = localStorage.getItem('NEXT_LOCALE');
+          console.log("==> API storedLocale", storedLocale);
+          
+          if (storedLocale && ['en', 'ar'].includes(storedLocale)) {
+            locale = storedLocale;
+            console.log("==> Using stored locale:", locale);
+          } else {
+            // Fallback to browser language detection
+            const browserLang = navigator.language.split('-')[0];
+            locale = ['en', 'ar'].includes(browserLang) ? browserLang : 'en';
+            console.log("==> Using browser/fallback locale:", locale);
+          }
+        } catch (error) {
+          console.warn('Failed to access localStorage or navigator:', error);
+          locale = 'en'; // fallback to default
         }
       }
       config.headers['Accept-Language'] = locale;

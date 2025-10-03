@@ -44,7 +44,7 @@ const Footer = () => {
               <ul className="footer-link">
                 <li><a href="#">Destination</a></li>
                 <li><a href="#">Deals</a></li>
-                <li><a href="#">Blog</a></li>
+                <li><Link href="/blogs">Blog</Link></li>
                 <li><a href="#">Limited Offers</a></li>
               </ul>
             </div>
@@ -64,7 +64,7 @@ const Footer = () => {
               <h4 className="usefull-link-heading">Support</h4>
               <ul className="footer-link">
                 <li><a href="#">Help Center</a></li>
-                <li><a href="#">FAQs</a></li>
+                <li><Link href="/faqs">FAQs</Link></li>
                 <li><a href="#">Contact Us</a></li>
                 <li><a href="#">Booking Policy</a></li>
               </ul>

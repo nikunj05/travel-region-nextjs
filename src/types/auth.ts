@@ -64,6 +64,7 @@ export interface AuthUser {
   email: string;
   mobile: string;
   country_code: string;
+  profile_image?: string | null;
   address?: string | null;
   date_of_birth?: string | null;
   gender?: string | null;

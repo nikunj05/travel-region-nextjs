@@ -57,15 +57,25 @@ const Header = () => {
       if (
         pathname === "/search-result" ||
         pathname === "/hotel-details" ||
-        pathname === "/profile" ||
         // pathname === "/blogs" ||
         pathname === "/booking-review" ||
-        pathname.startsWith("/blogs/")
+        pathname.startsWith("/blogs/") ||
+        pathname.startsWith("/privacy-policy") ||
+        pathname.startsWith("/terms-conditions") ||
+        // private routes are below
+        pathname.startsWith("/profile") ||
+        pathname.startsWith("/bookings") ||
+        pathname.startsWith("/favorites") ||
+        pathname.startsWith("/payment-methods") ||
+        pathname.startsWith("/notification") ||
+        pathname.startsWith("/settings") ||
+        pathname.startsWith("/support") 
+       
       ) {
         setIsSticky(true);
       }
       // On other paths: sticky only on scroll
-      else if (window.scrollY > 5) {
+      else if (typeof window !== 'undefined' && window.scrollY > 5) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
@@ -82,29 +92,33 @@ const Header = () => {
     // Check on mount
     checkHeaderSticky();
 
-    // Add event listeners
-    window.addEventListener("scroll", checkHeaderSticky);
-    document.addEventListener("click", handleClickOutside);
+    // Add event listeners only on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener("scroll", checkHeaderSticky);
+      document.addEventListener("click", handleClickOutside);
 
-    // Cleanup event listeners on unmount
-    return () => {
-      window.removeEventListener("scroll", checkHeaderSticky);
-      document.removeEventListener("click", handleClickOutside);
-    };
+      // Cleanup event listeners on unmount
+      return () => {
+        window.removeEventListener("scroll", checkHeaderSticky);
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
   }, [pathname]);
 
   // Handle mobile menu body class toggle
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.classList.add("mobile_menu_open");
-    } else {
-      document.body.classList.remove("mobile_menu_open");
-    }
+    if (typeof window !== 'undefined') {
+      if (isMobileMenuOpen) {
+        document.body.classList.add("mobile_menu_open");
+      } else {
+        document.body.classList.remove("mobile_menu_open");
+      }
 
-    // Cleanup on unmount
-    return () => {
-      document.body.classList.remove("mobile_menu_open");
-    };
+      // Cleanup on unmount
+      return () => {
+        document.body.classList.remove("mobile_menu_open");
+      };
+    }
   }, [isMobileMenuOpen]);
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo);

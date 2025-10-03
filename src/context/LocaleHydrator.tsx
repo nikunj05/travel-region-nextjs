@@ -9,7 +9,11 @@ const LocaleHydrator = ({ locale }: LocaleHydratorProps) => {
   useEffect(() => {
     // Store the locale in localStorage for API requests
     if (typeof window !== 'undefined') {
-      localStorage.setItem('NEXT_LOCALE', locale)
+      try {
+        localStorage.setItem('NEXT_LOCALE', locale)
+      } catch (error) {
+        console.warn('Failed to store locale in localStorage:', error)
+      }
     }
   }, [locale])
 

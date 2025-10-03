@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
+  setUser: (user: AuthUser | null) => void;
   socialLogin: (data: {
     first_name: string;
     last_name: string;
@@ -28,8 +29,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     const initializeAuth = () => {
       try {
         const storedToken = localStorage.getItem('token');
@@ -55,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     initializeAuth();
-  }, []);
+  }, [isClient]);
 
   const login = async (data: LoginRequest) => {
     try {
@@ -69,9 +77,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       setToken(token);
       setUser(userData);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      setCookie('token', token);
+      if (isClient) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setCookie('token', token);
+      }
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -109,9 +119,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { token: newToken, user: userData } = response.data;
       setToken(newToken);
       setUser(userData);
-      localStorage.setItem('token', newToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      setCookie('token', newToken);
+      if (isClient) {
+        localStorage.setItem('token', newToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        setCookie('token', newToken);
+      }
     } catch (error) {
       console.error('Social login failed:', error);
       throw error;
@@ -127,9 +139,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setToken(null);
       setUser(null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      deleteCookie('token');
+      if (isClient) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        deleteCookie('token');
+      }
     }
   };
 
@@ -143,6 +157,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        setUser,
         socialLogin,
       }}
     >
