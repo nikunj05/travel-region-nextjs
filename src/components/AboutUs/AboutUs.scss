@@ -215,6 +215,65 @@
     flex-wrap: wrap;
     gap: 16px 24px;
 
-    .hotel-partner-card {}
+    .hotel-partner-card {
+      padding: 0px;
+    }
+  }
+
+  .few-highlights-section {
+    .few-highlights-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+
+      .few-highlights-card {
+        padding: 24px;
+        border-radius: 8px;
+        background: url('../../assets/images/red-highlight-card.png') no-repeat;
+        background-size: contain;
+        background-position: left 100%;
+        height: 100%;
+
+        &.blue-highlight-card {
+          background: url('../../assets/images/blue-highlight-card.png') no-repeat;
+          background-size: contain;
+          background-position: left 100%;
+          height: 100%;
+        }
+
+        &.yellow-highlight-card {
+          background: url('../../assets/images/yellow-highlight-card.png') no-repeat;
+          background-size: contain;
+          background-position: left 100%;
+          height: 100%;
+        }
+
+        &.violet-highlight-card {
+          background: url('../../assets/images/violet-highlight-card.png') no-repeat;
+          background-size: contain;
+          background-position: left 100%;
+          height: 100%;
+        }
+
+        .few-highlights-icon {
+          img {
+            object-fit: cover;
+          }
+        }
+
+        .few-highlights-title {
+          font-size: 24px;
+          color: $color-black-zinc-950;
+          font-weight: $font-weight600;
+          margin: 24px 0;
+        }
+
+        .few-highlights-description {
+          font-size: 16px;
+          color: $color-black-zinc-500;
+          margin: 0px;
+        }
+      }
+    }
   }
 }

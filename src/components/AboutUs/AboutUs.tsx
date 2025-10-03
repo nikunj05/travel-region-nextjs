@@ -13,6 +13,11 @@ import PartnerLogo4 from "@/assets/images/wyndham-logo.png";
 import PartnerLogo5 from "@/assets/images/ihg-logo.png";
 import PartnerLogo6 from "@/assets/images/hyatt-logo.png";
 import PartnerLogo7 from "@/assets/images/hilton-logo.png";
+import HighlightsIcon1 from "@/assets/images/bookings-completed-icon.svg";
+import HighlightsIcon2 from "@/assets/images/customer-satisfaction-icon.svg";
+import HighlightsIcon3 from "@/assets/images/verified-hotels-icon.svg";
+import HighlightsIcon4 from "@/assets/images/supports-icon.svg";
+import Travelers from "../LandingPage/Travelers";
 
 interface AboutUsProps {
   page: CmsPageItem;
@@ -294,6 +299,106 @@ export default function AboutUs({ page }: AboutUsProps) {
                 height={40}
                 alt="hotel partner icon"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="few-highlights-section section-space-tb">
+        <div className="container">
+          <h2 className="about-us-section-title">A Few Highlights</h2>
+          <div className="few-highlights-cards">
+            <div className="few-highlights-card red-highlight-card">
+              <div className="few-highlights-icon">
+                <Image
+                  src={HighlightsIcon1}
+                  width={64}
+                  height={64}
+                  alt="Bookings Completed Icon"
+                />
+              </div>
+              <h3 className="few-highlights-title">200k+</h3>
+              <p className="few-highlights-description">Bookings Completed</p>
+            </div>
+            <div className="few-highlights-card blue-highlight-card">
+              <div className="few-highlights-icon">
+                <Image
+                  src={HighlightsIcon2}
+                  width={64}
+                  height={64}
+                  alt="Customer Satisfaction Icon"
+                />
+              </div>
+              <h3 className="few-highlights-title">98%</h3>
+              <p className="few-highlights-description">
+                Customer Satisfaction
+              </p>
+            </div>
+            <div className="few-highlights-card yellow-highlight-card">
+              <div className="few-highlights-icon">
+                <Image
+                  src={HighlightsIcon3}
+                  width={64}
+                  height={64}
+                  alt="hotels Icon"
+                />
+              </div>
+              <h3 className="few-highlights-title">5k+</h3>
+              <p className="few-highlights-description">Verified Hotels</p>
+            </div>
+            <div className="few-highlights-card violet-highlight-card">
+              <div className="few-highlights-icon">
+                <Image
+                  src={HighlightsIcon4}
+                  width={64}
+                  height={64}
+                  alt="support Icon"
+                />
+              </div>
+              <h3 className="few-highlights-title">24/7 Support</h3>
+              <p className="few-highlights-description">Across 3 Continents</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="about-testimonails-section">
+        <div className="testimonials-container">
+          <Travelers />
+        </div>
+      </section>
+      <section className="home-contact-section about-ready-to-explore-section section-space-t">
+        <div className="container">
+          <div className="contact-inner-section">
+            <div className="contact-us-content">
+              <div className="heading_section">
+                <h2 className="section-title">Ready to Explore</h2>
+                <p className="section-description mx-width-790">
+                  "Have questions or need help? We’re just a message away."
+                </p>
+              </div>
+              <button className="btn hotel-search-button d-flex align-items-center mx-auto">
+                Search Hotel
+                <svg
+                  width="25"
+                  height="24"
+                  viewBox="0 0 25 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 17.5L22.5 22"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M20.5 11C20.5 6.02944 16.4706 2 11.5 2C6.52944 2 2.5 6.02944 2.5 11C2.5 15.9706 6.52944 20 11.5 20C16.4706 20 20.5 15.9706 20.5 11Z"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
