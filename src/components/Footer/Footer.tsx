@@ -142,9 +142,9 @@ const Footer = () => {
           </div>
           <div className="col-md-6 text-end">
             <div className="copy-right-links">
-              <a href="#">Privacy Policy</a>
+              <Link href="/privacy-policy">Privacy Policy</Link>
               <span className="separator"></span>
-              <a href="#">Terms & Conditions</a>
+              <Link href="/terms-conditions">Terms & Conditions</Link>
             </div>
           </div>
         </div>

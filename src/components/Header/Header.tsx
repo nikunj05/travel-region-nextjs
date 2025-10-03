@@ -124,7 +124,7 @@ const Header = () => {
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo);
   // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <header
@@ -253,6 +253,19 @@ const Header = () => {
                 </button>
               </div>
             )}
+            {isAuthenticated && (
+              <div className="header-button-box d-flex d-lg-none align-items-center ">
+                <button
+                  className="button login-btn d-flex align-items-center"
+                  onClick={() => {
+                    logout();
+                    closeMobileMenu();
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
           <div className="d-flex align-items-center">
             <div
@@ -337,6 +350,16 @@ const Header = () => {
                   onClick={handleLoginClick}
                 >
                   Log In
+                </button>
+              </div>
+            )}
+            {isAuthenticated && (
+              <div className="header-button-box align-items-center d-none d-lg-flex">
+                <button
+                  className="button login-btn d-flex align-items-center"
+                  onClick={logout}
+                >
+                  Logout
                 </button>
               </div>
             )}
