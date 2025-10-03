@@ -11,7 +11,7 @@ import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg"
 
 const BookingReviewPage = () => {
   return (
-    <main className="hotel-details-page booking-review-page padding-top-100 section-space-b">
+    <main className="booking-review-page padding-top-100 section-space-b">
       <div className="container">
         <div className="progress-steps">
           <div className="step completed">

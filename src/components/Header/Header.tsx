@@ -59,6 +59,8 @@ const Header = () => {
         pathname === "/hotel-details" ||
         // pathname === "/blogs" ||
         pathname === "/booking-review" ||
+        pathname === "/checkout" ||
+        pathname === "/booking-confirmation" ||
         pathname.startsWith("/blogs/") ||
         pathname.startsWith("/privacy-policy") ||
         pathname.startsWith("/terms-conditions") ||
@@ -69,13 +71,12 @@ const Header = () => {
         pathname.startsWith("/payment-methods") ||
         pathname.startsWith("/notification") ||
         pathname.startsWith("/settings") ||
-        pathname.startsWith("/support") 
-       
+        pathname.startsWith("/support")
       ) {
         setIsSticky(true);
       }
       // On other paths: sticky only on scroll
-      else if (typeof window !== 'undefined' && window.scrollY > 5) {
+      else if (typeof window !== "undefined" && window.scrollY > 5) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
@@ -93,7 +94,7 @@ const Header = () => {
     checkHeaderSticky();
 
     // Add event listeners only on client side
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.addEventListener("scroll", checkHeaderSticky);
       document.addEventListener("click", handleClickOutside);
 
@@ -107,7 +108,7 @@ const Header = () => {
 
   // Handle mobile menu body class toggle
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (isMobileMenuOpen) {
         document.body.classList.add("mobile_menu_open");
       } else {

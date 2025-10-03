@@ -1,0 +1,137 @@
+.booking-confirmation-page {
+  .confirm-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
+  .confirm-card {
+    padding: 0px;
+    text-align: center;
+    width: 100%;
+
+    .ico-box {
+      object-fit: cover;
+    }
+
+    .card-title {
+      font-size: 32px;
+      font-weight: $font-weight600;
+      color: $color-black-zinc-950;
+      margin: 56px 0 24px;
+    }
+
+    .card-booking-num {
+      font-size: 24px;
+      color: $color-black-zinc-500;
+      margin-bottom: 16px;
+
+      .card-booking-id {
+        font-weight: $font-weight600;
+        color: $brand-color;
+      }
+    }
+
+    .confirmation-email {
+      font-size: 24px;
+      color: $color-black-zinc-500;
+      margin-bottom: 24px;
+
+      .confirmation-email-address {
+        font-weight: $font-weight500;
+        color: $color-black-zinc-950;
+      }
+    }
+
+    .booking-action {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+
+      .button-primary {
+        padding: 11.7px 15px;
+
+        &:hover {
+          svg {
+            path {
+              stroke: $brand-color;
+
+            }
+          }
+        }
+      }
+
+      .print-button {
+        background-color: $color-white;
+        color: $brand-color;
+
+        &:hover {
+          background-color: $brand-color;
+          color: $color-white;
+
+          svg {
+            path {
+              stroke: $color-white;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .booking-confirmation-page {
+    .confirm-card {
+      .card-title {
+        font-size: 24px;
+        margin: 32px 0 20px;
+      }
+
+      .card-booking-num {
+        font-size: 16px;
+        margin-bottom: 2px;
+      }
+
+      .confirmation-email {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .booking-action {
+        gap: 20px;
+
+        .button-primary {
+          padding: 9.7px 10px;
+          font-size: 14px;
+          gap: 8px;
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 575.55px) {
+  .booking-confirmation-page {
+    .confirm-card {
+      .booking-action {
+        gap: 12px;
+        flex-direction: column;
+        flex-wrap: nowrap;
+
+        .button-primary {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

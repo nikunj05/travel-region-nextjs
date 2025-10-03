@@ -136,6 +136,12 @@
   }
 
   .our-story-section {
+    .about-our-storyimage {
+      img {
+        height: revert-layer;
+      }
+    }
+
     .about-our-story-content {
 
       .about-our-story-description {
@@ -212,7 +218,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
     gap: 16px 24px;
 
     .hotel-partner-card {
@@ -272,6 +279,63 @@
           font-size: 16px;
           color: $color-black-zinc-500;
           margin: 0px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1199.55px) {
+  .about-us-page {
+    .about-us-section-title {
+      font-size: 38px;
+    }
+
+    .why-we-exist-section {
+      .why-exist-cards {
+        gap: 24px;
+      }
+    }
+
+    .hotel-partner-cards {
+      margin-top: 80px;
+    }
+
+    .few-highlights-section {
+      .few-highlights-cards {
+        gap: 24px;
+      }
+    }
+  }
+}
+
+
+@media (max-width: 991.95px) {
+
+  .about-us-page {
+    .about-us-section-title {
+      font-size: 28px;
+      margin-bottom: 32px;
+    }
+
+    .our-story-section {
+      .about-our-story-content {
+        .about-our-story-description {
+          margin: 32px 0;
+          font-size: 16px;
+        }
+
+        .about-self-info {
+          .about-self-name {
+
+            margin-bottom: 8px;
+            font-size: 20px;
+
+          }
+
+          .about-self-title {
+            font-size: 16px;
+          }
         }
       }
     }
