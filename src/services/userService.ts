@@ -20,11 +20,29 @@ export const userService = {
   },
 
   // Update user profile
-  updateProfile: async (data: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
+  updateProfile: async (data: UpdateProfileRequest | FormData): Promise<UpdateProfileResponse> => {
     try {
-      const response = await api.put<UpdateProfileResponse, UpdateProfileRequest>(
+      let requestData: any;
+      let headers: any = {};
+
+      if (data instanceof FormData) {
+        // For FormData (image upload), add _method parameter
+        data.append('_method', 'put');
+        requestData = data;
+        headers['Content-Type'] = 'multipart/form-data';
+      } else {
+        // For JSON data, add _method parameter
+        requestData = {
+          ...data,
+          _method: 'put'
+        };
+        headers['Content-Type'] = 'application/json';
+      }
+        
+      const response = await api.post<UpdateProfileResponse, any>(
         '/profile',
-        data
+        requestData,
+        { headers }
       );
       return response.data;
     } catch (error) {

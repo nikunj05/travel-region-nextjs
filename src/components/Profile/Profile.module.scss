@@ -176,6 +176,27 @@
   padding-right: 40px;
 }
 
+// Custom class for SelectWithFlag component without dropdown arrow background
+.selectWithFlagCustom {
+  // Remove border and background to avoid double styling
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  
+  // Let the SelectWithFlag component handle its own styling
+  .selectButton {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    
+    &:focus {
+      border-color: $color-blue;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
+    }
+  }
+}
+
 .errorMessage {
   color: $error-color;
   font-size: 13px;

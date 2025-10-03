@@ -10,6 +10,8 @@ export interface User {
   gender: string | null;
   nationality: string | null;
   passport_number: string | null;
+  profile_image: string | null;
+  profile_image_url: string | null;
 }
 
 // API Response interfaces
@@ -59,12 +61,12 @@ export interface UserSettingsResponse {
 }
 
 export interface UpdateUserSettingsRequest {
-  language: string;
-  currency: string;
-  email: string;
-  country_code: string;
-  mobile: string;
-  password: string;
+  language?: string;
+  currency?: string;
+  email?: string;
+  country_code?: string;
+  mobile?: string;
+  password?: string;
 }
 
 export interface UpdateUserSettingsResponse {

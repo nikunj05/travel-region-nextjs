@@ -18,7 +18,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
     fetchPageBySlug,
     clearCurrentPage,
   } = useCmsStore();
-
+// console.log(currentPage)
   useEffect(() => {
     fetchPageBySlug(slug);
     return () => {

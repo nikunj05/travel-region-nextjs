@@ -1,0 +1,164 @@
+@import '@/styles/variables';
+
+.selectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.selectLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+  margin-bottom: 8px;
+}
+
+.selectButton {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: $transition;
+  font-size: 14px;
+  color: $text-primary;
+
+  &:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-blue;
+    background-color: $color-white;
+    box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
+  }
+
+  &.disabled {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+  }
+}
+
+.selectContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.flagIcon {
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.selectText {
+  flex: 1;
+  text-align: left;
+}
+
+.selectArrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: #6b7280;
+
+  &.arrowOpen {
+    transform: rotate(180deg);
+  }
+}
+
+.selectDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: $color-white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 4px 0;
+  margin: 0;
+}
+
+.selectOption {
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+
+  &.selected {
+    background-color: #eff6ff;
+    color: $color-blue;
+  }
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.optionFlag {
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.optionText {
+  flex: 1;
+  text-align: left;
+}
+
+.open {
+  .selectButton {
+    border-color: $color-blue;
+    background-color: $color-white;
+    box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
+  }
+}
+
+.disabled {
+  .selectButton {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+  }
+}
+
+// RTL Support
+[dir="rtl"] {
+  .selectContent {
+    flex-direction: row-reverse;
+  }
+
+  .optionContent {
+    flex-direction: row-reverse;
+  }
+
+  .selectText,
+  .optionText {
+    text-align: right;
+  }
+}

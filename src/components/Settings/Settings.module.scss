@@ -1,0 +1,337 @@
+@import '@/styles/variables';
+
+.settingsContainer {
+  max-width: 800px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 32px;
+}
+
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.preferencesRow {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+}
+
+.preferenceSection {
+  flex: 1;
+  min-width: 0; // Prevents flex items from overflowing
+}
+
+.settingsSection {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 32px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.securityRow {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  
+  .inputGroup {
+    flex: 1;
+    min-width: 0; // Prevents flex items from overflowing
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+    
+    .inputGroup {
+      flex: none;
+    }
+  }
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 12px;
+}
+
+.sectionDescription {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.inputGroup {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.fieldRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.fieldLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+.editLink {
+  background: none;
+  border: none;
+  color: $color-blue;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    color: darken($color-blue, 10%);
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+.inputField {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $text-primary;
+  background-color: #f9fafb;
+  transition: $transition;
+
+  &:focus {
+    outline: none;
+    border-color: $color-blue;
+    background-color: $color-white;
+    box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
+  }
+
+  &:disabled {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+}
+
+.selectField {
+  width: 100%;
+}
+
+.selectwithinputfield {
+  display: flex;
+  position: relative;
+
+  .countryCodeInput {
+    z-index: 1;
+    align-items: center;
+    width: 92px;
+    height: calc(52px - 4px);
+    display: flex;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+
+    .selectContainer {
+      display: flex;
+      height: 100%;
+    }
+  }
+
+  .mobileNumberInput {
+    width: 100%;
+
+    .inputContainer {
+      padding: 50px;
+    }
+  }
+}
+
+.editActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cancelButton {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: #f9fafb;
+    color: $text-primary;
+  }
+}
+
+// .saveAllContainer {
+//   margin-top: 24px;
+//   padding-top: 24px;
+//   border-top: 1px solid #e5e7eb;
+// }
+
+.saveAllButton {
+  padding: 14px 32px;
+  background-color: $color-blue;
+  color: $color-white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    background-color: darken($color-blue, 10%);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid $color-blue;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.errorMessage {
+  color: $error-color;
+  font-size: 16px;
+  text-align: center;
+  margin: 0;
+}
+
+.retryButton {
+  padding: 12px 24px;
+  background-color: $color-blue;
+  color: $color-white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: darken($color-blue, 10%);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .settingsForm {
+    gap: 24px;
+  }
+
+  .settingsSection {
+    padding-bottom: 24px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .mobileInputGroup {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .countryCodeSelect {
+    width: 100%;
+  }
+
+  .saveAllButton {
+    width: 100%;
+  }
+}
+
+// RTL Support
+[dir="rtl"] {
+  .preferencesRow {
+    flex-direction: row-reverse;
+  }
+
+  .fieldRow {
+    flex-direction: row-reverse;
+  }
+
+  .mobileInputGroup {
+    flex-direction: row-reverse;
+  }
+
+  .selectWithFlag {
+    flex-direction: row-reverse;
+  }
+}

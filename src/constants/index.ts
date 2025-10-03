@@ -7,6 +7,7 @@ export interface CountryCode {
 
 export const COUNTRY_CODES: CountryCode[] = [
   { value: '1', label: '1' },
+  { value: '2', label: '2' },
   { value: '7', label: '7' },
   { value: '20', label: '20' },
   { value: '27', label: '27' },
