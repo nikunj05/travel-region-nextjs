@@ -5,6 +5,64 @@
     padding-top: 60px;
     display: flex;
     gap: 64px;
+    position: relative;
+  }
+
+  // Mobile hamburger button
+  .mobileMenuToggle {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    .hamburgerIcon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  // Mobile close button
+  .mobileCloseButton {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-bottom: 24px;
+    margin-right: 20px;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  // Mobile overlay
+  .mobileOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 998;
   }
 
   .sidebar {
@@ -102,6 +160,84 @@
 
 
 
+// Mobile responsive styles
+@media (max-width: 991.55px) {
+  .profileLayout {
+    .layoutWrapper {
+      padding-top: 10px;
+    }
+
+    // Show hamburger button on mobile
+    .mobileMenuToggle {
+      display: flex;
+    }
+
+    // Show overlay on mobile
+    .mobileOverlay {
+      display: block;
+    }
+
+    // Show close button on mobile
+    .mobileCloseButton {
+      display: block;
+    }
+
+    // Mobile sidebar styles
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 300px;
+      height: 100%;
+      z-index: 999;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      padding: 20px 0;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+
+      &.sidebarOpen {
+        right: 0;
+      }
+    }
+
+    .mobileOverlay {
+      &.overlayOpen {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .mainContent {
+      width: 100%;
+      margin-top: 20px;
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  .profileLayout {
+    .sidebar {
+      width: 280px;
+    }
+
+    .mobileMenuToggle {
+      padding: 6px;
+    }
+  }
+}
+
+@media (max-width: 575.55px) {
+  .profileLayout {
+    .sidebar {
+      width: 260px;
+    }
+
+    .mobileCloseButton {
+      margin-right: 15px;
+    }
+  }
+}
+
 // RTL Support
 [dir="rtl"] {
   .navLink {
@@ -116,5 +252,41 @@
   .icon {
     margin-right: 0;
     margin-left: 12px;
+  }
+
+  // RTL mobile styles
+  @media (max-width: 991.55px) {
+    .profileLayout {
+      .sidebar {
+        right: auto;
+        left: -100%;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+        &.sidebarOpen {
+          right: auto;
+          left: 0;
+        }
+      }
+
+      .mobileCloseButton {
+        margin-left: 20px;
+        margin-right: 0;
+      }
+
+      .mobileMenuToggle {
+        right: 0;
+        left: auto;
+      }
+    }
+  }
+
+  @media (max-width: 575.55px) {
+    .profileLayout {
+      .mobileCloseButton {
+        margin-left: 15px;
+        margin-right: 0;
+      }
+    }
   }
 }

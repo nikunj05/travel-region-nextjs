@@ -1,9 +1,12 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "@/i18/navigation";
+import Image from "next/image";
 import styles from "./ProfileLayout.module.scss";
+import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
+import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
 
 interface ProfileLayoutProps {
   children: ReactNode;
@@ -11,6 +14,31 @@ interface ProfileLayoutProps {
 
 const ProfileLayout = ({ children }: ProfileLayoutProps) => {
   const pathname = usePathname();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const closeMobileSidebar = () => {
+    setIsMobileSidebarOpen(false);
+  };
+
+  // Handle mobile sidebar body class toggle
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (isMobileSidebarOpen) {
+        document.body.classList.add("profile_mobile_sidebar_open");
+      } else {
+        document.body.classList.remove("profile_mobile_sidebar_open");
+      }
+
+      // Cleanup on unmount
+      return () => {
+        document.body.classList.remove("profile_mobile_sidebar_open");
+      };
+    }
+  }, [isMobileSidebarOpen]);
 
   const menuItems = [
     {
@@ -205,8 +233,44 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     <div className={`${styles.profileLayout} padding-top-100 section-space-b`}>
       <div className="container">
         <div className={styles.layoutWrapper}>
+          {/* Mobile Hamburger Button */}
+          <button
+            className={styles.mobileMenuToggle}
+            type="button"
+            onClick={toggleMobileSidebar}
+            aria-label="Toggle sidebar menu"
+          >
+            <Image
+              src={hamburgerMenuIcon}
+              width="24"
+              height="24"
+              alt="hamburger icon"
+              className={styles.hamburgerIcon}
+            />
+          </button>
+
           {/* Sidebar */}
-          <aside className={styles.sidebar}>
+          <aside
+            className={`${styles.sidebar} ${
+              isMobileSidebarOpen ? styles.sidebarOpen : ""
+            }`}
+          >
+            {/* Mobile Close Button */}
+            <button
+              className={styles.mobileCloseButton}
+              type="button"
+              onClick={closeMobileSidebar}
+              aria-label="Close sidebar menu"
+            >
+              <Image
+                src={closeBtnIcon}
+                width="24"
+                height="24"
+                alt="close icon"
+                className={styles.closeIcon}
+              />
+            </button>
+
             <div className={styles.sidebarHeader}>
               <h2>Menu Items</h2>
             </div>
@@ -219,6 +283,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
                       className={`${styles.navLink} ${
                         isActive(item.href) ? styles.active : ""
                       }`}
+                      onClick={closeMobileSidebar}
                     >
                       <span className={styles.icon}>{item.icon}</span>
                       <span className={styles.label}>{item.label}</span>
@@ -228,6 +293,14 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
               </ul>
             </nav>
           </aside>
+
+          {/* Mobile Overlay */}
+          <div
+            className={`${styles.mobileOverlay} ${
+              isMobileSidebarOpen ? styles.overlayOpen : ""
+            }`}
+            onClick={closeMobileSidebar}
+          ></div>
 
           {/* Main Content */}
           <main className={styles.mainContent}>{children}</main>

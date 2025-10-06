@@ -127,6 +127,11 @@
     }
   }
 
+  // Profile mobile sidebar open state
+  .profile_mobile_sidebar_open {
+    overflow-y: hidden;
+  }
+
   .header {
     position: sticky;
     background-color: $color-white;
