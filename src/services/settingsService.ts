@@ -1,7 +1,5 @@
 import { api } from './api';
 import { GetSettingsResponse } from '@/types/settings';
-import { BASE_URL } from '@/constants';
-
 export const settingsService = {
   getSettings: async (): Promise<GetSettingsResponse> => {
     try {
@@ -14,7 +12,7 @@ export const settingsService = {
   // Uses Next.js fetch caching with hourly revalidation (server-only)
   getSettingsCached: async (): Promise<GetSettingsResponse> => {
     try {
-      const res = await fetch(`${BASE_URL}/settings`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/settings`, {
         next: { revalidate: 3600 },
       });
       if (!res.ok) {

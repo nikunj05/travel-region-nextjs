@@ -1,5 +1,3 @@
-export const BASE_URL = 'https://phpstack-1497927-5868931.cloudwaysapps.com/api/v1';
-
 export interface CountryCode {
   value: string;
   label: string;

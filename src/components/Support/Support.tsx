@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
 import styles from './Support.module.scss';
+import { useSettingsStore } from '@/store/settingsStore'
 
-import UaeFlag from '@/assets/images/american-card-icon.svg';
-
-export default function Support() {
+  export default function Support() {
+  const { setting } = useSettingsStore();
+  console.log("==>",setting);
   return (
     <div className={styles.supportContainer}>
       <h1 className={styles.pageTitle}>Support & Help Center</h1>
@@ -25,8 +25,8 @@ export default function Support() {
             <div className={styles.cardContent}>
               <div className={styles.cardTitle}>Call Us</div>
               <div className={styles.numberRow}>
-                <Image src={UaeFlag} alt="UAE flag" className={styles.flagImg} />
-                <a href="tel:+971456789" className={styles.numberLink}>+971 456 789</a>
+                {/* <Image src={UaeFlag} alt="UAE flag" className={styles.flagImg} /> */}
+                <a href={`tel:${setting?.contact_us}`} className={styles.numberLink}>{setting?.contact_us}</a>
               </div>
             </div>
           </div>
@@ -48,8 +48,8 @@ export default function Support() {
             </div>
             <div className={styles.cardContent}>
               <div className={styles.cardTitle}>WhatsApp</div>
-              <a href="https://wa.me/971123456" target="_blank" rel="noreferrer" className={styles.numberLink}>
-                +971 123 456
+              <a href={`https://wa.me/${setting?.whatsapp_number}`} target="_blank" rel="noreferrer" className={styles.numberLink}>
+              {setting?.whatsapp_number}
               </a>
               <div className={styles.hintText}>Or click here to open in WhatsApp web.</div>
             </div>

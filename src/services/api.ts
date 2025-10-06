@@ -1,13 +1,23 @@
-import { BASE_URL } from "@/constants";
 import axios, {
     AxiosError,
     AxiosRequestConfig,
     InternalAxiosRequestConfig,
   } from "axios";
+
+const resolvedBaseUrl =
+  typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_BASE_URL
+    : 'https://phpstack-1497927-5868931.cloudwaysapps.com/api/v1';
+    
+if (!resolvedBaseUrl) {
+  console.warn(
+    "API baseURL is not defined. Set NEXT_PUBLIC_BASE_URL for client and BASE_URL for server."
+  );
+}
   
   // Create a custom axios instance
   const axiosInstance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: resolvedBaseUrl,
     timeout: 30000,
     headers: {
       "Content-Type": "application/json",
