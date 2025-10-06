@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { faqService } from "@/services/faqService";
-import { FaqCategory, FaqItem } from "@/types/faq";
+import { FaqCategory } from "@/types/faq";
 import "./FaqPage.scss";
 
 const SearchIcon = () => (

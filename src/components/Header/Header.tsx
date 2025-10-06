@@ -149,7 +149,7 @@ const Header = () => {
               className="hamburger-icon"
             />
           </button>
-          <a className="navbar-brand p-0 m-0" href="/">
+          <Link className="navbar-brand p-0 m-0" href="/">
             {dynamicLogo ? (
               <Image
                 src={dynamicLogo}
@@ -166,7 +166,7 @@ const Header = () => {
                 height={35}
               />
             )}
-          </a>
+          </Link>
           <div
             className="navbar-collapse mobile_side_menu navigation-barmenu justify-content-center"
             id="navbarSupportedContent"

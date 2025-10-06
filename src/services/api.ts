@@ -3,8 +3,6 @@ import axios, {
     AxiosError,
     AxiosRequestConfig,
     InternalAxiosRequestConfig,
-    AxiosResponse,
-    AxiosHeaders,
   } from "axios";
   
   // Create a custom axios instance

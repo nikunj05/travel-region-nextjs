@@ -15,9 +15,9 @@ export const useForgotPassword = () => {
     setError(null);
     try {
       const response = await authService.forgotPassword({ email: data.email });
-      const successMessage = (response as any)?.message || 'Reset link sent to your email';
+      const successMessage = (response as { message?: string })?.message || 'Reset link sent to your email';
       toast.success(successMessage);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage = formatApiErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage);

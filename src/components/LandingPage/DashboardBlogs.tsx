@@ -60,7 +60,7 @@ const DashboardBlogs = () => {
         </div>
       </div>
       <div className="blog-card-listing d-grid">
-        {blogs.slice(1, 4).map((blog, index) => (
+        {blogs.slice(1, 4).map((blog) => (
           <div key={blog.id} className="blog-card-items" onClick={() => handleBlogClick(blog.slug)} style={{ cursor: 'pointer' }}>
             <div className="blog-card-items-img">
               <Image src={blog.full_image_url} width={379} height={215} alt={blog.title} />

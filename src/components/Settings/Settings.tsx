@@ -30,10 +30,10 @@ const CURRENCY_OPTIONS = [
 ];
 
 // Country code options using the same reference as signup
-const COUNTRY_CODE_OPTIONS = COUNTRY_CODES.map((c) => ({
-  value: c.value,
-  label: `+${c.label}`,
-}));
+// const COUNTRY_CODE_OPTIONS = COUNTRY_CODES.map((c) => ({
+//   value: c.value,
+//   label: `+${c.label}`,
+// }));
 
 export default function Settings() {
   const { userSettings, loading, error, updating, updateError, fetchUserSettings, updateUserSettings, clearErrors } = useUserSettingsStore();
@@ -41,7 +41,7 @@ export default function Settings() {
   const [editingField, setEditingField] = useState<keyof UpdateUserSettingsRequest | null>(null);
 
   const methods = useForm<UpdateUserSettingsRequest>();
-  const { register, handleSubmit, setValue, watch, control, formState: { errors } } = methods;
+  const { register, setValue, watch, control, } = methods;
 
   // Fetch user settings on component mount
   useEffect(() => {
@@ -203,7 +203,7 @@ export default function Settings() {
         <div className={styles.settingsSection}>
           <h2 className={styles.sectionTitle}>Sign-in & Security</h2>
           <p className={styles.sectionDescription}>
-            Keep your account safe with a secure password and by signing out of devices you're not using.
+            Keep your account safe with a secure password and by signing out of devices you&apos;re not using.
           </p>
 
           {/* Email and Change Password Row */}

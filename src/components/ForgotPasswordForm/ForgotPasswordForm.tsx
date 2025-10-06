@@ -17,14 +17,14 @@ const ForgotPasswordForm: React.FC = () => {
     <main className={`${style.userLoginPage} loginPage`}>
       <div className={style.leftPanel}>
         <div className={style.loginlogo}>
-          <a className="p-0 m-0" href="/">
+          <Link className="p-0 m-0" href="/">
             <Image
               src={travelRegionsLogo}
               alt="logo"
               width="205"
               height="35"
             />
-          </a>
+          </Link>
         </div>
         <div className={style.loginContent}>
           <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>

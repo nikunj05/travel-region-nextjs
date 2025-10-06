@@ -8,7 +8,7 @@ const Contact = () => {
         <div className="contact-us-content">
           <div className="heading_section">
             <h1 className="section-title">Contact us for help <br/> or information</h1>
-            <p className="section-description mx-width-790">"Have questions or need help? We’re just a message away."</p>
+            <p className="section-description mx-width-790">&ldquo;Have questions or need help? We&rsquo;re just a message away.&rdquo;</p>
           </div>
           <button className="btn hotel-search-button d-flex align-items-center mx-auto">
             Search Hotel

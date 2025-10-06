@@ -53,10 +53,10 @@ export const useResetPassword = () => {
         password: data.password,
         password_confirmation: data.password_confirmation,
       });
-      const message = (response as any)?.message || 'Password reset successful';
+      const message = (response as { message?: string })?.message || 'Password reset successful';
       toast.success(message);
       router.push('/login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage = formatApiErrorMessage(error) || 'Password reset failed';
       setError(errorMessage);
       toast.error(errorMessage);

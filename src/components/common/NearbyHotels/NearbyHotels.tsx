@@ -4,9 +4,6 @@ import Image from "next/image";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import testimonialsSliderUserImg1 from "@/assets/images/testimonials-slider-user-img1.png";
-import testimonialsSliderUserImg2 from "@/assets/images/testimonials-slider-user-img2.png";
-import testimonialsSliderUserImg3 from "@/assets/images/testimonials-slider-user-img3.png";
 import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import "./NearbyHotels.scss";
@@ -331,7 +328,7 @@ const NearByHotels = () => {
           <button
             type="button"
             className="slick-prev"
-            onClick={() => (sliderRef.current as any)?.slickPrev()}
+            onClick={() => sliderRef.current?.slickPrev()}
           >
             <svg
               width="24"
@@ -350,7 +347,7 @@ const NearByHotels = () => {
           <button
             type="button"
             className="slick-next"
-            onClick={() => (sliderRef.current as any)?.slickNext()}
+            onClick={() => sliderRef.current?.slickNext()}
           >
             <svg
               width="24"

@@ -7,7 +7,7 @@ import styles from "./SelectWithFlag.module.scss";
 export interface SelectWithFlagOption {
   value: string;
   label: string;
-  flag: any; // Next.js Image import
+  flag: string; // Image source path
 }
 
 export interface SelectWithFlagProps {

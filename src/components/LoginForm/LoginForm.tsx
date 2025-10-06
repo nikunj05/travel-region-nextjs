@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTranslations } from "next-intl";
+// import { useTranslations } from "next-intl";
 import { loginSchema, LoginFormData } from "@/schemas/loginSchema";
 import { useLogin } from "@/hooks/useLogin";
 import { Form } from "@/components/core/Form/Form";
@@ -15,22 +15,22 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 const LoginForm: React.FC = () => {
-  const t = useTranslations("Auth.login");
-  const nav = useTranslations("Navigation");
+  // const t = useTranslations("Auth.login");
+  // const nav = useTranslations("Navigation");
   const { handleSubmit, isLoading, error } = useLogin();
   return (
     <>
       <main className={`${style.userLoginPage} loginPage`}>
         <div className={style.leftPanel}>
           <div className={style.loginlogo}>
-            <a className="p-0 m-0" href="/">
+            <Link className="p-0 m-0" href="/">
               <Image
                 src={travelRegionsLogo}
                 alt="logo"
                 width="205"
                 height="35"
               />
-            </a>
+            </Link>
           </div>
           <div className={style.loginContent}>
             <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>

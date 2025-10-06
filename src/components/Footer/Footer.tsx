@@ -13,14 +13,14 @@ import americanExpress from '@/assets/images/american-express.svg'
 import payPal from '@/assets/images/pay-pal.svg'
 import stripe from '@/assets/images/stripe.svg'
 import unionPay from '@/assets/images/union-pay.svg'
-import { useSettingsStore } from '@/store/settingsStore'
+// import { useSettingsStore } from '@/store/settingsStore'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useCmsStore } from '@/store/cmsStore'
 
 const Footer = () => {
 
-  const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
+  // const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
   const { pages, fetchPages } = useCmsStore()
 
   useEffect(() => {

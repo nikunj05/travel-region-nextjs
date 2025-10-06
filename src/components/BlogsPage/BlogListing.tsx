@@ -7,6 +7,7 @@ import "./BlogListing.scss";
 import { useBlogStore } from "@/store/blogStore";
 import { formatDateWithReadTime } from "@/lib/dateUtils";
 import BlogContent from "@/components/common/BlogContent/BlogContent";
+import { BlogFilters } from "@/types/blog";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
 import { useRouter } from "@/i18/navigation";
@@ -65,7 +66,7 @@ const BlogListing = () => {
 
   // Fetch blogs with current filters
   useEffect(() => {
-    const filters: any = {
+    const filters: BlogFilters = {
       page: currentPage,
       per_page: blogsPerPage,
     };
@@ -119,10 +120,10 @@ const BlogListing = () => {
     setCurrentPage(1);
   };
 
-  const handleSortChange = (sortValue: string) => {
-    setSortBy(sortValue);
-    setCurrentPage(1); // Reset to first page when sorting changes
-  };
+  // const handleSortChange = (sortValue: string) => {
+  //   setSortBy(sortValue);
+  //   setCurrentPage(1); // Reset to first page when sorting changes
+  // };
 
   // Calculate total pages from API pagination
   const totalPages = useMemo(() => {

@@ -1,6 +1,6 @@
 'use client'
 import { create } from 'zustand'
-import { UserSettings, UserSettingsResponse, UpdateUserSettingsRequest, UpdateUserSettingsResponse } from '@/types/user'
+import { UserSettings, UpdateUserSettingsRequest, } from '@/types/user'
 import { userService } from '@/services/userService'
 
 interface UserSettingsState {
@@ -51,7 +51,7 @@ export const useUserSettingsStore = create<UserSettingsState>((set, get) => ({
     set({ updating: true, updateError: null })
     
     try {
-      const response = await userService.updateUserSettings(data)
+      await userService.updateUserSettings(data)
       
       // Update the local state with the new data
       const currentSettings = get().userSettings

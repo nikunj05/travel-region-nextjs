@@ -20,14 +20,14 @@ const handler = NextAuth({
     async jwt({ token, account }) {
       if (account) {
         // You can also send token.id_token or access_token to your backend here
-        (token as any).accessToken = (account as any).access_token;
+        token.accessToken = account.access_token;
       }
       return token;
     },
     async session({ session, token }) {
-      (session as any).accessToken = (token as any).accessToken;
+      session.accessToken = token.accessToken;
       // expose provider user id (google sub) for client to post to API
-      (session as any).socialId = (token as any).sub;
+      session.socialId = token.sub;
       return session;
     },
   },

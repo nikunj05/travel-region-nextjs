@@ -1,14 +1,14 @@
 export function formatApiErrorMessage(error: unknown): string {
-  const anyErr: any = error as any;
+  const anyErr = error as { response?: { data?: unknown }; data?: unknown; message?: string };
   const payload = anyErr?.response?.data || anyErr?.data || anyErr;
 
-  let message: string | undefined = payload?.message || anyErr?.message;
+  const message: string | undefined = (payload as { message?: string })?.message || anyErr?.message;
 
   const fieldMessages: string[] = [];
   if (payload && typeof payload === 'object') {
     Object.keys(payload).forEach((key) => {
       if (key === 'message' || key === 'status') return;
-      const value = (payload as any)[key];
+      const value = (payload as Record<string, unknown>)[key];
       if (Array.isArray(value)) {
         value.forEach((v) => {
           if (typeof v === 'string') fieldMessages.push(v);
@@ -34,16 +34,16 @@ export function formatApiErrorMessage(error: unknown): string {
 }
 
 export function formatApiErrorMessages(error: unknown): string[] {
-  const anyErr: any = error as any;
+  const anyErr = error as { response?: { data?: unknown }; data?: unknown; message?: string };
   const payload = anyErr?.response?.data || anyErr?.data || anyErr;
 
-  let message: string | undefined = payload?.message || anyErr?.message;
+  const message: string | undefined = (payload as { message?: string })?.message || anyErr?.message;
 
   const fieldMessages: string[] = [];
   if (payload && typeof payload === 'object') {
     Object.keys(payload).forEach((key) => {
       if (key === 'message' || key === 'status') return;
-      const value = (payload as any)[key];
+      const value = (payload as Record<string, unknown>)[key];
       if (Array.isArray(value)) {
         value.forEach((v) => {
           if (typeof v === 'string') fieldMessages.push(v);

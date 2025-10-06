@@ -53,7 +53,7 @@ export const truncateContent = (htmlContent: string, maxLength: number = 200) =>
   const closeTags = truncatedHtml.match(/<\/[^>]*>/g) || [];
   
   // Add missing closing tags
-  let tagStack: string[] = [];
+  const tagStack: string[] = [];
   openTags.forEach(tag => {
     const tagName = tag.match(/<([^>\s]+)/)?.[1];
     if (tagName && !tag.includes('/')) {

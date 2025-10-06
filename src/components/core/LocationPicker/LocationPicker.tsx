@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React from 'react'
 import './LocationPicker.scss'
 
 interface Location {
@@ -12,7 +12,7 @@ interface Location {
 interface LocationPickerProps {
   isOpen: boolean
   onLocationSelect: (location: Location | null) => void
-  selectedLocation: Location | null
+  selectedLocation?: Location | null
   recentSearches?: Location[]
   suggestedDestinations?: Location[]
 }
@@ -20,7 +20,6 @@ interface LocationPickerProps {
 const LocationPicker: React.FC<LocationPickerProps> = ({
   isOpen,
   onLocationSelect,
-  selectedLocation,
   recentSearches = [],
   suggestedDestinations = []
 }) => {

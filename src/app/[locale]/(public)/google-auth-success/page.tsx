@@ -4,6 +4,26 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { formatApiErrorMessage } from "@/lib/formatApiError";
+
+// Extended session interface for social auth
+interface SocialSession {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  };
+  socialId?: string;
+}
+
+// Error interface for better type safety
+// interface ApiError {
+//   response?: {
+//     data?: {
+//       message?: string;
+//     };
+//   };
+//   message?: string;
+// }
 
 export default function GoogleAuthSuccessPage() {
   const { data: session } = useSession();
@@ -15,11 +35,13 @@ export default function GoogleAuthSuccessPage() {
     const run = async () => {
       if (!session?.user) return;
       try {
-        const firstName = (session.user.name || "").split(" ")[0] || "";
+        const socialSession = session as SocialSession;
+        const firstName = (socialSession.user?.name || "").split(" ")[0] || "";
         const lastName =
-          (session.user.name || "").split(" ").slice(1).join(" ") || "";
-        const email = session.user.email || "";
-        const socialId = (session as any).socialId || "";
+          (socialSession.user?.name || "").split(" ").slice(1).join(" ") || "";
+        const email = socialSession.user?.email || "";
+        const socialId = socialSession.socialId || "";
+        
         await socialLogin({
           first_name: firstName,
           last_name: lastName,
@@ -27,14 +49,14 @@ export default function GoogleAuthSuccessPage() {
           social_media_id: socialId,
         });
         router.push("/profile");
-      } catch (e: any) {
-        const msg = e?.response?.data?.message || e?.message || "Social auth failed";
-        setError(msg);
-        router.replace(`/google-auth-error?message=${encodeURIComponent(msg)}`);
+      } catch (e: unknown) {
+        const errorMessage = formatApiErrorMessage(e) || "Social auth failed";
+        setError(errorMessage);
+        router.replace(`/google-auth-error?message=${encodeURIComponent(errorMessage)}`);
       }
     };
     run();
-  }, [session, router]);
+  }, [session, router, socialLogin]);
 
   if (error) {
     return <div className="p-6 text-red-600">{error}</div>;

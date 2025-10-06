@@ -1,4 +1,5 @@
-@import '@/styles/variables';
+@use "../../styles/variables" as *;
+@use "sass:color";
 
 .settingsContainer {
   max-width: 800px;
@@ -110,7 +111,7 @@
   transition: $transition;
 
   &:hover:not(:disabled) {
-    color: darken($color-blue, 10%);
+    color: color.adjust($color-blue, $lightness: -10%);
     text-decoration: underline;
   }
 
@@ -218,7 +219,7 @@
   transition: $transition;
 
   &:hover:not(:disabled) {
-    background-color: darken($color-blue, 10%);
+    background-color: color.adjust($color-blue, $lightness: -10%);
     transform: translateY(-1px);
   }
 
@@ -280,7 +281,7 @@
   transition: $transition;
 
   &:hover {
-    background-color: darken($color-blue, 10%);
+    background-color: color.adjust($color-blue, $lightness: -10%);
   }
 }
 

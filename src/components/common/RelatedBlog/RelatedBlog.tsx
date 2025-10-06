@@ -5,8 +5,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RelatedBlogImage from "@/assets/images/related-blog-card-img.jpg";
-import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
-import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import "./RelatedBlog.scss";
 
 type RelatedBlogItem = {
@@ -103,7 +101,7 @@ const RelatedBlog: React.FC<RelatedBlogProps> = ({ blogs = [], onBlogClick }) =>
           <button
             type="button"
             className="slick-prev"
-            onClick={() => (sliderRef.current as any)?.slickPrev()}
+            onClick={() => sliderRef.current?.slickPrev()}
           >
             <svg
               width="24"
@@ -122,7 +120,7 @@ const RelatedBlog: React.FC<RelatedBlogProps> = ({ blogs = [], onBlogClick }) =>
           <button
             type="button"
             className="slick-next"
-            onClick={() => (sliderRef.current as any)?.slickNext()}
+            onClick={() => sliderRef.current?.slickNext()}
           >
             <svg
               width="24"

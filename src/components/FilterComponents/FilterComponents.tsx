@@ -23,20 +23,20 @@ interface GuestCounts {
   pets: number;
 }
 
-interface Hotel {
-  id: string;
-  name: string;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  amenities: string[];
-  description: string;
-  price: number;
-  currency: string;
-  mainImage: any;
-  thumbnailImages: any[];
-  ame: { name: string; icon: string }[];
-}
+// interface Hotel {
+//   id: string;
+//   name: string;
+//   rating: number;
+//   reviewCount: number;
+//   location: string;
+//   amenities: string[];
+//   description: string;
+//   price: number;
+//   currency: string;
+//   mainImage: any;
+//   thumbnailImages: any[];
+//   ame: { name: string; icon: string }[];
+// }
 
 const FilterComponents = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>({
@@ -58,16 +58,8 @@ const FilterComponents = () => {
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("Recommended");
 
-  // Sort options for the dropdown
-  const sortOptions = [
-    { value: "Recommended", label: "Recommended" },
-    { value: "Price: Low to High", label: "Price: Low to High" },
-    { value: "Price: High to Low", label: "Price: High to Low" },
-    { value: "Rating", label: "Rating" },
-  ];
+
 
   // Refs for click outside detection
   const locationPickerRef = useRef<HTMLDivElement>(null);
@@ -103,17 +95,6 @@ const FilterComponents = () => {
     };
   }, []);
 
-  // Lock body scroll when mobile filter modal is open
-  useEffect(() => {
-    if (isMobileFilterOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMobileFilterOpen]);
 
   const handleLocationSelect = (location: Location | null) => {
     setSelectedLocation(location);
@@ -145,8 +126,6 @@ const FilterComponents = () => {
     return guestCounts.adults + guestCounts.children + guestCounts.pets;
   };
 
-  // Reusable renderer for all filter sections (used in sidebar and mobile modal)
-  const renderFilters = (isMobile = false) => <></>;
 
   return (
     <div className="search-bar-common">

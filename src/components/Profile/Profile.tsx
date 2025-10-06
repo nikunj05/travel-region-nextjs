@@ -79,7 +79,7 @@ const Profile = () => {
             setProfileImage(userData.profile_image_url);
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error fetching profile:', error);
         const errorMessage = formatApiErrorMessage(error) || 'Failed to load profile';
         toast.error(errorMessage);
@@ -134,7 +134,7 @@ const Profile = () => {
         
         toast.success(response.message || 'Profile updated successfully');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating profile:', error);
       const errorMessage = formatApiErrorMessage(error) || 'Failed to update profile';
       toast.error(errorMessage);

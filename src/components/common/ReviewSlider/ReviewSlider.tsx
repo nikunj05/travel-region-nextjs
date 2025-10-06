@@ -58,7 +58,7 @@ const ReviewSlider = ({ slidesToShowDesktop = 3 }: { slidesToShowDesktop?: numbe
     if (!container) return;
 
     const ro = new ResizeObserver(() => {
-      const slider: any = sliderRef.current;
+      const slider = sliderRef.current;
       try {
         slider?.innerSlider?.onWindowResized?.();
       } catch {}
@@ -68,7 +68,7 @@ const ReviewSlider = ({ slidesToShowDesktop = 3 }: { slidesToShowDesktop?: numbe
     ro.observe(container);
     // Kick once on mount to ensure proper layout (e.g., when inside a modal)
     setTimeout(() => {
-      const slider: any = sliderRef.current;
+      const slider = sliderRef.current;
       try {
         slider?.innerSlider?.onWindowResized?.();
         slider?.slickGoTo?.(0, true);
@@ -277,7 +277,7 @@ const ReviewSlider = ({ slidesToShowDesktop = 3 }: { slidesToShowDesktop?: numbe
           <button
             type="button"
             className="slick-prev"
-            onClick={() => (sliderRef.current as any)?.slickPrev()}
+            onClick={() => sliderRef.current?.slickPrev()}
           >
             <svg
               width="24"
@@ -296,7 +296,7 @@ const ReviewSlider = ({ slidesToShowDesktop = 3 }: { slidesToShowDesktop?: numbe
           <button
             type="button"
             className="slick-next"
-            onClick={() => (sliderRef.current as any)?.slickNext()}
+            onClick={() => sliderRef.current?.slickNext()}
           >
             <svg
               width="24"

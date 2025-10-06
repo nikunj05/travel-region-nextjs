@@ -19,7 +19,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const [isClient, setIsClient] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
-  const [selectingCheckout, setSelectingCheckout] = useState(false);
+  // const [selectingCheckout, setSelectingCheckout] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState<Date[]>([]);
 
   // Initialize client-side state after hydration
@@ -82,11 +82,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
     ) {
       // Starting new selection or date is before current start date
       onDateSelect(date, null);
-      setSelectingCheckout(true);
+      // setSelectingCheckout(true);
     } else {
       // Selecting end date
       onDateSelect(selectedStartDate, date);
-      setSelectingCheckout(false);
+      // setSelectingCheckout(false);
     }
   };
 

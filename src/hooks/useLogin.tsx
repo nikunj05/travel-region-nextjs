@@ -23,7 +23,7 @@ export const useLogin = () => {
       await login(data);
       toast.success('Login successful');
       router.push('/profile');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error);
       const errorMessage = formatApiErrorMessage(error) || t('failed');
       setError(errorMessage);

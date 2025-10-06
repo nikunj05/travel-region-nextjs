@@ -7,7 +7,7 @@ import { useRouter } from "@/i18/navigation";
 import { useEffect, ReactNode } from "react";
 
 const PrivateLayout = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated, token, isInitialized } = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

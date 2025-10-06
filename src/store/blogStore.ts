@@ -34,7 +34,7 @@ interface BlogState {
   clearErrors: () => void
 }
 
-export const useBlogStore = create<BlogState>((set, get) => ({
+export const useBlogStore = create<BlogState>((set) => ({
   // Initial state
   blogs: [],
   pagination: null,

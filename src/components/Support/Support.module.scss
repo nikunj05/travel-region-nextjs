@@ -1,0 +1,89 @@
+.supportContainer {
+  padding: 24px 0;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pageSubtitle {
+  color: #6b7280; /* gray-500 */
+  margin-bottom: 24px;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .cardsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: #f6f8fc; /* light background similar to other pages */
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cardLeft {
+  display: flex;
+  gap: 12px;
+}
+
+.iconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitle {
+  font-weight: 600;
+}
+
+.numberRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flagImg {
+  width: 18px;
+  height: 12px;
+  object-fit: cover;
+}
+
+.numberLink {
+  color: #111827;
+  text-decoration: underline;
+}
+
+.hintText {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.chevron {
+  color: #111827;
+}
+
+

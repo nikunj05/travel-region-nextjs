@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "@/i18/navigation";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
@@ -47,8 +47,8 @@ interface Hotel {
   description: string;
   price: number;
   currency: string;
-  mainImage: any;
-  thumbnailImages: any[];
+  mainImage: StaticImageData;
+  thumbnailImages: StaticImageData[];
   ame: { name: string; icon: string }[];
 }
 

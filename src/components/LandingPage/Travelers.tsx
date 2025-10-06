@@ -85,7 +85,7 @@ const Travelers = () => {
               this one stands out. The search results were clear, and the filters helped me narrow things down quickly. I
               booked a beachfront villa in the Maldives within minutes, and the instant confirmation gave me peace of
               mind. Even the follow-up emails were organized and helpful. It’s now my go-to site every time I plan a
-              trip."
+              trip.&rdquo;
             </p>
             <div className="testimonial-footer">
               <p className="testimonial-hotel-name mb-2">
@@ -308,7 +308,7 @@ const Travelers = () => {
               this one stands out. The search results were clear, and the filters helped me narrow things down quickly. I
               booked a beachfront villa in the Maldives within minutes, and the instant confirmation gave me peace of
               mind. Even the follow-up emails were organized and helpful. It’s now my go-to site every time I plan a
-              trip."
+              trip.&rdquo;
             </p>
             <div className="testimonial-footer">
               <p className="testimonial-hotel-name mb-2">
@@ -511,12 +511,12 @@ const Travelers = () => {
         <div className="testimonial-actions">
           <div className="testimonial-dots" ref={dotsRef}></div>
           <div className="testimonial-arrows">
-            <button type="button" className="slick-prev" onClick={() => (sliderRef.current as any)?.slickPrev()}>
+            <button type="button" className="slick-prev" onClick={() => sliderRef.current?.slickPrev()}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 12L20 12M4 12L8.99996 17M4 12L9 7" stroke="#1B2236" strokeWidth="1.5" />
               </svg>
             </button>
-            <button type="button" className="slick-next" onClick={() => (sliderRef.current as any)?.slickNext()}>
+            <button type="button" className="slick-next" onClick={() => sliderRef.current?.slickNext()}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="#1B2236" strokeWidth="1.5" />
               </svg>

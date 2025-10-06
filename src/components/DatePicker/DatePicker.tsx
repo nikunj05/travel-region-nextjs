@@ -18,7 +18,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   minDate = new Date(),
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectingCheckout, setSelectingCheckout] = useState(false);
+  // const [selectingCheckout, setSelectingCheckout] = useState(false);
 
   const monthNames = [
     "January",
@@ -69,11 +69,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
     ) {
       // Starting new selection or date is before current start date
       onDateSelect(date, null);
-      setSelectingCheckout(true);
+      // setSelectingCheckout(true);
     } else {
       // Selecting end date
       onDateSelect(selectedStartDate, date);
-      setSelectingCheckout(false);
+      // setSelectingCheckout(false);
     }
   };
 

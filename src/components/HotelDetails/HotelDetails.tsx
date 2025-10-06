@@ -25,12 +25,13 @@ import FaqSection from "../common/FaqSection/FaqSection";
 import RoomInfoImage from "@/assets/images/room-information-image.jpg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import ImageModal from "../common/ImageModal/ImageModal";
+import Link from "next/link";
 
 const HotelDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-
+console.log("==> selectedRoom", selectedRoom);
   const handleOpenModal = (roomId: number) => {
     setSelectedRoom(roomId);
     setIsModalOpen(true);
@@ -67,7 +68,7 @@ const HotelDetails = () => {
         <nav className="breadcrumbs" aria-label="Breadcrumb">
           <ol>
             <li>
-              <a href="/">Home</a>
+              <Link href="/">Home</Link>
               <Image
                 src={BreadcrumbArrow}
                 width={18}
@@ -77,7 +78,7 @@ const HotelDetails = () => {
               />
             </li>
             <li>
-              <a href="#">Bangkok</a>
+              <Link href="#">Bangkok</Link>
               <Image
                 src={BreadcrumbArrow}
                 width={18}
@@ -87,7 +88,7 @@ const HotelDetails = () => {
               />
             </li>
             <li>
-              <a href="/thailand">Thailand</a>
+              <Link href="/thailand">Thailand</Link>
               <Image
                 src={BreadcrumbArrow}
                 width={18}
@@ -125,7 +126,7 @@ const HotelDetails = () => {
                 </div>
                 <div className="thambnail-image-item">
                   <Image src={thumbnailImages4} alt="Thumbnail 4" />
-                  <a
+                  <Link
                     href="#"
                     className="show-all-photos"
                     onClick={(e) => {
@@ -134,7 +135,7 @@ const HotelDetails = () => {
                     }}
                   >
                     Show all 34 photos
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

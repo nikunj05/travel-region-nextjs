@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { RegisterFormData } from '@/schemas/registerSchema';
 import { toast } from 'react-toastify';
-import { formatApiErrorMessage, formatApiErrorMessages } from '@/lib/formatApiError';
+import {  formatApiErrorMessages } from '@/lib/formatApiError';
 
 export const useRegister = () => {
   const [isLoading, setIsLoading] = useState(false);

@@ -10,6 +10,7 @@ export * from './faq';
 declare module 'next-auth' {
   interface Session {
     accessToken?: string;
+    socialId?: string;
   }
 }
 

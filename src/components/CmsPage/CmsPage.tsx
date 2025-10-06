@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import Link from "next/link";
 import { useCmsStore } from "@/store/cmsStore";
 import AboutUs from "@/components/AboutUs/AboutUs";
 import "./CmsPage.scss";
@@ -10,7 +10,6 @@ interface CmsPageProps {
 }
 
 export default function CmsPage({ slug }: CmsPageProps) {
-  const locale = useLocale();
   const {
     currentPage,
     detailLoading,
@@ -66,7 +65,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
       const text = node.textContent?.trim() || "";
       if (!text) return;
       const level = Number(node.tagName.substring(1));
-      let id = node.getAttribute("id") || slugify(text);
+      const id = node.getAttribute("id") || slugify(text);
       let uniqueId = id;
       let counter = 1;
       while (
@@ -95,7 +94,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
       const text = (strong.textContent || "").trim();
       if (!text) return;
 
-      let id = p.getAttribute("id") || slugify(text);
+      const id = p.getAttribute("id") || slugify(text);
       let uniqueId = id;
       let counter = 1;
       while (
@@ -188,9 +187,9 @@ export default function CmsPage({ slug }: CmsPageProps) {
                 <div className="banner-bradcumb-inner">
                   <ul className="banner-bradcumb-list p-0 m-0">
                     <li className="banner-bradcumb-item">
-                      <a href="/" className="banner-bradcumb-link">
+                      <Link href="/" className="banner-bradcumb-link">
                         Home
-                      </a>
+                      </Link>
                     </li>
                     <span className="banner-bradcumb-arrow">
                       <svg
@@ -233,9 +232,9 @@ export default function CmsPage({ slug }: CmsPageProps) {
                 <div className="banner-bradcumb-inner">
                   <ul className="banner-bradcumb-list p-0 m-0">
                     <li className="banner-bradcumb-item">
-                      <a href="/" className="banner-bradcumb-link">
+                      <Link href="/" className="banner-bradcumb-link">
                         Home
-                      </a>
+                      </Link>
                     </li>
                     <span className="banner-bradcumb-arrow">
                       <svg

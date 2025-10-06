@@ -72,5 +72,5 @@ export interface UpdateUserSettingsRequest {
 export interface UpdateUserSettingsResponse {
   status: boolean;
   message: string;
-  data?: any;
+  data?: string;
 }

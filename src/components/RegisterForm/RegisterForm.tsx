@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Controller } from "react-hook-form";
-import { useTranslations } from "next-intl";
+// import { useTranslations } from "next-intl";
 import { registerSchema, RegisterFormData } from "@/schemas/registerSchema";
 import { useRegister } from "@/hooks/useRegister";
 import { Form } from "@/components/core/Form/Form";
@@ -17,23 +17,23 @@ import style from "./RegisterForm.module.scss";
 import Link from "next/link";
 
 const RegisterForm: React.FC = () => {
-  const t = useTranslations("Auth.login");
-  const nav = useTranslations("Navigation");
-  const { handleSubmit, isLoading, error, success } = useRegister();
+  // const t = useTranslations("Auth.login");
+  // const nav = useTranslations("Navigation");
+  const { handleSubmit, isLoading, error } = useRegister();
 
   return (
     <>
       <main className={`${style.userLoginPage} loginPage`}>
         <div className={style.leftPanel}>
           <div className={style.loginlogo}>
-            <a className="p-0 m-0" href="/">
+            <Link className="p-0 m-0" href="/">
               <Image
                 src={travelRegionsLogo}
                 alt="logo"
                 width="205"
                 height="35"
               />
-            </a>
+            </Link>
           </div>
           <div className={style.loginContent}>
             <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>

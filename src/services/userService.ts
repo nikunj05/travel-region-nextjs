@@ -22,8 +22,8 @@ export const userService = {
   // Update user profile
   updateProfile: async (data: UpdateProfileRequest | FormData): Promise<UpdateProfileResponse> => {
     try {
-      let requestData: any;
-      let headers: any = {};
+      let requestData: UpdateProfileRequest | FormData | (UpdateProfileRequest & { _method: string });
+      const headers: Record<string, string> = {};
 
       if (data instanceof FormData) {
         // For FormData (image upload), add _method parameter
@@ -39,7 +39,7 @@ export const userService = {
         headers['Content-Type'] = 'application/json';
       }
         
-      const response = await api.post<UpdateProfileResponse, any>(
+      const response = await api.post<UpdateProfileResponse, UpdateProfileRequest | FormData>(
         '/profile',
         requestData,
         { headers }
