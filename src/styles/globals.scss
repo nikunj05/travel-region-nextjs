@@ -58,7 +58,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px 15px;
+  padding: 11.7px 15px;
   transition: $transition;
 
   &:hover {
@@ -413,6 +413,66 @@ img {
 
     &.open {
       .language-menu {
+        display: block;
+      }
+    }
+  }
+
+  .user-login-box {
+    .profile-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .profile-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0 0px 0 15px;
+        transition: background 0.2s ease;
+
+        .profile-avatar {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .profile-arrow {
+          color: $color-black-zinc-950;
+        }
+      }
+
+      .profile-menu {
+        display: none;
+        position: absolute;
+        top: 110%;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-width: 160px;
+        z-index: 10;
+
+        a {
+          display: block;
+          padding: 10px 14px;
+          color: #333;
+          text-decoration: none;
+          font-size: 14px;
+          transition: background 0.2s ease;
+
+          &:hover {
+            background: #f2f2f2;
+          }
+        }
+      }
+
+      &.open .profile-menu {
         display: block;
       }
     }

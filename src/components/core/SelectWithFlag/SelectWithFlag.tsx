@@ -92,7 +92,7 @@ export const SelectWithFlag = ({
         )}
         <button
           type="button"
-          className={styles.selectButton}
+          className={`${styles.selectButton} form-input`}
           onClick={handleToggle}
           disabled={disabled}
         >
@@ -100,8 +100,8 @@ export const SelectWithFlag = ({
             <Image
               src={displayFlag}
               alt="Flag"
-              width={20}
-              height={15}
+              width={30}
+              height={20}
               className={styles.flagIcon}
             />
             <span className={styles.selectText}>{displayText}</span>
@@ -131,8 +131,8 @@ export const SelectWithFlag = ({
                   <Image
                     src={option.flag}
                     alt="Flag"
-                    width={20}
-                    height={15}
+                    width={24}
+                    height={24}
                     className={styles.optionFlag}
                   />
                   <span className={styles.optionText}>{option.label}</span>

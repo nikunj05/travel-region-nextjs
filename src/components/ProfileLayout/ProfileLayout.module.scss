@@ -11,13 +11,10 @@
   // Mobile hamburger button
   .mobileMenuToggle {
     display: none;
-    position: absolute;
-    top: 0;
-    right: 0;
     z-index: 10;
     background-color: transparent;
     border: none;
-    padding: 8px;
+    padding: 0px;
     cursor: pointer;
     transition: all 0.2s ease;
 
@@ -43,7 +40,7 @@
     padding: 0;
     cursor: pointer;
     margin-bottom: 24px;
-    margin-right: 20px;
+    margin-left: 20px;
 
     &:hover {
       opacity: 0.7;
@@ -58,7 +55,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, .7);
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -74,15 +71,13 @@
   }
 
   .sidebarHeader {
-    padding: 24px 0 20px 0;
+    padding: 10px 0 20px 0;
 
     h2 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #6b7280;
+      font-size: 18px;
+      font-weight: $font-weight500;
+      color: $color-black-zinc-950;
       margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
   }
 
@@ -94,33 +89,35 @@
     }
 
     li {
-      margin: 0;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
   .navLink {
     display: flex;
     align-items: center;
-    padding: 14px 24px;
-    color: #374151;
+    padding: 8px 12px;
+    color: $color-black-zinc-500;
     text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 16px;
+    border-radius: 4px;
+    font-weight: $font-weight400;
+    border: none;
     transition: all 0.2s ease;
-    border-left: 3px solid transparent;
 
-    &:hover {
-      background-color: #f3f4f6;
-      color: $color-blue;
-    }
-
+    &:hover,
     &.active {
-      background-color: #eff6ff;
-      color: $color-blue;
-      border-left-color: $color-blue;
+      background-color: $brand-color;
+      color: $color-white;
 
       .icon {
-        color: $color-blue;
+        path {
+          stroke: $color-white;
+        }
       }
     }
   }
@@ -129,8 +126,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 12px;
-    color: #6b7280;
+    margin-right: 10px;
     transition: color 0.2s ease;
     flex-shrink: 0;
 
@@ -146,15 +142,8 @@
 
   .mainContent {
     flex: 1;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 32px;
+    padding: 0px;
     min-height: 500px;
-
-    @media (max-width: 767px) {
-      padding: 24px 20px;
-    }
   }
 }
 
@@ -164,40 +153,49 @@
 @media (max-width: 991.55px) {
   .profileLayout {
     .layoutWrapper {
-      padding-top: 10px;
+      padding-top: 20px;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    // Show hamburger button on mobile
     .mobileMenuToggle {
       display: flex;
+      justify-content: end;
     }
 
-    // Show overlay on mobile
     .mobileOverlay {
       display: block;
     }
 
-    // Show close button on mobile
     .mobileCloseButton {
       display: block;
     }
 
-    // Mobile sidebar styles
+    .sidebarNav {
+
+      li {
+        padding: 0 20px;
+      }
+    }
+
     .sidebar {
       position: fixed;
       top: 0;
       right: -100%;
-      width: 300px;
+      width: 50%;
       height: 100%;
       z-index: 999;
       transition: right 0.3s ease;
       overflow-y: auto;
-      padding: 20px 0;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+      padding: 32px 0 20px;
 
       &.sidebarOpen {
         right: 0;
       }
+    }
+
+    .sidebarHeader {
+      padding: 10px 20px 20px 20px;
     }
 
     .mobileOverlay {
@@ -209,84 +207,113 @@
 
     .mainContent {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 0px;
     }
   }
 }
 
 @media (max-width: 767.55px) {
   .profileLayout {
-    .sidebar {
-      width: 280px;
+
+    .layoutWrapper {
+      gap: 20px;
     }
 
-    .mobileMenuToggle {
-      padding: 6px;
-    }
-  }
-}
+    .sidebarHeader {
+      padding: 10px 0 16px 12px;
 
-@media (max-width: 575.55px) {
-  .profileLayout {
+      h2 {
+        font-size: 18px;
+      }
+    }
+
+    .navLink {
+      border-radius: 0px;
+    }
+
     .sidebar {
-      width: 260px;
+      width: 320px;
+      padding: 24px 0 20px;
     }
 
     .mobileCloseButton {
-      margin-right: 15px;
+      margin-left: 10px;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+
+    .sidebarNav {
+
+      li {
+        padding: 0px;
+      }
     }
   }
 }
+
+// @media (max-width: 575.55px) {
+//   .profileLayout {
+//     .sidebar {
+//       width: 260px;
+//     }
+
+//     .mobileCloseButton {
+//       margin-right: 15px;
+//     }
+//   }
+// }
 
 // RTL Support
-[dir="rtl"] {
-  .navLink {
-    border-left: none;
-    border-right: 3px solid transparent;
+// [dir="rtl"] {
+//   .navLink {
+//     border-left: none;
+//     border-right: 3px solid transparent;
 
-    &.active {
-      border-right-color: $color-blue;
-    }
-  }
+//     &.active {
+//       border-right-color: $color-blue;
+//     }
+//   }
 
-  .icon {
-    margin-right: 0;
-    margin-left: 12px;
-  }
+//   .icon {
+//     margin-right: 0;
+//     margin-left: 12px;
+//   }
 
-  // RTL mobile styles
-  @media (max-width: 991.55px) {
-    .profileLayout {
-      .sidebar {
-        right: auto;
-        left: -100%;
-        transition: left 0.3s ease;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+//   // RTL mobile styles
+//   @media (max-width: 991.55px) {
+//     .profileLayout {
+//       .sidebar {
+//         right: auto;
+//         left: -100%;
+//         transition: left 0.3s ease;
+//         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 
-        &.sidebarOpen {
-          right: auto;
-          left: 0;
-        }
-      }
+//         &.sidebarOpen {
+//           right: auto;
+//           left: 0;
+//         }
+//       }
 
-      .mobileCloseButton {
-        margin-left: 20px;
-        margin-right: 0;
-      }
+//       .mobileCloseButton {
+//         margin-left: 20px;
+//         margin-right: 0;
+//       }
 
-      .mobileMenuToggle {
-        right: 0;
-        left: auto;
-      }
-    }
-  }
+//       .mobileMenuToggle {
+//         right: 0;
+//         left: auto;
+//       }
+//     }
+//   }
 
-  @media (max-width: 575.55px) {
-    .profileLayout {
-      .mobileCloseButton {
-        margin-left: 15px;
-        margin-right: 0;
-      }
-    }
-  }
-}
+//   @media (max-width: 575.55px) {
+//     .profileLayout {
+//       .mobileCloseButton {
+//         margin-left: 15px;
+//         margin-right: 0;
+//       }
+//     }
+//   }
+// }

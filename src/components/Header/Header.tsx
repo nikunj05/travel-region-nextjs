@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "@/i18/navigation";
 import { useTransition } from "react";
 import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
+import UserImage from "@/assets/images/user-image.png";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
 import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
 import arabicFlagIcon from "@/assets/images/arabic-flag-icon.svg";
@@ -335,6 +336,43 @@ const Header = () => {
                   AR
                 </li>
               </ul>
+            </div>
+
+            <div className="user-login-box">
+              <div className="profile-dropdown">
+                <button className="profile-button">
+                  <Image
+                    src={UserImage}
+                    width="42"
+                    height="42"
+                    alt="user image"
+                    className="profile-avatar"
+                  />
+                  <span className="profile-arrow">
+                    <svg
+                      className="language-arrow-icon"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335"
+                        stroke="#09090b"
+                        stroke-width="0.833333"
+                        stroke-miterlimit="16"
+                      ></path>
+                    </svg>
+                  </span>
+                </button>
+
+                <div className="profile-menu">
+                  <a href="#">My Profile</a>
+                  <a href="#">Settings</a>
+                  <a href="#">Logout</a>
+                </div>
+              </div>
             </div>
 
             {!isAuthenticated && (

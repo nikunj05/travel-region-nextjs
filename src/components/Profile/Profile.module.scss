@@ -6,43 +6,52 @@
 
 .profileHeader {
   margin-bottom: 32px;
-  
+
   h1 {
-    font-size: 28px;
-    font-weight: 600;
-    color: $text-primary;
-    margin: 0;
+    font-size: 36px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-950;
+    margin: 0 0 32px 0;
   }
 }
 
 .profileContent {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 0px;
 }
 
 .profileImageSection {
   display: flex;
   justify-content: flex-start;
-  padding: 0 0 24px 0;
+  padding: 0 0 32px 0;
 }
 
 .profileAvatar {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  transition: $transition;
+
+  &:hover {
+    .uploadButton {
+      transform: translateY(0);
+    }
+  }
 }
 
 .avatarPlaceholder {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: #2B3E50;
+  background: #F4F6FB;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  
+  transition: $transition;
+
   svg {
     width: 32px;
     height: 32px;
@@ -51,11 +60,12 @@
 
 .avatarImage {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   overflow: hidden;
-  background: #f3f4f6;
+  background: #F4F6FB;
+  transition: $transition;
 }
 
 .imagePreview {
@@ -70,31 +80,31 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: $color-blue;
-  border: 2px solid white;
+  width: 64px;
+  height: 31px;
+  border-radius: 0 0 100px 100px;
+  background-color: #000000D4;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: $transition;
   color: white;
-  
+  transform: translateY(150px);
+  transition: $transition;
+
   &:hover:not(:disabled) {
-    background-color: color.adjust($color-blue, $lightness: -10%);
-    transform: scale(1.05);
+    transform: none;
   }
-  
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
-  
+
   svg {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -106,6 +116,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -115,7 +126,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  
+
   // Override Input component margins for consistent spacing
   :global(.form-group) {
     margin-bottom: 0 !important;
@@ -126,17 +137,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  
-  @media (max-width: 767px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  
+  gap: 0px;
+
   label {
     font-size: 14px;
     font-weight: 500;
@@ -146,22 +153,16 @@
 
 .formInput,
 .formSelect {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 15px;
-  color: $text-primary;
-  background-color: #f9fafb;
-  transition: all 0.2s ease;
-  
+  background: #F4F6FB !important;
+  font-weight: $font-weight500 !important;
+
   &:focus {
     outline: none;
     border-color: $color-blue;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
   }
-  
+
   &::placeholder {
     color: #9ca3af;
   }
@@ -170,10 +171,10 @@
 .formSelect {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23374151' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23374151' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 16px center !important;
+  padding-right: 40px !important;
 }
 
 // Custom class for SelectWithFlag component without dropdown arrow background
@@ -182,13 +183,13 @@
   border: none !important;
   background: none !important;
   padding: 0 !important;
-  
+
   // Let the SelectWithFlag component handle its own styling
   .selectButton {
     border: 1px solid #d1d5db;
     border-radius: 6px;
     background-color: #f9fafb;
-    
+
     &:focus {
       border-color: $color-blue;
       background-color: white;
@@ -214,7 +215,7 @@
 .inputWithIcon {
   position: relative;
   width: 100%;
-  
+
   input,
   select {
     padding-right: 48px;
@@ -231,7 +232,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   svg {
     width: 20px;
     height: 20px;
@@ -245,36 +246,49 @@
 .formActions {
   display: flex;
   justify-content: flex-start;
-  margin-top: 8px;
+  margin-top: 0px;
 }
 
 .saveButton {
-  width: 100%;
-  padding: 14px 48px;
-  background-color: #4A5F8C;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: $transition;
-  
-  &:hover:not(:disabled) {
-    background-color: color.adjust(#4A5F8C, $lightness: -10%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(74, 95, 140, 0.3);
-  }
-  
   &:active:not(:disabled) {
     transform: translateY(0);
   }
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 }
+
+@media (max-width: 767.55px) {
+  .profileHeader {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 24px;
+      margin: 0px;
+    }
+  }
+
+  .profileImageSection {
+    padding: 0 0 24px 0;
+  }
+
+  .profileForm {
+    gap: 20px;
+
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .saveButton {
+    margin-top: 4px;
+    padding: 11.2px 15px;
+  }
+}
+
 
 // RTL Support
 [dir="rtl"] {
@@ -282,7 +296,7 @@
     right: auto;
     left: 0;
   }
-  
+
   .formGroup {
     select {
       background-position: left 16px center;
@@ -290,23 +304,23 @@
       padding-left: 40px;
     }
   }
-  
+
   .inputIcon {
     right: auto;
     left: 16px;
   }
-  
+
   .inputWithIcon {
+
     input,
     select {
       padding-right: 16px;
       padding-left: 48px;
     }
   }
-  
+
   .selectWithFlag {
     padding-left: 40px !important;
     padding-right: 16px !important;
   }
 }
-
