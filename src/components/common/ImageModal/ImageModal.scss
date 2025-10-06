@@ -13,7 +13,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 16px;
 }
 
 .image-modal {
@@ -21,7 +21,7 @@
   border-radius: 12px;
   max-width: 1200px;
   width: 100%;
-  max-height: 90vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -31,8 +31,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 15px 20px;
+    gap: 20px;
+    border-bottom: 1px solid $border-color;
 
     .hotel-name {
       font-size: 24px;
@@ -47,18 +48,9 @@
       gap: 16px;
 
       .reserve-btn {
-        background: $brand-color;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-weight: $font-weight500;
-        cursor: pointer;
-        transition: $transition;
-
-        &:hover {
-          background: color.adjust($brand-color, $lightness: -10%);
-        }
+        font-size: 16px;
+        padding: 6.2px 15px;
+        white-space: nowrap;
       }
 
       .close-btn {
@@ -70,23 +62,31 @@
         color: $color-black;
         font-weight: $font-weight500;
         cursor: pointer;
-        padding: 8px;
+        padding: 0px;
         border-radius: 4px;
         transition: $transition;
-
-        &:hover {
-          background: #f3f4f6;
-        }
       }
     }
   }
 
   .category-navigation {
-    display: flex;
-    gap: 16px;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    overflow-x: auto;
+    padding: 15px 20px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid $border-color;
+
+    .category-buttons {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 0px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
 
     .category-btn {
       display: flex;
@@ -94,20 +94,20 @@
       align-items: center;
       gap: 8px;
       background: transparent;
-      border: 2px solid transparent;
-      border-radius: 8px;
-      padding: 12px;
+      flex: 0 0 calc((100% - 7 * 12px) / 8);
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      padding: 6px;
       cursor: pointer;
       transition: $transition;
       min-width: 120px;
 
       &:hover {
-        border-color: #e5e7eb;
+        border-color: $brand-color;
       }
 
       &.active {
         border-color: $brand-color;
-        background: rgba($brand-color, 0.05);
 
         .category-name {
           color: $brand-color;
@@ -116,9 +116,9 @@
       }
 
       .category-thumbnail {
-        width: 80px;
+        width: 100%;
         height: 60px;
-        border-radius: 6px;
+        border-radius: 4px;
         overflow: hidden;
 
         img {
@@ -139,27 +139,33 @@
 
   .image-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
     gap: 16px;
-    padding: 24px;
+    padding: 0px 20px 24px;
     overflow-y: auto;
     flex: 1;
+    max-height: fit-content;
+
 
     .image-item {
       border-radius: 8px;
       overflow: hidden;
       cursor: pointer;
+      height: max-content;
       transition: $transition;
 
       &:hover {
-        transform: scale(1.02);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        .grid-image {
+          transform: scale(1.08);
+        }
       }
 
       .grid-image {
         width: 100%;
         height: 200px;
+        border-radius: 8px;
         object-fit: cover;
+        transition: $transition;
       }
     }
   }
@@ -183,10 +189,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 30px;
-    background: #f8f9fa;
+    padding: 15px 20px;
+    background: $color-white;
     color: $color-black;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid $border-color;
 
     .back-btn {
       display: flex;
@@ -198,13 +204,9 @@
       font-size: 16px;
       font-weight: 500;
       cursor: pointer;
-      padding: 8px 12px;
+      padding: 0px;
       border-radius: 6px;
       transition: $transition;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
 
       svg {
         width: 20px;
@@ -228,13 +230,9 @@
       font-size: 16px;
       font-weight: 500;
       cursor: pointer;
-      padding: 8px 12px;
+      padding: 0px;
       border-radius: 6px;
       transition: $transition;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
 
       svg {
         width: 20px;
@@ -244,19 +242,19 @@
   }
 
   .main-image-container {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 40px 80px 100px;
+    height: calc(100% - 184px);
+    padding: 32px 20px;
 
     .nav-arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid #e5e7eb;
+      background: $color-white;
+      border: 1px solid $brand-color;
       color: $color-black;
       width: 50px;
       height: 50px;
@@ -270,14 +268,23 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
       &:hover {
-        background: white;
-        transform: translateY(-50%) scale(1.05);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: $brand-color;
+        color: $color-white;
+
+        svg {
+          path {
+            stroke: $color-white;
+          }
+        }
       }
 
       svg {
         width: 20px;
         height: 20px;
+
+        path {
+          stroke: $brand-color;
+        }
       }
 
       &.nav-arrow-left {
@@ -301,7 +308,6 @@
         max-height: 100%;
         object-fit: contain;
         border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       }
     }
   }
@@ -312,67 +318,119 @@
     left: 0;
     right: 0;
     background: white;
-    padding: 20px;
+    padding: 24px 20px;
     display: flex;
     gap: 12px;
-    justify-content: center;
     overflow-x: auto;
-    border-top: 1px solid #e5e7eb;
+    overflow-y: hidden;
+    border-top: 1px solid $border-color;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+
 
     .thumbnail-item {
-      width: 80px;
-      height: 60px;
-      border-radius: 6px;
+      width: 100%;
+      flex: 0 0 calc((100% - 7 * 12px) / 9);
+      height: 80px;
+      border-radius: 4px;
       overflow: hidden;
       cursor: pointer;
+      outline: 1px solid $border-color;
+      border: 1px solid $border-color;
       transition: $transition;
-      border: 2px solid transparent;
 
-      &:hover {
-        transform: scale(1.05);
-        border-color: #e5e7eb;
-      }
-
+      &:hover,
       &.active {
+        outline-color: $brand-color;
         border-color: $brand-color;
-        transform: scale(1.05);
+
+        .thumbnail-image {
+          transform: scale(1.05);
+        }
+
       }
 
       .thumbnail-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: $transition;
       }
     }
   }
 }
 
 // Responsive design
-@media (max-width: 768px) {
+
+@media (max-width: 911.55px) {
   .image-modal {
     .image-modal-header {
-      flex-direction: column;
-      gap: 16px;
+      .hotel-name {
+        font-size: 21px;
+      }
+    }
+  }
+
+  .image-viewer-container {
+    .thumbnail-strip {
+      .thumbnail-item {
+        flex: 0 0 calc((100% - 7 * 12px) / 6);
+      }
+    }
+  }
+}
+
+
+@media (max-width: 767.55px) {
+  .image-modal {
+    .image-modal-header {
+      flex-direction: column-reverse;
+      gap: 12px;
       align-items: flex-start;
+      padding: 15px;
+
+      .hotel-name {
+        font-size: 16px;
+      }
 
       .header-actions {
         width: 100%;
         justify-content: space-between;
+
+        .reserve-btn {
+          padding: 4.7px 10px;
+          font-size: 14px;
+        }
+
+        .close-btn {
+          gap: 6px;
+          font-size: 14px;
+
+          svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
     }
 
     .category-navigation {
-      padding: 16px;
-      gap: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+
+      .category-buttons {
+        gap: 10px;
+      }
 
       .category-btn {
-        min-width: 100px;
-        padding: 8px;
-
-        .category-thumbnail {
-          width: 60px;
-          height: 45px;
-        }
+        padding: 4px;
+        gap: 5px;
+        flex: 0 0 calc((100% - 7 * 12px) / 5);
 
         .category-name {
           font-size: 11px;
@@ -381,20 +439,29 @@
     }
 
     .image-grid {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 12px;
-      padding: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      padding: 0px 15px 15px;
+
+      .image-item {
+        border-radius: 4px;
+
+        .grid-image {
+          border-radius: 4px;
+          height: 150px;
+        }
+      }
     }
   }
 
   // Image viewer responsive
-  .image-viewer {
+  .image-viewer-container {
     .image-viewer-header {
-      padding: 15px 20px;
+      padding: 15px;
 
-      .back-btn, .close-viewer-btn {
+      .back-btn,
+      .close-viewer-btn {
         font-size: 14px;
-        padding: 6px 10px;
 
         svg {
           width: 18px;
@@ -408,11 +475,12 @@
     }
 
     .main-image-container {
-      padding: 60px 20px 100px;
+      height: calc(100% - 143px);
+      padding: 24px 15px;
 
       .nav-arrow {
-        width: 50px;
-        height: 50px;
+        width: 36px;
+        height: 36px;
 
         &.nav-arrow-left {
           left: 15px;
@@ -431,11 +499,11 @@
 
     .thumbnail-strip {
       padding: 15px;
-      gap: 8px;
+      gap: 10px;
 
       .thumbnail-item {
-        width: 60px;
-        height: 45px;
+        height: 60px;
+        flex: 0 0 calc((100% - 7 * 8px) / 3);
       }
     }
   }

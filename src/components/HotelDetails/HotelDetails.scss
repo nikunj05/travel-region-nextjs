@@ -267,6 +267,7 @@
         margin-bottom: 44px;
         border-bottom: 2px solid $border-color;
         width: fit-content;
+        min-width: -webkit-fill-available;
 
         a {
           flex: 1;

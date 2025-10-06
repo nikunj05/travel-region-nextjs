@@ -132,6 +132,7 @@
     background-color: $color-white;
     border-bottom: 1px solid $border-color;
     padding: 18px 0px;
+    min-height: auto;
 
     .navbar-nav {
       align-items: flex-start;

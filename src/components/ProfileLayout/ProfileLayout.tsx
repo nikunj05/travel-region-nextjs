@@ -202,7 +202,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
   };
 
   return (
-    <div className={styles.profileLayout}>
+    <div className={`${styles.profileLayout} padding-top-100 section-space-b`}>
       <div className="container">
         <div className={styles.layoutWrapper}>
           {/* Sidebar */}
@@ -238,4 +238,3 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
 };
 
 export default ProfileLayout;
-
