@@ -21,12 +21,6 @@
   gap: 32px;
   align-items: flex-start;
   margin-bottom: 60px !important;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 24px;
-    margin-bottom: 32px;
-  }
 }
 
 .preferenceSection {
@@ -59,15 +53,6 @@
   .inputGroup {
     flex: 1;
     min-width: 0;
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 16px;
-
-    .inputGroup {
-      flex: none;
-    }
   }
 }
 
@@ -266,15 +251,36 @@
   }
 
   .settingsForm {
-    gap: 24px;
+    gap: 0px;
+  }
+
+  .preferenceSection {
+    width: 100%;
+  }
+
+  .editLink {
+    font-size: 12px;
+  }
+
+  .cancelButton {
+    font-size: 12px;
+  }
+
+  .editActions {
+    margin-top: 8px;
   }
 
   .settingsSection {
-    padding-bottom: 24px;
+    padding-bottom: 0px;
   }
 
   .sectionTitle {
-    font-size: 18px;
+    font-size: 20px;
+  }
+
+  .sectionDescription {
+    font-size: 14px;
+    margin-bottom: 24px;
   }
 
   .mobileInputGroup {
@@ -288,6 +294,29 @@
 
   .saveAllButton {
     width: 100%;
+  }
+
+  .securityRow {
+    flex-direction: column;
+    gap: 16px;
+
+    .inputGroup {
+      flex: none;
+    }
+  }
+
+  .preferencesRow {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 24px !important;
+  }
+
+  .errorContainer {
+    min-height: 50px;
+  }
+
+  .errorMessage {
+    font-size: 14px;
   }
 }
 

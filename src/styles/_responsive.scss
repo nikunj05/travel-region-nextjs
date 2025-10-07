@@ -193,6 +193,18 @@
       }
     }
 
+    .user-login-box {
+      .profile-dropdown {
+        .profile-button {
+          .profile-avatar {
+            width: 32px;
+            height: 32px;
+          }
+        }
+
+      }
+    }
+
     .header-button-box {
       padding: 0 20px;
       margin: auto 0 0 0;
@@ -643,6 +655,30 @@
 
       .language-menu {
         padding: 5px 0;
+      }
+    }
+
+    .user-login-box {
+      .profile-dropdown {
+        .profile-menu {
+          top: calc(100% + 10px);
+
+          a {
+            padding: 7.5px 12px;
+            font-size: 14px;
+          }
+        }
+
+        .profile-button {
+          gap: 4px;
+          padding-left: 6px;
+
+          .profile-avatar {
+            width: 24px;
+            height: 24px;
+          }
+        }
+
       }
     }
 
