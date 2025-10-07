@@ -44,20 +44,21 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   // Fetch settings on server (cached, revalidate hourly)
-  // const settingsRes = await settingsService.getSettingsCached();
-  // const setting = settingsRes.data.setting;
+  // Pass locale to ensure API receives proper Accept-Language header
+  const settingsRes = await settingsService.getSettingsCached(locale);
+  const setting = settingsRes.data.setting;
 
   return (
     <html lang={lang} dir={direction}>
-      {/* <head>
+      <head>
         <link rel="icon" href={setting.favicon} />
-      </head> */}
+      </head>
       <body>
         <NextIntlClientProvider messages={messages}>
           <NextAuthSessionProvider>
             <AuthProvider>
               <LocaleHydrator locale={locale} />
-              {/* <SettingsHydrator setting={setting} /> */}
+              <SettingsHydrator setting={setting} />
               {children}
               <ToastContainer />
             </AuthProvider>
