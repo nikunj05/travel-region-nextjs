@@ -5,6 +5,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18/request.ts');
 
 const nextConfig: NextConfig = {
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+
   sassOptions: {
     includePaths: [path.join(__dirname, "src/styles")],
     additionalData: `@use "variables" as *; @use "mixins" as *;`,

@@ -18,6 +18,7 @@ const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   // Language switching logic
   const locale = useLocale();
@@ -42,6 +43,10 @@ const Header = () => {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
   };
 
   const handleLoginClick = () => {
@@ -89,6 +94,9 @@ const Header = () => {
       if (!target.closest(".header-language-dropdown")) {
         setIsLanguageMenuOpen(false);
       }
+      if (!target.closest(".profile-dropdown")) {
+        setIsProfileMenuOpen(false);
+      }
     };
 
     // Check on mount
@@ -125,7 +133,10 @@ const Header = () => {
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo);
   // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+  
+  // Use dynamic profile image or fallback to static image
+  const profileImage = user?.profile_image_url || UserImage;
 
   return (
     <header
@@ -338,42 +349,57 @@ const Header = () => {
               </ul>
             </div>
 
-            <div className="user-login-box">
-              <div className="profile-dropdown">
-                <button className="profile-button">
-                  <Image
-                    src={UserImage}
-                    width="42"
-                    height="42"
-                    alt="user image"
-                    className="profile-avatar"
-                  />
-                  <span className="profile-arrow">
-                    <svg
-                      className="language-arrow-icon"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335"
-                        stroke="#09090b"
-                        stroke-width="0.833333"
-                        stroke-miterlimit="16"
-                      ></path>
-                    </svg>
-                  </span>
-                </button>
+            {isAuthenticated && (
+              <div className="user-login-box">
+                <div
+                  className={`profile-dropdown ${
+                    isProfileMenuOpen ? "open" : ""
+                  }`}
+                >
+                  <button className="profile-button" onClick={toggleProfileMenu}>
+                    <Image
+                      src={profileImage}
+                      width="42"
+                      height="42"
+                      alt="user image"
+                      className="profile-avatar"
+                    />
+                    <span className="profile-arrow">
+                      <svg
+                        className="language-arrow-icon"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335"
+                          stroke="#09090b"
+                          strokeWidth="0.833333"
+                          strokeMiterlimit="16"
+                        />
+                      </svg>
+                    </span>
+                  </button>
 
-                <div className="profile-menu">
-                  <a href="#">My Profile</a>
-                  <a href="#">Settings</a>
-                  <a href="#">Logout</a>
+                  <div className="profile-menu">
+                    <Link href="/profile">My Profile</Link>
+                    <Link href="/settings">Settings</Link>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        logout();
+                        setIsProfileMenuOpen(false);
+                      }}
+                    >
+                      Logout
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {!isAuthenticated && (
               <div className="header-button-box align-items-center d-none d-lg-flex">
@@ -388,16 +414,6 @@ const Header = () => {
                   onClick={handleLoginClick}
                 >
                   Log In
-                </button>
-              </div>
-            )}
-            {isAuthenticated && (
-              <div className="header-button-box align-items-center d-none d-lg-flex">
-                <button
-                  className="button login-btn d-flex align-items-center"
-                  onClick={logout}
-                >
-                  Logout
                 </button>
               </div>
             )}

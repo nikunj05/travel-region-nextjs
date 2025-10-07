@@ -12,9 +12,11 @@ export const settingsService = {
   // Uses Next.js fetch caching with hourly revalidation (server-only)
   getSettingsCached: async (): Promise<GetSettingsResponse> => {
     try {
+      console.log(process.env.NEXT_PUBLIC_BASE_URL , "this is call");
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/settings`, {
         next: { revalidate: 3600 },
       });
+      console.log(res , "this is res");
       if (!res.ok) {
         throw new Error(`Failed to fetch settings: ${res.status}`);
       }
