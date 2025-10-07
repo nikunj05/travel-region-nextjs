@@ -1,55 +1,106 @@
-.notificationContainer {
-  padding: 24px;
-}
-
 .pageTitle {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 24px;
+  font-size: 36px;
+  font-weight: $font-weight600;
+  color: $color-black-zinc-950;
+  margin: 0 0 32px 0;
 }
 
 .sectionTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: $font-weight500;
+  color: $color-black-zinc-900;
+  margin-bottom: 16px;
 }
 
 .radioGroup {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px 48px;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    color: $color-black-zinc-900;
+    cursor: pointer;
+  }
+
+  input {
+    appearance: none;
+    cursor: pointer;
+    margin-top: 0px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px !important;
+    margin-left: 0px;
+    border: 1px solid $color-black-zinc-500;
+
+    &:checked,
+    &:active {
+      background-color: $brand-color;
+      border-color: $brand-color;
+    }
+
+    &:focus {
+      border-color: $brand-color;
+    }
+
+  }
+}
+
+.checkboxfield {
+  margin: 0;
+}
+
+.sectionTitleEmail {
+  font-size: 24px;
+  font-weight: $font-weight500;
+  color: $color-black-zinc-900;
+  margin-bottom: 2px;
 }
 
 .emailNote {
-  color: #6b7280;
-  margin-bottom: 16px;
+  font-size: 18px;
+  color: $color-black-zinc-500;
+  margin-bottom: 32px;
 }
 
 .toggleCard {
-  background: #f7f8fb;
+  background: #F4F6FB;
   border-radius: 8px;
-  padding: 16px 20px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 16px;
+  margin-bottom: 10px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .toggleTitle {
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 20px;
+  font-weight: $font-weight500;
+  color: $color-black-zinc-800;
+  margin-bottom: 2px;
 }
 
 .toggleDescription {
-  color: #6b7280;
-  font-size: 14px;
+  color: $color-black-zinc-500;
+  font-size: 16px;
+  margin: 0px;
 }
 
 .toggle {
   appearance: none;
-  width: 44px;
-  height: 24px;
-  background: #e5e7eb;
+  width: 40px;
+  min-width: 40px;
+  height: 20px;
+  background: #D1D5DC;
   border-radius: 9999px;
   position: relative;
   cursor: pointer;
@@ -61,18 +112,74 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 20px;
-  height: 20px;
-  background: #ffffff;
+  width: 16px;
+  height: 16px;
+  background: $color-white;
   border-radius: 50%;
   transition: transform 0.2s ease;
 }
 
 .toggle:checked {
-  background: #2563eb;
+  background: $brand-color;
 }
 
 .toggle:checked::after {
   transform: translateX(20px);
 }
 
+@media (max-width: 991.55px) {
+  .radioGroup {
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width: 767.55px) {
+  .pageTitle {
+    font-size: 24px;
+    margin: 0 0 24px 0;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+
+  .radioGroup {
+    gap: 12px 28px;
+    margin-bottom: 24px;
+
+    label {
+      font-size: 14px;
+    }
+  }
+
+  .sectionTitleEmail {
+    font-size: 16px;
+  }
+
+  .emailNote {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .toggleCard {
+    gap: 12px;
+  }
+
+  .toggleTitle {
+    font-size: 14px;
+  }
+
+  .toggleDescription {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 575.55px) {
+  .radioGroup {
+    label {
+      width: calc(50% - 14px);
+    }
+  }
+
+}

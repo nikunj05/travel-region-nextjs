@@ -11,7 +11,7 @@
   // Mobile hamburger button
   .mobileMenuToggle {
     display: none;
-    z-index: 10;
+    z-index: 8;
     background-color: transparent;
     border: none;
     padding: 0px;
@@ -152,6 +152,8 @@
 // Mobile responsive styles
 @media (max-width: 991.55px) {
   .profileLayout {
+    min-height: auto;
+
     .layoutWrapper {
       padding-top: 20px;
       flex-direction: column;
@@ -208,12 +210,14 @@
     .mainContent {
       width: 100%;
       margin-top: 0px;
+      min-height: auto;
     }
   }
 }
 
 @media (max-width: 767.55px) {
   .profileLayout {
+
 
     .layoutWrapper {
       gap: 20px;

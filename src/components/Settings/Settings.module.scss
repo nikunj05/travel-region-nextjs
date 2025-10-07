@@ -1,29 +1,27 @@
 @use "../../styles/variables" as *;
 @use "sass:color";
 
-.settingsContainer {
-  max-width: 800px;
-}
 
 .pageTitle {
-  font-size: 28px;
-  font-weight: 600;
-  color: $text-primary;
-  margin-bottom: 32px;
+  font-size: 36px;
+  font-weight: $font-weight600;
+  color: $color-black-zinc-950;
+  margin: 0 0 32px 0;
 }
 
 .settingsForm {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 0px;
 }
+
 
 .preferencesRow {
   display: flex;
-  gap: 40px;
+  gap: 32px;
   align-items: flex-start;
-  margin-bottom: 40px;
-  
+  margin-bottom: 60px !important;
+
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 24px;
@@ -36,48 +34,43 @@
   min-width: 0; // Prevents flex items from overflowing
 }
 
-.settingsSection {
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 32px;
+.sectionTitle {
+  font-size: 24px;
+  font-weight: $font-weight500;
+  color: $color-black-zinc-900;
+  margin-bottom: 2px;
+}
 
-  &:last-child {
-    border-bottom: none;
-  }
+.sectionDescription {
+  font-size: 18px;
+  color: $color-black-zinc-500;
+  margin-bottom: 32px;
 }
 
 .securityRow {
   display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-  
+  gap: 32px;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
   .inputGroup {
     flex: 1;
-    min-width: 0; // Prevents flex items from overflowing
+    min-width: 0;
   }
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 16px;
-    
+
     .inputGroup {
       flex: none;
     }
   }
 }
 
-.sectionTitle {
-  font-size: 18px;
-  font-weight: 600;
-  color: $text-primary;
-  margin-bottom: 12px;
-}
-
-.sectionDescription {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
 
 .inputGroup {
   margin-bottom: 24px;
@@ -91,57 +84,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 8px;
-}
-
-.fieldLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: $text-primary;
 }
 
 .editLink {
   background: none;
   border: none;
-  color: $color-blue;
+  color: $brand-color;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: $font-weight500;
   cursor: pointer;
   text-decoration: none;
+  padding: 0px;
   transition: $transition;
 
   &:hover:not(:disabled) {
-    color: color.adjust($color-blue, $lightness: -10%);
     text-decoration: underline;
   }
 
   &:disabled {
-    color: #9ca3af;
     cursor: not-allowed;
   }
 }
 
 .inputField {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  color: $text-primary;
-  background-color: #f9fafb;
-  transition: $transition;
-
   &:focus {
     outline: none;
-    border-color: $color-blue;
-    background-color: $color-white;
-    box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.1);
   }
 
   &:disabled {
-    background-color: #f3f4f6;
-    color: #6b7280;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 }
 
@@ -156,7 +129,7 @@
   .countryCodeInput {
     z-index: 1;
     align-items: center;
-    width: 92px;
+    width: 94px;
     height: calc(52px - 4px);
     display: flex;
     position: absolute;
@@ -181,24 +154,12 @@
 .editActions {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .cancelButton {
-  padding: 8px 16px;
-  background-color: transparent;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 4px 12px;
   font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: $transition;
-
-  &:hover {
-    background-color: #f9fafb;
-    color: $text-primary;
-  }
 }
 
 // .saveAllContainer {
@@ -249,8 +210,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .errorContainer {
@@ -258,7 +224,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 100px;
   gap: 16px;
 }
 
@@ -286,7 +252,14 @@
 }
 
 // Responsive Design
-@media (max-width: 768px) {
+@media (max-width: 991.55px) {
+  .preferencesRow {
+    margin-bottom: 32px !important;
+  }
+}
+
+@media (max-width: 767.55px) {
+
   .pageTitle {
     font-size: 24px;
     margin-bottom: 24px;
