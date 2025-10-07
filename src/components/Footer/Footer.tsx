@@ -17,10 +17,11 @@ import unionPay from '@/assets/images/union-pay.svg'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useCmsStore } from '@/store/cmsStore'
+import { useSettingsStore } from '@/store/settingsStore'
 
 const Footer = () => {
 
-  // const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
+  const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
   const { pages, fetchPages } = useCmsStore()
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const Footer = () => {
       <div className="row">
         <div className="col-lg-6">
           <div className="footer-logo-content">
-            <Image src={footerLogoWhite} width={240} height={44} alt="logo" className="footer-logo" />
+            <Image src={dynamicFooterLogo || footerLogoWhite} width={240} height={44} alt="logo" className="footer-logo" />
             <p className="footer-caption">Your trusted travel partner across the Middle East —bringing you handpicked stays,
               personalized experiences, and effortless booking wherever your journey takes you.</p>
           </div>

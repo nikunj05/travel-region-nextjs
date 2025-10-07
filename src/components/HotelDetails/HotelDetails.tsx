@@ -26,12 +26,14 @@ import RoomInfoImage from "@/assets/images/room-information-image.jpg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import ImageModal from "../common/ImageModal/ImageModal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const HotelDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-console.log("==> selectedRoom", selectedRoom);
+// console.log("==> selectedRoom", selectedRoom);
+const router = useRouter();
   const handleOpenModal = (roomId: number) => {
     setSelectedRoom(roomId);
     setIsModalOpen(true);
@@ -625,7 +627,7 @@ console.log("==> selectedRoom", selectedRoom);
                   Price: Starts from <span>$500</span>/night
                 </div>
                 <div className="check-availability-action">
-                  <button className="button-primary check-availability-btn">
+                  <button className="button-primary check-availability-btn" onClick={() => router.push(`/booking-review`)}>
                     Check Availability
                   </button>
                 </div>

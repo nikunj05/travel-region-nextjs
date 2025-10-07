@@ -8,8 +8,10 @@ import SelfParking from "@/assets/images/parking-icon.svg";
 import PoolIcon from "@/assets/images/pool-icon.svg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
+import { useRouter } from "next/navigation";
 
 const BookingReviewPage = () => {
+  const router = useRouter();
   return (
     <main className="booking-review-page padding-top-100 section-space-b">
       <div className="container">
@@ -792,7 +794,7 @@ const BookingReviewPage = () => {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn">
+                <button className="button-primary check-availability-btn" onClick={() => router.push(`/checkout`)}>
                   Proceed to Payment
                 </button>
               </div>

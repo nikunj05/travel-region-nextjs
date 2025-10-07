@@ -1,9 +1,12 @@
+'use client'
 import React from "react";
 import "./BookingConfirmation.scss";
 import Image from "next/image";
 import BookingConfirmIcon from "@/assets/images/booking-confirmed-icon.svg";
+import { useRouter } from "next/navigation";
 
 function BookingConfirmationComp() {
+  const router = useRouter();
   return (
     <>
       <main className="booking-confirmation-page padding-top-100">
@@ -71,7 +74,7 @@ function BookingConfirmationComp() {
                     </svg>
                     Print Confirmation
                   </button>
-                  <button className="button-primary view-button">
+                  <button className="button-primary view-button" onClick={() => router.push(`/`)}>
                     View my Booking
                     <svg
                       width="25"

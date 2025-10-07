@@ -8,8 +8,10 @@ import UnionCardIcon from "@/assets/images/union-card-icon.svg";
 import visaCardIcon from "@/assets/images/visa-card-icon.svg";
 import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
+import { useRouter } from "next/navigation";
 
 function CheckoutComponent() {
+  const router = useRouter();
   return (
     <main className="checkout-page padding-top-100 section-space-b">
       <div className="container">
@@ -465,7 +467,7 @@ function CheckoutComponent() {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn">
+                <button className="button-primary check-availability-btn" onClick={() => router.push(`/booking-confirmation`)}>
                   Pay
                 </button>
               </div>
