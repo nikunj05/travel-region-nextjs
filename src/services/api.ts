@@ -46,16 +46,16 @@ if (!resolvedBaseUrl) {
         try {
           // Try to get locale from localStorage first
           const storedLocale = localStorage.getItem('NEXT_LOCALE');
-          console.log("==> API storedLocale", storedLocale);
+          // console.log("==> API storedLocale", storedLocale);
           
           if (storedLocale && ['en', 'ar'].includes(storedLocale)) {
             locale = storedLocale;
-            console.log("==> Using stored locale:", locale);
+            // console.log("==> Using stored locale:", locale);
           } else {
             // Fallback to browser language detection
             const browserLang = navigator.language.split('-')[0];
             locale = ['en', 'ar'].includes(browserLang) ? browserLang : 'en';
-            console.log("==> Using browser/fallback locale:", locale);
+            // console.log("==> Using browser/fallback locale:", locale);
           }
         } catch (error) {
           console.warn('Failed to access localStorage or navigator:', error);
@@ -63,7 +63,7 @@ if (!resolvedBaseUrl) {
         }
       }
       config.headers['Accept-Language'] = locale;
-      console.log("==> Setting Accept-Language header:", locale);
+      // console.log("==> Setting Accept-Language header:", locale);
 
       return config;
     },

@@ -132,7 +132,7 @@ const Header = () => {
   }, [isMobileMenuOpen]);
 
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo);
-  console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
+  // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
   const { isAuthenticated, logout, user } = useAuth();
   
   // Use dynamic profile image or fallback to static image
@@ -169,7 +169,7 @@ const Header = () => {
                 alt="logo"
                 width={205}
                 height={35}
-              />123
+              />
               </>
              
             ) : (

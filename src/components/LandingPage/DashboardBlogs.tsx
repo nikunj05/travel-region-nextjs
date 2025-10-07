@@ -15,7 +15,7 @@ const DashboardBlogs = () => {
   }, [fetchBlogs])
 
   useEffect(() => {
-    console.log('All Blogs:', blogs)
+    // console.log('All Blogs:', blogs)
   }, [blogs])
 
   const handleBlogClick = (blogSlug: string) => {
