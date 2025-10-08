@@ -1,42 +1,90 @@
 {
-  "Home": {
-    "title": "Welcome to Travel Region",
-    "description": "Your travel companion for regional exploration"
+  "Banner": {
+    "title": "Find your perfect stay, anywhere.",
+    "description": "Search thousands of hotels across the globe – compare, book, and relax.",
+    "exploreJourney": "Explore your journey",
+    "location": "Location",
+    "findLocation": "Find Location",
+    "checkInDate": "Check-in Date",
+    "checkOutDate": "Check-out Date",
+    "addDate": "Add Date",
+    "guestsAndRooms": "Guests and Rooms",
+    "addGuests": "Add Guests",
+    "guest": "Guest",
+    "guests": "Guests",
+    "freeCancellation": "Free Cancellation",
+    "search": "Search"
   },
-  "Auth": {
-    "login": {
-      "title": "Login",
-      "email": "Email",
-      "password": "Password",
-      "submit": "Login",
-      "loading": "Logging in...",
-      "failed": "Login failed"
-    },
-    "register": {
-      "title": "Register",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "email": "Email",
-      "countryCode": "Country Code",
-      "mobile": "Mobile",
-      "password": "Password",
-      "confirmPassword": "Confirm Password",
-      "submit": "Register",
-      "failed": "Registration failed"
-    }
+  "Blogs": {
+    "pageTitle": "Discover Travel Tips, Destinations & More",
+    "pageDescription": "Helpful articles to plan your perfect trip — from hidden gems to hotel hacks.",
+    "featuredReads": "Featured Reads",
+    "latestFromBlog": "Latest From The Blog",
+    "categories": "Categories:",
+    "tags": "Tags:",
+    "allArticles": "All Articles",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "sortByNewest": "Sort by Newest",
+    "sortByOldest": "Sort by Oldest",
+    "readMore": "Read More",
+    "readLess": "Read Less",
+    "minRead": "min read",
+    "errorLoadingBlogs": "Error loading blogs:",
+    "errorLoadingCategories": "Error loading categories:",
+    "errorLoadingTags": "Error loading tags:",
+    "noBlogsAvailable": "No blogs available",
+    "reset": "Reset",
+    "showResults": "Show results",
+    "errorLoadingBlog": "Error loading blog:",
+    "blogNotFound": "Blog not found",
+    "share": "Share",
+    "like": "Like",
+    "planningTrip": "Planning a Trip?",
+    "findPerfectHotel": "Find the perfect hotel in Maldives.",
+    "findHotelsMaldives": "Find Hotels in Maldives",
+    "relatedPost": "Related Post",
+    "authorDefault": "John Doe"
   },
-  "Profile": {
-    "title": "User Profile",
-    "welcome": "Welcome to your profile!",
-    "logout": "Logout"
+  "FAQ": {
+    "loading": "Loading FAQs...",
+    "title": "Frequently Asked Questions",
+    "description": "Find quick answers to our most common questions. Can't find what you need?",
+    "chatWithTeam": "Chat with Our Team",
+    "searchPlaceholder": "Search for a question...",
+    "noResultsFound": "No FAQs found matching your search.",
+    "noFaqsAvailable": "No FAQs available."
   },
-  "Navigation": {
+  "HotelDetails": {
+    "readMore": "Read More",
+    "showAllPhotos": "Show all 34 photos"
+  },
+  "AboutUs": {
+    "bannerTitle": "Who We Are",
+    "bannerDescription": "Your trusted partner in discovering the perfect stay, anywhere.",
+    "exploreStory": "Explore Our Story",
+    "whyWeExist": "Why We Exist",
+    "mission": "Mission",
+    "missionDescription": "To make hotel booking effortless, transparent, and trustworthy for all travelers.",
+    "vision": "Vision",
+    "visionDescription": "To become the go-to platform for booking authentic and tailored stays.",
+    "missionDescription2": "Real reviews, real photos, real peace of mind.",
+    "hotelPartners": "Our Hotel Partners",
+    "fewHighlights": "A Few Highlights",
+    "bookingsCompleted": "Bookings Completed",
+    "customerSatisfaction": "Customer Satisfaction",
+    "verifiedHotels": "Verified Hotels",
+    "support247": "24/7 Support",
+    "acrossContinents": "Across 3 Continents",
+    "readyToExplore": "Ready to Explore",
+    "readyToExploreDescription": "Have questions or need help? We're just a message away.",
+    "searchHotel": "Search Hotel"
+  },
+  "CmsPage": {
     "home": "Home",
-    "login": "Login",
-    "register": "Register",
-    "profile": "Profile"
-  },
-  "LanguageSwitcher": {
-    "selectLanguage": "Select Language"
+    "privacyPolicyTitle": "Privacy & Policy",
+    "privacyPolicyDescription": "Your privacy is important to us. This page explains how we collect, use, and protect your personal information.",
+    "termsConditionsTitle": "Terms & Conditions",
+    "termsConditionsDescription": "Please read these terms carefully before using our hotel booking services."
   }
 }

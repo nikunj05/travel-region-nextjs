@@ -794,7 +794,7 @@ const BookingReviewPage = () => {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn" onClick={() => router.push(`/checkout`)}>
+                <button className="button-primary check-availability-btn" onClick={() => router.push(`/checkout `)}>
                   Proceed to Payment
                 </button>
               </div>

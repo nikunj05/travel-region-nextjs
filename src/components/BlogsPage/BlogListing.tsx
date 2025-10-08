@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "./BlogListing.scss";
@@ -14,20 +15,20 @@ import { useRouter } from "@/i18/navigation";
 import { Select } from "../core/Select";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 
-// Static sort options remain the same
-
-const sortOptions = [
-  { value: "newest", label: "Sort by Newest" },
-  { value: "oldest", label: "Sort by Oldest" },
-];
-
 const BlogListing = () => {
+  const t = useTranslations('Blogs');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const blogsPerPage = 8;
+
+  // Sort options with translations
+  const sortOptions = [
+    { value: "newest", label: t('sortByNewest') },
+    { value: "oldest", label: t('sortByOldest') },
+  ];
 
   const {
     blogs,
@@ -196,14 +197,14 @@ const BlogListing = () => {
   // Reusable renderer for categories only (used in sidebar and mobile modal)
   const renderCategories = () => (
     <div className="filter-section">
-      <h3 className="filter-title">Categories:</h3>
+      <h3 className="filter-title">{t('categories')}</h3>
       {categoriesLoading ? (
         <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
           <CategoriesSkeleton />
         </SkeletonTheme>
       ) : categoriesError ? (
         <div className="error-state">
-          <p>Error loading categories: {categoriesError}</p>
+          <p>{t('errorLoadingCategories')} {categoriesError}</p>
         </div>
       ) : (
         <div
@@ -226,7 +227,7 @@ const BlogListing = () => {
                 categories.length > 0
               }
             />
-            <span className="filter-label">All Articles</span>
+            <span className="filter-label">{t('allArticles')}</span>
           </label>
 
           {/* Dynamic categories */}
@@ -256,14 +257,14 @@ const BlogListing = () => {
   // Renderer for tags section
   const renderTags = () => (
     <div className="filter-section">
-      <h3 className="filter-title">Tags:</h3>
+      <h3 className="filter-title">{t('tags')}</h3>
       {tagsLoading ? (
         <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
           <TagsSkeleton />
         </SkeletonTheme>
       ) : tagsError ? (
         <div className="error-state">
-          <p>Error loading tags: {tagsError}</p>
+          <p>{t('errorLoadingTags')} {tagsError}</p>
         </div>
       ) : (
         <div className="tags-container">
@@ -288,7 +289,7 @@ const BlogListing = () => {
     <div className="blog-listing-section section-space-tb">
       <div className="container">
         <div className="blog-listing-header">
-          <h2 className="section-title text-start">Latest From The Blog</h2>
+          <h2 className="section-title text-start">{t('latestFromBlog')}</h2>
           <div className="blog-sort-bar d-flex align-items-center">
             <div className="mobile-filter-button d-md-none ">
               <button
@@ -303,7 +304,7 @@ const BlogListing = () => {
                     height={20}
                     className="sort-filter-icon"
                   />
-                  Filter
+                  {t('filter')}
                 </span>
                 <Image
                   src={downBlackArrowIcon}
@@ -319,7 +320,7 @@ const BlogListing = () => {
                 options={sortOptions}
                 value={sortBy}
                 onChange={setSortBy}
-                label="Sort by"
+                label={t('sortBy')}
                 className="sort-dropdown"
               />
             </div>
@@ -362,11 +363,11 @@ const BlogListing = () => {
               </SkeletonTheme>
             ) : error && !loading ? (
               <div className="error-state">
-                <p>Error loading blogs: {error}</p>
+                <p>{t('errorLoadingBlogs')} {error}</p>
               </div>
             ) : !loading && !error && blogs && blogs.length === 0 ? (
               <div className="empty-state">
-                <p>No blogs available</p>
+                <p>{t('noBlogsAvailable')}</p>
               </div>
             ) : (
               <div className="blog-grid">
@@ -387,8 +388,14 @@ const BlogListing = () => {
                             className="blog-img"
                           />
                           <div className="blog-card-overlay">
-                            <button className="blog-list-read-more-btn">
-                              Read More
+                            <button 
+                              className="blog-list-read-more-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleBlogClick(blog.slug);
+                              }}
+                            >
+                              {t('readMore')}
                             </button>
                           </div>
                         </div>
@@ -400,7 +407,8 @@ const BlogListing = () => {
                             <span className="blog-date-read">
                               {formatDateWithReadTime(
                                 blog.created_at,
-                                blog.read_time
+                                blog.read_time,
+                                t
                               )}
                             </span>
                           </div>
@@ -495,7 +503,7 @@ const BlogListing = () => {
         ></div>
         <div className="mobile-filter-panel">
           <div className="mobile-filter-header">
-            <h3>Filter</h3>
+            <h3>{t('filter')}</h3>
             <button
               className="close-btn"
               aria-label="Close filters"
@@ -519,13 +527,13 @@ const BlogListing = () => {
                 setCurrentPage(1);
               }}
             >
-              Reset
+              {t('reset')}
             </button>
             <button
               className="apply-btn button-primary"
               onClick={() => setIsMobileFilterOpen(false)}
             >
-              Show results
+              {t('showResults')}
             </button>
           </div>
         </div>

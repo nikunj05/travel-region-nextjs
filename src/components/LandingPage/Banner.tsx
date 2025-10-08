@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import locationIcon from '@/assets/images/location-icon.svg'
 import downBlackArrowIcon from '@/assets/images/down-black-arrow-icon.svg'
 import calendarIcon from '@/assets/images/calendar-icon.svg'
@@ -20,6 +21,8 @@ interface Location {
 }
 
 const Banner = () => {
+  const t = useTranslations('Banner')
+  
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
   
@@ -66,8 +69,8 @@ const Banner = () => {
 
   const getGuestsDisplayText = () => {
     const total = guestCounts.adults + guestCounts.children + guestCounts.pets
-    if (total === 0) return 'Add Guests'
-    return `${total} Guest${total > 1 ? 's' : ''}`
+    if (total === 0) return t('addGuests')
+    return `${total} ${total > 1 ? t('guests') : t('guest')}`
   }
 
   // Date picker functions
@@ -97,15 +100,15 @@ const Banner = () => {
   }
 
   const getCheckInDisplayText = () => {
-    return checkInDate ? formatDate(checkInDate) : 'Add Date'
+    return checkInDate ? formatDate(checkInDate) : t('addDate')
   }
 
   const getCheckOutDisplayText = () => {
-    return checkOutDate ? formatDate(checkOutDate) : 'Add Date'
+    return checkOutDate ? formatDate(checkOutDate) : t('addDate')
   }
 
   const getLocationDisplayText = () => {
-    return selectedLocation ? selectedLocation.name : 'Find Location'
+    return selectedLocation ? selectedLocation.name : t('findLocation')
   }
 
   return (
@@ -114,14 +117,14 @@ const Banner = () => {
         <div className="banner-overlay"></div>
         <div className="banner-content">
           <div className="heading_section">
-            <h1 className="section-title">Find your perfect stay, anywhere.</h1>
-            <p className="section-description">Search thousands of hotels across the globe – compare, book, and relax.</p>
+            <h1 className="section-title">{t('title')}</h1>
+            <p className="section-description">{t('description')}</p>
           </div>
           <div className="banner-property-filter">
-            <h3 className="property-filter-title">Explore your journey</h3>
+            <h3 className="property-filter-title">{t('exploreJourney')}</h3>
             <div className="choose-location-and-date d-grid">
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">Location</h4>
+                <h4 className="choose-location-items-title">{t('location')}</h4>
                 <div className="dropdown">
                   <button 
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -143,7 +146,7 @@ const Banner = () => {
                 </div>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">Check-in Date</h4>
+                <h4 className="choose-location-items-title">{t('checkInDate')}</h4>
                 <div className="dropdown" ref={datePickerRef}>
                   <button 
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -167,7 +170,7 @@ const Banner = () => {
                 </div>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">Check-out Date</h4>
+                <h4 className="choose-location-items-title">{t('checkOutDate')}</h4>
                 <button 
                   className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
                   onClick={toggleDatePicker}
@@ -182,7 +185,7 @@ const Banner = () => {
                 </button>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">Guests and Rooms</h4>
+                <h4 className="choose-location-items-title">{t('guestsAndRooms')}</h4>
                 <div className="dropdown">
                   <button 
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -208,13 +211,13 @@ const Banner = () => {
               <div className="form-check">
                 <input className="form-check-input" type="checkbox" id="freeCancel" />
                 <label className="form-check-label" htmlFor="freeCancel">
-                  Free Cancellation
+                  {t('freeCancellation')}
                 </label>
               </div>
               <Link href="/search-result" className='text-decoration-none'>
 
               <button className="btn banner-search-btn">
-                Search
+                {t('search')}
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="white" strokeWidth="1.5" />
                 </svg>

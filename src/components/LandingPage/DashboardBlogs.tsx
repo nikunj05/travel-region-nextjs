@@ -1,12 +1,14 @@
 'use client'
 import React, { useEffect } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { useBlogStore } from '@/store/blogStore'
 import { formatDateWithReadTime } from '@/lib/dateUtils'
 import BlogContent from '@/components/common/BlogContent/BlogContent'
 import { useRouter } from '@/i18/navigation'
 
 const DashboardBlogs = () => {
+  const t = useTranslations('Blogs')
   const { blogs, fetchBlogs, loading, error } = useBlogStore()
   const router = useRouter()
 
@@ -50,7 +52,7 @@ const DashboardBlogs = () => {
           </div>
         </div>
         <div className="blog-card-content">
-          <span className="blog-card-date">{blogs[0] && formatDateWithReadTime(blogs[0].created_at, blogs[0].read_time)}</span>
+          <span className="blog-card-date">{blogs[0] && formatDateWithReadTime(blogs[0].created_at, blogs[0].read_time, t)}</span>
           <div className="blog-card-title">{blogs[0]?.title}</div>
           <BlogContent 
             content={blogs[0]?.content || ''} 
@@ -66,7 +68,7 @@ const DashboardBlogs = () => {
               <Image src={blog.full_image_url} width={379} height={215} alt={blog.title} />
             </div>
             <div className="blog-card-details">
-              <div className="blog-card-details-date">{formatDateWithReadTime(blog.created_at, blog.read_time)}</div>
+              <div className="blog-card-details-date">{formatDateWithReadTime(blog.created_at, blog.read_time, t)}</div>
               <div className="blog-card-details-title">
                 {blog.title}
               </div>

@@ -222,3 +222,20 @@
     }
   }
 }
+
+// Pagination styles
+.favorites-page {
+  .pagination-wrapper {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .error-message,
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 18px;
+    color: $color-black-zinc-600;
+  }
+}

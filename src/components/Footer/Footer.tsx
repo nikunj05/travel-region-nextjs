@@ -13,7 +13,6 @@ import americanExpress from '@/assets/images/american-express.svg'
 import payPal from '@/assets/images/pay-pal.svg'
 import stripe from '@/assets/images/stripe.svg'
 import unionPay from '@/assets/images/union-pay.svg'
-// import { useSettingsStore } from '@/store/settingsStore'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { useCmsStore } from '@/store/cmsStore'
@@ -22,8 +21,8 @@ import { useSettingsStore } from '@/store/settingsStore'
 const Footer = () => {
 
   const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
+  // const socialMediaLinks = useSettingsStore((s) => s.setting?.social_media_links) || []
   const { pages, fetchPages } = useCmsStore()
-
   useEffect(() => {
     fetchPages()
   }, [fetchPages])
@@ -107,6 +106,24 @@ const Footer = () => {
               </a>
             </li>
           </ul>
+
+          {/* {socialMediaLinks.map((socialLink, index) => (
+              <li key={index}>
+                <a href={socialLink.link} target="_blank" rel="noopener noreferrer">
+                  {socialLink.icon ? (
+                    <Image 
+                      src={socialLink.icon} 
+                      width={40} 
+                      height={40} 
+                      alt={socialLink.title}
+                      className="footer-social-media-logo" 
+                    />
+                  ) : (
+                    <span className="footer-social-media-text">{socialLink.title}</span>
+                  )}
+                </a>
+              </li>
+            ))} */}
         </div>
         <div className="social-media-items payment-security">
           <h4 className="social-media-payment-title">Payment Security</h4>

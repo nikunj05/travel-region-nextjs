@@ -19,9 +19,15 @@ export const formatDate = (isoDateString: string): string => {
  * Format date with read time
  * @param isoDateString - ISO date string from API
  * @param readTime - Read time in minutes
+ * @param t - Translation function (optional)
  * @returns Formatted string (e.g., "Aug 15, 2025 • 5 min read")
  */
-export const formatDateWithReadTime = (isoDateString: string, readTime: number): string => {
+export const formatDateWithReadTime = (
+  isoDateString: string, 
+  readTime: number, 
+  t?: (key: string) => string
+): string => {
   const formattedDate = formatDate(isoDateString);
-  return `${formattedDate} • ${readTime} min read`;
+  const minReadText = t ? t('minRead') : 'min read';
+  return `${formattedDate} • ${readTime} ${minReadText}`;
 };

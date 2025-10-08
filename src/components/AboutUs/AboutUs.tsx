@@ -1,5 +1,8 @@
 "use client";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { CmsPageItem } from "@/types/cms";
 import "./AboutUs.scss";
 import OurStoryimage from "@/assets/images/about-image.png";
@@ -21,11 +24,124 @@ import Travelers from "../LandingPage/Travelers";
 
 interface AboutUsProps {
   page: CmsPageItem;
+  loading?: boolean;
 }
 
-export default function AboutUs({ page }: AboutUsProps) {
+export default function AboutUs({ page, loading = false }: AboutUsProps) {
+  const t = useTranslations('AboutUs');
 
-  console.log(page)
+  // console.log(page)
+
+  // Skeleton Loading Component
+  const AboutUsSkeleton = () => (
+    <main className="about-us-page section-space-b">
+      <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+        {/* Banner Section Skeleton */}
+        <section className="banner-section-common about-us-banner-section">
+          <div className="container">
+            <div className="banner-content">
+              <div className="heading_section text-center">
+                <Skeleton height={48} style={{ marginBottom: "16px" }} />
+                <Skeleton height={20} count={2} style={{ marginBottom: "24px" }} />
+                <Skeleton width={200} height={40} borderRadius={20} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Our Story Section Skeleton */}
+        <section className="our-story-section section-space-tb">
+          <div className="container">
+            <div className="row align-items-center">
+              <div className="col-md-5">
+                <Skeleton height={463} borderRadius={8} />
+              </div>
+              <div className="col-md-7">
+                <div className="about-our-story-content">
+                  <Skeleton height={32} style={{ marginBottom: "16px" }} />
+                  <Skeleton count={5} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={24} width={200} style={{ marginTop: "16px" }} />
+                  <Skeleton height={16} width={250} style={{ marginTop: "8px" }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why We Exist Section Skeleton */}
+        <section className="why-we-exist-section section-space-tb">
+          <div className="container">
+            <Skeleton height={32} style={{ marginBottom: "24px" }} />
+            <div className="why-exist-cards">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="why-exist-card">
+                  <Skeleton circle width={32} height={32} style={{ marginBottom: "16px" }} />
+                  <Skeleton height={24} style={{ marginBottom: "12px" }} />
+                  <Skeleton count={3} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Hotel Partners Section Skeleton */}
+        <section className="hotel-partner-section section-space-tb">
+          <div className="container">
+            <Skeleton height={32} style={{ marginBottom: "24px" }} />
+            <div className="hotel-partner-cards">
+              {Array.from({ length: 7 }).map((_, idx) => (
+                <div key={idx} className="hotel-partner-card">
+                  <Skeleton height={40} width={100} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Highlights Section Skeleton */}
+        <section className="few-highlights-section section-space-tb">
+          <div className="container">
+            <Skeleton height={32} style={{ marginBottom: "24px" }} />
+            <div className="few-highlights-cards">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="few-highlights-card">
+                  <Skeleton circle width={64} height={64} style={{ marginBottom: "16px" }} />
+                  <Skeleton height={28} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={16} width={150} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section Skeleton */}
+        <section className="about-testimonails-section">
+          <div className="testimonials-container">
+            <Skeleton height={300} />
+          </div>
+        </section>
+
+        {/* Ready to Explore Section Skeleton */}
+        <section className="home-contact-section about-ready-to-explore-section section-space-t">
+          <div className="container">
+            <div className="contact-inner-section">
+              <div className="contact-us-content">
+                <div className="heading_section">
+                  <Skeleton height={32} style={{ marginBottom: "16px" }} />
+                  <Skeleton height={20} count={2} style={{ marginBottom: "24px" }} />
+                </div>
+                <Skeleton width={200} height={48} borderRadius={24} />
+              </div>
+            </div>
+          </div>
+        </section>
+      </SkeletonTheme>
+    </main>
+  );
+
+  if (loading) {
+    return <AboutUsSkeleton />;
+  }
 
   // Parse the dynamic content from page.content
   const parseContent = (content: string) => {
@@ -60,12 +176,12 @@ export default function AboutUs({ page }: AboutUsProps) {
         <div className="container">
           <div className="banner-content">
             <div className="heading_section text-center">
-              <h1 className="section-title">Who We Are</h1>
+              <h1 className="section-title">{t('bannerTitle')}</h1>
               <p className="section-description">
-                Your trusted partner in discovering the perfect stay, anywhere.
+                {t('bannerDescription')}
               </p>
               <button className="button-primary mx-auto banner-common-button">
-                Explore Our Story
+                {t('exploreStory')}
               </button>
             </div>
           </div>
@@ -103,7 +219,7 @@ export default function AboutUs({ page }: AboutUsProps) {
       </section>
       <section className="why-we-exist-section section-space-tb">
         <div className="container">
-          <h2 className="about-us-section-title">Why We Exist</h2>
+          <h2 className="about-us-section-title">{t('whyWeExist')}</h2>
           <div className="why-exist-cards">
             {page.why_we_exist && page.why_we_exist.length > 0 ? (
               page.why_we_exist.map((item, idx) => {
@@ -141,10 +257,9 @@ export default function AboutUs({ page }: AboutUsProps) {
                       alt="watch icon"
                     />
                   </div>
-                  <h3 className="why-exist-title">Mission</h3>
+                  <h3 className="why-exist-title">{t('mission')}</h3>
                   <p className="why-exist-description">
-                    To make hotel booking effortless, transparent, and trustworthy
-                    for all travelers.
+                    {t('missionDescription')}
                   </p>
                 </div>
                 <div className="why-exist-card vision-card">
@@ -156,10 +271,9 @@ export default function AboutUs({ page }: AboutUsProps) {
                       alt="vision icon"
                     />
                   </div>
-                  <h3 className="why-exist-title">Vision</h3>
+                  <h3 className="why-exist-title">{t('vision')}</h3>
                   <p className="why-exist-description">
-                    To become the go-to platform for booking authentic and tailored
-                    stays.
+                    {t('visionDescription')}
                   </p>
                 </div>
                 <div className="why-exist-card mission-card">
@@ -171,9 +285,9 @@ export default function AboutUs({ page }: AboutUsProps) {
                       alt="mission icon"
                     />
                   </div>
-                  <h3 className="why-exist-title">Mission</h3>
+                  <h3 className="why-exist-title">{t('mission')}</h3>
                   <p className="why-exist-description">
-                    Real reviews, real photos, real peace of mind.
+                    {t('missionDescription2')}
                   </p>
                 </div>
               </>
@@ -183,7 +297,7 @@ export default function AboutUs({ page }: AboutUsProps) {
       </section>
       <section className="hotel-partner-section section-space-tb">
         <div className="container">
-          <h2 className="about-us-section-title">Our Hotel Partners</h2>
+          <h2 className="about-us-section-title">{t('hotelPartners')}</h2>
           <div className="hotel-partner-cards">
             {page.our_partners && page.our_partners.length > 0 ? (
               page.our_partners.map((partnerUrl, idx) => {
@@ -268,7 +382,7 @@ export default function AboutUs({ page }: AboutUsProps) {
       </section>
       <section className="few-highlights-section section-space-tb">
         <div className="container">
-          <h2 className="about-us-section-title">A Few Highlights</h2>
+          <h2 className="about-us-section-title">{t('fewHighlights')}</h2>
           <div className="few-highlights-cards">
             {page.few_highlights && page.few_highlights.length > 0 ? (
               page.few_highlights.map((item, idx) => {
@@ -307,7 +421,7 @@ export default function AboutUs({ page }: AboutUsProps) {
                     />
                   </div>
                   <h3 className="few-highlights-title">200k+</h3>
-                  <p className="few-highlights-description">Bookings Completed</p>
+                  <p className="few-highlights-description">{t('bookingsCompleted')}</p>
                 </div>
                 <div className="few-highlights-card blue-highlight-card">
                   <div className="few-highlights-icon">
@@ -320,7 +434,7 @@ export default function AboutUs({ page }: AboutUsProps) {
                   </div>
                   <h3 className="few-highlights-title">98%</h3>
                   <p className="few-highlights-description">
-                    Customer Satisfaction
+                    {t('customerSatisfaction')}
                   </p>
                 </div>
                 <div className="few-highlights-card yellow-highlight-card">
@@ -333,7 +447,7 @@ export default function AboutUs({ page }: AboutUsProps) {
                     />
                   </div>
                   <h3 className="few-highlights-title">5k+</h3>
-                  <p className="few-highlights-description">Verified Hotels</p>
+                  <p className="few-highlights-description">{t('verifiedHotels')}</p>
                 </div>
                 <div className="few-highlights-card violet-highlight-card">
                   <div className="few-highlights-icon">
@@ -344,8 +458,8 @@ export default function AboutUs({ page }: AboutUsProps) {
                       alt="support Icon"
                     />
                   </div>
-                  <h3 className="few-highlights-title">24/7 Support</h3>
-                  <p className="few-highlights-description">Across 3 Continents</p>
+                  <h3 className="few-highlights-title">{t('support247')}</h3>
+                  <p className="few-highlights-description">{t('acrossContinents')}</p>
                 </div>
               </>
             )}
@@ -362,13 +476,13 @@ export default function AboutUs({ page }: AboutUsProps) {
           <div className="contact-inner-section">
             <div className="contact-us-content">
               <div className="heading_section">
-                <h2 className="section-title"> {page.ready_to_explore_title || "Ready to Explore"}</h2>
+                <h2 className="section-title"> {page.ready_to_explore_title || t('readyToExplore')}</h2>
                 <p className="section-description mx-width-790">
-                  {page.ready_to_explore_sub_title || "Have questions or need help? We’re just a message away."}
+                  {page.ready_to_explore_sub_title || t('readyToExploreDescription')}
                 </p>
               </div>
               <button className="btn hotel-search-button d-flex align-items-center mx-auto">
-                Search Hotel
+                {t('searchHotel')}
                 <svg
                   width="25"
                   height="24"

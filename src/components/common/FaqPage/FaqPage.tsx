@@ -1,5 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { faqService } from "@/services/faqService";
 import { FaqCategory } from "@/types/faq";
 import "./FaqPage.scss";
@@ -34,8 +37,8 @@ const PlusIcon = () => (
     <path
       d="M15.9993 10.668V21.3346M21.3327 16.0013H10.666"
       stroke="white"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -52,13 +55,14 @@ const CloseIcon = () => (
     <path
       d="M20 12L16 16M16 16L12 20M16 16L20 20M16 16L12 12"
       stroke="#1B2236"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
 
 const FaqPage = () => {
+  const t = useTranslations('FAQ');
   const [faqCategories, setFaqCategories] = useState<FaqCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -101,14 +105,68 @@ const FaqPage = () => {
     }))
     .filter((category) => category.faqs.length > 0);
 
-  if (loading) {
-    return (
-      <div className="faq-page">
-        <div className="faq-container">
-          <div className="loading">Loading FAQs...</div>
+  // Skeleton Loading Component
+  const FaqSkeleton = () => (
+    <div className="faq-page section-space-b">
+      <section className="banner-section-common faq-banner-section">
+        <div className="container">
+          <div className="banner-content">
+            <div className="heading_section text-center">
+              <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+                <Skeleton height={48} style={{ marginBottom: "16px" }} />
+                <Skeleton height={20} count={2} style={{ marginBottom: "24px" }} />
+                <Skeleton width={200} height={40} borderRadius={20} />
+              </SkeletonTheme>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div className="container">
+        <div className="faq-main-content">
+          {/* Left Sidebar Skeleton */}
+          <div className="faq-sidebar">
+            <div className="sidebar-categories">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  height={40}
+                  style={{ marginBottom: "8px" }}
+                  borderRadius={8}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Right Content Area Skeleton */}
+          <div className="faq-content">
+            {/* Search Bar Skeleton */}
+            <div className="search-container">
+              <Skeleton height={48} borderRadius={8} />
+            </div>
+
+            {/* FAQ Content Skeleton */}
+            <div className="faq-sections">
+              {Array.from({ length: 3 }).map((_, categoryIndex) => (
+                <div key={categoryIndex} className="faq-section">
+                  <Skeleton height={32} style={{ marginBottom: "16px" }} />
+                  <div className="faq-items">
+                    {Array.from({ length: 4 }).map((_, itemIndex) => (
+                      <div key={itemIndex} className="faq-item">
+                        <Skeleton height={60} style={{ marginBottom: "8px" }} borderRadius={8} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    );
+    </div>
+  );
+
+  if (loading) {
+    return <FaqSkeleton />;
   }
 
   return (
@@ -117,10 +175,9 @@ const FaqPage = () => {
         <div className="container">
           <div className="banner-content">
             <div className="heading_section text-center">
-              <h1 className="section-title">Frequently Asked Questions</h1>
+              <h1 className="section-title">{t('title')}</h1>
               <p className="section-description">
-                Find quick answers to our most common questions. Can’t find what
-                you need?
+                {t('description')}
               </p>
               <button className="button-primary mx-auto banner-common-button">
                 <svg
@@ -135,7 +192,7 @@ const FaqPage = () => {
                     fill="white"
                   />
                 </svg>
-                Chat with Our Team
+                {t('chatWithTeam')}
               </button>
             </div>
           </div>
@@ -168,7 +225,7 @@ const FaqPage = () => {
                 <SearchIcon />
                 <input
                   type="text"
-                  placeholder="Search for a question..."
+                  placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -208,8 +265,8 @@ const FaqPage = () => {
               ) : (
                 <div className="no-results">
                   {searchQuery
-                    ? "No FAQs found matching your search."
-                    : "No FAQs available."}
+                    ? t('noResultsFound')
+                    : t('noFaqsAvailable')}
                 </div>
               )}
             </div>

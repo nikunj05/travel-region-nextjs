@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from '@/i18/navigation';
-import { useTranslations } from 'next-intl';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginFormData } from '@/schemas/loginSchema';
 import { toast } from 'react-toastify';
@@ -12,7 +11,6 @@ export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const t = useTranslations('Auth.login');
   const { login } = useAuth();
 
   const handleSubmit = async (data: LoginFormData) => {
@@ -25,7 +23,7 @@ export const useLogin = () => {
       router.push('/profile');
     } catch (error: unknown) {
       console.error('Login failed:', error);
-      const errorMessage = formatApiErrorMessage(error) || t('failed');
+      const errorMessage = formatApiErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

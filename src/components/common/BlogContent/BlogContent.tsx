@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { getPlainTextExcerpt } from "@/lib/contentUtils";
 
 interface BlogContentProps {
@@ -12,6 +13,7 @@ const BlogContent: React.FC<BlogContentProps> = ({
   maxLength = 200,
   className = "",
 }) => {
+  const t = useTranslations('Blogs');
   const [isExpanded, setIsExpanded] = useState(false);
 
   const plainTextContent = content.replace(/<[^>]*>/g, "");
@@ -26,10 +28,13 @@ const BlogContent: React.FC<BlogContentProps> = ({
       {displayText}
       {shouldTruncate && (
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
           className="read-more-btn"
         >
-          {isExpanded ? "Read Less" : "Read More"}
+          {isExpanded ? t('readLess') : t('readMore')}
         </button>
       )}
     </div>

@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { useCmsStore } from "@/store/cmsStore";
 import AboutUs from "@/components/AboutUs/AboutUs";
 import "./CmsPage.scss";
@@ -10,6 +13,7 @@ interface CmsPageProps {
 }
 
 export default function CmsPage({ slug }: CmsPageProps) {
+  const t = useTranslations('CmsPage');
   const {
     currentPage,
     detailLoading,
@@ -165,15 +169,74 @@ export default function CmsPage({ slug }: CmsPageProps) {
     return () => observer.disconnect();
   }, [headings]);
 
-  if (detailLoading)
-    return <div className="container section-space-tb">Loading...</div>;
+  // Skeleton Loading Component for Terms/Privacy pages
+  const CmsPageSkeleton = () => (
+    <div className="privacy-policy-page section-space-b">
+      <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
+        {/* Banner Section Skeleton */}
+        <section className="banner-section-common privacy-policy-banner-section">
+          <div className="container">
+            <div className="banner-content">
+              <div className="banner-bradcumb-menu text-center">
+                <Skeleton width={200} height={20} style={{ marginBottom: "16px" }} />
+              </div>
+              <div className="heading_section text-center">
+                <Skeleton height={48} style={{ marginBottom: "16px" }} />
+                <Skeleton height={20} count={2} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Content Section Skeleton */}
+        <div className="container">
+          <div className="privacy-policy-content">
+            {/* Sidebar Skeleton */}
+            <aside className="privacy-policy-sidebar">
+              <nav aria-label="On this page" className="side-bar-content">
+                <ul className="pvc-sidebar-list">
+                  {Array.from({ length: 8 }).map((_, idx) => (
+                    <li key={idx} className="pvc-sidebar-item">
+                      <Skeleton height={20} style={{ marginBottom: "12px" }} />
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </aside>
+
+            {/* Main Content Skeleton */}
+            <div className="privacy-policy-main cms-content">
+              <div className="policy-content-wrapper">
+                {Array.from({ length: 6 }).map((_, sectionIdx) => (
+                  <div key={sectionIdx} style={{ marginBottom: "32px" }}>
+                    <Skeleton height={32} style={{ marginBottom: "16px" }} />
+                    <Skeleton count={5} style={{ marginBottom: "8px" }} />
+                    <Skeleton count={3} style={{ marginBottom: "16px" }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SkeletonTheme>
+    </div>
+  );
+
+  if (detailLoading) {
+    // Check if it's about-us page by slug
+    if (slug === 'about-us') {
+      return <AboutUs page={{} as any} loading={true} />;
+    }
+    return <CmsPageSkeleton />;
+  }
+
   if (detailError)
     return <div className="container section-space-tb">{detailError}</div>;
   if (!currentPage) return null;
 
   // Render About Us page with special layout
   if (currentPage.about_us) {
-    return <AboutUs page={currentPage} />;
+    return <AboutUs page={currentPage} loading={false} />;
   }
 
   // Render Terms/Privacy Policy with sidebar TOC
@@ -188,7 +251,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
                   <ul className="banner-bradcumb-list p-0 m-0">
                     <li className="banner-bradcumb-item">
                       <Link href="/" className="banner-bradcumb-link">
-                        Home
+                        {t('home')}
                       </Link>
                     </li>
                     <span className="banner-bradcumb-arrow">
@@ -202,22 +265,21 @@ export default function CmsPage({ slug }: CmsPageProps) {
                         <path
                           d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
                           stroke="white"
-                          stroke-width="1.125"
-                          stroke-miterlimit="16"
+                          strokeWidth="1.125"
+                          strokeMiterlimit="16"
                         />
                       </svg>
                     </span>
                     <li className="banner-bradcumb-item current-page">
-                      Privacy & Policy
+                      {t('privacyPolicyTitle')}
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="heading_section text-center">
-                <h1 className="section-title">Privacy & Policy</h1>
+                <h1 className="section-title">{t('privacyPolicyTitle')}</h1>
                 <p className="section-description">
-                  Your privacy is important to us. This page explains how we
-                  collect, <br /> use, and protect your personal information.
+                  {t('privacyPolicyDescription')}
                 </p>
               </div>
             </div>
@@ -233,7 +295,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
                   <ul className="banner-bradcumb-list p-0 m-0">
                     <li className="banner-bradcumb-item">
                       <Link href="/" className="banner-bradcumb-link">
-                        Home
+                        {t('home')}
                       </Link>
                     </li>
                     <span className="banner-bradcumb-arrow">
@@ -247,22 +309,21 @@ export default function CmsPage({ slug }: CmsPageProps) {
                         <path
                           d="M7.25004 13.5L11.75 8.99996L7.25 4.5"
                           stroke="white"
-                          stroke-width="1.125"
-                          stroke-miterlimit="16"
+                          strokeWidth="1.125"
+                          strokeMiterlimit="16"
                         />
                       </svg>
                     </span>
                     <li className="banner-bradcumb-item current-page">
-                      Terms & Conditions
+                      {t('termsConditionsTitle')}
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="heading_section text-center">
-                <h1 className="section-title">Terms & Conditions</h1>
+                <h1 className="section-title">{t('termsConditionsTitle')}</h1>
                 <p className="section-description">
-                  Please read these terms carefully before using our hotel booking
-                  services.
+                  {t('termsConditionsDescription')}
                 </p>
               </div>
             </div>

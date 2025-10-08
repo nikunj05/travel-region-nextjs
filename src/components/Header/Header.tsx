@@ -383,8 +383,8 @@ const Header = () => {
                   </button>
 
                   <div className="profile-menu">
-                    <Link href="/profile">My Profile</Link>
-                    <Link href="/settings">Settings</Link>
+                    <Link href="/profile" onClick={() => setIsProfileMenuOpen(false)}>My Profile</Link>
+                    <Link href="/settings" onClick={() => setIsProfileMenuOpen(false)}>Settings</Link>
                     <a
                       href="#"
                       onClick={(e) => {

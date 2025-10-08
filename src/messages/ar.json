@@ -1,42 +1,90 @@
 {
-  "Home": {
-    "title": "مرحبًا بكم في منطقة السفر",
-    "description": "رفيقك في السفر لاستكشاف المناطق"
+  "Banner": {
+    "title": "اعثر على إقامتك المثالية، في أي مكان.",
+    "description": "ابحث في آلاف الفنادق حول العالم – قارن واحجز واسترخ.",
+    "exploreJourney": "استكشف رحلتك",
+    "location": "الموقع",
+    "findLocation": "ابحث عن موقع",
+    "checkInDate": "تاريخ الوصول",
+    "checkOutDate": "تاريخ المغادرة",
+    "addDate": "أضف تاريخ",
+    "guestsAndRooms": "الضيوف والغرف",
+    "addGuests": "أضف ضيوف",
+    "guest": "ضيف",
+    "guests": "ضيوف",
+    "freeCancellation": "إلغاء مجاني",
+    "search": "بحث"
   },
-  "Auth": {
-    "login": {
-      "title": "تسجيل الدخول",
-      "email": "البريد الإلكتروني",
-      "password": "كلمة المرور",
-      "submit": "تسجيل الدخول",
-      "loading": "جاري تسجيل الدخول...",
-      "failed": "فشل تسجيل الدخول"
-    },
-    "register": {
-      "title": "إنشاء حساب",
-      "firstName": "الاسم الأول",
-      "lastName": "الاسم الأخير",
-      "email": "البريد الإلكتروني",
-      "countryCode": "رمز البلد",
-      "mobile": "رقم الهاتف",
-      "password": "كلمة المرور",
-      "confirmPassword": "تأكيد كلمة المرور",
-      "submit": "إنشاء حساب",
-      "failed": "فشل إنشاء الحساب"
-    }
+  "Blogs": {
+    "pageTitle": "اكتشف نصائح السفر والوجهات والمزيد",
+    "pageDescription": "مقالات مفيدة لتخطيط رحلتك المثالية - من الجواهر المخفية إلى حيل الفنادق.",
+    "featuredReads": "قراءات مميزة",
+    "latestFromBlog": "أحدث المقالات",
+    "categories": "الفئات:",
+    "tags": "الوسوم:",
+    "allArticles": "جميع المقالات",
+    "filter": "تصفية",
+    "sortBy": "ترتيب حسب",
+    "sortByNewest": "ترتيب حسب الأحدث",
+    "sortByOldest": "ترتيب حسب الأقدم",
+    "readMore": "اقرأ المزيد",
+    "readLess": "اقرأ أقل",
+    "minRead": "دقائق قراءة",
+    "errorLoadingBlogs": "خطأ في تحميل المقالات:",
+    "errorLoadingCategories": "خطأ في تحميل الفئات:",
+    "errorLoadingTags": "خطأ في تحميل الوسوم:",
+    "noBlogsAvailable": "لا توجد مقالات متاحة",
+    "reset": "إعادة تعيين",
+    "showResults": "عرض النتائج",
+    "errorLoadingBlog": "خطأ في تحميل المقال:",
+    "blogNotFound": "المقال غير موجود",
+    "share": "مشاركة",
+    "like": "إعجاب",
+    "planningTrip": "تخطط لرحلة؟",
+    "findPerfectHotel": "اعثر على الفندق المثالي في المالديف.",
+    "findHotelsMaldives": "اعثر على فنادق في المالديف",
+    "relatedPost": "مقالات ذات صلة",
+    "authorDefault": "جون دو"
   },
-  "Profile": {
-    "title": "الملف الشخصي",
-    "welcome": "مرحبًا بك في ملفك الشخصي!",
-    "logout": "تسجيل الخروج"
+  "FAQ": {
+    "loading": "جاري تحميل الأسئلة الشائعة...",
+    "title": "الأسئلة الشائعة",
+    "description": "اعثر على إجابات سريعة لأسئلتنا الأكثر شيوعاً. لا تجد ما تبحث عنه؟",
+    "chatWithTeam": "تحدث مع فريقنا",
+    "searchPlaceholder": "ابحث عن سؤال...",
+    "noResultsFound": "لم يتم العثور على أسئلة شائعة تطابق بحثك.",
+    "noFaqsAvailable": "لا توجد أسئلة شائعة متاحة."
   },
-  "Navigation": {
+  "HotelDetails": {
+    "readMore": "اقرأ المزيد",
+    "showAllPhotos": "عرض جميع الصور الـ 34"
+  },
+  "AboutUs": {
+    "bannerTitle": "من نحن",
+    "bannerDescription": "شريكك الموثوق في اكتشاف الإقامة المثالية، في أي مكان.",
+    "exploreStory": "استكشف قصتنا",
+    "whyWeExist": "لماذا نوجد",
+    "mission": "المهمة",
+    "missionDescription": "جعل حجز الفنادق سهلاً وشفافاً وموثوقاً لجميع المسافرين.",
+    "vision": "الرؤية",
+    "visionDescription": "أن نصبح المنصة المفضلة لحجز الإقامات الأصيلة والمخصصة.",
+    "missionDescription2": "مراجعات حقيقية، صور حقيقية، راحة بال حقيقية.",
+    "hotelPartners": "شركاؤنا من الفنادق",
+    "fewHighlights": "بعض النقاط البارزة",
+    "bookingsCompleted": "حجوزات مكتملة",
+    "customerSatisfaction": "رضا العملاء",
+    "verifiedHotels": "فنادق موثقة",
+    "support247": "دعم على مدار الساعة",
+    "acrossContinents": "عبر 3 قارات",
+    "readyToExplore": "مستعد للاستكشاف",
+    "readyToExploreDescription": "لديك أسئلة أو تحتاج مساعدة؟ نحن على بعد رسالة واحدة فقط.",
+    "searchHotel": "ابحث عن فندق"
+  },
+  "CmsPage": {
     "home": "الرئيسية",
-    "login": "تسجيل الدخول",
-    "register": "إنشاء حساب",
-    "profile": "الملف الشخصي"
-  },
-  "LanguageSwitcher": {
-    "selectLanguage": "اختر اللغة"
+    "privacyPolicyTitle": "سياسة الخصوصية",
+    "privacyPolicyDescription": "خصوصيتك مهمة بالنسبة لنا. توضح هذه الصفحة كيفية جمع معلوماتك الشخصية واستخدامها وحمايتها.",
+    "termsConditionsTitle": "الشروط والأحكام",
+    "termsConditionsDescription": "يرجى قراءة هذه الشروط بعناية قبل استخدام خدمات حجز الفنادق الخاصة بنا."
   }
 }

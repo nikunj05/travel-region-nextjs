@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import "./HotelDetails.scss";
 
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
@@ -29,6 +30,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const HotelDetails = () => {
+  const t = useTranslations('HotelDetails');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -136,7 +138,7 @@ const router = useRouter();
                       handleOpenImageModal();
                     }}
                   >
-                    Show all 34 photos
+                    {t('showAllPhotos')}
                   </Link>
                 </div>
               </div>
@@ -182,9 +184,9 @@ const router = useRouter();
                   walk and explore the neighborhood area of the hotel. Places
                   nearby: Siam Paragon Mall, MBK Center and National Stadium.
                   Spend an evening in a nice atmosphere of the bar. Stop by the
-                  restaurant. If can’t live without coffee, drop by the cafe.
+                  restaurant.                   If can't live without coffee, drop by the cafe.
                   Free Wi-Fi is available on the territory. If...{" "}
-                  <a href="#">Read More</a>
+                  <a href="#">{t('readMore')}</a>
                 </p>
               </section>
               <section className="hotel-tab-section important-tab-content">

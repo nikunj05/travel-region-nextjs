@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "./BlogDetails.scss";
@@ -12,6 +13,7 @@ import suitcaseTravel from "@/assets/images/blog-travel-ad-image.jpg";
 import RelatedBlog from "../common/RelatedBlog/RelatedBlog";
 
 const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
+  const t = useTranslations('Blogs');
   const {
     currentBlog,
     relatedBlogs,
@@ -215,7 +217,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
       <main className="padding-top-100">
         <div className="blog-details-error">
           <div className="container">
-            <p>Error loading blog: {detailError || "Blog not found"}</p>
+            <p>{t('errorLoadingBlog')} {detailError || t('blogNotFound')}</p>
           </div>
         </div>
       </main>
@@ -235,7 +237,8 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 <span className="blog-date-read">
                   {formatDateWithReadTime(
                     currentBlog.created_at,
-                    currentBlog.read_time
+                    currentBlog.read_time,
+                    t
                   )}
                 </span>
                 <div className="blog-author">
@@ -249,7 +252,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                     />
                   </div>
                   <span className="author-name">
-                    {currentBlog.author || "John Doe"}
+                    {currentBlog.author || t('authorDefault')}
                   </span>
                 </div>
               </div>
@@ -281,7 +284,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Share
+                    {t('share')}
                   </button>
                   <button className="social-btn like-btn d-none">
                     <svg
@@ -298,7 +301,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                         strokeLinecap="round"
                       />
                     </svg>
-                    Like
+                    {t('like')}
                   </button>
                 </div>
               </div>
@@ -325,153 +328,15 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 <p dangerouslySetInnerHTML={{ __html: currentBlog.content }} />
               </div>
 
-              {/* Author Bio */}
-              {/* <div className="author-bio">
-                <div className="author-info">
-                  <div className="author-avatar-large">
-                    <Image
-                      src={currentBlog.full_author_image_url || userImage}
-                      width={60}
-                      height={60}
-                      alt="Author"
-                      className="avatar-img-large"
-                    />
-                  </div>
-                  <div className="author-details">
-                    <h3 className="author-name-large">
-                      {currentBlog.author || "John Doe"}
-                    </h3>
-                    <p className="author-description">
-                      Travel writer and ocean enthusiast who has explored over
-                      30 islands in the Maldives, sharing insider tips and
-                      stories from paradise.
-                    </p>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Related Articles */}
-              {/* <div className="related-articles">
-                <h3 className="related-title">Releted Blogs:</h3>
-                <div className="related-cards">
-                  {relatedBlogs.slice(0, 2).map((blog) => (
-                    <div
-                      key={blog.id}
-                      className="related-card"
-                      onClick={() => handleRelatedBlogClick(blog.slug)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <div className="related-card-image">
-                        <Image
-                          src={blog.full_image_url}
-                          width={200}
-                          height={150}
-                          alt={blog.title}
-                          className="related-img"
-                        />
-                      </div>
-                      <h4 className="related-card-title">{blog.title}</h4>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
-
-              {/* Comments Section */}
-              {/* <div className="comments-section">
-                <div className="comment-input">
-                  <input
-                    type="text"
-                    placeholder="Share your thoughts"
-                    className="comment-text-input"
-                  />
-                  <button className="post-comment-btn">Post it</button>
-                </div>
-
-                <div className="comments-header">
-                  <h3 className="comments-title">3 Comments</h3>
-                  <select className="comments-sort">
-                    <option value="newest">Newest</option>
-                    <option value="oldest">Oldest</option>
-                  </select>
-                </div>
-
-                <div className="comments-list">
-                  <div className="comment-item">
-                    <div className="comment-avatar">
-                      <Image
-                        src={userImage}
-                        width={40}
-                        height={40}
-                        alt="Commenter"
-                        className="comment-avatar-img"
-                      />
-                    </div>
-                    <div className="comment-content">
-                      <div className="comment-header">
-                        <span className="comment-author">Habib Ahmed</span>
-                        <span className="comment-time">about 1 hour ago</span>
-                      </div>
-                      <p className="comment-text">
-                        I've been to the Maldives twice and never knew about
-                        these places! Definitely adding them to my next trip
-                        itinerary.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="comment-item">
-                    <div className="comment-avatar">
-                      <Image
-                        src={userImage}
-                        width={40}
-                        height={40}
-                        alt="Commenter"
-                        className="comment-avatar-img"
-                      />
-                    </div>
-                    <div className="comment-content">
-                      <div className="comment-header">
-                        <span className="comment-author">Tazrin Kamal</span>
-                        <span className="comment-time">about 3 hour ago</span>
-                      </div>
-                      <p className="comment-text">
-                        Love how you highlighted the lesser-known islands. Makes
-                        me want to explore beyond the resorts.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="comment-item">
-                    <div className="comment-avatar">
-                      <Image
-                        src={userImage}
-                        width={40}
-                        height={40}
-                        alt="Commenter"
-                        className="comment-avatar-img"
-                      />
-                    </div>
-                    <div className="comment-content">
-                      <div className="comment-header">
-                        <span className="comment-author">Robert Smith</span>
-                        <span className="comment-time">1 Day ago</span>
-                      </div>
-                      <p className="comment-text">
-                        Great read! The hidden beach spot you mentioned sounds
-                        like paradise.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
+           
             </div>
 
             {/* Right Sidebar */}
             <div className="blog-sidebar">
               <div className="sidebar-ad">
-                <h3 className="ad-title">Planning a Trip?</h3>
+                <h3 className="ad-title">{t('planningTrip')}</h3>
                 <p className="ad-subtitle">
-                  Find the perfect hotel in Maldives.
+                  {t('findPerfectHotel')}
                 </p>
                 <div className="ad-image">
                   <Image
@@ -484,14 +349,14 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 </div>
                 <div className="ad-cta">
                   <button className="ad-btn button-primary">
-                    Find Hotels in Maldives
+                    {t('findHotelsMaldives')}
                   </button>
                 </div>
               </div>
             </div>
           </div>
           <div className="related-blogs-section">
-            <h2 className="related-blogs-title">Related Post</h2>
+            <h2 className="related-blogs-title">{t('relatedPost')}</h2>
             <RelatedBlog blogs={relatedBlogs} onBlogClick={handleRelatedBlogClick} />
           </div>
         </div>

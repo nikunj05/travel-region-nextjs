@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useBlogStore } from "@/store/blogStore";
@@ -10,6 +11,7 @@ import { useRouter } from "@/i18/navigation";
 import "./FeaturedBlogs.scss";
 
 const FeaturedBlogs = () => {
+  const t = useTranslations('Blogs');
   const { blogs, fetchBlogs, loading, error } = useBlogStore();
   const router = useRouter();
 
@@ -27,7 +29,7 @@ const FeaturedBlogs = () => {
       <div className="container">
         <div className="featured-reads-section section-space-tb">
           <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
-            <h1 className="section-title text-start">Featured Reads</h1>
+            <h1 className="section-title text-start">{t('featuredReads')}</h1>
 
             <div className="featured-blogs-layout">
               {/* Main Featured Blog Skeleton */}
@@ -93,7 +95,7 @@ const FeaturedBlogs = () => {
         <div className="container">
           <div className="featured-reads-section section-space-tb">
             <div className="error-state">
-              <p>Error loading blogs: {error}</p>
+              <p>{t('errorLoadingBlogs')} {error}</p>
             </div>
           </div>
         </div>
@@ -107,7 +109,7 @@ const FeaturedBlogs = () => {
         <div className="container">
           <div className="featured-reads-section section-space-tb">
             <div className="empty-state">
-              <p>No blogs available</p>
+              <p>{t('noBlogsAvailable')}</p>
             </div>
           </div>
         </div>
@@ -125,11 +127,10 @@ const FeaturedBlogs = () => {
           <div className="banner-content">
             <div className="heading_section text-center">
               <h1 className="section-title">
-                Discover Travel Tips, Destinations & More
+                {t('pageTitle')}
               </h1>
               <p className="section-description">
-                Helpful articles to plan your perfect trip — from hidden gems to
-                hotel hacks.
+                {t('pageDescription')}
               </p>
             </div>
           </div>
@@ -137,7 +138,7 @@ const FeaturedBlogs = () => {
       </section>
       <div className="container">
         <div className="featured-reads-section section-space-tb">
-          <h1 className="section-title text-start">Featured Reads</h1>
+          <h1 className="section-title text-start">{t('featuredReads')}</h1>
 
           <div className="featured-blogs-layout">
             {/* Main Featured Blog */}
@@ -164,7 +165,8 @@ const FeaturedBlogs = () => {
                     <span className="blog-date-read">
                       {formatDateWithReadTime(
                         featuredBlog.created_at,
-                        featuredBlog.read_time
+                        featuredBlog.read_time,
+                        t
                       )}
                     </span>
                   </div>
