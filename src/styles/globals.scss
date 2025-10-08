@@ -67,6 +67,26 @@ body {
   }
 }
 
+.cancel-button {
+  font-size: 18px;
+  background: $color-white;
+  border-radius: 4px;
+  color: $color-red;
+  font-weight: $font-weight500;
+  border: 1px solid $color-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11.7px 15px;
+  transition: $transition;
+
+  &:hover {
+    color: $color-white;
+    background-color: $color-red;
+  }
+}
+
 // .button-secondary {
 //   font-size: 20px;
 //   color: $brand-color;

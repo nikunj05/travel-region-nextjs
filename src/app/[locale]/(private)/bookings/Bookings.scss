@@ -1,0 +1,112 @@
+.my-booking-page {
+  .my-booking-title-with-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 32px 0;
+
+    .my-booking-title {
+      font-size: 36px;
+      font-weight: $font-weight600;
+      color: $color-black-zinc-950;
+      margin: 0 px;
+    }
+
+    .my-booking-filter-btn {
+      padding: 10.5px 12px;
+      border-radius: 9px;
+      background-color: #F3F4F6;
+      border: none;
+      min-width: 166px;
+      justify-content: space-between;
+      cursor: pointer;
+
+      .my-booking-filter-text {
+        gap: 10px;
+        font-size: 18px;
+        color: $color-black-zinc-950;
+      }
+    }
+  }
+
+  .hotel-booking-card {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+
+    .hotel-booking-card-item {
+      transition: $transition;
+
+      .hotel-booking-img {
+        overflow: hidden;
+        border-radius: 18px;
+
+        .hotel-booking-img {
+          width: 100%;
+          height: 222px;
+          border-radius: 18px;
+          transition: $transition;
+        }
+      }
+
+      .hotel-booking-info {
+        padding-top: 12px;
+
+        .hotel-title-with-rating {
+          gap: 15px;
+          margin-bottom: 8px;
+        }
+
+        .hotel-title {
+          font-size: 24px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-950;
+          margin: 0px;
+        }
+
+        .hotel-review-rating {
+          gap: 6px;
+          font-size: 16px;
+          color: $color-black-zinc-800;
+          font-weight: $font-weight500;
+          margin: 0px;
+        }
+
+        .hotel-location {
+          gap: 6px;
+          font-size: 16px;
+          color: $color-black-zinc-500;
+          margin-bottom: 12px;
+        }
+
+        .date-guest-number {
+          gap: 15px;
+          margin-bottom: 12px;
+        }
+
+        .text-with-icon {
+          gap: 6px;
+          font-size: 18px;
+          color: $color-black-zinc-500;
+        }
+      }
+
+      .hotel-bookig-action {
+        gap: 12px;
+
+        .hotel-bookig-action-btn {
+          flex: 1;
+          font-size: 16px;
+          padding: 6.7px 12px;
+        }
+      }
+
+      &:hover {
+        .hotel-booking-img {
+          .hotel-booking-img {
+            transform: scale(1.05);
+          }
+        }
+      }
+    }
+  }
+}

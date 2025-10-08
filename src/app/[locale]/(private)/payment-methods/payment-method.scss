@@ -1,0 +1,46 @@
+.payment-methods-page {
+  .payment-methods-title {
+    font-size: 36px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-950;
+    margin: 0 0 32px 0;
+  }
+
+  .no-save-card-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 0;
+
+    .no-save-card-title {
+      font-size: 24px;
+      font-weight: $font-weight600;
+      color: $color-black;
+      margin: 0 0 22px 0;
+    }
+  }
+}
+
+
+@media (max-width: 767.55px) {
+  .payment-methods-page {
+    .payment-methods-title {
+      font-size: 24px;
+      margin: 0 0 24px 0;
+    }
+
+    .no-save-card-screen {
+      padding: 0px;
+
+      .no-save-card-title {
+        font-size: 16px;
+        margin: 0 0 12px 0;
+      }
+
+      .no-save-card-image {
+        max-width: 200px;
+      }
+    }
+  }
+}

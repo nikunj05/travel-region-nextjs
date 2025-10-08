@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import styles from './Support.module.scss';
-import { useSettingsStore } from '@/store/settingsStore'
+import React from "react";
+import styles from "./Support.module.scss";
+import { useSettingsStore } from "@/store/settingsStore";
 
-  export default function Support() {
+export default function Support() {
   const { setting } = useSettingsStore();
-  console.log("==>",setting);
+  console.log("==>", setting);
   return (
     <div className={styles.supportContainer}>
       <h1 className={styles.pageTitle}>Support & Help Center</h1>
-      <p className={styles.pageSubtitle}>Get help and support here.</p>
+      {/* <p className={styles.pageSubtitle}>Get help and support here.</p> */}
 
       <div className={styles.cardsGrid}>
         {/* Call Us Card */}
@@ -18,22 +18,54 @@ import { useSettingsStore } from '@/store/settingsStore'
           <div className={styles.cardLeft}>
             <div className={styles.iconWrap} aria-hidden>
               {/* phone icon */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.09 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.31 1.77.57 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.14a2 2 0 0 1 2.11-.45c.83.26 1.7.45 2.6.57A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.19226 1.41157C5.75895 1.52869 6.21024 1.90943 6.49064 2.41246L7.38385 4.01491C7.71286 4.60511 7.98973 5.1018 8.17054 5.53357C8.36235 5.99158 8.47626 6.44324 8.42419 6.9426C8.37211 7.44196 8.16746 7.8604 7.88529 8.26899C7.61928 8.65417 7.24588 9.08304 6.80218 9.59267L5.48917 11.1009C5.25389 11.3711 5.13624 11.5062 5.12549 11.6751C5.11474 11.844 5.21116 11.9883 5.404 12.2768C7.04759 14.7359 9.26273 16.9518 11.7238 18.5968C12.0124 18.7897 12.1566 18.8861 12.3255 18.8753C12.4944 18.8646 12.6296 18.7469 12.8998 18.5116L14.4081 17.1986C14.9177 16.7549 15.3466 16.3815 15.7318 16.1155C16.1403 15.8333 16.5588 15.6286 17.0581 15.5766C17.5575 15.5245 18.0092 15.6384 18.4672 15.8302C18.8989 16.011 19.3956 16.2879 19.9857 16.6168L21.5883 17.5101C22.0913 17.7905 22.4721 18.2418 22.5892 18.8085C22.7075 19.3811 22.533 19.9566 22.1474 20.4297C20.7485 22.146 18.5072 23.2389 16.156 22.7646C14.7108 22.473 13.2848 21.9873 11.5601 20.9982C8.0947 19.0108 4.98763 15.902 3.00255 12.4407C2.01343 10.716 1.52772 9.29 1.23618 7.84474C0.76188 5.49352 1.85471 3.25224 3.57108 1.85333C4.04411 1.46779 4.61966 1.29322 5.19226 1.41157Z"
+                  fill="#09090B"
+                />
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M13.5685 1.84799C13.7216 1.31736 14.2759 1.01134 14.8065 1.16447C18.6739 2.28049 21.7199 5.32634 22.836 9.19358C22.9892 9.72421 22.6832 10.2785 22.1526 10.4317C21.6219 10.5848 21.0676 10.2788 20.9145 9.74819C19.9889 6.54122 17.4591 4.01154 14.252 3.08605C13.7214 2.93292 13.4154 2.37863 13.5685 1.84799ZM12.9548 6.56624C13.1707 6.05789 13.7578 5.82079 14.2661 6.03666C15.9278 6.74231 17.2582 8.07269 17.9639 9.73438C18.1798 10.2427 17.9427 10.8298 17.4343 11.0457C16.926 11.2616 16.3389 11.0245 16.123 10.5161C15.6199 9.33137 14.6692 8.38068 13.4844 7.87756C12.976 7.66169 12.7389 7.07459 12.9548 6.56624Z"
+                  fill="#09090B"
+                />
               </svg>
             </div>
             <div className={styles.cardContent}>
               <div className={styles.cardTitle}>Call Us</div>
               <div className={styles.numberRow}>
                 {/* <Image src={UaeFlag} alt="UAE flag" className={styles.flagImg} /> */}
-                <a href={`tel:${setting?.contact_us}`} className={styles.numberLink}>{setting?.contact_us}</a>
+                <a
+                  href={`tel:${setting?.contact_us}`}
+                  className={styles.numberLink}
+                >
+                  {setting?.contact_us}
+
+                  <div className={styles.chevron} aria-hidden>
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M9.00005 6L15 12L9 18"
+                        stroke="#09090B"
+                        stroke-width="1.5"
+                        stroke-miterlimit="16"
+                      />
+                    </svg>
+                  </div>
+                </a>
               </div>
             </div>
-          </div>
-          <div className={styles.chevron} aria-hidden>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </div>
         </div>
 
@@ -42,27 +74,53 @@ import { useSettingsStore } from '@/store/settingsStore'
           <div className={styles.cardLeft}>
             <div className={styles.iconWrap} aria-hidden>
               {/* whatsapp icon */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.52 3.48A11.8 11.8 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.1 1.6 5.9L0 24l6.25-1.6A12 12 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.21-3.48-8.52zM12 21.33c-1.94 0-3.83-.52-5.48-1.5l-.39-.23-3.7.95.99-3.59-.25-.41A9.32 9.32 0 0 1 2.67 12C2.67 7 7 2.67 12 2.67S21.33 7 21.33 12 17 21.33 12 21.33zm5.19-6.07c-.28-.14-1.65-.82-1.9-.91-.25-.09-.43-.14-.61.14-.18.28-.7.91-.86 1.09-.16.18-.32.2-.6.07-.28-.14-1.17-.43-2.23-1.36-.82-.73-1.37-1.62-1.53-1.9-.16-.28-.02-.43.12-.57.12-.12.28-.32.43-.48.14-.16.18-.28.27-.46.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2-.22-.52-.45-.45-.61-.45-.16 0-.34-.02-.52-.02-.18 0-.48.07-.73.34-.25.28-.96.93-.96 2.27 0 1.34.98 2.64 1.12 2.82.14.18 1.93 2.95 4.68 4.14.65.28 1.16.45 1.56.57.65.21 1.23.18 1.69.11.52-.08 1.65-.67 1.88-1.32.23-.66.23-1.22.16-1.34-.07-.12-.25-.18-.52-.32z" fill="currentColor"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 22.75C17.9371 22.75 22.75 17.937 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25C6.06295 1.25001 1.25 6.06294 1.25 12C1.25 13.4809 1.54973 14.8939 2.09277 16.1797C2.23519 16.5169 2.33137 16.7448 2.39551 16.9199C2.46089 17.0985 2.47052 17.163 2.47168 17.1797C2.47818 17.2736 2.45414 17.4018 2.29199 18.0078L1.27539 21.8057C1.20616 22.0644 1.28033 22.3409 1.46973 22.5303C1.65913 22.7197 1.93559 22.7938 2.19434 22.7246L5.99219 21.708C6.59822 21.5459 6.72641 21.5218 6.82031 21.5283C6.83702 21.5295 6.9016 21.5391 7.08008 21.6045C7.2552 21.6686 7.4831 21.7648 7.82031 21.9072C9.10609 22.4503 10.5191 22.75 12 22.75ZM16.0156 17.7051C15.5495 17.8026 15.1948 17.7218 14.8154 17.6357L14.7627 17.624C12.8385 17.1895 10.9514 16.174 9.38867 14.6113C7.82599 13.0487 6.81055 11.1614 6.37598 9.2373L6.36328 9.18457C6.27714 8.80499 6.19728 8.44974 6.29492 7.9834C6.36619 7.6433 6.54635 7.32702 6.74219 7.08203C6.93798 6.83712 7.20653 6.59169 7.52246 6.44727C7.95753 6.24854 8.40036 6.24919 8.87988 6.25H8.97266C9.19297 6.25 9.56429 6.25658 9.90723 6.39941C10.317 6.57016 10.6548 6.92226 10.7412 7.47363L10.7422 7.47949C10.8493 8.16295 10.931 8.68233 10.9844 9.0498C11.0111 9.23368 11.0314 9.38645 11.0449 9.50586C11.0561 9.60401 11.0701 9.73957 11.0635 9.85254C11.0347 10.3417 10.8364 10.7308 10.6299 11.0322C10.4984 11.2241 10.3221 11.4327 10.1836 11.5967C10.1293 11.661 10.0807 11.7187 10.043 11.7656L9.98047 11.8438C9.74289 12.1388 9.62419 12.2868 9.62793 12.4688C9.63187 12.6505 9.74884 12.7839 9.98242 13.0508C10.1311 13.2206 10.2866 13.3872 10.4492 13.5498C10.6119 13.7125 10.7784 13.8689 10.9482 14.0176C11.2153 14.2514 11.3492 14.3683 11.5313 14.3721C11.7133 14.3758 11.861 14.2563 12.1563 14.0186L12.2334 13.957C12.2804 13.9192 12.3379 13.8698 12.4023 13.8154C12.5662 13.677 12.775 13.5016 12.9668 13.3701C13.2684 13.1634 13.6579 12.9642 14.1475 12.9355C14.2604 12.9289 14.396 12.943 14.4941 12.9541C14.6134 12.9677 14.7657 12.9889 14.9492 13.0156C15.3167 13.069 15.837 13.1507 16.5205 13.2578H16.5254C17.0767 13.3442 17.4288 13.6822 17.5996 14.0918C17.7425 14.4347 17.75 14.806 17.75 15.0264V15.1191C17.7508 15.5987 17.7514 16.0414 17.5527 16.4766C17.4083 16.7927 17.163 17.0619 16.918 17.2578C16.6729 17.4537 16.3558 17.6338 16.0156 17.7051Z"
+                  fill="#09090B"
+                />
               </svg>
             </div>
             <div className={styles.cardContent}>
               <div className={styles.cardTitle}>WhatsApp</div>
-              <a href={`https://wa.me/${setting?.whatsapp_number}`} target="_blank" rel="noreferrer" className={styles.numberLink}>
-              {setting?.whatsapp_number}
+              <a
+                href={`https://wa.me/${setting?.whatsapp_number}`}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.numberLink}
+              >
+                {setting?.whatsapp_number}
+                <div className={styles.chevron} aria-hidden>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9.00005 6L15 12L9 18"
+                      stroke="#09090B"
+                      stroke-width="1.5"
+                      stroke-miterlimit="16"
+                    />
+                  </svg>
+                </div>
               </a>
-              <div className={styles.hintText}>Or click here to open in WhatsApp web.</div>
+
+              <div className={styles.hintText}>
+                Or click here to open in WhatsApp web.
+              </div>
             </div>
-          </div>
-          <div className={styles.chevron} aria-hidden>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-

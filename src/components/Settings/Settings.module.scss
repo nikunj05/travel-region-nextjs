@@ -311,6 +311,14 @@
     margin-bottom: 24px !important;
   }
 
+  .selectwithinputfield {
+
+
+    .countryCodeInput {
+      height: calc(48px - 4px);
+    }
+  }
+
   .errorContainer {
     min-height: 50px;
   }

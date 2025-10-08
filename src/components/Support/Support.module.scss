@@ -1,34 +1,26 @@
-.supportContainer {
-  padding: 24px 0;
-}
-
 .pageTitle {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-size: 36px;
+  font-weight: $font-weight600;
+  color: $color-black-zinc-950;
+  margin: 0 0 32px 0;
 }
 
 .pageSubtitle {
-  color: #6b7280; /* gray-500 */
+  color: #6b7280;
+  /* gray-500 */
   margin-bottom: 24px;
 }
 
 .cardsGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-@media (min-width: 768px) {
-  .cardsGrid {
-    grid-template-columns: 1fr 1fr;
-  }
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
 }
 
 .card {
-  background: #f6f8fc; /* light background similar to other pages */
-  border-radius: 12px;
-  padding: 20px;
+  background: #F4F6FB;
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -36,34 +28,29 @@
 
 .cardLeft {
   display: flex;
-  gap: 12px;
+  gap: 48px;
+  width: 100%;
+  flex-direction: column;
+  height: 100%;
 }
 
 .iconWrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 9999px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
+  width: 24px;
+  height: 24px;
 }
 
 .cardContent {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0px;
+  margin-top: auto;
 }
 
 .cardTitle {
-  font-weight: 600;
-}
-
-.numberRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 20px;
+  font-weight: $font-weight500;
+  color: $color-black;
+  margin-bottom: 8px;
 }
 
 .flagImg {
@@ -73,17 +60,59 @@
 }
 
 .numberLink {
-  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 16px;
+  color: $color-black-zinc-800;
   text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .hintText {
-  color: #6b7280;
+  color: $color-black-zinc-800;
   font-size: 12px;
 }
 
-.chevron {
-  color: #111827;
+@media (max-width: 991.55px) {
+  .cardLeft {
+    gap: 32px;
+  }
 }
 
+@media (max-width: 767.55px) {
+  .pageTitle {
+    font-size: 24px;
+    margin: 0 0 24px 0;
+  }
 
+  .card {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .cardLeft {
+    gap: 24px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .numberLink {
+    font-size: 14px;
+  }
+
+  .hintText {
+    font-size: 12px;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
