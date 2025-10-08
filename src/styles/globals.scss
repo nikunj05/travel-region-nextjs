@@ -363,6 +363,7 @@ img {
 
   .navbar-nav {
     align-items: center;
+    padding: 0px;
 
     .nav-item {
       margin-right: 32px;
@@ -926,6 +927,9 @@ img {
         font-weight: $font-weight600;
         margin: 0px;
         line-height: 32px;
+        align-items: baseline;
+        display: flex;
+        gap: 4px;
 
         .destination-hotel-pricing-night {
           font-size: 18px;

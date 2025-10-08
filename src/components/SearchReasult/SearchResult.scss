@@ -1303,3 +1303,61 @@
     transform: translateY(0);
   }
 }
+
+
+
+// RTL Layout start
+
+[dir="rtl"] {
+  .search-result-page {
+    .search-bar-main {
+      .search-bar {
+        .search-bar-container {
+          .search-field {
+            .datepicker-dropdown {
+              left: auto;
+              right: 100%;
+              transform: translate(50%);
+            }
+          }
+        }
+      }
+    }
+
+    .search-content {
+      .filter-sidebar {
+        .filter-section {
+          .filter-options {
+            .filter-option {
+              .stars {
+                flex-direction: row-reverse;
+              }
+            }
+          }
+        }
+      }
+
+      .result-right-side {
+        .hotel-results {
+          .hotel-card {
+            .property-card-action {
+              .hotel-footer {
+                .hotel-price {
+                  text-align: start;
+
+                  .price-amount {
+                    gap: 2px;
+                    display: flex;
+                    align-items: baseline;
+                    direction: ltr;
+                    flex-direction: row-reverse;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
