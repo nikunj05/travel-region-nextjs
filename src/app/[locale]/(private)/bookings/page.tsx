@@ -5,7 +5,6 @@ import "./Bookings.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
 import StartIcon from "@/assets/images/star-fill-icon.svg";
-import LocationIcon from "@/assets/images/location-icon.svg";
 
 export default function BookingsPage() {
   return (
@@ -106,7 +105,7 @@ export default function BookingsPage() {
         </div>
         <div className="hotel-booking-card d-grid">
           <div className="hotel-booking-card-item">
-            <div className="hotel-booking-img">
+            <div className="hotel-booking-image">
               <Image
                 src={HotelBookingImg}
                 alt="Hotel Booking"
@@ -230,7 +229,7 @@ export default function BookingsPage() {
             </div>
           </div>
           <div className="hotel-booking-card-item">
-            <div className="hotel-booking-img">
+            <div className="hotel-booking-image">
               <Image
                 src={HotelBookingImg}
                 alt="Hotel Booking"

@@ -317,6 +317,20 @@ img {
       }
     }
 
+    .user-login-box {
+      .profile-dropdown {
+        .profile-button {
+          .profile-arrow {
+            .language-arrow-icon {
+              path {
+                stroke: $color-black-zinc-950;
+              }
+            }
+          }
+        }
+      }
+    }
+
     .header-button-box {
       .login-btn {
         background-color: $brand-color;

@@ -283,21 +283,22 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
       <div className="container">
         <div className={styles.layoutWrapper}>
           {/* Mobile Hamburger Button */}
-          <button
-            className={styles.mobileMenuToggle}
-            type="button"
-            onClick={toggleMobileSidebar}
-            aria-label="Toggle sidebar menu"
-          >
-            <Image
-              src={hamburgerMenuIcon}
-              width="24"
-              height="24"
-              alt="hamburger icon"
-              className={styles.hamburgerIcon}
-            />
-          </button>
-
+          <div className={styles.mobileMenuToggleContainer}>
+            <button
+              className={styles.mobileMenuToggle}
+              type="button"
+              onClick={toggleMobileSidebar}
+              aria-label="Toggle sidebar menu"
+            >
+              <Image
+                src={hamburgerMenuIcon}
+                width="24"
+                height="24"
+                alt="hamburger icon"
+                className={styles.hamburgerIcon}
+              />
+            </button>
+          </div>
           {/* Sidebar */}
           <aside
             className={`${styles.sidebar} ${

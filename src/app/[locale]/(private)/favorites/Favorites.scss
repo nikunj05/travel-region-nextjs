@@ -1,4 +1,4 @@
-.my-booking-page {
+.favorites-page {
   .my-booking-title-with-filter {
     display: flex;
     justify-content: space-between;
@@ -13,23 +13,6 @@
       color: $color-black-zinc-950;
       margin: 0px;
     }
-
-    .my-booking-filter-btn {
-      padding: 10.5px 12px;
-      border-radius: 9px;
-      background-color: #F3F4F6;
-      border: none;
-      gap: 15px;
-      min-width: 166px;
-      justify-content: space-between;
-      cursor: pointer;
-
-      .my-booking-filter-text {
-        gap: 10px;
-        font-size: 18px;
-        color: $color-black-zinc-950;
-      }
-    }
   }
 
   .hotel-booking-card {
@@ -41,6 +24,7 @@
 
       .hotel-booking-image {
         overflow: hidden;
+        position: relative;
         border-radius: 18px;
 
         .hotel-booking-img {
@@ -49,6 +33,16 @@
           border-radius: 18px;
           transition: $transition;
         }
+
+        .hotel-favorit-action {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+          padding: 0px;
+        }
       }
 
       .hotel-booking-info {
@@ -56,7 +50,7 @@
 
         .hotel-title-with-rating {
           gap: 15px;
-          margin-bottom: 8px;
+          margin-bottom: 18px;
         }
 
         .hotel-title {
@@ -74,22 +68,19 @@
           margin: 0px;
         }
 
-        .hotel-location {
-          gap: 6px;
-          font-size: 16px;
-          color: $color-black-zinc-500;
-          margin-bottom: 12px;
-        }
+        .hotel-pricing {
+          font-size: 30px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-950;
+          margin-bottom: 18px;
+          line-height: 1.2;
+          align-items: baseline;
 
-        .date-guest-number {
-          gap: 15px;
-          margin-bottom: 12px;
-        }
-
-        .text-with-icon {
-          gap: 6px;
-          font-size: 18px;
-          color: $color-black-zinc-500;
+          .hotel-pricing-per {
+            font-size: 14px;
+            font-weight: $font-weight400;
+            color: $color-black-zinc-500
+          }
         }
       }
 
@@ -115,7 +106,7 @@
 }
 
 @media (max-width: 1199.55px) {
-  .my-booking-page {
+  .favorites-page {
     .hotel-booking-card {
       gap: 24px;
 
@@ -133,24 +124,30 @@
   }
 }
 
+@media (max-width: 991.55px) {
+  .favorites-page {
+    .hotel-booking-card {
+      .hotel-booking-card-item {
+        .hotel-booking-image {
+          .hotel-favorit-action {
+            svg {
+              width: 32px;
+              height: 32px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 @media (max-width: 767.55px) {
-  .my-booking-page {
+  .favorites-page {
     .my-booking-title-with-filter {
       margin-bottom: 24px;
 
       .my-booking-title {
         font-size: 24px;
-      }
-
-      .my-booking-filter-btn {
-        min-width: auto;
-        border-radius: 4px;
-        padding: 9px 10px;
-
-        .my-booking-filter-text {
-          font-size: 16px;
-        }
       }
     }
 
@@ -161,6 +158,16 @@
         .hotel-booking-image {
           .hotel-booking-img {
             height: auto;
+          }
+
+          .hotel-favorit-action {
+            top: 12px;
+            right: 12px;
+
+            svg {
+              width: 24px;
+              height: 24px;
+            }
           }
         }
 
@@ -182,26 +189,12 @@
             }
           }
 
-          .hotel-location {
-            font-size: 14px;
+          .hotel-pricing {
+            font-size: 20px;
             margin-bottom: 6px;
 
-            svg {
-              width: 14px;
-              height: 14px;
-            }
-          }
-
-          .date-guest-number {
-            margin-bottom: 6px;
-          }
-
-          .text-with-icon {
-            font-size: 14px;
-
-            svg {
-              width: 14px;
-              height: 14px;
+            .hotel-pricing-per {
+              font-size: 12px;
             }
           }
         }
@@ -217,7 +210,7 @@
 }
 
 @media (max-width: 575.55px) {
-  .my-booking-page {
+  .favorites-page {
     .hotel-booking-card {
       .hotel-booking-card-item {
         .hotel-booking-image {

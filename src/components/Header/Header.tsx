@@ -134,7 +134,7 @@ const Header = () => {
   const dynamicLogo = useSettingsStore((s) => s.setting?.logo);
   // console.log("==> dynamicLogo", useSettingsStore((s) => s.setting))
   const { isAuthenticated, logout, user } = useAuth();
-  
+
   // Use dynamic profile image or fallback to static image
   const profileImage = user?.profile_image_url || UserImage;
 
@@ -164,14 +164,8 @@ const Header = () => {
           <Link className="navbar-brand p-0 m-0" href="/">
             {dynamicLogo ? (
               <>
-              <Image
-                src={dynamicLogo}
-                alt="logo"
-                width={205}
-                height={35}
-              />
+                <Image src={dynamicLogo} alt="logo" width={205} height={35} />
               </>
-             
             ) : (
               <Image
                 src={travelRegionsLogo}
@@ -358,7 +352,10 @@ const Header = () => {
                     isProfileMenuOpen ? "open" : ""
                   }`}
                 >
-                  <button className="profile-button" onClick={toggleProfileMenu}>
+                  <button
+                    className="profile-button"
+                    onClick={toggleProfileMenu}
+                  >
                     <Image
                       src={profileImage}
                       width="42"
@@ -377,7 +374,7 @@ const Header = () => {
                       >
                         <path
                           d="M4.66797 6.33352L8.00133 9.66683L11.3346 6.3335"
-                          stroke="#09090b"
+                          stroke="white"
                           strokeWidth="0.833333"
                           strokeMiterlimit="16"
                         />
