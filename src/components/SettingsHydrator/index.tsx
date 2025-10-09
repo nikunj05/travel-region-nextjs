@@ -4,7 +4,7 @@ import { AppSetting } from '@/types/settings'
 import { useSettingsStore } from '@/store/settingsStore'
 
 interface SettingsHydratorProps {
-  setting: AppSetting
+  setting: AppSetting | null
 }
 
 export default function SettingsHydrator({ setting }: SettingsHydratorProps) {

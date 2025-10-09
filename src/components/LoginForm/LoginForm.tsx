@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-// import { useTranslations } from "next-intl";
-import { loginSchema, LoginFormData } from "@/schemas/loginSchema";
+import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
+import { createLoginSchema, LoginFormData } from "@/schemas/loginSchema";
 import { useLogin } from "@/hooks/useLogin";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
@@ -15,9 +15,16 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 const LoginForm: React.FC = () => {
-  // const t = useTranslations("Auth.login");
-  // const nav = useTranslations("Navigation");
+  const t = useTranslations("Auth.login");
+  const tv = useTranslations("Auth.validation");
   const { handleSubmit, isLoading, error } = useLogin();
+  
+  const loginSchema = useMemo(() => createLoginSchema((key, params) => {
+    if (key === 'passwordMinLength' && params?.min) {
+      return tv('passwordMinLength', { min: params.min });
+    }
+    return tv(key);
+  }), [tv]);
   return (
     <>
       <main className={`${style.userLoginPage} loginPage`}>
@@ -33,19 +40,18 @@ const LoginForm: React.FC = () => {
             </Link>
           </div>
           <div className={style.loginContent}>
-            <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>
+            <h1 className={style.loginheadline}>{t("pageTitle")}</h1>
             <p className={style.logindescription}>
-              Sign in or create an account to manage your bookings and enjoy
-              exclusive offers.
+              {t("pageDescription")}
             </p>
           </div>
         </div>
 
         <div className={style.loginrightcontent}>
           <div className={style.loginformBox}>
-            <h2 className={style.loginformheading}>Please Sign in</h2>
+            <h2 className={style.loginformheading}>{t("formHeading")}</h2>
             <p className={style.loginformdesc}>
-              You need to Sign in first to continue
+              {t("formDescription")}
             </p>
             <Form<LoginFormData>
               defaultValues={{
@@ -59,23 +65,22 @@ const LoginForm: React.FC = () => {
               <div className={`${style.loginformGroup} form-group`}>
                 <Input
                   name="email"
-                  label="Email"
+                  label={t("emailLabel")}
                   type="email"
                   className="form-input form-control"
-                  placeholder="example@gmail.com"
+                  placeholder={t("emailPlaceholder")}
                   labelClassName="form-label"
                 />
               </div>
               <div className={`${style.loginformGroup} form-group`}>
                 <Input
                   name="password"
-                  label="Password"
+                  label={t("passwordLabel")}
                   type="password"
                   showPasswordToggle={true}
                   className="form-input form-control"
-                  placeholder="•••••••••••••••••"
+                  placeholder={t("passwordPlaceholder")}
                   labelClassName={`${style.labelwithfpassword} form-label`}
-                  required
                 />
               </div>
               {error && (
@@ -87,19 +92,19 @@ const LoginForm: React.FC = () => {
                   disabled={isLoading}
                   className={`${style.loginformbutton} button-primary w-100`}
                 >
-                  {isLoading ? "Signing in..." : "Sign in"}
+                  {isLoading ? t("signingIn") : t("signInButton")}
                 </button>
               </div>
             </Form>
             <div className={style.forgotpass}>
               <Link href="/forgot-password" className={style.forgotpassword}>
-                Forgot Password?
+                {t("forgotPassword")}
               </Link>
             </div>
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
-              Or Sign in with
+              {t("orSignInWith")}
               <span className={style.orDividerline}></span>
             </div>
 
@@ -120,7 +125,7 @@ const LoginForm: React.FC = () => {
                   height="44"
                   className={style.socialloginicon}
                 />
-                <span> Google</span>
+                <span> {t("google")}</span>
               </button>
               <button
                 className={style.socialBtn}
@@ -138,15 +143,15 @@ const LoginForm: React.FC = () => {
                   height="44"
                   className={style.socialloginicon}
                 />
-                <span>Facebook</span>
+                <span>{t("facebook")}</span>
               </button>
             </div>
 
             <div className={style.logingotosignuplink}>
               <p className={style.signupText}>
-                Don’t have an account? {""}
+                {t("noAccount")} {""}
                 <Link href="/register" className={style.signupLink}>
-                  Sign up
+                  {t("signUp")}
                 </Link>
               </p>
             </div>

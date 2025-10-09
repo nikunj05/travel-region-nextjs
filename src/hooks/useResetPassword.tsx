@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { formatApiErrorMessage } from '@/lib/formatApiError';
 import { ResetPasswordFormData } from '@/schemas/resetPasswordSchema';
 import { authService } from '@/services/authService';
-import { useRouter } from 'next/router';
 
 function extractTokenFromPath(pathname: string): string | null {
   if (!pathname) return null;

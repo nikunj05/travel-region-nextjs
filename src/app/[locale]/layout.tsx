@@ -45,13 +45,19 @@ export default async function LocaleLayout({
 
   // Fetch settings on server (cached, revalidate hourly)
   // Pass locale to ensure API receives proper Accept-Language header
-  const settingsRes = await settingsService.getSettingsCached(locale);
-  const setting = settingsRes.data.setting;
+  let setting = null;
+  try {
+    const settingsRes = await settingsService.getSettingsCached(locale);
+    setting = settingsRes.data?.setting || null;
+  } catch (error) {
+    console.error('Failed to fetch settings in layout:', error);
+    // Continue rendering with null setting - components should handle this
+  }
 
   return (
     <html lang={lang} dir={direction}>
       <head>
-        <link rel="icon" href={setting.favicon} />
+        {setting?.favicon && <link rel="icon" href={setting.favicon} />}
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>

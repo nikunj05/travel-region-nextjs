@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
-import { forgotPasswordSchema, ForgotPasswordFormData } from "@/schemas/forgotPasswordSchema";
+import { createForgotPasswordSchema, ForgotPasswordFormData } from "@/schemas/forgotPasswordSchema";
 import { useForgotPassword } from "@/hooks/useForgotPassword";
 import style from "@/components/LoginForm/Login.module.scss";
 import Link from "next/link";
@@ -11,7 +12,11 @@ import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 
 const ForgotPasswordForm: React.FC = () => {
+  const t = useTranslations("Auth.forgotPassword");
+  const tv = useTranslations("Auth.validation");
   const { handleSubmit, isLoading, error } = useForgotPassword();
+  
+  const forgotPasswordSchema = useMemo(() => createForgotPasswordSchema((key) => tv(key)), [tv]);
 
   return (
     <main className={`${style.userLoginPage} loginPage`}>
@@ -27,17 +32,16 @@ const ForgotPasswordForm: React.FC = () => {
           </Link>
         </div>
         <div className={style.loginContent}>
-          <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>
+          <h1 className={style.loginheadline}>{t("pageTitle")}</h1>
           <p className={style.logindescription}>
-            Sign in or create an account to manage your bookings and enjoy
-            exclusive offers.
+            {t("pageDescription")}
           </p>
         </div>
       </div>
       <div className={style.loginrightcontent}>
         <div className={style.loginformBox}>
-          <h2 className={style.loginformheading}>Forgot Password</h2>
-          <p className={style.loginformdesc}>You need to enter your email to continue</p>
+          <h2 className={style.loginformheading}>{t("formHeading")}</h2>
+          <p className={style.loginformdesc}>{t("formDescription")}</p>
           <Form<ForgotPasswordFormData>
             defaultValues={{ email: "" }}
             onSubmit={handleSubmit}
@@ -47,10 +51,10 @@ const ForgotPasswordForm: React.FC = () => {
             <div className={`${style.loginformGroup} form-group`}>
               <Input
                 name="email"
-                label="Email"
+                label={t("emailLabel")}
                 type="email"
                 className="form-input form-control"
-                placeholder="Enter your email"
+                placeholder={t("emailPlaceholder")}
                 labelClassName="form-label"
               />
             </div>
@@ -63,16 +67,16 @@ const ForgotPasswordForm: React.FC = () => {
                 disabled={isLoading}
                 className={`${style.loginformbutton} button-primary w-100`}
               >
-                {isLoading ? "Sending..." : "Send reset link"}
+                {isLoading ? t("sending") : t("sendButton")}
               </button>
             </div>
           </Form>
 
           <div className={style.logingotosignuplink}>
             <p className={style.signupText}>
-              Remembered your password? {""}
+              {t("rememberedPassword")} {""}
               <Link href="/login" className={style.signupLink}>
-                Sign in
+                {t("signIn")}
               </Link>
             </p>
           </div>

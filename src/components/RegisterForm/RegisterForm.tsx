@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Controller } from "react-hook-form";
-// import { useTranslations } from "next-intl";
-import { registerSchema, RegisterFormData } from "@/schemas/registerSchema";
+import { useTranslations } from "next-intl";
+import { createRegisterSchema, RegisterFormData } from "@/schemas/registerSchema";
 import { useRegister } from "@/hooks/useRegister";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
@@ -17,9 +17,16 @@ import style from "./RegisterForm.module.scss";
 import Link from "next/link";
 
 const RegisterForm: React.FC = () => {
-  // const t = useTranslations("Auth.login");
-  // const nav = useTranslations("Navigation");
+  const t = useTranslations("Auth.register");
+  const tv = useTranslations("Auth.validation");
   const { handleSubmit, isLoading, error } = useRegister();
+  
+  const registerSchema = useMemo(() => createRegisterSchema((key, params) => {
+    if (key === 'passwordMinLength' && params?.min) {
+      return tv('passwordMinLength', { min: params.min });
+    }
+    return tv(key);
+  }), [tv]);
 
   return (
     <>
@@ -36,19 +43,18 @@ const RegisterForm: React.FC = () => {
             </Link>
           </div>
           <div className={style.loginContent}>
-            <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>
+            <h1 className={style.loginheadline}>{t("pageTitle")}</h1>
             <p className={style.logindescription}>
-              Sign in or create an account to manage your bookings and enjoy
-              exclusive offers.
+              {t("pageDescription")}
             </p>
           </div>
         </div>
 
         <div className={style.loginrightcontent}>
           <div className={style.loginformBox}>
-            <h2 className={style.loginformheading}>Create an account</h2>
+            <h2 className={style.loginformheading}>{t("formHeading")}</h2>
             <p className={style.loginformdesc}>
-              Create an account and get the Deals & Promotions news
+              {t("formDescription")}
             </p>
             <Form<RegisterFormData>
               defaultValues={{
@@ -70,20 +76,20 @@ const RegisterForm: React.FC = () => {
                       <div className={`${style.loginformGroup}`}>
                         <Input
                           name="first_name"
-                          label="First Name"
+                          label={t("firstNameLabel")}
                           type="text"
                           className="form-input form-control"
-                          placeholder="Enter your first name"
+                          placeholder={t("firstNamePlaceholder")}
                           labelClassName="form-label"
                         />
                       </div>
                       <div className={`${style.loginformGroup} form-group`}>
                         <Input
                           name="last_name"
-                          label="Last Name"
+                          label={t("lastNameLabel")}
                           type="text"
                           className="form-input form-control"
-                          placeholder="Enter your last name"
+                          placeholder={t("lastNamePlaceholder")}
                           labelClassName="form-label"
                         />
                       </div>
@@ -94,21 +100,21 @@ const RegisterForm: React.FC = () => {
                       <div className={`${style.loginformGroup} `}>
                         <Input
                           name="email"
-                          label="Email"
+                          label={t("emailLabel")}
                           type="email"
                           className="form-input form-control"
-                          placeholder="example@gmail.com"
+                          placeholder={t("emailPlaceholder")}
                           labelClassName="form-label"
                         />
                       </div>
                       <div className={`${style.loginformGroup} form-group`}>
                         <Input
                           name="password"
-                          label="Password"
+                          label={t("passwordLabel")}
                           type="password"
                           showPasswordToggle={true}
                           className="form-input form-control"
-                          placeholder="•••••••••••••••••"
+                          placeholder={t("passwordPlaceholder")}
                           labelClassName="form-label"
                         />
                       </div>
@@ -117,7 +123,7 @@ const RegisterForm: React.FC = () => {
                   <div
                     className={`${style.loginformGroup} form-group select-with-input-field`}
                   >
-                    <label className="form-label">Mobile Number</label>
+                    <label className="form-label">{t("mobileLabel")}</label>
                     <div
                       className={`${style.selectwithinputfield} select-with-input`}
                     >
@@ -143,7 +149,7 @@ const RegisterForm: React.FC = () => {
                           name="mobile"
                           type="number"
                           className="form-input form-control"
-                          placeholder="Enter Mobile Number"
+                          placeholder={t("mobilePlaceholder")}
                         />
                       </div>
                     </div>
@@ -158,7 +164,7 @@ const RegisterForm: React.FC = () => {
                       disabled={isLoading}
                       className={`${style.loginformbutton} button-primary w-100`}
                     >
-                      {isLoading ? "Signing up..." : "Sign up"}
+                      {isLoading ? t("signingUp") : t("signUpButton")}
                     </button>
                   </div>
                 </>
@@ -167,7 +173,7 @@ const RegisterForm: React.FC = () => {
 
             <div className={style.orDivider}>
               <span className={style.orDividerline}></span>
-              Or Sign up with
+              {t("orSignUpWith")}
               <span className={style.orDividerline}></span>
             </div>
 
@@ -180,7 +186,7 @@ const RegisterForm: React.FC = () => {
                   height="44"
                   className={style.socialloginicon}
                 />
-                <span> Google</span>
+                <span> {t("google")}</span>
               </button>
               <button className={style.socialBtn}>
                 <Image
@@ -190,15 +196,15 @@ const RegisterForm: React.FC = () => {
                   height="44"
                   className={style.socialloginicon}
                 />
-                <span>Facebook</span>
+                <span>{t("facebook")}</span>
               </button>
             </div>
 
             <div className={style.logingotosignuplink}>
               <p className={style.signupText}>
-                Already have an account? {""}
+                {t("haveAccount")} {""}
                 <Link href="/login" className={style.signupLink}>
-                  Sign in
+                  {t("signIn")}
                 </Link>
               </p>
             </div>

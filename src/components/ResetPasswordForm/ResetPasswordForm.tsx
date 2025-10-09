@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
-import { resetPasswordSchema, ResetPasswordFormData } from "@/schemas/resetPasswordSchema";
+import { createResetPasswordSchema, ResetPasswordFormData } from "@/schemas/resetPasswordSchema";
 import { useResetPassword } from "@/hooks/useResetPassword";
 import style from "@/components/LoginForm/Login.module.scss";
 import Link from "next/link";
@@ -11,8 +12,17 @@ import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 
 const ResetPasswordForm: React.FC = () => {
+  const t = useTranslations("Auth.resetPassword");
+  const tv = useTranslations("Auth.validation");
   const { handleSubmit, isLoading, error, initialEmail } = useResetPassword();
   const [mounted, setMounted] = useState(false);
+  
+  const resetPasswordSchema = useMemo(() => createResetPasswordSchema((key, params) => {
+    if (key === 'passwordMinLength' && params?.min) {
+      return tv('passwordMinLength', { min: params.min });
+    }
+    return tv(key);
+  }), [tv]);
 
   useEffect(() => {
     setMounted(true);
@@ -29,17 +39,16 @@ const ResetPasswordForm: React.FC = () => {
           </Link>
         </div>
         <div className={style.loginContent}>
-          <h1 className={style.loginheadline}>Discover Your Perfect Stay</h1>
+          <h1 className={style.loginheadline}>{t("pageTitle")}</h1>
           <p className={style.logindescription}>
-            Sign in or create an account to manage your bookings and enjoy
-            exclusive offers.
+            {t("pageDescription")}
           </p>
         </div>
       </div>
       <div className={style.loginrightcontent}>
         <div className={style.loginformBox}>
-          <h2 className={style.loginformheading}>Reset Password</h2>
-          <p className={style.loginformdesc}>Set a new password for your account</p>
+          <h2 className={style.loginformheading}>{t("formHeading")}</h2>
+          <p className={style.loginformdesc}>{t("formDescription")}</p>
           <Form<ResetPasswordFormData>
             defaultValues={{
               email: initialEmail,
@@ -53,10 +62,10 @@ const ResetPasswordForm: React.FC = () => {
             <div className={`${style.loginformGroup} form-group`}>
               <Input
                 name="email"
-                label="Email"
+                label={t("emailLabel")}
                 type="email"
                 className="form-input form-control"
-                placeholder="Enter your email"
+                placeholder={t("emailPlaceholder")}
                 labelClassName="form-label"
               />
             </div>
@@ -64,22 +73,22 @@ const ResetPasswordForm: React.FC = () => {
             <div className={`${style.loginformGroup} form-group`}>
               <Input
                 name="password"
-                label="New Password"
+                label={t("newPasswordLabel")}
                 type="password"
                 showPasswordToggle={true}
                 className="form-input form-control"
-                placeholder="•••••••••••••••••"
+                placeholder={t("newPasswordPlaceholder")}
                 labelClassName="form-label"
               />
             </div>
             <div className={`${style.loginformGroup} form-group`}>
               <Input
                 name="password_confirmation"
-                label="Confirm Password"
+                label={t("confirmPasswordLabel")}
                 type="password"
                 showPasswordToggle={true}
                 className="form-input form-control"
-                placeholder="•••••••••••••••••"
+                placeholder={t("confirmPasswordPlaceholder")}
                 labelClassName="form-label"
               />
             </div>
@@ -90,16 +99,16 @@ const ResetPasswordForm: React.FC = () => {
                 disabled={isLoading}
                 className={`${style.loginformbutton} button-primary w-100`}
               >
-                {isLoading ? "Resetting..." : "Reset Password"}
+                {isLoading ? t("resetting") : t("resetButton")}
               </button>
             </div>
           </Form>
 
           <div className={style.logingotosignuplink}>
             <p className={style.signupText}>
-              Back to {""}
+              {t("backTo")} {""}
               <Link href="/login" className={style.signupLink}>
-                Sign in
+                {t("signIn")}
               </Link>
             </p>
           </div>
