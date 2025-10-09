@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const createResetPasswordSchema = (t: (key: string, params?: Record<string, any>) => string) => {
+export const createResetPasswordSchema = (t: (key: string, params?: Record<string, string | number>) => string) => {
   return yup.object({
     email: yup
       .string()

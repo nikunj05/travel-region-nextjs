@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18/navigation";
 import { useTransition } from "react";
 import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
@@ -15,6 +15,7 @@ import { useSettingsStore } from "@/store/settingsStore";
 import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
+  const t = useTranslations("Header");
   const [isSticky, setIsSticky] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -198,7 +199,7 @@ const Header = () => {
             <ul className="navbar-nav">
               <li className="nav-item">
                 <Link className="nav-link" href="/" onClick={closeMobileMenu}>
-                  Home
+                  {t("home")}
                 </Link>
               </li>
               <li className="nav-item">
@@ -208,7 +209,7 @@ const Header = () => {
                   onClick={closeMobileMenu}
                 >
                   {" "}
-                  Deals & Offers
+                  {t("dealsAndOffers")}
                 </Link>
               </li>
               <li className="nav-item">
@@ -217,7 +218,7 @@ const Header = () => {
                   href="/blogs"
                   onClick={closeMobileMenu}
                 >
-                  Blog
+                  {t("blog")}
                 </Link>
               </li>
               <li className="nav-item">
@@ -226,7 +227,7 @@ const Header = () => {
                   href="/faqs"
                   onClick={closeMobileMenu}
                 >
-                  FAQs
+                  {t("faqs")}
                 </Link>
               </li>
               <li className="nav-item">
@@ -235,7 +236,7 @@ const Header = () => {
                   href="/about-us"
                   onClick={closeMobileMenu}
                 >
-                  About Us
+                  {t("aboutUs")}
                 </Link>
               </li>
             </ul>
@@ -248,7 +249,7 @@ const Header = () => {
                     closeMobileMenu();
                   }}
                 >
-                  Sign up
+                  {t("signUp")}
                 </button>
                 <button
                   className="button login-btn d-flex align-items-center"
@@ -257,7 +258,7 @@ const Header = () => {
                     closeMobileMenu();
                   }}
                 >
-                  Log In
+                  {t("logIn")}
                 </button>
               </div>
             )}
@@ -270,7 +271,7 @@ const Header = () => {
                     closeMobileMenu();
                   }}
                 >
-                  Logout
+                  {t("logout")}
                 </button>
               </div>
             )}
@@ -383,8 +384,8 @@ const Header = () => {
                   </button>
 
                   <div className="profile-menu">
-                    <Link href="/profile" onClick={() => setIsProfileMenuOpen(false)}>My Profile</Link>
-                    <Link href="/settings" onClick={() => setIsProfileMenuOpen(false)}>Settings</Link>
+                    <Link href="/profile" onClick={() => setIsProfileMenuOpen(false)}>{t("myProfile")}</Link>
+                    <Link href="/settings" onClick={() => setIsProfileMenuOpen(false)}>{t("settings")}</Link>
                     <a
                       href="#"
                       onClick={(e) => {
@@ -393,7 +394,7 @@ const Header = () => {
                         setIsProfileMenuOpen(false);
                       }}
                     >
-                      Logout
+                      {t("logout")}
                     </a>
                   </div>
                 </div>
@@ -406,13 +407,13 @@ const Header = () => {
                   className="button login-btn sign-up-btn d-flex align-items-center"
                   onClick={handleSignupClick}
                 >
-                  Sign up
+                  {t("signUp")}
                 </button>
                 <button
                   className="button login-btn d-flex align-items-center"
                   onClick={handleLoginClick}
                 >
-                  Log In
+                  {t("logIn")}
                 </button>
               </div>
             )}

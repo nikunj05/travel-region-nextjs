@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const createProfileSchema = (t: (key: string, params?: Record<string, any>) => string) => {
+export const createProfileSchema = (t: (key: string, params?: Record<string, string | number>) => string) => {
   return yup.object().shape({
     first_name: yup
       .string()
@@ -58,7 +58,7 @@ export const createProfileSchema = (t: (key: string, params?: Record<string, any
 };
 
 // Keep the default schema for backward compatibility
-export const profileSchema = createProfileSchema((key, params) => {
+export const profileSchema = createProfileSchema((key) => {
   const messages: Record<string, string> = {
     firstNameRequired: 'First name is required',
     firstNameMinLength: 'First name must be at least 2 characters',

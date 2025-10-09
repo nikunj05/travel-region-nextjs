@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useCmsStore } from "@/store/cmsStore";
+import { CmsPageItem } from "@/types/cms";
 import AboutUs from "@/components/AboutUs/AboutUs";
 import "./CmsPage.scss";
 
@@ -225,7 +226,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
   if (detailLoading) {
     // Check if it's about-us page by slug
     if (slug === 'about-us') {
-      return <AboutUs page={{} as any} loading={true} />;
+      return <AboutUs page={{} as CmsPageItem} loading={true} />;
     }
     return <CmsPageSkeleton />;
   }

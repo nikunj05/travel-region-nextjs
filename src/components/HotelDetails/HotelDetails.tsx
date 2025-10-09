@@ -184,7 +184,7 @@ const router = useRouter();
                   walk and explore the neighborhood area of the hotel. Places
                   nearby: Siam Paragon Mall, MBK Center and National Stadium.
                   Spend an evening in a nice atmosphere of the bar. Stop by the
-                  restaurant.                   If can't live without coffee, drop by the cafe.
+                  restaurant.                   If can&apos;t live without coffee, drop by the cafe.
                   Free Wi-Fi is available on the territory. If...{" "}
                   <a href="#">{t('readMore')}</a>
                 </p>

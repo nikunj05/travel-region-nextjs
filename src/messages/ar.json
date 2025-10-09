@@ -87,6 +87,37 @@
     "termsConditionsTitle": "الشروط والأحكام",
     "termsConditionsDescription": "يرجى قراءة هذه الشروط بعناية قبل استخدام خدمات حجز الفنادق الخاصة بنا."
   },
+  "Header": {
+    "home": "الرئيسية",
+    "dealsAndOffers": "العروض والصفقات",
+    "blog": "المدونة",
+    "faqs": "الأسئلة الشائعة",
+    "aboutUs": "من نحن",
+    "signUp": "إنشاء حساب",
+    "logIn": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "myProfile": "ملفي الشخصي",
+    "settings": "الإعدادات"
+  },
+  "Footer": {
+    "caption": "شريكك الموثوق في السفر عبر الشرق الأوسط - نقدم لك إقامات مختارة بعناية، تجارب شخصية، وحجز سهل أينما كانت رحلتك.",
+    "explore": "استكشف",
+    "destination": "الوجهات",
+    "deals": "العروض",
+    "blog": "المدونة",
+    "limitedOffers": "عروض محدودة",
+    "about": "حول",
+    "support": "الدعم",
+    "helpCenter": "مركز المساعدة",
+    "faqs": "الأسئلة الشائعة",
+    "contactUs": "اتصل بنا",
+    "bookingPolicy": "سياسة الحجز",
+    "connectWithUs": "تواصل معنا",
+    "paymentSecurity": "أمان الدفع",
+    "copyRight": "© 2025 منطقة السفر. جميع الحقوق محفوظة.",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsConditions": "الشروط والأحكام"
+  },
   "Auth": {
     "login": {
       "pageTitle": "اكتشف إقامتك المثالية",

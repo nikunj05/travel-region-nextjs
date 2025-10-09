@@ -87,6 +87,37 @@
     "termsConditionsTitle": "Terms & Conditions",
     "termsConditionsDescription": "Please read these terms carefully before using our hotel booking services."
   },
+  "Header": {
+    "home": "Home",
+    "dealsAndOffers": "Deals & Offers",
+    "blog": "Blog",
+    "faqs": "FAQs",
+    "aboutUs": "About Us",
+    "signUp": "Sign up",
+    "logIn": "Log In",
+    "logout": "Logout",
+    "myProfile": "My Profile",
+    "settings": "Settings"
+  },
+  "Footer": {
+    "caption": "Your trusted travel partner across the Middle East —bringing you handpicked stays, personalized experiences, and effortless booking wherever your journey takes you.",
+    "explore": "Explore",
+    "destination": "Destination",
+    "deals": "Deals",
+    "blog": "Blog",
+    "limitedOffers": "Limited Offers",
+    "about": "About",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "faqs": "FAQs",
+    "contactUs": "Contact Us",
+    "bookingPolicy": "Booking Policy",
+    "connectWithUs": "Connect With Us",
+    "paymentSecurity": "Payment Security",
+    "copyRight": "© 2025 Travel Region. All Rights Reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms & Conditions"
+  },
   "Auth": {
     "login": {
       "pageTitle": "Discover Your Perfect Stay",
