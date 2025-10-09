@@ -12,13 +12,13 @@ import NextAuthSessionProvider from "@/context/NextAuthSessionProvider";
 import LocaleHydrator from "@/context/LocaleHydrator";
 
 // Function to determine text direction based on locale
-function getTextDirection(locale: string): 'ltr' | 'rtl' {
-  return locale === 'ar' ? 'rtl' : 'ltr';
+function getTextDirection(locale: string): "ltr" | "rtl" {
+  return locale === "ar" ? "rtl" : "ltr";
 }
 
 // Function to get language code for lang attribute
 function getLanguageCode(locale: string): string {
-  return locale === 'ar' ? 'ar' : 'en';
+  return locale === "ar" ? "ar" : "en";
 }
 
 export default async function LocaleLayout({
