@@ -281,3 +281,15 @@
     }
   }
 }
+
+// RTL Layout start
+[dir="rtl"] {
+  .guestspicker-content {
+    .guestspicker-section {
+      .guestspicker-add-room {
+        margin-left: unset;
+        margin-right: auto;
+      }
+    }
+  }
+}

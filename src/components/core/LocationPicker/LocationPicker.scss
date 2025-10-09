@@ -267,3 +267,16 @@
     }
   }
 }
+
+// RTL Layout
+[dir="rtl"] {
+  .locationpicker-content {
+    .locationpicker-section {
+      .locationpicker-item {
+        .destination-suggestion {
+          text-align: right;
+        }
+      }
+    }
+  }
+}

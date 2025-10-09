@@ -324,3 +324,22 @@
     left: calc(100% + 12px);
   }
 }
+
+// RTL Layout start
+[dir="rtl"] {
+  .calendar-header {
+    .calendar-header-buttons {
+      .nav-button {
+        svg {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .datepicker-dropdown {
+    left: auto;
+    right: 100%;
+    transform: translate(50%);
+  }
+}

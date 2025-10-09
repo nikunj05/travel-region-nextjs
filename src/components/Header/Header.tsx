@@ -275,7 +275,7 @@ const Header = () => {
               </div>
             )}
           </div>
-          <div className="d-flex align-items-center">
+          <div className="profile-language-box d-flex align-items-center">
             <div
               className={`header-language-dropdown ${
                 isLanguageMenuOpen ? "open" : ""
