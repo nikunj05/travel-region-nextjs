@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
 import { SelectWithFlag } from "@/components/core/SelectWithFlag/SelectWithFlag";
-import { profileSchema, ProfileFormData } from "@/schemas/profileSchema";
+import { createProfileSchema, ProfileFormData } from "@/schemas/profileSchema";
 import { userService } from "@/services/userService";
 import { formatApiErrorMessage } from "@/lib/formatApiError";
 import { Controller } from "react-hook-form";
@@ -38,12 +41,20 @@ const NATIONALITY_OPTIONS = [
 ];
 
 const Profile = () => {
+  const t = useTranslations("Profile");
+  const tv = useTranslations("Auth.validation");
   const { user, setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Create profile schema with translations
+  const profileSchema = useMemo(
+    () => createProfileSchema((key, params) => tv(key, params)),
+    [tv]
+  );
 
   const [defaultValues, setDefaultValues] = useState<ProfileFormData>({
     first_name: "",
@@ -86,7 +97,7 @@ const Profile = () => {
       } catch (error: unknown) {
         console.error("Error fetching profile:", error);
         const errorMessage =
-          formatApiErrorMessage(error) || "Failed to load profile";
+          formatApiErrorMessage(error) || t("failedToLoadProfile");
         toast.error(errorMessage);
       } finally {
         setIsFetching(false);
@@ -137,12 +148,12 @@ const Profile = () => {
         // Clear image file after successful upload
         setImageFile(null);
 
-        toast.success(response.message || "Profile updated successfully");
+        toast.success(response.message || t("profileUpdatedSuccess"));
       }
     } catch (error: unknown) {
       console.error("Error updating profile:", error);
       const errorMessage =
-        formatApiErrorMessage(error) || "Failed to update profile";
+        formatApiErrorMessage(error) || t("failedToUpdateProfile");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -160,14 +171,14 @@ const Profile = () => {
     // Validate file type
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image file (JPEG, PNG, or WebP)");
+      toast.error(t("invalidImageType"));
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      toast.error("Image size should be less than 5MB");
+      toast.error(t("imageSizeExceeded"));
       return;
     }
 
@@ -187,10 +198,62 @@ const Profile = () => {
     return (
       <div className={styles.profilePage}>
         <div className={styles.profileHeader}>
-          <h1>{"Profile"}</h1>
+          <h1>{t("title")}</h1>
         </div>
-        <div className={styles.loadingState}>
-          <p>Loading profile...</p>
+        <div className={styles.profileContent}>
+          <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
+            {/* Profile Image Skeleton */}
+            <div className={styles.profileImageSection}>
+              <Skeleton circle={true} height={120} width={120} />
+            </div>
+
+            {/* Form Skeleton */}
+            <div className={styles.profileForm}>
+              <div className={styles.formRow}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+              </div>
+              <div className={styles.formRow}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={120} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+              </div>
+              <div className={styles.formRow}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+              </div>
+              <div className={styles.formRow}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={140} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+              </div>
+              <div className={styles.formActions}>
+                <Skeleton height={48} />
+              </div>
+            </div>
+          </SkeletonTheme>
         </div>
       </div>
     );
@@ -199,7 +262,7 @@ const Profile = () => {
   return (
     <div className={styles.profilePage}>
       <div className={styles.profileHeader}>
-        <h1>{"Profile"}</h1>
+        <h1>{t("title")}</h1>
       </div>
 
       <div className={styles.profileContent}>
@@ -240,7 +303,7 @@ const Profile = () => {
               type="button"
               className={styles.uploadButton}
               onClick={handleImageClick}
-              aria-label="Upload profile photo"
+              aria-label={t("uploadPhotoLabel")}
             >
               <svg
                 width="16"
@@ -286,7 +349,7 @@ const Profile = () => {
               accept="image/jpeg,image/jpg,image/png,image/webp"
               onChange={handleImageChange}
               className={styles.fileInput}
-              aria-label="Upload profile image"
+              aria-label={t("uploadPhotoLabel")}
             />
           </div>
         </div>
@@ -303,14 +366,14 @@ const Profile = () => {
               <div className={`${styles.formRow} `}>
                 <Input
                   name="first_name"
-                  label="First Name"
-                  placeholder="Enter first name"
+                  label={t("firstName")}
+                  placeholder={t("firstNamePlaceholder")}
                   className={styles.formInput}
                 />
                 <Input
                   name="last_name"
-                  label="Last Name"
-                  placeholder="Enter last name"
+                  label={t("lastName")}
+                  placeholder={t("lastNamePlaceholder")}
                   className={styles.formInput}
                 />
               </div>
@@ -318,7 +381,7 @@ const Profile = () => {
               <div className={styles.formRow}>
                 <div className={`${styles.formGroup} form-group`}>
                   <label htmlFor="gender" className="form-label">
-                    Gender
+                    {t("gender")}
                   </label>
                   <Controller
                     name="gender"
@@ -329,8 +392,8 @@ const Profile = () => {
                         id="gender"
                         className={`${styles.formSelect} form-input`}
                       >
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
+                        <option value="male">{t("male")}</option>
+                        <option value="female">{t("female")}</option>
                       </select>
                     )}
                   />
@@ -343,9 +406,9 @@ const Profile = () => {
 
                 <Input
                   name="mobile"
-                  label="Phone Number"
+                  label={t("phoneNumber")}
                   type="tel"
-                  placeholder="Enter phone number"
+                  placeholder={t("phoneNumberPlaceholder")}
                   className={styles.formInput}
                 />
               </div>
@@ -353,7 +416,7 @@ const Profile = () => {
               <div className={styles.formRow}>
                 <div className={`${styles.formGroup} form-group`}>
                   <label htmlFor="date_of_birth" className="form-label">
-                    Date of Birth
+                    {t("dateOfBirth")}
                   </label>
                   <Controller
                     name="date_of_birth"
@@ -376,7 +439,7 @@ const Profile = () => {
 
                 <div className={`${styles.formGroup} form-group`}>
                   <label htmlFor="nationality" className="form-label">
-                    Nationality
+                    {t("nationality")}
                   </label>
                   <Controller
                     name="nationality"
@@ -386,7 +449,7 @@ const Profile = () => {
                         options={NATIONALITY_OPTIONS}
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder="Select nationality"
+                        placeholder={t("nationalityPlaceholder")}
                       />
                     )}
                   />
@@ -401,14 +464,14 @@ const Profile = () => {
               <div className={styles.formRow}>
                 <Input
                   name="address"
-                  label="Address(optional)"
-                  placeholder="Enter address"
+                  label={t("address")}
+                  placeholder={t("addressPlaceholder")}
                   className={styles.formInput}
                 />
                 <Input
                   name="passport_number"
-                  label="Passport number(optional)"
-                  placeholder="Enter passport number"
+                  label={t("passportNumber")}
+                  placeholder={t("passportNumberPlaceholder")}
                   className={styles.formInput}
                 />
               </div>
@@ -419,7 +482,7 @@ const Profile = () => {
                   className={`${styles.saveButton} button-primary w-100`}
                   disabled={isLoading}
                 >
-                  {isLoading ? "Saving..." : "Save"}
+                  {isLoading ? t("saving") : t("save")}
                 </button>
               </div>
             </>

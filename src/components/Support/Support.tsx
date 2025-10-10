@@ -1,15 +1,17 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import styles from "./Support.module.scss";
 import { useSettingsStore } from "@/store/settingsStore";
 
 export default function Support() {
+  const t = useTranslations("Support");
   const { setting } = useSettingsStore();
-  console.log("==>", setting);
+  // console.log("==>", setting);
   return (
     <div className={styles.supportContainer}>
-      <h1 className={styles.pageTitle}>Support & Help Center</h1>
+      <h1 className={styles.pageTitle}>{t("pageTitle")}</h1>
       {/* <p className={styles.pageSubtitle}>Get help and support here.</p> */}
 
       <div className={styles.cardsGrid}>
@@ -30,15 +32,15 @@ export default function Support() {
                   fill="#09090B"
                 />
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M13.5685 1.84799C13.7216 1.31736 14.2759 1.01134 14.8065 1.16447C18.6739 2.28049 21.7199 5.32634 22.836 9.19358C22.9892 9.72421 22.6832 10.2785 22.1526 10.4317C21.6219 10.5848 21.0676 10.2788 20.9145 9.74819C19.9889 6.54122 17.4591 4.01154 14.252 3.08605C13.7214 2.93292 13.4154 2.37863 13.5685 1.84799ZM12.9548 6.56624C13.1707 6.05789 13.7578 5.82079 14.2661 6.03666C15.9278 6.74231 17.2582 8.07269 17.9639 9.73438C18.1798 10.2427 17.9427 10.8298 17.4343 11.0457C16.926 11.2616 16.3389 11.0245 16.123 10.5161C15.6199 9.33137 14.6692 8.38068 13.4844 7.87756C12.976 7.66169 12.7389 7.07459 12.9548 6.56624Z"
                   fill="#09090B"
                 />
               </svg>
             </div>
             <div className={styles.cardContent}>
-              <div className={styles.cardTitle}>Call Us</div>
+              <div className={styles.cardTitle}>{t("callUs")}</div>
               <div className={styles.numberRow}>
                 {/* <Image src={UaeFlag} alt="UAE flag" className={styles.flagImg} /> */}
                 <a
@@ -58,8 +60,8 @@ export default function Support() {
                       <path
                         d="M9.00005 6L15 12L9 18"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-miterlimit="16"
+                        strokeWidth="1.5"
+                        strokeMiterlimit="16"
                       />
                     </svg>
                   </div>
@@ -88,7 +90,7 @@ export default function Support() {
               </svg>
             </div>
             <div className={styles.cardContent}>
-              <div className={styles.cardTitle}>WhatsApp</div>
+              <div className={styles.cardTitle}>{t("whatsApp")}</div>
               <a
                 href={`https://wa.me/${setting?.whatsapp_number}`}
                 target="_blank"
@@ -107,15 +109,15 @@ export default function Support() {
                     <path
                       d="M9.00005 6L15 12L9 18"
                       stroke="#09090B"
-                      stroke-width="1.5"
-                      stroke-miterlimit="16"
+                      strokeWidth="1.5"
+                      strokeMiterlimit="16"
                     />
                   </svg>
                 </div>
               </a>
 
               <div className={styles.hintText}>
-                Or click here to open in WhatsApp web.
+                {t("whatsAppHint")}
               </div>
             </div>
           </div>

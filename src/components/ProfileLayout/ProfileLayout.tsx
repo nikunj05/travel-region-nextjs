@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "@/i18/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import styles from "./ProfileLayout.module.scss";
 import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
@@ -13,6 +14,7 @@ interface ProfileLayoutProps {
 }
 
 const ProfileLayout = ({ children }: ProfileLayoutProps) => {
+  const t = useTranslations("ProfileLayout");
   const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -43,7 +45,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
   const menuItems = [
     {
       id: "bookings",
-      label: "Bookings",
+      labelKey: "bookings",
       href: "/bookings",
       icon: (
         <svg
@@ -86,7 +88,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "favorites",
-      label: "Favorites",
+      labelKey: "favorites",
       href: "/favorites",
       icon: (
         <svg
@@ -107,7 +109,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "profile",
-      label: "Profile",
+      labelKey: "profile",
       href: "/profile",
       icon: (
         <svg
@@ -134,7 +136,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "payment-methods",
-      label: "Payment Methods",
+      labelKey: "paymentMethods",
       href: "/payment-methods",
       icon: (
         <svg
@@ -178,7 +180,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "notification",
-      label: "Notification",
+      labelKey: "notification",
       href: "/notification",
       icon: (
         <svg
@@ -207,7 +209,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "settings",
-      label: "Settings",
+      labelKey: "settings",
       href: "/settings",
       icon: (
         <svg
@@ -233,7 +235,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
     },
     {
       id: "support",
-      label: "Support & Help Center",
+      labelKey: "supportHelpCenter",
       href: "/support",
       icon: (
         <svg
@@ -322,7 +324,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
             </button>
 
             <div className={styles.sidebarHeader}>
-              <h2>Menu Items</h2>
+              <h2>{t("menuItems")}</h2>
             </div>
             <nav className={styles.sidebarNav}>
               <ul>
@@ -336,7 +338,7 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
                       onClick={closeMobileSidebar}
                     >
                       <span className={styles.icon}>{item.icon}</span>
-                      <span className={styles.label}>{item.label}</span>
+                      <span className={styles.label}>{t(item.labelKey)}</span>
                     </Link>
                   </li>
                 ))}

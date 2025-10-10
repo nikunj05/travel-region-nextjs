@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import "./Favorites.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
@@ -11,6 +12,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Pagination from "@/components/common/Pagination/Pagination";
 
 export default function Favorites() {
+  const t = useTranslations("Favorites");
   const { 
     favorites, 
     loading, 
@@ -57,7 +59,7 @@ export default function Favorites() {
   return (
     <div className="favorites-page">
       <div className="my-booking-title-with-filter">
-        <h1 className="my-booking-title">Favorites</h1>
+        <h1 className="my-booking-title">{t("pageTitle")}</h1>
       </div>
 
       {loading ? (
@@ -79,9 +81,9 @@ export default function Favorites() {
         <div className="error-message">
           <p>{error}</p>
         </div>
-      ) : favorites.length === 0 ? (
+      ) : !favorites || favorites.length === 0 ? (
         <div className="empty-state">
-          <p>No favorite hotels found.</p>
+          <p>{t("noFavoritesFound")}</p>
         </div>
       ) : (
         <>
@@ -108,11 +110,11 @@ export default function Favorites() {
                         height={20}
                         className="ration-star-icon"
                       />
-                      4.9 Rating
+                      4.9 {t("rating")}
                     </div>
                   </div>
                   <div className="hotel-pricing d-flex">
-                    $200 <span className="hotel-pricing-per">/night</span>
+                    $200 <span className="hotel-pricing-per">{t("perNight")}</span>
                   </div>
                 </div>
 
@@ -122,10 +124,10 @@ export default function Favorites() {
                     onClick={() => handleRemove(hotel.code)}
                     disabled={removing}
                   >
-                    {removing ? "Removing..." : "Remove"}
+                    {removing ? t("removing") : t("remove")}
                   </button>
                   <button className="hotel-bookig-action-btn button-primary">
-                    Book now
+                    {t("bookNow")}
                   </button>
                 </div>
               </div>

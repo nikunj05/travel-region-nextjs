@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./Notification.module.scss";
 import { useNotificationStore } from "@/store/notificationStore";
 import {
@@ -9,6 +12,7 @@ import {
 } from "@/types/notification";
 
 export default function Notification() {
+  const t = useTranslations("Notification");
   const {
     preferences,
     loading,
@@ -59,12 +63,37 @@ export default function Notification() {
     (preferences?.special_offers ?? 0) === 1 ||
     preferences?.special_offers === "1";
 
+  if (loading) {
+    return (
+      <div className={styles.notificationContainer}>
+        <h1 className={styles.pageTitle}>{t("pageTitle")}</h1>
+        <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
+          <div>
+            <Skeleton height={28} width={150} style={{ marginBottom: "16px" }} />
+            <div className={styles.radioGroup}>
+              <Skeleton height={24} width={100} style={{ marginBottom: "12px" }} />
+              <Skeleton height={24} width={140} style={{ marginBottom: "12px" }} />
+              <Skeleton height={24} width={100} style={{ marginBottom: "12px" }} />
+              <Skeleton height={24} width={100} />
+            </div>
+          </div>
+          <div style={{ marginTop: "32px" }}>
+            <Skeleton height={28} width={180} style={{ marginBottom: "8px" }} />
+            <Skeleton height={20} width="80%" style={{ marginBottom: "24px" }} />
+            <Skeleton height={80} style={{ marginBottom: "16px", borderRadius: "12px" }} />
+            <Skeleton height={80} style={{ borderRadius: "12px" }} />
+          </div>
+        </SkeletonTheme>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.notificationContainer}>
-      <h1 className={styles.pageTitle}>Notifications</h1>
+      <h1 className={styles.pageTitle}>{t("pageTitle")}</h1>
 
       <div>
-        <h2 className={styles.sectionTitle}>Newsletter</h2>
+        <h2 className={styles.sectionTitle}>{t("newsletterSection")}</h2>
         <div className={styles.radioGroup}>
           <label>
             <input
@@ -75,7 +104,7 @@ export default function Notification() {
               disabled={loading || updating}
               className={`${styles.checkboxfield} form-check-input`}
             />{" "}
-            Daily
+            {t("daily")}
           </label>
           <label>
             <input
@@ -86,7 +115,7 @@ export default function Notification() {
               disabled={loading || updating}
               className={`${styles.checkboxfield} form-check-input`}
             />{" "}
-            Twice a week
+            {t("twiceAWeek")}
           </label>
           <label>
             <input
@@ -94,10 +123,10 @@ export default function Notification() {
               name="newsletter_weekly"
               checked={currentNewsletter === "weekly"}
               onChange={() => setNewsletter("weekly")}
-              disabled={loading || updating}
+              disabled={loading || updating} 
               className={`${styles.checkboxfield} form-check-input`}
             />{" "}
-            Weekly
+            {t("weekly")}
           </label>
           <label>
             <input
@@ -108,23 +137,22 @@ export default function Notification() {
               disabled={loading || updating}
               className={`${styles.checkboxfield} form-check-input`}
             />{" "}
-            Never
+            {t("never")}
           </label>
         </div>
       </div>
 
       <div>
-        <h2 className={styles.sectionTitleEmail}>Email Preferences</h2>
+        <h2 className={styles.sectionTitleEmail}>{t("emailPreferencesSection")}</h2>
         <p className={styles.emailNote}>
-          We&apos;ll send the selected emails to your account email.
+          {t("emailNote")}
         </p>
 
         <div className={styles.toggleCard}>
           <div>
-            <div className={styles.toggleTitle}>Travel Blog</div>
+            <div className={styles.toggleTitle}>{t("travelBlogTitle")}</div>
             <div className={styles.toggleDescription}>
-              A monthly update one the the latest travel trips, trick, and
-              trends.
+              {t("travelBlogDescription")}
             </div>
           </div>
           <input
@@ -138,9 +166,9 @@ export default function Notification() {
 
         <div className={styles.toggleCard}>
           <div>
-            <div className={styles.toggleTitle}>Special Offers</div>
+            <div className={styles.toggleTitle}>{t("specialOffersTitle")}</div>
             <div className={styles.toggleDescription}>
-              Get special and limited-time deals.
+              {t("specialOffersDescription")}
             </div>
           </div>
           <input

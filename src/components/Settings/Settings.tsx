@@ -2,6 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Select } from "@/components/core/Select/Select";
 import { SelectWithFlag } from "@/components/core/SelectWithFlag/SelectWithFlag";
 import { Input } from "@/components/core/Input/Input";
@@ -36,6 +39,7 @@ const CURRENCY_OPTIONS = [
 // }));
 
 export default function Settings() {
+  const t = useTranslations("Settings");
   const {
     userSettings,
     loading,
@@ -139,9 +143,50 @@ export default function Settings() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.spinner}></div>
-        <p>Loading settings...</p>
+      <div className={styles.settingsContainer}>
+        <h1 className={styles.pageTitle}>{t("pageTitle")}</h1>
+        <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
+          <div className={styles.settingsForm}>
+            {/* Language and Currency Preferences Row */}
+            <div className={styles.preferencesRow}>
+              <div className={styles.preferenceSection} style={{ flex: 1 }}>
+                <Skeleton height={24} width={180} style={{ marginBottom: "12px" }} />
+                <Skeleton height={56} />
+              </div>
+              <div className={styles.preferenceSection} style={{ flex: 1 }}>
+                <Skeleton height={24} width={180} style={{ marginBottom: "12px" }} />
+                <Skeleton height={56} />
+              </div>
+            </div>
+
+            {/* Sign-in & Security Section */}
+            <div className={styles.settingsSection} style={{ marginTop: "32px" }}>
+              <Skeleton height={28} width={200} style={{ marginBottom: "8px" }} />
+              <Skeleton height={20} width="80%" style={{ marginBottom: "24px" }} />
+              
+              {/* Email and Password Row */}
+              <div className={styles.securityRow}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={100} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={140} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+              </div>
+
+              {/* Mobile Number Row */}
+              <div className={styles.securityRow} style={{ marginTop: "16px" }}>
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={20} width={130} style={{ marginBottom: "8px" }} />
+                  <Skeleton height={48} />
+                </div>
+                <div style={{ flex: 1 }}></div>
+              </div>
+            </div>
+          </div>
+        </SkeletonTheme>
       </div>
     );
   }
@@ -154,7 +199,7 @@ export default function Settings() {
           onClick={() => fetchUserSettings()}
           className={styles.retryButton}
         >
-          Try Again
+          {t("tryAgain")}
         </button>
       </div>
     );
@@ -162,7 +207,7 @@ export default function Settings() {
 
   return (
     <div className={styles.settingsContainer}>
-      <h1 className={styles.pageTitle}>Settings</h1>
+      <h1 className={styles.pageTitle}>{t("pageTitle")}</h1>
 
       <FormProvider {...methods}>
         <div className={`${styles.settingsForm} form-field`}>
@@ -171,7 +216,7 @@ export default function Settings() {
             {/* Language Preferences */}
             <div className={styles.preferenceSection}>
               <h2 className={`${styles.sectionLable} form-label`}>
-                Language Preferences
+                {t("languagePreferences")}
               </h2>
               <div className={styles.inputGroup}>
                 <Controller
@@ -195,7 +240,7 @@ export default function Settings() {
             {/* Currency Preferences */}
             <div className={styles.preferenceSection}>
               <h2 className={`${styles.sectionLable} form-label`}>
-                Currency Preferences
+                {t("currencyPreferences")}
               </h2>
               <div className={styles.inputGroup}>
                 <Controller
@@ -219,10 +264,9 @@ export default function Settings() {
 
           {/* Sign-in & Security */}
           <div className={styles.settingsSection}>
-            <h2 className={styles.sectionTitle}>Sign-in & Security</h2>
+            <h2 className={styles.sectionTitle}>{t("signInSecurity")}</h2>
             <p className={styles.sectionDescription}>
-              Keep your account safe with a secure password and by signing out
-              of devices you&apos;re not using.
+              {t("signInSecurityDescription")}
             </p>
 
             {/* Email and Change Password Row */}
@@ -231,7 +275,7 @@ export default function Settings() {
               <div className={`${styles.inputGroup} form-group mb-0`}>
                 <div className={styles.fieldRow}>
                   <label className={`${styles.fieldLabel} form-label mb-0`}>
-                    Email
+                    {t("email")}
                   </label>
                   <button
                     type="button"
@@ -243,7 +287,7 @@ export default function Settings() {
                     }
                     disabled={updating}
                   >
-                    {editingField === "email" ? "Save" : "Edit"}
+                    {editingField === "email" ? t("save") : t("edit")}
                   </button>
                 </div>
                 <input
@@ -259,7 +303,7 @@ export default function Settings() {
                       className={`${styles.cancelButton} button-primary`}
                       onClick={handleCancelEdit}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 )}
@@ -269,7 +313,7 @@ export default function Settings() {
               <div className={`${styles.inputGroup} form-group `}>
                 <div className={styles.fieldRow}>
                   <label className={`${styles.fieldLabel} form-label mb-0`}>
-                    Change Password
+                    {t("changePassword")}
                   </label>
                   <button
                     type="button"
@@ -281,14 +325,14 @@ export default function Settings() {
                     }
                     disabled={updating}
                   >
-                    {editingField === "password" ? "Save" : "Edit"}
+                    {editingField === "password" ? t("save") : t("edit")}
                   </button>
                 </div>
                 <input
                   {...register("password")}
                   type="password"
                   className={`${styles.inputField} form-input`}
-                  placeholder="•••••••••••••••••"
+                  placeholder={t("passwordPlaceholder")}
                   disabled={editingField !== "password"}
                 />
                 {editingField === "password" && (
@@ -298,7 +342,7 @@ export default function Settings() {
                       className={`${styles.cancelButton} button-primary`}
                       onClick={handleCancelEdit}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 )}
@@ -311,7 +355,7 @@ export default function Settings() {
                 className={`${styles.inputGroup} form-group mb-0 select-with-input-field`}
               >
                 <div className={styles.fieldRow}>
-                  <label className="form-label mb-0">Mobile Number</label>
+                  <label className="form-label mb-0">{t("mobileNumber")}</label>
                   <button
                     type="button"
                     className={styles.editLink}
@@ -322,7 +366,7 @@ export default function Settings() {
                     }
                     disabled={updating}
                   >
-                    {editingField === "mobile" ? "Save" : "Edit"}
+                    {editingField === "mobile" ? t("save") : t("edit")}
                   </button>
                 </div>
                 <div
@@ -357,7 +401,7 @@ export default function Settings() {
                       name="mobile"
                       type="number"
                       className="form-input form-control"
-                      placeholder="Enter Mobile Number"
+                      placeholder={t("mobileNumberPlaceholder")}
                       disabled={editingField !== "mobile"}
                     />
                   </div>
@@ -369,7 +413,7 @@ export default function Settings() {
                       className={`${styles.cancelButton} button-primary`}
                       onClick={handleCancelEdit}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                   </div>
                 )}
