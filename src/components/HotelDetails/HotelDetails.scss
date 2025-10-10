@@ -457,7 +457,6 @@
             position: absolute;
             top: 50%;
             left: 0%;
-            transform: 0px;
             width: 100%;
             transform: translate(0%, -50%);
           }
@@ -1050,6 +1049,21 @@
         }
       }
     }
+
+    .hotel-details-main-content {
+      .hotel-details-left {
+        .image-gallery-section .thumbnail-images {
+          .thambnail-image-item {
+            .show-all-photos {
+              cursor: pointer;
+              color: #000;
+              padding: 7.7px 8px;
+
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -1589,6 +1603,99 @@
           .modal-room-refund {
             .refund-item {
               font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// RTL Layout
+[dir='rtl'] {
+  .hotel-details-page {
+    .hotel-details-main-content {
+      .hotel-details-left {
+        .image-gallery-section {
+          .thumbnail-images {
+            .thambnail-image-item {
+              .show-all-photos {
+                left: 8px;
+                right: auto;
+              }
+            }
+          }
+        }
+      }
+
+      .tabbing-conetnt {
+        .important-tab-content {
+          .important-info {
+            .important-item {
+              .arrow_icon {
+                svg {
+                  transform: rotate(180deg);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .rooms-filter-section {
+      .room-list {
+        .room-card {
+          .room-card-image {
+            .hotel-image-action {
+              .hotel-img-btn {
+                img {
+                  transform: rotate(180deg);
+                }
+
+              }
+            }
+
+            .hotel-card-total-image {
+              right: auto;
+              left: 5px;
+            }
+          }
+
+          .room-card-details {
+            .hotel-room-more-details {
+              text-align: right;
+
+              .hotel-more-details-link {
+                svg {
+                  transform: rotate(180deg);
+                }
+              }
+            }
+
+            .price-info {
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  [dir='rtl'] {
+    .hotel-details-page {
+      .hotel-details-main-content {
+        .hotel-details-left {
+          .image-gallery-section {
+            .thumbnail-images {
+              .thambnail-image-item {
+                .show-all-photos {
+                  left: 4px;
+                }
+              }
             }
           }
         }

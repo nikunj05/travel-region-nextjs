@@ -835,6 +835,7 @@
         border: none;
         font-size: 28px;
         line-height: 1;
+        padding: 0px;
         cursor: pointer;
         color: $color-black-zinc-800;
       }
@@ -1353,6 +1354,26 @@
                     direction: ltr;
                     flex-direction: row-reverse;
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+[dir="rtl"] {
+  @media (max-width: 767.55px) {
+    .search-result-page {
+      .search-content {
+        .result-right-side {
+          .hotel-results {
+            .hotel-card {
+              .property-card-action {
+                .hotel-footer {
+                  flex-direction: row;
                 }
               }
             }

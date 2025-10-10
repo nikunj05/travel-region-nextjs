@@ -156,3 +156,29 @@
     }
   }
 }
+
+// // RTL Layout
+[dir='rtl'] {
+  .faq-section {
+    .faq-container {
+      .faq-question {
+        text-align: right;
+      }
+
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  [dir='rtl'] {
+    .faq-section {
+      .faq-container {
+
+
+        .faq-answer {
+          padding: 0 8px 16px 52px;
+        }
+      }
+    }
+  }
+}

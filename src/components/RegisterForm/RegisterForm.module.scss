@@ -385,3 +385,32 @@
     }
   }
 }
+
+
+// RTL Layout 
+[dir="rtl"] {
+  .userLoginPage {
+    direction: ltr;
+
+    .loginrightcontent {
+      .loginformBox {
+        .socialLogin {
+          direction: rtl;
+        }
+
+        .forgotpass {
+          text-align: left;
+        }
+
+        .loginformdetails {
+          .selectwithinputfield {
+            .countryCodeInput {
+              right: 3px;
+              left: auto;
+            }
+          }
+        }
+      }
+    }
+  }
+}

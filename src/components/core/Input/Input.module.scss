@@ -53,7 +53,7 @@
   right: 14px;
   top: 50%;
   transform: translate(0px, -50%);
-  background: transparent;
+  background: transparent !important;
   padding: 0px;
   border: none;
   z-index: 1;
@@ -84,4 +84,21 @@
   justify-content: space-between;
   align-items: center;
   gap: 15px;
+}
+
+
+// RTL Layout 
+[dir="rtl"] {
+  .inputField {
+
+    &.passwordField {
+      padding-right: 14px !important;
+      padding-left: 45px !important;
+    }
+  }
+
+  .passwordToggle {
+    right: 0px;
+    left: 14px;
+  }
 }

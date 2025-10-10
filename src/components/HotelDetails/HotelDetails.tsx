@@ -30,12 +30,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const HotelDetails = () => {
-  const t = useTranslations('HotelDetails');
+  const t = useTranslations("HotelDetails");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-// console.log("==> selectedRoom", selectedRoom);
-const router = useRouter();
+  // console.log("==> selectedRoom", selectedRoom);
+  const router = useRouter();
   const handleOpenModal = (roomId: number) => {
     setSelectedRoom(roomId);
     setIsModalOpen(true);
@@ -138,7 +138,7 @@ const router = useRouter();
                       handleOpenImageModal();
                     }}
                   >
-                    {t('showAllPhotos')}
+                    {t("showAllPhotos")}
                   </Link>
                 </div>
               </div>
@@ -184,16 +184,16 @@ const router = useRouter();
                   walk and explore the neighborhood area of the hotel. Places
                   nearby: Siam Paragon Mall, MBK Center and National Stadium.
                   Spend an evening in a nice atmosphere of the bar. Stop by the
-                  restaurant.                   If can't live without coffee, drop by the cafe.
+                  restaurant. If can't live without coffee, drop by the cafe.
                   Free Wi-Fi is available on the territory. If...{" "}
-                  <a href="#">{t('readMore')}</a>
+                  <a href="#">{t("readMore")}</a>
                 </p>
               </section>
               <section className="hotel-tab-section important-tab-content">
                 <h2 className="tabbing-sub-title">Important</h2>
                 <div className="important-info">
                   <div className="important-item">
-                    <div className="important-icon d-flex align-items-center">
+                    <div className="important-icon arrow_icon d-flex align-items-center">
                       <svg
                         width="24"
                         height="24"
@@ -221,7 +221,7 @@ const router = useRouter();
                     <p className="important-text">2:00 PM</p>
                   </div>
                   <div className="important-item">
-                    <div className="important-icon d-flex align-items-center">
+                    <div className="important-icon arrow_icon d-flex align-items-center">
                       <svg
                         width="24"
                         height="24"
@@ -629,7 +629,10 @@ const router = useRouter();
                   Price: Starts from <span>$500</span>/night
                 </div>
                 <div className="check-availability-action">
-                  <button className="button-primary check-availability-btn" onClick={() => router.push(`/booking-review`)}>
+                  <button
+                    className="button-primary check-availability-btn"
+                    onClick={() => router.push(`/booking-review`)}
+                  >
                     Check Availability
                   </button>
                 </div>

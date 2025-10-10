@@ -320,3 +320,19 @@
     }
   }
 }
+
+
+// RTL Layout
+[dir='rtl'] {
+  .nearby-hotels-slider {
+    .nearby-hotels-card {
+      direction: rtl;
+
+      .nearby-hotels-card-details {
+        .nearby-hotels-price-info {
+          text-align: right;
+        }
+      }
+    }
+  }
+}

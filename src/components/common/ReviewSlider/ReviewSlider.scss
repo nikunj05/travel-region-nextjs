@@ -316,3 +316,36 @@
     }
   }
 }
+
+// RTL Layout
+[dir='rtl'] {
+  .review-slider {
+    .review-card {
+      direction: rtl;
+    }
+
+    .testimonial-actions {
+      .testimonial-arrows {
+
+        .slick-prev,
+        .slick-next {
+          svg {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+  }
+
+  .testimonial-actions {
+    .testimonial-arrows {
+
+      .slick-prev,
+      .slick-next {
+        svg {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+}

@@ -290,6 +290,26 @@
       }
     }
   }
+
+  .breadcrumbs {
+    ol {
+      li {
+        .breadcrumb-arrow-icon {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .select-with-input-field {
+    .form-group {
+      .form-input {
+        padding-left: 14px !important;
+        padding-right: 110px !important;
+        direction: rtl;
+      }
+    }
+  }
 }
 
 // LTR (Left-to-Right) specific styles for consistency
@@ -347,6 +367,13 @@
 
       .header-button-box {
         margin: auto 0 0;
+      }
+
+      .header-language-dropdown {
+        .language-menu {
+          left: 0;
+          right: auto;
+        }
       }
     }
 

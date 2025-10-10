@@ -17,9 +17,10 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { useCmsStore } from '@/store/cmsStore'
 import { useSettingsStore } from '@/store/settingsStore'
+import { useTranslations } from 'next-intl'
 
 const Footer = () => {
-
+  const t = useTranslations("Footer")
   const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
   // const socialMediaLinks = useSettingsStore((s) => s.setting?.social_media_links) || []
   const { pages, fetchPages } = useCmsStore()
@@ -33,23 +34,22 @@ const Footer = () => {
         <div className="col-lg-6">
           <div className="footer-logo-content">
             <Image src={dynamicFooterLogo || footerLogoWhite} width={240} height={44} alt="logo" className="footer-logo" />
-            <p className="footer-caption">Your trusted travel partner across the Middle East —bringing you handpicked stays,
-              personalized experiences, and effortless booking wherever your journey takes you.</p>
+            <p className="footer-caption">{t("caption")}</p>
           </div>
         </div>
         <div className="col-lg-6">
           <div className="usefull-link d-grid">
             <div className="quick-link">
-              <h4 className="usefull-link-heading">Explore</h4>
+              <h4 className="usefull-link-heading">{t("explore")}</h4>
               <ul className="footer-link">
-                <li><a href="#">Destination</a></li>
-                <li><a href="#">Deals</a></li>
-                <li><Link href="/blogs">Blog</Link></li>
-                <li><a href="#">Limited Offers</a></li>
+                <li><a href="#">{t("destination")}</a></li>
+                <li><a href="#">{t("deals")}</a></li>
+                <li><Link href="/blogs">{t("blog")}</Link></li>
+                <li><a href="#">{t("limitedOffers")}</a></li>
               </ul>
             </div>
             <div className="quick-link">
-              <h4 className="usefull-link-heading">About</h4>
+              <h4 className="usefull-link-heading">{t("about")}</h4>
               <ul className="footer-link">
                 {pages
                   .filter(p => ['about-us','privacy-policy','terms-conditions'].includes(p.slug))
@@ -61,12 +61,12 @@ const Footer = () => {
               </ul>
             </div>
             <div className="quick-link">
-              <h4 className="usefull-link-heading">Support</h4>
+              <h4 className="usefull-link-heading">{t("support")}</h4>
               <ul className="footer-link">
-                <li><a href="#">Help Center</a></li>
-                <li><Link href="/faqs">FAQs</Link></li>
-                <li><a href="#">Contact Us</a></li>
-                <li><a href="#">Booking Policy</a></li>
+                <li><a href="#">{t("helpCenter")}</a></li>
+                <li><Link href="/faqs">{t("faqs")}</Link></li>
+                <li><a href="#">{t("contactUs")}</a></li>
+                <li><a href="#">{t("bookingPolicy")}</a></li>
               </ul>
             </div>
           </div>
@@ -74,7 +74,7 @@ const Footer = () => {
       </div>
       <div className="social-media-payment d-flex">
         <div className="social-media-items">
-          <h4 className="social-media-payment-title">Connect With Us</h4>
+          <h4 className="social-media-payment-title">{t("connectWithUs")}</h4>
           <ul className="footer-social-media">
             <li>
               <a href="#">
@@ -99,7 +99,7 @@ const Footer = () => {
                 <Image src={xLogo} width={40} height={40} alt="x" className="footer-social-media-logo" />
               </a>
             </li>
-            <li>
+            <li>                  
               <a href="#">
                 <Image src={youtubeLogo} width={40} height={40} alt="youtube"
                   className="footer-social-media-logo" />
@@ -126,7 +126,7 @@ const Footer = () => {
             ))} */}
         </div>
         <div className="social-media-items payment-security">
-          <h4 className="social-media-payment-title">Payment Security</h4>
+          <h4 className="social-media-payment-title">{t("paymentSecurity")}</h4>
           <ul className="footer-social-media">
             <li>
               <Image src={masterCard} width={40} height={40} alt="master card"
@@ -156,13 +156,13 @@ const Footer = () => {
       <div className="footer-copy-right">
         <div className="row">
           <div className="col-md-6 text-start d-flex align-items-center">
-            <p className="copy-right-text">© 2025 Travel Region. All Rights Reserved.</p>
+            <p className="copy-right-text">{t("copyRight")}</p>
           </div>
           <div className="col-md-6 text-end">
             <div className="copy-right-links">
-              <Link href="/privacy-policy">Privacy Policy</Link>
+              <Link href="/privacy-policy">{t("privacyPolicy")}</Link>
               <span className="separator"></span>
-              <Link href="/terms-conditions">Terms & Conditions</Link>
+              <Link href="/terms-conditions">{t("termsConditions")}</Link>
             </div>
           </div>
         </div>

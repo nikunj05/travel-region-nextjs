@@ -323,3 +323,32 @@
     }
   }
 }
+
+// RTL Layout 
+[dir="rtl"] {
+  .userLoginPage {
+    direction: ltr;
+
+    .loginrightcontent {
+      .loginformBox {
+        .loginformdetails {
+          .loginformGroup {
+            .labelwithfpassword {
+              justify-content: end;
+
+            }
+
+          }
+        }
+
+        .socialLogin {
+          direction: rtl;
+        }
+
+        .forgotpass {
+          text-align: left;
+        }
+      }
+    }
+  }
+}

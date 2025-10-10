@@ -267,6 +267,12 @@
   .selectContainer {
     .selectButton {
       text-align: right;
+      direction: rtl;
+    }
+
+    .selectArrow {
+      margin-right: 8px;
+      margin-left: 0px;
     }
   }
 }

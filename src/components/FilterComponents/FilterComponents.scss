@@ -186,3 +186,19 @@
     }
   }
 }
+
+
+// RTL Layout
+[dir="rtl"] {
+  .search-bar-common {
+    .search-bar-container {
+      .search-field {
+        .datepicker-dropdown {
+          left: 0;
+          right: auto;
+          transform: translate(-50%);
+        }
+      }
+    }
+  }
+}

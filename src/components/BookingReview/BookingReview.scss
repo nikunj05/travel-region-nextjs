@@ -892,3 +892,28 @@
     }
   }
 }
+
+
+// RTL Layout
+@media (max-width: 767.55px) {
+  [dir="rtl"] {
+    .booking-review-page {
+      .progress-steps {
+        .step {
+          .mobile-progress-line {
+            left: 0;
+          }
+
+          &:last-child {
+            .step-circle {
+              .mobile-progress-line {
+                left: 40px;
+                right: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

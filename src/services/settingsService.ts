@@ -34,7 +34,7 @@ export const settingsService = {
       }
 
       const data = await res.json();
-      console.log("Settings API Response:", JSON.stringify(data, null, 2));
+      // console.log('Settings API Response:', JSON.stringify(data, null, 2));
 
       // Handle different response structures
       // If data has the expected structure, return it
