@@ -135,3 +135,20 @@
     }
   }
 }
+
+
+// RTL Layout 
+
+[dir='rtl'] {
+  .booking-confirmation-page {
+    .confirm-card {
+      .booking-action {
+        .view-button {
+          svg {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+  }
+}

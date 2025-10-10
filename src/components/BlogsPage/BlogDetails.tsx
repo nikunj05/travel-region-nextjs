@@ -13,7 +13,7 @@ import suitcaseTravel from "@/assets/images/blog-travel-ad-image.jpg";
 import RelatedBlog from "../common/RelatedBlog/RelatedBlog";
 
 const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
-  const t = useTranslations('Blogs');
+  const t = useTranslations("Blogs");
   const {
     currentBlog,
     relatedBlogs,
@@ -215,9 +215,11 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
   if (detailError || !currentBlog) {
     return (
       <main className="padding-top-100">
-        <div className="blog-details-error">
+        <div className="blog-details-error mt-4">
           <div className="container">
-            <p>{t('errorLoadingBlog')} {detailError || t('blogNotFound')}</p>
+            <p>
+              {t("errorLoadingBlog")} {detailError || t("blogNotFound")}
+            </p>
           </div>
         </div>
       </main>
@@ -252,7 +254,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                     />
                   </div>
                   <span className="author-name">
-                    {currentBlog.author || t('authorDefault')}
+                    {currentBlog.author || t("authorDefault")}
                   </span>
                 </div>
               </div>
@@ -284,7 +286,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    {t('share')}
+                    {t("share")}
                   </button>
                   <button className="social-btn like-btn d-none">
                     <svg
@@ -301,7 +303,7 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                         strokeLinecap="round"
                       />
                     </svg>
-                    {t('like')}
+                    {t("like")}
                   </button>
                 </div>
               </div>
@@ -327,17 +329,13 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
               <div className="blog-content">
                 <p dangerouslySetInnerHTML={{ __html: currentBlog.content }} />
               </div>
-
-           
             </div>
 
             {/* Right Sidebar */}
             <div className="blog-sidebar">
               <div className="sidebar-ad">
-                <h3 className="ad-title">{t('planningTrip')}</h3>
-                <p className="ad-subtitle">
-                  {t('findPerfectHotel')}
-                </p>
+                <h3 className="ad-title">{t("planningTrip")}</h3>
+                <p className="ad-subtitle">{t("findPerfectHotel")}</p>
                 <div className="ad-image">
                   <Image
                     src={suitcaseTravel}
@@ -349,15 +347,18 @@ const BlogDetails = ({ blogSlug }: { blogSlug: string }) => {
                 </div>
                 <div className="ad-cta">
                   <button className="ad-btn button-primary">
-                    {t('findHotelsMaldives')}
+                    {t("findHotelsMaldives")}
                   </button>
                 </div>
               </div>
             </div>
           </div>
           <div className="related-blogs-section">
-            <h2 className="related-blogs-title">{t('relatedPost')}</h2>
-            <RelatedBlog blogs={relatedBlogs} onBlogClick={handleRelatedBlogClick} />
+            <h2 className="related-blogs-title">{t("relatedPost")}</h2>
+            <RelatedBlog
+              blogs={relatedBlogs}
+              onBlogClick={handleRelatedBlogClick}
+            />
           </div>
         </div>
       </div>

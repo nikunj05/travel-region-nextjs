@@ -779,7 +779,6 @@
           position: absolute;
           top: 50%;
           left: 0%;
-          transform: 0px;
           width: 100%;
           transform: translate(0%, -50%);
         }
@@ -1677,6 +1676,24 @@
             .price-info {
               text-align: right;
             }
+          }
+        }
+      }
+    }
+
+    .room-modal-overlay {
+      .room-modal-body {
+        .room-modal-images {
+          .hotel-image-action {
+            .arrow-icon {
+              transform: rotate(180deg);
+            }
+          }
+        }
+
+        .modal-room-pricing {
+          .modal-room-price-info {
+            text-align: right;
           }
         }
       }

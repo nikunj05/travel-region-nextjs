@@ -232,3 +232,20 @@
     }
   }
 }
+
+
+// RTL Layout
+
+[dir='rtl'] {
+  .privacy-policy-page {
+    .privacy-policy-content {
+      .privacy-policy-sidebar {
+        .side-bar-content {
+          .pvc-sidebar-list {
+            padding: 0px;
+          }
+        }
+      }
+    }
+  }
+}

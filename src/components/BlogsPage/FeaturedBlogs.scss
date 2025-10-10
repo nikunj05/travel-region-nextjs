@@ -138,6 +138,7 @@
           font-weight: $font-weight500;
           color: $color-black-zinc-950;
           margin: 0;
+          line-height: 1.5;
         }
       }
     }
@@ -258,6 +259,17 @@
           }
         }
       }
+    }
+  }
+}
+
+
+// RTL Layout
+
+[dir='rtl'] {
+  .featured-reads-section {
+    .section-title {
+      text-align: right !important;
     }
   }
 }

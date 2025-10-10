@@ -508,3 +508,18 @@
     }
   }
 }
+
+
+// RTL Layout
+
+[dir="rtl"] {
+  .image-viewer-container {
+    .image-viewer-header {
+      .back-btn {
+        svg {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+}

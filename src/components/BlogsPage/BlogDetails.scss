@@ -609,3 +609,27 @@
     }
   }
 }
+
+
+[dir='rtl'] {
+  .blog-details-section {
+    .blog-header-full {
+      .blog-meta {
+        .blog-meta-left {
+          .blog-author {
+            direction: ltr;
+          }
+        }
+
+        .blog-meta-right {
+          .social-actions {
+            .social-btn {
+              direction: ltr;
+            }
+          }
+        }
+      }
+    }
+
+  }
+}

@@ -77,6 +77,12 @@
           }
         }
       }
+
+      .navbar-toggler {
+        .hamburger-icon {
+          transform: scaleX(-1);
+        }
+      }
     }
 
     .profile-language-box {
@@ -310,6 +316,22 @@
       }
     }
   }
+
+  .banner-section-common {
+    .banner-content {
+      .banner-bradcumb-menu {
+        .banner-bradcumb-inner {
+          .banner-bradcumb-list {
+            .banner-bradcumb-arrow {
+              svg {
+                transform: rotate(180deg);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 // LTR (Left-to-Right) specific styles for consistency
@@ -336,6 +358,19 @@
   }
 }
 
+@media (min-width: 1200px) and (max-width: 1239.55px) {
+  [dir="rtl"] {
+    .header {
+      .navbar {
+        .navbar-nav {
+          .nav-item {
+            margin-left: 24px;
+          }
+        }
+      }
+    }
+  }
+}
 
 @media (max-width: 1199.55px) {
   [dir="rtl"] {
@@ -344,6 +379,44 @@
         .navbar-nav {
           .nav-item {
             margin-left: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.55px) {
+  [dir="rtl"] {
+    .header {
+      .navbar {
+        .navbar-nav {
+          .nav-item {
+            margin-left: 16px;
+
+            .nav-link {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .header-button-box {
+        margin-right: 12px;
+
+        .login-btn {
+          padding: 6.7px 10px;
+          font-size: 14px;
+        }
+      }
+
+      .header-language-dropdown {
+        .language-btn {
+
+          font-size: 17px;
+
+          .flag-icon {
+            width: 30px;
           }
         }
       }

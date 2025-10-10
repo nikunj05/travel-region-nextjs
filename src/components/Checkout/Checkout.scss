@@ -724,3 +724,61 @@
     }
   }
 }
+
+
+// RTL Layout
+
+[dir="rtl"] {
+  .checkout-page {
+    .booking-review-details {
+      .review-booking-details-left {
+        .choose-payment-option {
+          .save-card-checkbox {
+            .form-check {
+              .form-check-label {
+                padding-left: 0px;
+                padding-right: 10px;
+              }
+            }
+          }
+        }
+      }
+
+      .review-booking-details-right {
+        .hotel-info-header {
+          .chekout-agree-terms-box {
+            .form-check {
+              .form-check-label {
+                padding-left: 0px;
+                padding-right: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  [dir="rtl"] {
+    .checkout-page {
+      .progress-steps {
+        .step {
+          .mobile-progress-line {
+            left: 0;
+          }
+
+          &:last-child {
+            .step-circle {
+              .mobile-progress-line {
+                left: 40px;
+                right: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
