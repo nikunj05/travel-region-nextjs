@@ -256,7 +256,7 @@
     }
 
     .mobileCloseButton {
-      margin-left: 10px;
+      margin-left: 12px;
 
       &:hover {
         opacity: 0.7;
@@ -285,54 +285,63 @@
 // }
 
 // RTL Support
-// [dir="rtl"] {
-//   .navLink {
-//     border-left: none;
-//     border-right: 3px solid transparent;
+[dir="rtl"] {
+  .profileLayout {
+    .icon {
+      margin-right: 0;
+      margin-left: 10px;
+    }
+  }
 
-//     &.active {
-//       border-right-color: $color-blue;
-//     }
-//   }
 
-//   .icon {
-//     margin-right: 0;
-//     margin-left: 12px;
-//   }
+  // RTL mobile styles
+  @media (max-width: 991.55px) {
+    .profileLayout {
+      .sidebar {
+        right: auto;
+        left: -100%;
+        transition: left 0.3s ease;
 
-//   // RTL mobile styles
-//   @media (max-width: 991.55px) {
-//     .profileLayout {
-//       .sidebar {
-//         right: auto;
-//         left: -100%;
-//         transition: left 0.3s ease;
-//         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        &.sidebarOpen {
+          right: auto;
+          left: 0;
+        }
+      }
 
-//         &.sidebarOpen {
-//           right: auto;
-//           left: 0;
-//         }
-//       }
+      .mobileCloseButton {
+        margin-left: 0px;
+        margin-right: 20px;
+      }
 
-//       .mobileCloseButton {
-//         margin-left: 20px;
-//         margin-right: 0;
-//       }
+      .sidebarHeader {
+        padding: 10px 20px 20px;
+      }
 
-//       .mobileMenuToggle {
-//         right: 0;
-//         left: auto;
-//       }
-//     }
-//   }
+      .mobileMenuToggle {
+        right: 0;
+        left: auto;
+      }
+    }
+  }
 
-//   @media (max-width: 575.55px) {
-//     .profileLayout {
-//       .mobileCloseButton {
-//         margin-left: 15px;
-//         margin-right: 0;
-//       }
-//     }
-//   }
-// }
+  @media (max-width: 767.55px) {
+    .profileLayout {
+
+
+      .mobileCloseButton {
+        margin-left: 0px;
+        margin-right: 12px;
+      }
+
+      .sidebarHeader {
+        padding: 10px 12px 16px 12px;
+      }
+
+      .mobileMenuToggle {
+        right: 0;
+        left: auto;
+      }
+    }
+
+  }
+}

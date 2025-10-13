@@ -1,12 +1,12 @@
-"use client"
-import React, { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
-import { useTranslations } from 'next-intl'
-import locationIcon from '@/assets/images/location-icon.svg'
-import downBlackArrowIcon from '@/assets/images/down-black-arrow-icon.svg'
-import calendarIcon from '@/assets/images/calendar-icon.svg'
-import plusIcon from '@/assets/images/plus-icon.svg'
-import guestsIcon from '@/assets/images/guests-icon.svg'
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import locationIcon from "@/assets/images/location-icon.svg";
+import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
+import calendarIcon from "@/assets/images/calendar-icon.svg";
+import plusIcon from "@/assets/images/plus-icon.svg";
+import guestsIcon from "@/assets/images/guests-icon.svg";
 // import minusRoundIcon from '@/assets/images/minus-round-icon.svg'
 // import plusRoundIcon from '@/assets/images/plus-round-icon.svg'
 import DatePicker from "../core/DatePicker/DatePicker";
@@ -21,12 +21,14 @@ interface Location {
 }
 
 const Banner = () => {
-  const t = useTranslations('Banner')
-  
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
-  
-  const [isGuestsDropdownOpen, setIsGuestsDropdownOpen] = useState(false)
+  const t = useTranslations("Banner");
+
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null
+  );
+
+  const [isGuestsDropdownOpen, setIsGuestsDropdownOpen] = useState(false);
   const [guestCounts, setGuestCounts] = useState({
     adults: 2,
     children: 1,
@@ -70,10 +72,10 @@ const Banner = () => {
   };
 
   const getGuestsDisplayText = () => {
-    const total = guestCounts.adults + guestCounts.children + guestCounts.pets
-    if (total === 0) return t('addGuests')
-    return `${total} ${total > 1 ? t('guests') : t('guest')}`
-  }
+    const total = guestCounts.adults + guestCounts.children + guestCounts.pets;
+    if (total === 0) return t("addGuests");
+    return `${total} ${total > 1 ? t("guests") : t("guest")}`;
+  };
 
   // Date picker functions
   const toggleDatePicker = () => {
@@ -95,23 +97,23 @@ const Banner = () => {
     if (!date) return "";
     // Use a consistent format that doesn't depend on locale
     return date.toLocaleDateString("en-US", {
-      month: "short", 
+      month: "short",
       day: "numeric",
       year: "numeric",
     });
   };
 
   const getCheckInDisplayText = () => {
-    return checkInDate ? formatDate(checkInDate) : t('addDate')
-  }
+    return checkInDate ? formatDate(checkInDate) : t("addDate");
+  };
 
   const getCheckOutDisplayText = () => {
-    return checkOutDate ? formatDate(checkOutDate) : t('addDate')
-  }
+    return checkOutDate ? formatDate(checkOutDate) : t("addDate");
+  };
 
   const getLocationDisplayText = () => {
-    return selectedLocation ? selectedLocation.name : t('findLocation')
-  }
+    return selectedLocation ? selectedLocation.name : t("findLocation");
+  };
 
   return (
     <section className="home-banner-section">
@@ -119,14 +121,14 @@ const Banner = () => {
         <div className="banner-overlay"></div>
         <div className="banner-content">
           <div className="heading_section">
-            <h1 className="section-title">{t('title')}</h1>
-            <p className="section-description">{t('description')}</p>
+            <h1 className="section-title">{t("title")}</h1>
+            <p className="section-description">{t("description")}</p>
           </div>
           <div className="banner-property-filter">
-            <h3 className="property-filter-title">{t('exploreJourney')}</h3>
+            <h3 className="property-filter-title">{t("exploreJourney")}</h3>
             <div className="choose-location-and-date d-grid">
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">{t('location')}</h4>
+                <h4 className="choose-location-items-title">{t("location")}</h4>
                 <div className="dropdown">
                   <button
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -158,7 +160,9 @@ const Banner = () => {
                 </div>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">{t('checkInDate')}</h4>
+                <h4 className="choose-location-items-title">
+                  {t("checkInDate")}
+                </h4>
                 <div className="dropdown" ref={datePickerRef}>
                   <button
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -192,8 +196,10 @@ const Banner = () => {
                 </div>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">{t('checkOutDate')}</h4>
-                <button 
+                <h4 className="choose-location-items-title">
+                  {t("checkOutDate")}
+                </h4>
+                <button
                   className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
                   onClick={toggleDatePicker}
                   type="button"
@@ -217,7 +223,9 @@ const Banner = () => {
                 </button>
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">{t('guestsAndRooms')}</h4>
+                <h4 className="choose-location-items-title">
+                  {t("guestsAndRooms")}
+                </h4>
                 <div className="dropdown">
                   <button
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
@@ -257,17 +265,29 @@ const Banner = () => {
                   id="freeCancel"
                 />
                 <label className="form-check-label" htmlFor="freeCancel">
-                  {t('freeCancellation')}
+                  {t("freeCancellation")}
                 </label>
               </div>
-              <Link href="/search-result" className='text-decoration-none'>
-
-              <button className="btn banner-search-btn">
-                {t('search')}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 12L4 12M20 12L15.0001 17M20 12L15 7" stroke="white" strokeWidth="1.5" />
-                </svg>
-              </button>
+              <Link
+                href="/search-result"
+                className="text-decoration-none banner-search-button"
+              >
+                <button className="btn banner-search-btn">
+                  {t("search")}
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20 12L4 12M20 12L15.0001 17M20 12L15 7"
+                      stroke="white"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                </button>
               </Link>
             </div>
           </div>

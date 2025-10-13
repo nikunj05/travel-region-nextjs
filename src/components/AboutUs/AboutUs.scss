@@ -218,7 +218,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
-    overflow-x: scroll;
+    overflow-x: auto;
     gap: 16px 24px;
 
     .hotel-partner-card {
@@ -234,7 +234,7 @@
 
       .few-highlights-card {
         padding: 24px;
-        border-radius: 8px;
+        // border-radius: 8px;
         background: url('../../assets/images/red-highlight-card.png') no-repeat;
         background-size: contain;
         background-position: left 100%;
@@ -458,22 +458,22 @@
 
         .few-highlights-card {
           padding: 12px;
-          border-radius: 8px;
-          background: url('../../assets/images/red-highlight-card-mobile.png') no-repeat;
+          // border-radius: 8px;
+          background: url('../../assets/images/red-highlight-card-mobile.png') 0 100% / contain no-repeat;
           background-size: auto;
 
           &.blue-highlight-card {
-            background: url('../../assets/images/blue-highlight-card-mobile.png') no-repeat;
+            background: url('../../assets/images/blue-highlight-card-mobile.png') 0 100% / contain no-repeat;
             background-size: auto;
           }
 
           &.yellow-highlight-card {
-            background: url('../../assets/images/yellow-highlight-card-mobile.png') no-repeat;
+            background: url('../../assets/images/yellow-highlight-card-mobile.png') 0 100% / contain no-repeat;
             background-size: auto;
           }
 
           &.violet-highlight-card {
-            background: url('../../assets/images/violet-highlight-card-mobile.png') no-repeat;
+            background: url('../../assets/images/violet-highlight-card-mobile.png') 0 100% / contain no-repeat;
             background-size: auto;
           }
 
@@ -491,6 +491,85 @@
 
           .few-highlights-description {
             font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// RTL Layout 
+
+[dir="rtl"] {
+  .about-us-page {
+    .about-our-storyimage {
+      img {
+        transform: scaleX(-1);
+      }
+    }
+
+    .why-we-exist-section {
+      .why-exist-cards {
+        .why-exist-card {
+          background: radial-gradient(121.35% 264.43% at 121.26% -19.15%, rgba(255, 100, 103, 0.5) 0%, rgba(254, 242, 242, 0.5) 45.9%);
+
+          &.vision-card {
+            background: radial-gradient(111.71% 243.8% at 111.8% -12.7%, rgba(81, 162, 255, 0.5) 0%, rgba(219, 234, 254, 0.5) 45.9%);
+          }
+
+          &.mission-card {
+            background: radial-gradient(117.52% 256.2% at 117.52% -16.33%, rgba(253, 199, 0, 0.5) 0%, rgba(254, 249, 194, 0.5) 45.9%);
+          }
+        }
+      }
+    }
+
+    .few-highlights-section {
+      .few-highlights-cards {
+        .few-highlights-card {
+          background: url('../../assets/images/red-highlight-card-ar.png') no-repeat;
+          background-size: contain;
+          background-position: right 100%;
+
+          &.blue-highlight-card {
+            background: url('../../assets/images/blue-highlight-card-ar.png') no-repeat;
+            background-size: contain;
+            background-position: right 100%;
+          }
+
+          &.yellow-highlight-card {
+            background: url('../../assets/images/yellow-highlight-card-ar.png') no-repeat;
+            background-size: contain;
+            background-position: right 100%;
+          }
+
+          &.violet-highlight-card {
+            background: url('../../assets/images/violet-highlight-card-ar.png') no-repeat;
+            background-size: contain;
+            background-position: right 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.55px) {
+  [dir="rtl"] {
+    .about-us-page {
+      .why-we-exist-section {
+        .why-exist-cards {
+          .why-exist-card {
+            background: radial-gradient(110.2% 338.97% at 110.2% -37.8%, rgba(255, 100, 103, 0.5) 0%, rgba(254, 242, 242, 0.5) 45.9%);
+
+            &.vision-card {
+              background: radial-gradient(113.03% 306.83% at 113.03% -25%, rgba(81, 162, 255, 0.5) 0%, rgba(219, 234, 254, 0.5) 45.9%);
+            }
+
+            &.mission-card {
+              background: radial-gradient(112.61% 235.18% at 112.61% -18.21%, rgba(253, 199, 0, 0.5) 0%, rgba(254, 249, 194, 0.5) 45.9%);
+            }
           }
         }
       }

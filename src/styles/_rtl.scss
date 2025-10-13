@@ -90,6 +90,11 @@
     }
 
     .header-language-dropdown {
+      .language-menu {
+        left: 0;
+        right: auto;
+      }
+
       .language-btn {
         .lang-text {
           margin-left: 0px;
@@ -103,6 +108,11 @@
         .profile-button {
           padding-left: 0px;
           padding-right: 15px;
+        }
+
+        .profile-menu {
+          right: auto;
+          left: 0;
         }
       }
     }
@@ -332,6 +342,20 @@
       }
     }
   }
+
+  .Toastify {
+    .Toastify__close-button--light {
+      right: auto;
+      left: 10px;
+    }
+
+    .Toastify__toast-container {
+      max-width: 90%;
+      right: auto;
+      left: 15px;
+    }
+
+  }
 }
 
 // LTR (Left-to-Right) specific styles for consistency
@@ -395,7 +419,7 @@
             margin-left: 16px;
 
             .nav-link {
-              font-size: 14px;
+              font-size: 16px;
             }
           }
         }
@@ -440,13 +464,6 @@
 
       .header-button-box {
         margin: auto 0 0;
-      }
-
-      .header-language-dropdown {
-        .language-menu {
-          left: 0;
-          right: auto;
-        }
       }
     }
 
