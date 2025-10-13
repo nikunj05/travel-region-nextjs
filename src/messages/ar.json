@@ -211,6 +211,10 @@
     "cancel": "إلغاء",
     "modify": "تعديل"
   },
+  "PaymentMethods": {
+    "pageTitle": "طرق الدفع",
+    "noSavedCards": "لا توجد بطاقات محفوظة"
+  },
   "Auth": {
     "login": {
       "pageTitle": "اكتشف إقامتك المثالية",

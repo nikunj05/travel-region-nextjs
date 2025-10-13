@@ -211,6 +211,10 @@
     "cancel": "Cancel",
     "modify": "Modify"
   },
+  "PaymentMethods": {
+    "pageTitle": "Payment Methods",
+    "noSavedCards": "No Saved Cards"
+  },
   "Auth": {
     "login": {
       "pageTitle": "Discover Your Perfect Stay",
