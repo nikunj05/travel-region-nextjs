@@ -17,13 +17,13 @@ import Image from "next/image";
 import styles from "./Profile.module.scss";
 
 // Import flag images for nationality
-import UAEFlag from "@/assets/images/arabic-flag-icon.svg";
-import IndiaFlag from "@/assets/images/english-flag-icon.svg";
+import UAEFlag from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
+// import IndiaFlag from "@/assets/images/english-flag-icon.svg";
 import USAFlag from "@/assets/images/english-flag-icon.svg";
-import UKFlag from "@/assets/images/english-flag-icon.svg";
-import CanadaFlag from "@/assets/images/english-flag-icon.svg";
-import AustraliaFlag from "@/assets/images/english-flag-icon.svg";
-import SaudiFlag from "@/assets/images/arabic-flag-icon.svg";
+// import UKFlag from "@/assets/images/english-flag-icon.svg";
+// import CanadaFlag from "@/assets/images/english-flag-icon.svg";
+// import AustraliaFlag from "@/assets/images/english-flag-icon.svg";
+// import SaudiFlag from "@/assets/images/arabic-flag-icon.svg";
 
 // Nationality options with flags
 const NATIONALITY_OPTIONS = [
@@ -32,12 +32,12 @@ const NATIONALITY_OPTIONS = [
     label: "United Arab Emirates",
     flag: UAEFlag,
   },
-  { value: "India", label: "India", flag: IndiaFlag },
+  // { value: "India", label: "India", flag: IndiaFlag },
   { value: "USA", label: "USA", flag: USAFlag },
-  { value: "UK", label: "UK", flag: UKFlag },
-  { value: "Canada", label: "Canada", flag: CanadaFlag },
-  { value: "Australia", label: "Australia", flag: AustraliaFlag },
-  { value: "Saudi Arabia", label: "Saudi Arabia", flag: SaudiFlag },
+  // { value: "UK", label: "UK", flag: UKFlag },
+  // { value: "Canada", label: "Canada", flag: CanadaFlag },
+  // { value: "Australia", label: "Australia", flag: AustraliaFlag },
+  // { value: "Saudi Arabia", label: "Saudi Arabia", flag: SaudiFlag },
 ];
 
 const Profile = () => {

@@ -9,7 +9,7 @@ import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import UserImage from "@/assets/images/user-image.png";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
 import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
-import arabicFlagIcon from "@/assets/images/arabic-flag-icon.svg";
+import arabicFlagIcon from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
 import Link from "next/link";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useAuth } from "@/hooks/useAuth";

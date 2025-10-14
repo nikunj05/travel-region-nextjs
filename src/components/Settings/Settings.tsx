@@ -15,7 +15,7 @@ import styles from "./Settings.module.scss";
 
 // Import flag images
 import EnglishFlag from "@/assets/images/english-flag-icon.svg";
-import ArabicFlag from "@/assets/images/arabic-flag-icon.svg";
+import ArabicFlag from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
 
 // Language options with flags
 const LANGUAGE_OPTIONS = [
@@ -26,10 +26,10 @@ const LANGUAGE_OPTIONS = [
 // Currency options with flags
 const CURRENCY_OPTIONS = [
   { value: "USD", label: "US$/ U.S. Dollar", flag: EnglishFlag },
-  { value: "EUR", label: "€/ Euro", flag: EnglishFlag },
-  { value: "GBP", label: "£/ British Pound", flag: EnglishFlag },
+  // { value: "EUR", label: "€/ Euro", flag: ArabicFlag },
+  // { value: "GBP", label: "£/ British Pound", flag: EnglishFlag },
   { value: "AED", label: "د.إ/ UAE Dirham", flag: ArabicFlag },
-  { value: "SAR", label: "ر.س/ Saudi Riyal", flag: ArabicFlag },
+  // { value: "SAR", label: "ر.س/ Saudi Riyal", flag: ArabicFlag },
 ];
 
 // Country code options using the same reference as signup
