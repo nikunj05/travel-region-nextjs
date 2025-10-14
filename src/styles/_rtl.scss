@@ -65,7 +65,7 @@
       .navbar-nav {
         .nav-item {
           margin-right: 0px;
-          margin-left: 32px;
+          margin-left: 27px;
 
           &:last-child {
             margin-left: 0px;
@@ -392,6 +392,12 @@
           }
         }
       }
+
+      .header-button-box {
+        .login-btn {
+          padding: 6.7px 15px;
+        }
+      }
     }
   }
 }
@@ -416,10 +422,10 @@
       .navbar {
         .navbar-nav {
           .nav-item {
-            margin-left: 16px;
+            margin-left: 13px;
 
             .nav-link {
-              font-size: 16px;
+              font-size: 15px;
             }
           }
         }
@@ -442,6 +448,12 @@
           .flag-icon {
             width: 30px;
           }
+        }
+      }
+
+      .navbar-brand {
+        img {
+          max-width: 165px;
         }
       }
     }
