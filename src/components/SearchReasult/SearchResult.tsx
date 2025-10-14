@@ -24,18 +24,7 @@ import PoolIcon from "@/assets/images/pool-icon.svg";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
-
-interface Location {
-  id: string;
-  name: string;
-  country: string;
-}
-
-interface GuestCounts {
-  adults: number;
-  children: number;
-  pets: number;
-}
+import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
 
 interface Hotel {
   id: string;
@@ -54,22 +43,18 @@ interface Hotel {
 
 const SearchResult = () => {
   const router = useRouter();
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>({
-    id: "1",
-    name: "Bangkok",
-    country: "Thailand",
-  });
-  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
-    new Date(2024, 7, 8)
-  ); // Aug 08
-  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(
-    new Date(2024, 7, 18)
-  ); // Aug 18
-  const [guestCounts, setGuestCounts] = useState<GuestCounts>({
-    adults: 3,
-    children: 0,
-    pets: 0,
-  });
+  const { 
+    filters, 
+    resetFilters, 
+    setLocation, 
+    setCheckInDate, 
+    setCheckOutDate, 
+    setGuestCounts 
+  } = useSearchFiltersStore();
+
+  // Local UI state
+  const [locationSearchQuery, setLocationSearchQuery] = useState('');
+  const [locationError, setLocationError] = useState('');
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
@@ -275,13 +260,15 @@ const SearchResult = () => {
   ];
 
   const handleLocationSelect = (location: Location | null) => {
-    setSelectedLocation(location);
+    setLocation(location);
     setIsLocationPickerOpen(false);
+    setLocationSearchQuery('');
+    setLocationError('');
   };
 
   const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
-    setSelectedStartDate(startDate);
-    setSelectedEndDate(endDate);
+    setCheckInDate(startDate);
+    setCheckOutDate(endDate);
     // Auto-close when both dates are selected
     if (startDate && endDate) {
       setTimeout(() => {
@@ -295,13 +282,43 @@ const SearchResult = () => {
     // Don't auto-close guests picker, let user manually close or click outside
   };
 
+  const handleClearLocation = () => {
+    setLocation(null);
+    setLocationSearchQuery('');
+    setIsLocationPickerOpen(false);
+    setLocationError('');
+  };
+
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocationSearchQuery(e.target.value);
+    if (e.target.value.trim() && !isLocationPickerOpen) {
+      setIsLocationPickerOpen(true);
+    }
+  };
+
+  const handleLocationInputFocus = () => {
+    if (locationSearchQuery.trim()) {
+      setIsLocationPickerOpen(true);
+    }
+  };
+
+  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!filters.location) {
+      e.preventDefault();
+      setLocationError('Enter a destination to start searching.');
+      return;
+    }
+    setLocationError('');
+    // Perform search logic here
+  };
+
   const formatDate = (date: Date | null) => {
     if (!date) return "Add Date";
     return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
   };
 
   const getTotalGuests = () => {
-    return guestCounts.adults + guestCounts.children + guestCounts.pets;
+    return filters.guestCounts.adults + filters.guestCounts.children + filters.guestCounts.pets;
   };
 
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
@@ -548,12 +565,7 @@ const SearchResult = () => {
               <div className="search-bar-container">
                 <div className="search-field" ref={locationPickerRef}>
                   <label>Location</label>
-                  <div
-                    className="search-input-wrapper"
-                    onClick={() =>
-                      setIsLocationPickerOpen(!isLocationPickerOpen)
-                    }
-                  >
+                  <div className="search-input-wrapper">
                     <div className="search-input-inner">
                       <Image
                         src={locationIcon}
@@ -561,23 +573,65 @@ const SearchResult = () => {
                         height="20"
                         alt="location icon"
                       />
-                      <span className="search-input-text">
-                        {selectedLocation
-                          ? selectedLocation.name
-                          : "Find Location"}
-                      </span>
+                      <input
+                        type="text"
+                        className="location-input-field"
+                        placeholder={filters.location ? filters.location.name : "Find Location"}
+                        value={locationSearchQuery}
+                        onChange={handleLocationInputChange}
+                        onFocus={handleLocationInputFocus}
+                        onClick={() => setIsLocationPickerOpen(!isLocationPickerOpen)}
+                      />
                     </div>
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="24"
-                      height="24"
-                      alt="down arrow"
-                    />
+                    <div className="location-actions d-flex align-items-center">
+                      {filters.location && (
+                        <button
+                          type="button"
+                          className="clear-location-btn"
+                          onClick={handleClearLocation}
+                          title="Clear location"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M18 6L6 18M6 6L18 18"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      {!filters.location && (
+                        <Image
+                          src={downBlackArrowIcon}
+                          width="24"
+                          height="24"
+                          alt="down icon"
+                          className="arrow-and-plus-icon"
+                          onClick={() => setIsLocationPickerOpen(!isLocationPickerOpen)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      )}
+                    </div>
                   </div>
+                  {locationError && (
+                    <div className="location-error-message">
+                      {locationError}
+                    </div>
+                  )}
                   <LocationPicker
                     isOpen={isLocationPickerOpen}
                     onLocationSelect={handleLocationSelect}
-                    selectedLocation={selectedLocation}
+                    selectedLocation={filters.location}
+                    searchQuery={locationSearchQuery}
+                    onSearchQueryChange={setLocationSearchQuery}
                   />
                 </div>
 
@@ -595,7 +649,7 @@ const SearchResult = () => {
                         alt="calendar icon"
                       />
                       <span className="search-input-text">
-                        {formatDate(selectedStartDate)}
+                        {formatDate(filters.checkInDate)}
                       </span>
                     </div>
                     <Image
@@ -608,8 +662,8 @@ const SearchResult = () => {
                   <DatePicker
                     isOpen={isDatePickerOpen}
                     onDateSelect={handleDateSelect}
-                    selectedStartDate={selectedStartDate}
-                    selectedEndDate={selectedEndDate}
+                    selectedStartDate={filters.checkInDate}
+                    selectedEndDate={filters.checkOutDate}
                   />
                 </div>
 
@@ -627,7 +681,7 @@ const SearchResult = () => {
                         alt="calendar icon"
                       />
                       <span className="search-input-text">
-                        {formatDate(selectedEndDate)}
+                        {formatDate(filters.checkOutDate)}
                       </span>
                     </div>
                     <Image
@@ -668,11 +722,11 @@ const SearchResult = () => {
                   <GuestsPicker
                     isOpen={isGuestsPickerOpen}
                     onGuestCountChange={handleGuestCountChange}
-                    guestCounts={guestCounts}
+                    guestCounts={filters.guestCounts}
                   />
                 </div>
 
-                <button className="search-button">
+                <button className="search-button" onClick={handleSearchClick}>
                   <svg
                     width="24"
                     height="25"
@@ -712,7 +766,13 @@ const SearchResult = () => {
                 <div className="search-header">
                   <div className="search-header-left">
                     <div className="search-results-info">
-                      Showing 45 hotels in Bangkok (Aug 08 - Aug 18, 3 Guests)
+                      Showing 45 hotels in {filters.location ? filters.location.name : 'Selected Location'} 
+                      {filters.checkInDate && filters.checkOutDate && (
+                        <span> ({formatDate(filters.checkInDate)} - {formatDate(filters.checkOutDate)})</span>
+                      )}
+                      {getTotalGuests() > 0 && (
+                        <span>, {getTotalGuests()} Guests</span>
+                      )}
                     </div>
                   </div>
                   <div className="search-header-right">

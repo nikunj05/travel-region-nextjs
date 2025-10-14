@@ -1,12 +1,45 @@
 "use client"
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './LocationPicker.scss'
 
 interface Location {
   id: string
   name: string
   country: string
+  region?: string
   icon?: React.ReactNode
+  coordinates?: {
+    lat: number
+    lng: number
+  }
+}
+
+interface MapboxContext {
+  id: string
+  mapbox_id: string
+  wikidata?: string
+  short_code?: string
+  text: string
+}
+
+interface MapboxFeature {
+  id: string
+  type: string
+  place_type: string[]
+  relevance: number
+  properties: {
+    mapbox_id: string
+    wikidata?: string
+  }
+  text: string
+  place_name: string
+  bbox: number[]
+  center: number[]
+  context?: MapboxContext[]
+  geometry: {
+    type: string
+    coordinates: number[]
+  }
 }
 
 interface LocationPickerProps {
@@ -15,33 +48,122 @@ interface LocationPickerProps {
   selectedLocation?: Location | null
   recentSearches?: Location[]
   suggestedDestinations?: Location[]
+  searchQuery?: string
+  onSearchQueryChange?: (query: string) => void
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
   isOpen,
   onLocationSelect,
   recentSearches = [],
-  suggestedDestinations = []
+  suggestedDestinations = [],
+  searchQuery: externalSearchQuery = '',
+  onSearchQueryChange
 }) => {
+  const [internalSearchQuery, setInternalSearchQuery] = useState('')
+  const [mapboxSuggestions, setMapboxSuggestions] = useState<Location[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+console.log('mapboxSuggestions ==>' , mapboxSuggestions)
+  // Use external search query if provided, otherwise use internal
+  const searchQuery = externalSearchQuery || internalSearchQuery
+
   // Default locations if none provided
-  const defaultRecentSearches: Location[] = [
-    { id: '1', name: 'Kuala Lumpur', country: 'Malaysia' }
-  ]
+  // const defaultRecentSearches: Location[] = [
+  //   { id: '1', name: 'Kuala Lumpur', country: 'Malaysia' }
+  // ]
 
-  const defaultSuggestedDestinations: Location[] = [
-    { id: '2', name: 'Kuala Lumpur', country: 'Malaysia' },
-    { id: '3', name: 'Toronto', country: 'Canada' },
-    { id: '4', name: 'Bangkok', country: 'Thailand' },
-    { id: '5', name: 'London', country: 'United Kingdom' },
-    { id: '6', name: 'NY City', country: 'New York' }
-  ]
+  // const defaultSuggestedDestinations: Location[] = [
+  //   { id: '2', name: 'Kuala Lumpur', country: 'Malaysia' },
+  //   { id: '3', name: 'Toronto', country: 'Canada' },
+  //   { id: '4', name: 'Bangkok', country: 'Thailand' },
+  //   { id: '5', name: 'London', country: 'United Kingdom' },
+  //   { id: '6', name: 'NY City', country: 'New York' }
+  // ]
 
-  const recentLocations = recentSearches.length > 0 ? recentSearches : defaultRecentSearches
-  const suggestedLocations = suggestedDestinations.length > 0 ? suggestedDestinations : defaultSuggestedDestinations
+  // const recentLocations = recentSearches.length > 0 ? recentSearches : defaultRecentSearches
+
+  // Focus input when dropdown opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isOpen])
+
+  // Mapbox search function
+  const searchMapboxPlaces = async (query: string) => {
+    if (!query.trim()) {
+      setMapboxSuggestions([])
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_KEY
+      if (!mapboxToken) {
+        console.error('Mapbox token not found')
+        return
+      }
+
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&limit=5&types=place,locality,neighborhood`
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestions')
+      }
+
+      const data = await response.json()
+      console.log("data ==>" , data)
+      const features: MapboxFeature[] = data.features || []
+
+      const suggestions: Location[] = features.map((feature, index) => {
+        // Extract country, region, and district from context array
+        const countryContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('country'))
+        const regionContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('region'))
+        const districtContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('district'))
+        
+        return {
+          id: feature.id || `mapbox-${index}`,
+          name: feature.text || 'Unknown',
+          country: countryContext?.text || 'Unknown',
+          region: regionContext?.text || districtContext?.text || undefined,
+          coordinates: {
+            lat: feature.center[1],
+            lng: feature.center[0]
+          }
+        }
+      })
+
+      setMapboxSuggestions(suggestions)
+    } catch (error) {
+      console.error('Error fetching Mapbox suggestions:', error)
+      setMapboxSuggestions([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      searchMapboxPlaces(searchQuery)
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
 
   const handleLocationClick = (location: Location) => {
     onLocationSelect(location)
+    if (onSearchQueryChange) {
+      onSearchQueryChange('')
+    } else {
+      setInternalSearchQuery('')
+    }
+    setMapboxSuggestions([])
   }
+
+  
 
   const renderLocationIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +202,48 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   return (
     <div className="locationpicker-dropdown">
       <div className="locationpicker-content">
-        {recentLocations.length > 0 && (
+        {/* Show Mapbox suggestions when user is typing */}
+        {searchQuery.trim() && (
+          <div className="locationpicker-section">
+            <span className="locationpicker-section-header">
+              {isLoading ? 'Searching...' : 'Search Results'}
+            </span>
+            {isLoading ? (
+              <div className="locationpicker-loading">
+                <p>Loading suggestions...</p>
+              </div>
+            ) : mapboxSuggestions.length > 0 ? (
+              <ul className="locationpicker-list">
+                {mapboxSuggestions.map((location) => (
+                  <li key={location.id}>
+                    <button
+                      className="locationpicker-item"
+                      onClick={() => handleLocationClick(location)}
+                      type="button"
+                    >
+                      {renderLocationIcon()}
+                      <div className="destination-suggestion">
+                        <span className="location-name">{location.name}</span>
+                        <span className="location-country">
+                          {location.region && location.region !== location.country 
+                            ? `${location.region}, ${location.country}` 
+                            : location.country}
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="locationpicker-no-results">
+                <p>No locations found for "{searchQuery}"</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Show recent searches when no search query */}
+        {/* {!searchQuery.trim() && recentLocations.length > 0 && (
           <div className="locationpicker-section">
             <span className="locationpicker-section-header">Recent Searches</span>
             <ul className="locationpicker-list">
@@ -98,30 +261,14 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               ))}
             </ul>
           </div>
-        )}
+        )} */}
 
-        {suggestedLocations.length > 0 && (
-          <div className="locationpicker-section">
-            <span className="locationpicker-section-header">Suggested Destinations</span>
-            <ul className="locationpicker-list">
-              {suggestedLocations.map((location) => (
-                <li key={location.id}>
-                  <button
-                    className="locationpicker-item"
-                    onClick={() => handleLocationClick(location)}
-                    type="button"
-                  >
-                    {renderLocationIcon()}
-                    <div className="destination-suggestion">
-                      <span className="location-name">{location.name}</span>
-                      <span className="location-country">{location.country}</span>
-                    </div>
-                  </button>
-                </li>
-              ))}
-            </ul>
+        {/* Show no content message when no search and no recent searches */}
+        {/* {!searchQuery.trim() && recentLocations.length === 0 && (
+          <div className="locationpicker-no-results">
+            <p>Start typing to search for locations</p>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   )

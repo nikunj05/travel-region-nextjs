@@ -613,12 +613,20 @@ img {
         grid-template-columns: repeat(4, 1fr);
         gap: 16px;
 
-        .choose-location-items {
-          .choose-location-items-title {
-            font-size: 20px;
-            margin-bottom: 16px;
-            text-align: start;
-          }
+          .choose-location-items {
+            .choose-location-items-title {
+              font-size: 20px;
+              margin-bottom: 16px;
+              text-align: start;
+            }
+
+            .location-error-message {
+              color: #dc3545;
+              font-size: 14px;
+              margin-top: 8px;
+              margin-left: 12px;
+              display: block;
+            }
 
           .filter-dropdown {
             background-color: #F3F4F6;
@@ -633,6 +641,51 @@ img {
               gap: 6px;
               font-size: 18px;
               color: $color-black-zinc-800;
+
+              .location-input-field {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-size: 18px;
+                color: $color-black-zinc-800;
+                flex: 1;
+                min-width: 0;
+
+                &::placeholder {
+                  color: $color-black-zinc-800;
+                }
+
+                &:focus {
+                  outline: none;
+                }
+              }
+
+              .location-actions {
+                gap: 8px;
+
+                .clear-location-btn {
+                  background: none;
+                  border: none;
+                  padding: 4px;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 4px;
+                  color: $color-black-zinc-600;
+                  transition: $transition;
+
+                  &:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                    color: $color-black-zinc-800;
+                  }
+
+                  svg {
+                    width: 16px;
+                    height: 16px;
+                  }
+                }
+              }
             }
           }
         }

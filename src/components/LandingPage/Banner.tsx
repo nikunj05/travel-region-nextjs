@@ -13,32 +13,28 @@ import DatePicker from "../core/DatePicker/DatePicker";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
 import Link from "next/link";
-
-interface Location {
-  id: string;
-  name: string;
-  country: string;
-}
+import { useSearchFiltersStore, Location, GuestCounts } from "../../store/searchFiltersStore";
 
 const Banner = () => {
   const t = useTranslations("Banner");
 
+  // Use the search filters store
+  const {
+    filters,
+    setLocation,
+    setCheckInDate,
+    setCheckOutDate,
+    setGuestCounts,
+    setFreeCancellation,
+  } = useSearchFiltersStore();
+
+  // Local UI state
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null
-  );
-
+  const [locationSearchQuery, setLocationSearchQuery] = useState('');
   const [isGuestsDropdownOpen, setIsGuestsDropdownOpen] = useState(false);
-  const [guestCounts, setGuestCounts] = useState({
-    adults: 2,
-    children: 1,
-    pets: 0,
-  });
-
-  // Date picker states
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [checkInDate, setCheckInDate] = useState<Date | null>(null);
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
+  const [freeCancellation, setFreeCancellationLocal] = useState(false);
+  const [locationError, setLocationError] = useState('');
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns when clicking outside
@@ -63,8 +59,40 @@ const Banner = () => {
   };
 
   const handleLocationSelect = (location: Location | null) => {
-    setSelectedLocation(location);
+    setLocation(location);
     setIsLocationDropdownOpen(false);
+    setLocationSearchQuery(''); // Clear search query when location is selected
+    setLocationError(''); // Clear error when location is selected
+  };
+
+  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocationSearchQuery(e.target.value);
+    if (e.target.value.trim() && !isLocationDropdownOpen) {
+      setIsLocationDropdownOpen(true);
+    }
+  };
+
+  const handleLocationInputFocus = () => {
+    if (locationSearchQuery.trim()) {
+      setIsLocationDropdownOpen(true);
+    }
+  };
+
+  const handleClearLocation = () => {
+    setLocation(null);
+    setLocationSearchQuery('');
+    setIsLocationDropdownOpen(false);
+    setLocationError(''); // Clear error when location is cleared
+  };
+
+  const handleSearchClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!filters.location) {
+      e.preventDefault(); // Prevent navigation
+      setLocationError('Enter a destination to start searching.');
+      return;
+    }
+    // Clear any existing error if location is selected
+    setLocationError('');
   };
 
   const toggleGuestsDropdown = () => {
@@ -72,7 +100,7 @@ const Banner = () => {
   };
 
   const getGuestsDisplayText = () => {
-    const total = guestCounts.adults + guestCounts.children + guestCounts.pets;
+    const total = filters.guestCounts.adults + filters.guestCounts.children + filters.guestCounts.pets;
     if (total === 0) return t("addGuests");
     return `${total} ${total > 1 ? t("guests") : t("guest")}`;
   };
@@ -104,16 +132,14 @@ const Banner = () => {
   };
 
   const getCheckInDisplayText = () => {
-    return checkInDate ? formatDate(checkInDate) : t("addDate");
+    return filters.checkInDate ? formatDate(filters.checkInDate) : t("addDate");
   };
 
   const getCheckOutDisplayText = () => {
-    return checkOutDate ? formatDate(checkOutDate) : t("addDate");
+    return filters.checkOutDate ? formatDate(filters.checkOutDate) : t("addDate");
   };
 
-  const getLocationDisplayText = () => {
-    return selectedLocation ? selectedLocation.name : t("findLocation");
-  };
+
 
   return (
     <section className="home-banner-section">
@@ -130,34 +156,76 @@ const Banner = () => {
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">{t("location")}</h4>
                 <div className="dropdown">
-                  <button
-                    className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
-                    onClick={toggleLocationDropdown}
-                    type="button"
-                  >
-                    <div className="filter-dropdown-inner d-flex align-items-center">
+                  <div className="filter-dropdown w-100 d-flex align-items-center justify-content-between">
+                    <div className="filter-dropdown-inner d-flex align-items-center flex-grow-1">
                       <Image
                         src={locationIcon}
                         width="20"
                         height="20"
                         alt="location icon"
                       />
-                      {getLocationDisplayText()}
+                      <input
+                        type="text"
+                        className="location-input-field"
+                        placeholder={filters.location ? filters.location.name : t("findLocation")}
+                        value={locationSearchQuery}
+                        onChange={handleLocationInputChange}
+                        onFocus={handleLocationInputFocus}
+                        onClick={toggleLocationDropdown}
+                      />
+                      {!filters.location && (
+                        <Image
+                          src={downBlackArrowIcon}
+                          width="24"
+                          height="24"
+                          alt="down icon"
+                          className="arrow-and-plus-icon"
+                          onClick={toggleLocationDropdown}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      )}
                     </div>
-                    <Image
-                      src={downBlackArrowIcon}
-                      width="24"
-                      height="24"
-                      alt="down icon"
-                      className="arrow-and-plus-icon"
-                    />
-                  </button>
+                    <div className="location-actions d-flex align-items-center">
+                      {filters.location && (
+                        <button
+                          type="button"
+                          className="clear-location-btn"
+                          onClick={handleClearLocation}
+                          title="Clear location"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M18 6L6 18M6 6L18 18"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      
+                    </div>
+                  </div>
                   <LocationPicker
                     isOpen={isLocationDropdownOpen}
                     onLocationSelect={handleLocationSelect}
-                    selectedLocation={selectedLocation}
+                    selectedLocation={filters.location}
+                    searchQuery={locationSearchQuery}
+                    onSearchQueryChange={setLocationSearchQuery}
                   />
                 </div>
+                {locationError && (
+                  <div className="location-error-message">
+                    {locationError}
+                  </div>
+                )}
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">
@@ -189,8 +257,8 @@ const Banner = () => {
                   <DatePicker
                     isOpen={isDatePickerOpen}
                     onDateSelect={handleDateSelect}
-                    selectedStartDate={checkInDate}
-                    selectedEndDate={checkOutDate}
+                    selectedStartDate={filters.checkInDate}
+                    selectedEndDate={filters.checkOutDate}
                     minDate={undefined}
                   />
                 </div>
@@ -252,7 +320,7 @@ const Banner = () => {
                   <GuestsPicker
                     isOpen={isGuestsDropdownOpen}
                     onGuestCountChange={setGuestCounts}
-                    guestCounts={guestCounts}
+                    guestCounts={filters.guestCounts}
                   />
                 </div>
               </div>
@@ -263,6 +331,11 @@ const Banner = () => {
                   className="form-check-input"
                   type="checkbox"
                   id="freeCancel"
+                  checked={freeCancellation}
+                  onChange={(e) => {
+                    setFreeCancellationLocal(e.target.checked);
+                    setFreeCancellation(e.target.checked);
+                  }}
                 />
                 <label className="form-check-label" htmlFor="freeCancel">
                   {t("freeCancellation")}
@@ -271,8 +344,11 @@ const Banner = () => {
               <Link
                 href="/search-result"
                 className="text-decoration-none banner-search-button"
+                onClick={handleSearchClick}
               >
-                <button className="btn banner-search-btn">
+                <button 
+                  className="btn banner-search-btn"
+                >
                   {t("search")}
                   <svg
                     width="24"

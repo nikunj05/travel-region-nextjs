@@ -284,6 +284,27 @@
               margin-bottom: 12px;
             }
 
+            .location-error-message {
+              font-size: 13px;
+              margin-top: 6px;
+              margin-left: 10px;
+            }
+
+            .filter-dropdown {
+              .filter-dropdown-inner {
+                .location-actions {
+                  .clear-location-btn {
+                    padding: 3px;
+
+                    svg {
+                      width: 14px;
+                      height: 14px;
+                    }
+                  }
+                }
+              }
+            }
+
             &:nth-child(1),
             &:nth-child(4) {
               width: 100%;

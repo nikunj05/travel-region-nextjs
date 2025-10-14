@@ -7,6 +7,7 @@ export * from './cms';
 export * from './faq';
 export * from './notification';
 export * from './favorite';
+export * from './testimonial';
 
 // NextAuth type augmentation
 declare module 'next-auth' {

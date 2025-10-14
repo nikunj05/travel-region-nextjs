@@ -46,49 +46,102 @@
               gap: 6px;
               font-size: 18px;
               color: $color-black-zinc-800;
+
+              .location-input-field {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-size: 18px;
+                color: $color-black-zinc-800;
+                flex: 1;
+                min-width: 0;
+
+                &::placeholder {
+                  color: $color-black-zinc-800;
+                }
+
+                &:focus {
+                  outline: none;
+                }
+              }
             }
 
-            .search-input-text {
-              font-size: 18px;
-              color: $color-black-zinc-800;
-            }
+            .location-actions {
+              gap: 8px;
 
-            img {
-              transition: transform 0.3s ease;
+              .clear-location-btn {
+                background: none;
+                border: none;
+                padding: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                color: $color-black-zinc-600;
+                transition: $transition;
+
+                &:hover {
+                  background-color: rgba(0, 0, 0, 0.05);
+                  color: $color-black-zinc-800;
+                }
+
+                svg {
+                  width: 16px;
+                  height: 16px;
+                }
+              }
             }
           }
 
-          // DatePicker positionin
-          .datepicker-dropdown {
-            position: absolute;
-            top: 100%;
-            transform: translate(-50%, 0px);
-            left: 100%;
-            right: 0;
+          .location-error-message {
+            color: #dc3545;
+            font-size: 14px;
             margin-top: 8px;
+            margin-left: 12px;
+            display: block;
+          }
+
+          .search-input-text {
+            font-size: 18px;
+            color: $color-black-zinc-800;
+          }
+
+          img {
+            transition: transform 0.3s ease;
           }
         }
 
-        .search-button {
-          background: $brand-color;
-          border: none;
-          border-radius: 50%;
-          width: 48px;
-          height: 48px;
-          border: 1px solid $brand-color;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
+        // DatePicker positioning
+        .datepicker-dropdown {
+          position: absolute;
+          top: 100%;
+          transform: translate(-50%, 0px);
+          left: 100%;
+          right: 0;
+          margin-top: 8px;
+        }
+      }
 
-          &:hover {
-            background: $color-white;
-            transform: scale(1.02);
+      .search-button {
+        background: $brand-color;
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        border: 1px solid $brand-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
 
-            svg {
-              path {
-                stroke: $brand-color;
-              }
+        &:hover {
+          background: $color-white;
+          transform: scale(1.02);
+
+          svg {
+            path {
+              stroke: $brand-color;
             }
           }
         }
