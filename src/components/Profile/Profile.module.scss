@@ -292,6 +292,12 @@
 
 // RTL Support
 [dir="rtl"] {
+  .formSelect {
+    padding-right: 14px !important;
+    padding-left: 40px !important;
+    background-position: left 16px center !important;
+  }
+
   .uploadButton {
     right: auto;
     left: 0;

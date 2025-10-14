@@ -37,6 +37,8 @@
     gap: 32px;
 
     .hotel-booking-card-item {
+      display: flex;
+      flex-direction: column;
       transition: $transition;
 
       .hotel-booking-image {
@@ -72,6 +74,7 @@
           color: $color-black-zinc-800;
           font-weight: $font-weight500;
           margin: 0px;
+          min-width: fit-content;
         }
 
         .hotel-location {
@@ -95,6 +98,7 @@
 
       .hotel-bookig-action {
         gap: 12px;
+        margin-top: auto;
 
         .hotel-bookig-action-btn {
           flex: 1;
@@ -229,4 +233,3 @@
     }
   }
 }
-

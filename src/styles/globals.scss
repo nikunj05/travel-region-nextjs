@@ -1751,3 +1751,11 @@ img {
     text-decoration: underline;
   }
 }
+
+.Toastify {
+  .Toastify__toast-container {
+    max-width: 90%;
+    right: 16px;
+    left: auto;
+  }
+}
