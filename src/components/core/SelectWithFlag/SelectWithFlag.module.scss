@@ -60,6 +60,7 @@
 .flagIcon {
   flex-shrink: 0;
   border-radius: 2px;
+  max-height: 20px;
 }
 
 .selectText {
@@ -149,13 +150,6 @@
 
 // RTL Support
 [dir="rtl"] {
-  .selectContent {
-    flex-direction: row-reverse;
-  }
-
-  .optionContent {
-    flex-direction: row-reverse;
-  }
 
   .selectText,
   .optionText {
@@ -167,6 +161,6 @@
 @media (max-width: 767.55px) {
   .flagIcon {
     width: 24px;
-
+    max-height: 16px;
   }
 }

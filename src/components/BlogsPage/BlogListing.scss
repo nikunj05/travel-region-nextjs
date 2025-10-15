@@ -539,6 +539,7 @@
 
     .mobile-filter-header {
       padding: 6px 20px 24px;
+      gap: 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -555,6 +556,7 @@
         font-size: 28px;
         line-height: 1;
         cursor: pointer;
+        padding: 0px;
         color: $color-black-zinc-800;
       }
     }
@@ -611,6 +613,32 @@
             color: $color-black-zinc-500;
             font-weight: $font-weight400;
             width: 100%;
+
+            .filter-checkbox {
+              width: 20px;
+              height: 20px;
+              border: 1px solid $color-black-zinc-500;
+              border-radius: 5px;
+              position: relative;
+              appearance: none;
+              cursor: pointer;
+              transition: $transition;
+
+
+              &:checked {
+                background: $brand-color;
+                border-color: $brand-color;
+
+                &::after {
+                  content: '✓';
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  color: $color-white;
+                }
+              }
+            }
           }
         }
 

@@ -669,6 +669,14 @@
       }
     }
 
+    .navbar-nav {
+      .nav-item {
+        .nav-link {
+          padding: 10px 15px;
+        }
+      }
+    }
+
     .header-language-dropdown {
       .language-btn {
         font-size: 14px;
@@ -707,7 +715,6 @@
             height: 24px;
           }
         }
-
       }
     }
 
