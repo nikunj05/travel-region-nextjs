@@ -183,3 +183,21 @@
   }
 
 }
+
+
+// RTL Layout
+
+[dir="rtl"] {
+
+  .toggle {
+    &::after {
+      transform: translateX(20px);
+    }
+
+    &:checked {
+      &::after {
+        transform: translateX(0px);
+      }
+    }
+  }
+}
