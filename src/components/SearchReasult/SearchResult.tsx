@@ -25,21 +25,12 @@ import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
 import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
+import { useHotelSearchStore } from "@/store/hotelSearchStore";
+import { HotelItem } from "@/types/hotel";
+import { FavoriteHotel } from "@/types/favorite";
+import { buildHotelbedsImageUrl } from "@/constants";
 
-interface Hotel {
-  id: string;
-  name: string;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  amenities: string[];
-  description: string;
-  price: number;
-  currency: string;
-  mainImage: StaticImageData;
-  thumbnailImages: StaticImageData[];
-  ame: { name: string; icon: string }[];
-}
+// Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
 const SearchResult = () => {
   const router = useRouter();
@@ -135,129 +126,44 @@ const SearchResult = () => {
     };
   }, [isMobileFilterOpen]);
 
-  // Static hotel data
-  const hotels: Hotel[] = [
-    {
-      id: "1",
-      name: "lebua",
-      rating: 4.5,
-      reviewCount: 120,
-      location: "123 Sukhumvit Road, Bangkok, Thailand",
-      ame: [
-        { name: "Breakfast", icon: BreaFastIcon },
-        { name: "Parking", icon: ParkingIcon },
-        { name: "Pool", icon: PoolIcon },
-      ],
-      amenities: ["Breakfast", "Parking", "Pool"],
-      description:
-        "Unbeatable location at the heart of the city. Steps from the SkyTrain, top shopping malls, and exciting activities.",
-      price: 266,
-      currency: "US$",
-      mainImage: mainImage1,
-      thumbnailImages: [
-        thumbnailImages1,
-        thumbnailImages2,
-        thumbnailImages3,
-        thumbnailImages4,
-      ],
-    },
-    {
-      id: "2",
-      name: "Novtel",
-      rating: 4.5,
-      reviewCount: 120,
-      location: "456 Silom Road, Bangkok, Thailand",
-      ame: [
-        { name: "Breakfast", icon: BreaFastIcon },
-        { name: "Parking", icon: ParkingIcon },
-        { name: "Pool", icon: PoolIcon },
-      ],
-      amenities: ["Breakfast", "Parking", "Pool"],
-      description:
-        "Modern luxury with stunning city views. Perfect for business and leisure travelers.",
-      price: 500,
-      currency: "US$",
-      mainImage: mainImage1,
-      thumbnailImages: [
-        thumbnailImages1,
-        thumbnailImages2,
-        thumbnailImages3,
-        thumbnailImages4,
-      ],
-    },
-    {
-      id: "3",
-      name: "X GO INN The Grand Palace",
-      rating: 4.5,
-      reviewCount: 120,
-      location: "789 Grand Palace Road, Bangkok, Thailand",
-      ame: [
-        { name: "Breakfast", icon: BreaFastIcon },
-        { name: "Parking", icon: ParkingIcon },
-        { name: "Pool", icon: PoolIcon },
-      ],
-      amenities: ["Breakfast", "Parking", "Pool"],
-      description:
-        "Budget-friendly accommodation near historic landmarks. Clean and comfortable rooms.",
-      price: 24,
-      currency: "US$",
-      mainImage: mainImage1,
-      thumbnailImages: [
-        thumbnailImages1,
-        thumbnailImages2,
-        thumbnailImages3,
-        thumbnailImages4,
-      ],
-    },
-    {
-      id: "4",
-      name: "INNSIDE by Meliá",
-      rating: 4.5,
-      reviewCount: 120,
-      location: "321 Riverside Road, Bangkok, Thailand",
-      ame: [
-        { name: "Breakfast", icon: BreaFastIcon },
-        { name: "Parking", icon: ParkingIcon },
-        { name: "Pool", icon: PoolIcon },
-      ],
-      amenities: ["Breakfast", "Parking", "Pool"],
-      description:
-        "Contemporary design meets comfort. Rooftop pool with panoramic city views.",
-      price: 300,
-      currency: "US$",
-      mainImage: mainImage1,
-      thumbnailImages: [
-        thumbnailImages1,
-        thumbnailImages2,
-        thumbnailImages3,
-        thumbnailImages4,
-      ],
-    },
-    {
-      id: "5",
-      name: "GM Serviced Apartment",
-      rating: 4.5,
-      reviewCount: 120,
-      location: "654 Business District, Bangkok, Thailand",
-      ame: [
-        { name: "Breakfast", icon: BreaFastIcon },
-        { name: "Parking", icon: ParkingIcon },
-        { name: "Pool", icon: PoolIcon },
-      ],
-      amenities: ["Breakfast", "Parking", "Pool"],
-      description:
-        "Spacious apartments with full kitchen facilities. Ideal for extended stays.",
-      price: 200,
-      currency: "US$",
-      mainImage: mainImage1,
-      thumbnailImages: [
-        thumbnailImages1,
-        thumbnailImages2,
-        thumbnailImages3,
-        thumbnailImages4,
-      ],
-    },
-  ];
+  // Dynamic hotels from API (hotel search store)
+  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal } = useHotelSearchStore();
+
+  const getHotelId = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : (hotel as HotelItem).id);
+  const getHotelName = (hotel: HotelItem | FavoriteHotel) => (
+    'name' in hotel && typeof hotel.name === 'string' ? hotel.name : (hotel as FavoriteHotel).name?.content
+  ) || 'Hotel';
+  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) => (
+    (hotel as FavoriteHotel).address?.content || (hotel as FavoriteHotel).city?.content || 'Location'
+  );
+  const getHotelCode = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : undefined);
+
+  const getOrderedHotelImages = (hotel: HotelItem | FavoriteHotel) => {
+    const images = (hotel as FavoriteHotel).images || [];
+    // Sort by 'order' ascending; fallback to 'visualOrder' if needed
+    const sorted = [...images].sort((a, b) => {
+      const orderA = typeof a.order === 'number' ? a.order : a.visualOrder ?? 0;
+      const orderB = typeof b.order === 'number' ? b.order : b.visualOrder ?? 0;
+      return orderA - orderB;
+    });
+    return sorted;
+  };
+
+  const getMainAndThumbImages = (hotel: HotelItem | FavoriteHotel) => {
+    const sorted = getOrderedHotelImages(hotel);
+    if (sorted.length === 0) {
+      return {
+        main: null,
+        thumbs: [] as string[],
+      };
+    }
+    const mainPath = sorted[0]?.path;
+    const thumbPaths = sorted.slice(1, 5).map((img) => img.path);
+    return {
+      main: mainPath ? buildHotelbedsImageUrl(mainPath) : null,
+      thumbs: thumbPaths.map(buildHotelbedsImageUrl),
+    };
+  };
 
   const handleLocationSelect = (location: Location | null) => {
     setLocation(location);
@@ -309,7 +215,37 @@ const SearchResult = () => {
       return;
     }
     setLocationError('');
-    // Perform search logic here
+    // Wire dynamic filters to hotel search store and call API
+    try {
+      const coords = filters.location?.coordinates;
+      const latitude = coords?.lat ?? null;
+      const longitude = coords?.lng ?? null;
+
+      // Push current UI filters into the hotel search store
+      useHotelSearchStore.getState().setDates(filters.checkInDate, filters.checkOutDate);
+      useHotelSearchStore.getState().setGuests(
+        filters.guestCounts.adults,
+        filters.guestCounts.children,
+        1 // rooms (fallback to 1 for now)
+      );
+      useHotelSearchStore.getState().setLanguage('eng');
+      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+
+      // Execute search and log the raw response data held in the store
+      useHotelSearchStore.getState().search().then(() => {
+        const { hotels, currency, error } = useHotelSearchStore.getState();
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.error('Hotels API error:', error);
+        } else {
+          // eslint-disable-next-line no-console
+          console.log('Hotels API result:', { hotels, currency });
+        }
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to trigger hotels search:', err);
+    }
   };
 
   const formatDate = (date: Date | null) => {
@@ -766,9 +702,9 @@ const SearchResult = () => {
                 <div className="search-header">
                   <div className="search-header-left">
                     <div className="search-results-info">
-                      Showing 45 hotels in {filters.location ? filters.location.name : 'Selected Location'} 
-                      {filters.checkInDate && filters.checkOutDate && (
-                        <span> ({formatDate(filters.checkInDate)} - {formatDate(filters.checkOutDate)})</span>
+                      Showing {apiTotal ?? apiHotels.length} hotels in {filters.location ? filters.location.name : 'Selected Location'} 
+                      {hotelFilters.checkIn && hotelFilters.checkOut && (
+                        <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
                       )}
                       {getTotalGuests() > 0 && (
                         <span>, {getTotalGuests()} Guests</span>
@@ -812,36 +748,46 @@ const SearchResult = () => {
                   </div>
                 </div>
                 <div className="hotel-results">
-                  {hotels.map((hotel) => (
-                    <div key={hotel.id} className="hotel-card">
+                  {apiHotels.map((hotel: HotelItem | FavoriteHotel) => (
+                    <div key={getHotelId(hotel)} className="hotel-card">
                       <div className="hotel-images">
-                        <div className="main-image">
-                          <Image
-                            src={hotel.mainImage}
-                            alt={hotel.name}
-                            width={276}
-                            height={146}
-                            className="property-main-img"
-                          />
-                        </div>
-                        <div className="thumbnail-images">
-                          {hotel.thumbnailImages.map((img, index) => (
-                            <div key={`${hotel.id}-thumb-${index}`} className="thumbnail-image">
-                              <Image
-                                width={66}
-                                height={52}
-                                src={img}
-                                alt={`${hotel.name} ${index + 1}`}
-                                className="property-thumb-img"
-                              />
-                            </div>
-                          ))}
-                        </div>
+                        {(() => {
+                          const images = getMainAndThumbImages(hotel);
+                          return (
+                            <>
+                              <div className="main-image">
+                                <Image
+                                  src={images.main || (mainImage1 as unknown as string)}
+                                  alt={getHotelName(hotel) || 'Hotel'}
+                                  width={276}
+                                  height={146}
+                                  className="property-main-img"
+                                />
+                              </div>
+                              <div className="thumbnail-images">
+                                {(images.thumbs.length > 0
+                                  ? images.thumbs
+                                  : [thumbnailImages1, thumbnailImages2, thumbnailImages3, thumbnailImages4] as unknown as string[]
+                                ).slice(0, 4).map((imgSrc, index) => (
+                                  <div key={`${getHotelId(hotel)}-thumb-${index}`} className="thumbnail-image">
+                                    <Image
+                                      width={66}
+                                      height={52}
+                                      src={imgSrc}
+                                      alt={`${getHotelName(hotel)} ${index + 1}`}
+                                      className="property-thumb-img"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                       <div className="hotel-info-with-action-card d-flex">
                         <div className="hotel-info">
                           <a href="#" className="hotel-name">
-                            {hotel.name}
+                            {getHotelName(hotel)}
                           </a>
                           <div className="hotel-rating">
                             <div className="rating-stars d-flex align-items-center">
@@ -878,9 +824,9 @@ const SearchResult = () => {
                             </div>
                             <span className="rating-reviews d-flex align-items-center">
                               <span className="rating-score">
-                                {hotel.rating}
+                                {4.5}
                               </span>
-                              ({hotel.reviewCount} Reviews)
+                              ({120} Reviews)
                             </span>
                           </div>
 
@@ -898,27 +844,24 @@ const SearchResult = () => {
                               />
                             </svg>
 
-                            <span>{hotel.location}</span>
+                            <span>{getHotelLocation(hotel)}</span>
                           </div>
 
                           <div className="hotel-amenities">
-                            {hotel.ame.map((amenity, index) => (
-                              <div key={`${hotel.id}-amenity-${index}`} className="amenity-tag d-flex align-items-center">
-                                <Image
-                                  src={amenity.icon}
-                                  width="16"
-                                  height="16"
-                                  alt={amenity.name}
-                                />
-                                <span className="amenity-tag-name">
-                                  {amenity.name}
-                                </span>
+                            {[
+                              { name: 'Breakfast', icon: BreaFastIcon },
+                              { name: 'Parking', icon: ParkingIcon },
+                              { name: 'Pool', icon: PoolIcon },
+                            ].map((amenity, index) => (
+                              <div key={`${getHotelId(hotel)}-amenity-${index}`} className="amenity-tag d-flex align-items-center">
+                                <Image src={amenity.icon} width="16" height="16" alt={amenity.name} />
+                                <span className="amenity-tag-name">{amenity.name}</span>
                               </div>
                             ))}
                           </div>
 
                           <p className="hotel-description">
-                            {hotel.description}
+                            {('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.'}
                           </p>
                         </div>
                         <div className="property-card-action">
@@ -926,13 +869,13 @@ const SearchResult = () => {
                             <div className="hotel-price">
                               <span className="price-amount">
                                 <span className="property-currency">
-                                  {hotel.currency} {""}
+                                  {"US$"} {""}
                                 </span>
-                                {hotel.price}
+                                {179}
                               </span>
                               <span className="price-period">Per night</span>
                             </div>
-                            <button className="view-details-button button-primary w-100" onClick={() => router.push('/hotel-details')} >
+                            <button className="view-details-button button-primary w-100" onClick={() => router.push(`/hotel-details/${getHotelCode(hotel)}`)} >
                               View Details
                             </button>
                           </div>

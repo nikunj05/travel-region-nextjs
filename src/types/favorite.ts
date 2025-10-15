@@ -8,6 +8,12 @@ export interface HotelImage {
   roomCode?: string;
   roomType?: string;
   characteristicCode?: string;
+  type?: {
+    code: string;
+    description: {
+      content: string;
+    };
+  };
 }
 
 export interface HotelPhone {
@@ -60,7 +66,7 @@ export interface RoomStay {
   roomStayFacilities: RoomStayFacility[];
 }
 
-export interface HotelRoom {
+export interface FavoriteHotelRoom {
   roomCode: string;
   isParentRoom: boolean;
   minPax: number;
@@ -146,7 +152,7 @@ export interface FavoriteHotel {
   license: string;
   giataCode: number;
   phones: HotelPhone[];
-  rooms: HotelRoom[];
+  rooms: FavoriteHotelRoom[];
   facilities: HotelFacility[];
   terminals: HotelTerminal[];
   interestPoints: InterestPoint[];

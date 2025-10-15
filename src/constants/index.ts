@@ -211,3 +211,8 @@ export const COUNTRY_CODES: CountryCode[] = [
   { value: '996', label: '996' },
   { value: '998', label: '998' },
 ];
+
+// Hotelbeds image base URL
+export const HOTELBEDS_IMAGE_BASE = 'https://photos.hotelbeds.com/giata/original/';
+
+export const buildHotelbedsImageUrl = (path: string) => `${HOTELBEDS_IMAGE_BASE}${path}`;

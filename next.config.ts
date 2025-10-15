@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'phpstack-1497927-5868931.cloudwaysapps.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'photos.hotelbeds.com',
+      },
     ],
   },
 };

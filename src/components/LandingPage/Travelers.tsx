@@ -5,8 +5,8 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import testimonialsSliderUserImg1 from '@/assets/images/testimonials-slider-user-img1.png'
-import testimonialsSliderUserImg2 from '@/assets/images/testimonials-slider-user-img2.png'
-import testimonialsSliderUserImg3 from '@/assets/images/testimonials-slider-user-img3.png'
+// import testimonialsSliderUserImg2 from '@/assets/images/testimonials-slider-user-img2.png'
+// import testimonialsSliderUserImg3 from '@/assets/images/testimonials-slider-user-img3.png'
 import { useTestimonialStore } from '@/store/testimonialStore'
 
 const Travelers = () => {
@@ -30,12 +30,7 @@ const Travelers = () => {
     fetchTestimonials({ page: 1, per_page: 15 })
   }, [fetchTestimonials])
 
-  useEffect(() => {
-    if (!loading) {
-      console.log('Testimonials data:', testimonials)
-      if (error) console.error('Testimonials error:', error)
-    }
-  }, [testimonials, loading, error])
+ 
 
   const handleSliderUpdate = () => {
     setTimeout(() => {

@@ -2,74 +2,82 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import "./ImageModal.scss";
+import { buildHotelbedsImageUrl } from "@/constants";
+import { HotelImage } from "@/types/favorite";
 
-// Import the actual images
+// Import the actual images for fallback
 import hotelDetailsImg1 from "@/assets/images/hotel-details-img1.jpg";
 import hotelDetailsImg2 from "@/assets/images/hotel-details-img2.jpg";
 import hotelDetailsImg3 from "@/assets/images/hotel-details-img3.jpg";
 import hotelDetailsImg4 from "@/assets/images/hotel-details-img4.jpg";
 import hotelDetailsImg5 from "@/assets/images/hotel-details-img5.jpg";
 
-// Mock data for hotel image categories
-const hotelImageCategories = {
-  overview: {
-    name: "Overview",
-    images: [
-      { src: hotelDetailsImg1, alt: "Hotel Overview 1" },
-      { src: hotelDetailsImg2, alt: "Hotel Overview 2" },
-      { src: hotelDetailsImg3, alt: "Hotel Overview 3" },
-      { src: hotelDetailsImg4, alt: "Hotel Overview 4" },
-      { src: hotelDetailsImg5, alt: "Hotel Overview 5" },
-    ],
-  },
-  towersRoom: {
-    name: "Towers Room",
-    images: [
-      { src: hotelDetailsImg1, alt: "Towers Room 1" },
-      { src: hotelDetailsImg2, alt: "Towers Room 2" },
-      { src: hotelDetailsImg3, alt: "Towers Room 3" },
-      { src: hotelDetailsImg2, alt: "Towers Room 2" },
-      { src: hotelDetailsImg3, alt: "Towers Room 3" },
-    ],
-  },
-  itcOne: {
-    name: "ITC One, Executive",
-    images: [
-      { src: hotelDetailsImg2, alt: "ITC One 1" },
-      { src: hotelDetailsImg3, alt: "ITC One 2" },
-      { src: hotelDetailsImg4, alt: "ITC One 3" },
-    ],
-  },
-  executiveClub: {
-    name: "Executive Club",
-    images: [
-      { src: hotelDetailsImg3, alt: "Executive Club 1" },
-      { src: hotelDetailsImg4, alt: "Executive Club 2" },
-      { src: hotelDetailsImg5, alt: "Executive Club 3" },
-    ],
-  },
-  deluxeSuite: {
-    name: "Deluxe Suite with Balcony",
-    images: [
-      { src: hotelDetailsImg4, alt: "Deluxe Suite 1" },
-      { src: hotelDetailsImg5, alt: "Deluxe Suite 2" },
-      { src: hotelDetailsImg1, alt: "Deluxe Suite 3" },
-    ],
-  },
-};
-
 interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
+  hotelImages?: HotelImage[];
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose }) => {
-  const [selectedCategory, setSelectedCategory] =
-    useState<keyof typeof hotelImageCategories>("overview");
+const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, hotelImages = [] }) => {
+  // Create categorized images from API data
+  const createImageCategories = (): { [key: string]: { name: string; images: Array<{ src: string; alt: string }> } } => {
+    if (!hotelImages || hotelImages.length === 0) {
+      // Fallback to mock data if no images provided
+      return {
+        "Overview": {
+          name: "Overview",
+          images: [
+            { src: hotelDetailsImg1 as unknown as string, alt: "Hotel Overview 1" },
+            { src: hotelDetailsImg2 as unknown as string, alt: "Hotel Overview 2" },
+            { src: hotelDetailsImg3 as unknown as string, alt: "Hotel Overview 3" },
+            { src: hotelDetailsImg4 as unknown as string, alt: "Hotel Overview 4" },
+            { src: hotelDetailsImg5 as unknown as string, alt: "Hotel Overview 5" },
+          ],
+        },
+      };
+    }
+
+    // Group images by type description
+    const categories: { [key: string]: { name: string; images: Array<{ src: string; alt: string }> } } = {};
+    
+    // Sort images by order
+    const sortedImages = [...hotelImages].sort((a, b) => {
+      const orderA = typeof a.order === 'number' ? a.order : a.visualOrder ?? 0;
+      const orderB = typeof b.order === 'number' ? b.order : b.visualOrder ?? 0;
+      return orderA - orderB;
+    });
+
+    sortedImages.forEach((img, index) => {
+      const categoryName = img.type?.description?.content || "Other";
+      if (!categories[categoryName]) {
+        categories[categoryName] = {
+          name: categoryName,
+          images: []
+        };
+      }
+      categories[categoryName].images.push({
+        src: buildHotelbedsImageUrl(img.path),
+        alt: `${categoryName} ${index + 1}`
+      });
+    });
+
+    return categories;
+  };
+
+  const imageCategories = createImageCategories();
+  const categoryKeys = Object.keys(imageCategories);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryKeys[0] || "");
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const currentImages = hotelImageCategories[selectedCategory].images;
+  // Update selected category when categories change
+  useEffect(() => {
+    if (categoryKeys.length > 0 && !categoryKeys.includes(selectedCategory)) {
+      setSelectedCategory(categoryKeys[0]);
+    }
+  }, [categoryKeys, selectedCategory]);
+
+  const currentImages = imageCategories[selectedCategory]?.images || [];
 
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index);
@@ -160,33 +168,34 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose }) => {
         {/* Category Navigation */}
         <div className="category-navigation">
           <div className="category-buttons">
-            {Object.entries(hotelImageCategories).map(([key, category]) => (
-              <button
-                key={key}
-                className={`category-btn ${
-                  selectedCategory === key ? "active" : ""
-                }`}
-                onClick={() =>
-                  setSelectedCategory(key as keyof typeof hotelImageCategories)
-                }
-              >
-                <div className="category-thumbnail">
-                  <Image
-                    src={category.images[0].src}
-                    alt={category.name}
-                    width={80}
-                    height={60}
-                  />
-                </div>
-                <span className="category-name">{category.name}</span>
-              </button>
-            ))}
+            {categoryKeys.map((categoryKey) => {
+              const category = imageCategories[categoryKey];
+              return (
+                <button
+                  key={categoryKey}
+                  className={`category-btn ${
+                    selectedCategory === categoryKey ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedCategory(categoryKey)}
+                >
+                  <div className="category-thumbnail">
+                    <Image
+                      src={category.images[0]?.src || hotelDetailsImg1}
+                      alt={category.name}
+                      width={80}
+                      height={60}
+                    />
+                  </div>
+                  <span className="category-name">{category.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Image Grid */}
         <div className="image-grid">
-          {currentImages.map((image, index) => (
+          {currentImages.map((image: { src: string; alt: string }, index: number) => (
             <div
               key={index}
               className="image-item"
@@ -306,7 +315,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose }) => {
 
             {/* Thumbnail Strip */}
             <div className="thumbnail-strip">
-              {currentImages.map((image, index) => (
+              {currentImages.map((image: { src: string; alt: string }, index: number) => (
                 <div
                   key={index}
                   className={`thumbnail-item ${

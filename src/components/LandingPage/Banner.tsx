@@ -13,10 +13,13 @@ import DatePicker from "../core/DatePicker/DatePicker";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSearchFiltersStore, Location, GuestCounts } from "../../store/searchFiltersStore";
+import { useHotelSearchStore } from "@/store/hotelSearchStore";
 
 const Banner = () => {
   const t = useTranslations("Banner");
+  const router = useRouter();
 
   // Use the search filters store
   const {
@@ -40,11 +43,25 @@ const Banner = () => {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // Check if click is outside date picker
       if (
         datePickerRef.current &&
-        !datePickerRef.current.contains(event.target as Node)
+        !datePickerRef.current.contains(target)
       ) {
         setIsDatePickerOpen(false);
+      }
+      
+      // Close all dropdowns when clicking outside any of them
+      // This ensures only one dropdown can be open at a time
+      const isClickInsideAnyDropdown = 
+        datePickerRef.current?.contains(target) ||
+        document.querySelector('.dropdown')?.contains(target);
+        
+      if (!isClickInsideAnyDropdown) {
+        setIsLocationDropdownOpen(false);
+        setIsGuestsDropdownOpen(false);
       }
     };
 
@@ -55,25 +72,41 @@ const Banner = () => {
   }, []);
 
   const toggleLocationDropdown = () => {
+    // Close other dropdowns when opening location dropdown
+    if (!isLocationDropdownOpen) {
+      setIsDatePickerOpen(false);
+      setIsGuestsDropdownOpen(false);
+    }
     setIsLocationDropdownOpen(!isLocationDropdownOpen);
   };
 
   const handleLocationSelect = (location: Location | null) => {
     setLocation(location);
     setIsLocationDropdownOpen(false);
-    setLocationSearchQuery(''); // Clear search query when location is selected
+    // Keep the location name in the input for editing
+    if (location) {
+      setLocationSearchQuery(location.name);
+    } else {
+      setLocationSearchQuery(''); // Clear only when location is null
+    }
     setLocationError(''); // Clear error when location is selected
   };
 
   const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocationSearchQuery(e.target.value);
     if (e.target.value.trim() && !isLocationDropdownOpen) {
+      // Close other dropdowns when opening location dropdown via input
+      setIsDatePickerOpen(false);
+      setIsGuestsDropdownOpen(false);
       setIsLocationDropdownOpen(true);
     }
   };
 
   const handleLocationInputFocus = () => {
     if (locationSearchQuery.trim()) {
+      // Close other dropdowns when opening location dropdown via focus
+      setIsDatePickerOpen(false);
+      setIsGuestsDropdownOpen(false);
       setIsLocationDropdownOpen(true);
     }
   };
@@ -85,17 +118,52 @@ const Banner = () => {
     setLocationError(''); // Clear error when location is cleared
   };
 
-  const handleSearchClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSearchClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!filters.location) {
       e.preventDefault(); // Prevent navigation
       setLocationError('Enter a destination to start searching.');
       return;
     }
+    
     // Clear any existing error if location is selected
     setLocationError('');
+    
+    // Prevent default navigation temporarily to fetch hotels first
+    e.preventDefault();
+    
+    try {
+      const coords = filters.location?.coordinates;
+      const latitude = coords?.lat ?? null;
+      const longitude = coords?.lng ?? null;
+
+      // Push current UI filters into the hotel search store
+      useHotelSearchStore.getState().setDates(filters.checkInDate, filters.checkOutDate);
+      useHotelSearchStore.getState().setGuests(
+        filters.guestCounts.adults,
+        filters.guestCounts.children,
+        1 // rooms (fallback to 1 for now)
+      );
+      useHotelSearchStore.getState().setLanguage('eng');
+      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+
+      // Execute search and then navigate
+      await useHotelSearchStore.getState().search();
+      
+      // Navigate to search result page after hotels are fetched (client-side to preserve state)
+      router.push('/search-result');
+    } catch (err) {
+      console.error('Failed to fetch hotels:', err);
+      // Still navigate even if there's an error
+      router.push('/search-result');
+    }
   };
 
   const toggleGuestsDropdown = () => {
+    // Close other dropdowns when opening guests dropdown
+    if (!isGuestsDropdownOpen) {
+      setIsLocationDropdownOpen(false);
+      setIsDatePickerOpen(false);
+    }
     setIsGuestsDropdownOpen(!isGuestsDropdownOpen);
   };
 
@@ -107,6 +175,11 @@ const Banner = () => {
 
   // Date picker functions
   const toggleDatePicker = () => {
+    // Close other dropdowns when opening date picker
+    if (!isDatePickerOpen) {
+      setIsLocationDropdownOpen(false);
+      setIsGuestsDropdownOpen(false);
+    }
     setIsDatePickerOpen(!isDatePickerOpen);
   };
 
@@ -186,7 +259,7 @@ const Banner = () => {
                       )}
                     </div>
                     <div className="location-actions d-flex align-items-center">
-                      {filters.location && (
+                    {filters.location && (
                         <button
                           type="button"
                           className="clear-location-btn"

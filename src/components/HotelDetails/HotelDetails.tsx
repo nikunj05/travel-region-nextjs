@@ -1,14 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import "./HotelDetails.scss";
+import { hotelService } from "@/services/hotelService";
+import { HotelDetails as HotelDetailsType } from "@/types/hotel";
 
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
 import thumbnailImages1 from "@/assets/images/hotel-details-img2.jpg";
 import thumbnailImages2 from "@/assets/images/hotel-details-img3.jpg";
 import thumbnailImages3 from "@/assets/images/hotel-details-img4.jpg";
 import thumbnailImages4 from "@/assets/images/hotel-details-img5.jpg";
+import { buildHotelbedsImageUrl } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
 import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
@@ -29,13 +32,45 @@ import ImageModal from "../common/ImageModal/ImageModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const HotelDetails = () => {
+interface HotelDetailsProps {
+  hotelId: string;
+}
+
+const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [hotelData, setHotelData] = useState<HotelDetailsType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // console.log("==> selectedRoom", selectedRoom);
   const router = useRouter();
+
+  // Fetch hotel details
+  useEffect(() => {
+    const fetchHotelDetails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await hotelService.getHotelDetails({
+          hotelId,
+          language: 'ENG'
+        });
+        setHotelData(response.data.hotel);
+        console.log("Hotel Details Data:", response.data.hotel);
+      } catch (err) {
+        console.error("Error fetching hotel details:", err);
+        setError("Failed to fetch hotel details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hotelId) {
+      fetchHotelDetails();
+    }
+  }, [hotelId]);
   const handleOpenModal = (roomId: number) => {
     setSelectedRoom(roomId);
     setIsModalOpen(true);
@@ -52,6 +87,34 @@ const HotelDetails = () => {
 
   const handleCloseImageModal = () => {
     setIsImageModalOpen(false);
+  };
+
+  // Helper functions for hotel images
+  const getOrderedHotelImages = () => {
+    if (!hotelData?.images) return [];
+    return [...hotelData.images].sort((a, b) => {
+      const orderA = typeof a.order === 'number' ? a.order : a.visualOrder ?? 0;
+      const orderB = typeof b.order === 'number' ? b.order : b.visualOrder ?? 0;
+      return orderA - orderB;
+    });
+  };
+
+  const getMainAndThumbImages = () => {
+    const sorted = getOrderedHotelImages();
+    if (sorted.length === 0) {
+      return {
+        main: mainImage,
+        thumbs: [thumbnailImages1, thumbnailImages2, thumbnailImages3, thumbnailImages4],
+        totalCount: 0
+      };
+    }
+    const mainPath = sorted[0]?.path;
+    const thumbPaths = sorted.slice(1, 5).map((img) => img.path);
+    return {
+      main: mainPath ? buildHotelbedsImageUrl(mainPath) : mainImage,
+      thumbs: thumbPaths.map(buildHotelbedsImageUrl),
+      totalCount: sorted.length
+    };
   };
 
   const handleTabClick = (
@@ -109,39 +172,46 @@ const HotelDetails = () => {
           <div className="hotel-details-left">
             {/* Image Gallery */}
             <div className="image-gallery-section">
-              <div className="main-image">
-                <Image
-                  src={mainImage}
-                  width={892}
-                  height={260}
-                  alt="Novotel Bangkok"
-                  className="hotel-details-main-image"
-                />
-              </div>
-              <div className="thumbnail-images">
-                <div className="thambnail-image-item">
-                  <Image src={thumbnailImages1} alt="Thumbnail 1" />
-                </div>
-                <div className="thambnail-image-item">
-                  <Image src={thumbnailImages2} alt="Thumbnail 2" />
-                </div>
-                <div className="thambnail-image-item">
-                  <Image src={thumbnailImages3} alt="Thumbnail 3" />
-                </div>
-                <div className="thambnail-image-item">
-                  <Image src={thumbnailImages4} alt="Thumbnail 4" />
-                  <Link
-                    href="#"
-                    className="show-all-photos"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleOpenImageModal();
-                    }}
-                  >
-                    {t("showAllPhotos")}
-                  </Link>
-                </div>
-              </div>
+              {(() => {
+                const images = getMainAndThumbImages();
+                return (
+                  <>
+                    <div className="main-image">
+                      <Image
+                        src={images.main}
+                        width={892}
+                        height={260}
+                        alt={hotelData?.name?.content || "Hotel"}
+                        className="hotel-details-main-image"
+                      />
+                    </div>
+                    <div className="thumbnail-images">
+                      {images.thumbs.slice(0, 4).map((imgSrc, index, arr) => (
+                        <div key={`thumb-${index}`} className="thambnail-image-item">
+                          <Image 
+                            src={imgSrc} 
+                            alt={`Thumbnail ${index + 1}`} 
+                            width={66}
+                            height={52}
+                          />
+                          {(images.totalCount > 0 && (index === 3 || index === arr.length - 1)) && (
+                            <Link
+                              href="#"
+                              className="show-all-photos"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOpenImageModal();
+                              }}
+                            >
+                              {`${t("showAllPhotos")} (${images.totalCount})`}
+                            </Link>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             <div className="tabbing-conetnt">
@@ -748,25 +818,25 @@ const HotelDetails = () => {
                       <path
                         d="M5 14.9787C5.10725 16.0691 5.34963 16.803 5.89743 17.3508C6.87997 18.3333 8.46135 18.3333 11.6241 18.3333C14.7869 18.3333 16.3682 18.3333 17.3508 17.3508C18.3333 16.3682 18.3333 14.7869 18.3333 11.6241C18.3333 8.46135 18.3333 6.87997 17.3508 5.89743C16.803 5.34963 16.0691 5.10725 14.9787 5"
                         stroke="white"
-                        stroke-width="1.25"
+                        strokeWidth="1.25"
                       />
                       <path
                         d="M1.66602 8.33268C1.66602 5.18999 1.66602 3.61864 2.64233 2.64233C3.61864 1.66602 5.18999 1.66602 8.33268 1.66602C11.4754 1.66602 13.0467 1.66602 14.023 2.64233C14.9993 3.61864 14.9993 5.18999 14.9993 8.33268C14.9993 11.4754 14.9993 13.0467 14.023 14.023C13.0467 14.9993 11.4754 14.9993 8.33268 14.9993C5.18999 14.9993 3.61864 14.9993 2.64233 14.023C1.66602 13.0467 1.66602 11.4754 1.66602 8.33268Z"
                         stroke="white"
-                        stroke-width="1.25"
+                        strokeWidth="1.25"
                       />
                       <path
                         d="M1.66602 9.26477C2.18186 9.19922 2.70338 9.16682 3.22578 9.16797C5.43573 9.1271 7.59155 9.72962 9.30858 10.868C10.901 11.9238 12.02 13.3769 12.4993 14.9993"
                         stroke="white"
-                        stroke-width="1.25"
-                        stroke-linejoin="round"
+                        strokeWidth="1.25"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M10.8338 5.83398H10.8413"
                         stroke="white"
-                        stroke-width="1.66667"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     4
@@ -865,7 +935,7 @@ const HotelDetails = () => {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <g clip-path="url(#clip0_40000469_6427)">
+                          <g clipPath="url(#clip0_40000469_6427)">
                             <path
                               d="M2.51 0C1.1324 0 0 1.1322 0 2.51C0 3.7134 0.8634 4.7292 2 4.9672V15.0528C0.8634 15.2908 0 16.3068 0 17.5102C0 18.888 1.1322 20.02 2.51 20.02C3.7194 20.02 4.728 19.1452 4.9582 18H15.0492C15.2796 19.1464 16.2998 20.02 17.5102 20.02C18.8402 20.02 19.9312 18.9624 20.0058 17.6496C20.0151 17.6037 20.0198 17.557 20.0198 17.5102C20.0198 17.4634 20.0151 17.4167 20.0058 17.3708C19.9406 16.2234 19.099 15.2712 18 15.0492V4.9708C19.099 4.7488 19.9406 3.7968 20.006 2.6496C20.0153 2.60372 20.02 2.55702 20.02 2.5102C20.02 2.46338 20.0153 2.41668 20.006 2.3708C19.931 1.058 18.8402 0 17.51 0C16.3068 0 15.2908 0.8634 15.0528 2H4.954C4.716 0.8648 3.712 0 2.51 0ZM2.51 1.4C3.1314 1.4 3.62 1.8888 3.62 2.51C3.62 3.1314 3.1314 3.62 2.51 3.62C1.889 3.62 1.4 3.1314 1.4 2.51C1.4 1.889 1.8888 1.4 2.51 1.4ZM17.51 1.4C18.1314 1.4 18.62 1.8888 18.62 2.51C18.62 3.1314 18.1314 3.62 17.51 3.62C16.8888 3.62 16.4 3.1314 16.4 2.51C16.4 1.889 16.8888 1.4 17.51 1.4ZM4.8436 3.4H15.1676C15.2936 3.72671 15.486 4.02378 15.7325 4.27248C15.979 4.52117 16.2744 4.71611 16.6 4.845V15.175C16.2777 15.3026 15.985 15.4948 15.7399 15.7399C15.4948 15.985 15.3026 16.2777 15.175 16.6H4.835C4.70762 16.2751 4.51436 15.9802 4.2674 15.7336C4.02043 15.4871 3.7251 15.2944 3.4 15.1676V4.8524C3.7286 4.72439 4.02678 4.52905 4.27536 4.27891C4.52395 4.02877 4.71744 3.72939 4.8434 3.4H4.8436ZM2.51 16.4C3.1312 16.4 3.6198 16.8888 3.6198 17.51C3.6198 18.1314 3.1312 18.62 2.5098 18.62C1.889 18.62 1.4 18.1314 1.4 17.51C1.4 16.889 1.8888 16.4 2.51 16.4ZM17.51 16.4C18.1312 16.4 18.6198 16.8888 18.6198 17.51C18.6198 18.1314 18.1312 18.62 17.5098 18.62C16.8886 18.62 16.3998 18.1314 16.3998 17.51C16.3998 16.8888 16.8888 16.4 17.51 16.4Z"
                               fill="#27272A"
@@ -905,23 +975,23 @@ const HotelDetails = () => {
                           <path
                             d="M15 16.6673C15.9205 16.6673 16.6667 15.9212 16.6667 15.0007V5.00065C16.6667 4.08018 15.9205 3.33398 15 3.33398"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M3.33398 5.70577V14.2929C3.33398 15.6205 3.33398 16.2843 3.72107 16.7473C4.10814 17.2103 4.76244 17.329 6.07103 17.5665L8.57107 18.0203C10.3924 18.3508 11.3032 18.5161 11.9019 18.0173C12.5007 17.5185 12.5007 16.5945 12.5007 14.7467V5.25206C12.5007 3.40416 12.5007 2.48021 11.9019 1.98142C11.3032 1.48263 10.3924 1.64791 8.57107 1.97847L6.07103 2.43219C4.76244 2.66968 4.10814 2.78842 3.72107 3.25138C3.33398 3.71434 3.33398 4.37816 3.33398 5.70577Z"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M9.58398 9.99857V9.99023"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                         1 bedroom
@@ -937,26 +1007,26 @@ const HotelDetails = () => {
                           <path
                             d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
                           />
                           <path
                             d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
                           />
                           <path
                             d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
                             stroke="#27272A"
-                            stroke-width="1.25"
+                            strokeWidth="1.25"
                           />
                         </svg>
                         Sleeps 3
@@ -977,9 +1047,9 @@ const HotelDetails = () => {
                           <path
                             d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                         Reserve now, pay later
@@ -995,9 +1065,9 @@ const HotelDetails = () => {
                           <path
                             d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
                             stroke="#27272A"
-                            stroke-width="1.25"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                         Free welcome drink
@@ -1017,21 +1087,21 @@ const HotelDetails = () => {
                         <path
                           d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
                           stroke="#09090B"
-                          stroke-width="1.25"
+                          strokeWidth="1.25"
                         />
                         <path
                           d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
                           stroke="#09090B"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M9.99203 6.66602H9.99951"
                           stroke="#09090B"
-                          stroke-width="1.66667"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.66667"
+                            strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Fully refundable
@@ -1059,8 +1129,8 @@ const HotelDetails = () => {
                         <path
                           d="M7.50004 5L12.5 10L7.5 15"
                           stroke="#3E5B96"
-                          stroke-width="1.25"
-                          stroke-miterlimit="16"
+                          strokeWidth="1.25"
+                          strokeMiterlimit="16"
                         />
                       </svg>
                     </a>
@@ -1087,8 +1157,8 @@ const HotelDetails = () => {
                         <path
                           d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
                           stroke="#00C950"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                       </svg>
                       Totals with taxes and fees
@@ -1237,23 +1307,23 @@ const HotelDetails = () => {
                         <path
                           d="M7.5 16.002V19.002M17.5 16.002V19.002"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M21.4976 9.27024C20.5411 8.71795 19.3179 9.0457 18.7656 10.0023L17.7561 12.3912C17.5059 12.9835 17.478 13.002 16.835 13.002H8.16109C7.51812 13.002 7.49023 12.9835 7.23996 12.3912L6.23043 10.0023C5.67815 9.0457 4.45497 8.71795 3.49838 9.27024C2.5418 9.82252 2.21405 11.0457 2.76633 12.0023C3.19737 12.7489 4.39297 12.6857 4.58651 13.2665C5.02644 14.5867 5.24641 15.2468 5.77021 15.6244C6.29401 16.002 6.98979 16.002 8.38136 16.002H16.6147C18.0063 16.002 18.7021 16.002 19.2259 15.6244C19.7497 15.2468 19.9696 14.5867 20.4095 13.2664C20.603 12.6858 21.7987 12.7488 22.2297 12.0023C22.782 11.0457 22.4542 9.82252 21.4976 9.27024Z"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M4.99805 9L5.03807 8.89326C5.74428 7.01005 6.09738 6.06845 6.86826 5.53422C7.63915 5 8.64478 5 10.656 5H14.34C16.3513 5 17.3569 5 18.1278 5.53422C18.8987 6.06845 19.2518 7.01005 19.958 8.89326L19.998 9"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                       </svg>
                       Separate sitting area
@@ -1269,42 +1339,42 @@ const HotelDetails = () => {
                         <path
                           d="M16.502 3C18.8409 3 20.0103 3 20.8641 3.53647C21.3093 3.81621 21.6858 4.19267 21.9655 4.63789C22.502 5.49167 22.502 6.66111 22.502 9C22.502 11.3389 22.502 12.5083 21.9655 13.3621C21.6858 13.8073 21.3093 14.1838 20.8641 14.4635C20.0103 15 18.8409 15 16.502 15H8.50195C6.16306 15 4.99362 15 4.13984 14.4635C3.69462 14.1838 3.31816 13.8073 3.03842 13.3621C2.50195 12.5083 2.50195 11.3389 2.50195 9C2.50195 6.66111 2.50195 5.49167 3.03842 4.63789C3.31816 4.19267 3.69462 3.81621 4.13984 3.53647C4.99362 3 6.16306 3 8.50195 3H16.502Z"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M7.49805 12H17.498"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M18.5 7H18.509"
                           stroke="#09090B"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M7.3 18C7.3 18 8.1 19.875 6.5 21"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M17.702 18C17.702 18 16.902 19.875 18.502 21"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M12.5 18V21"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Air Conditioning
@@ -1320,33 +1390,33 @@ const HotelDetails = () => {
                         <path
                           d="M6.49805 20L5.49805 21M18.498 20L19.498 21"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
                         />
                         <path
                           d="M3.49805 12V13C3.49805 16.2998 3.49805 17.9497 4.52317 18.9749C5.5483 20 7.19822 20 10.498 20H14.498C17.7979 20 19.4478 20 20.4729 18.9749C21.498 17.9497 21.498 16.2998 21.498 13V12"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M2.49805 12H22.498"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M4.5 12V5.5234C4.5 4.12977 5.62977 3 7.0234 3C8.14166 3 9.12654 3.73598 9.44339 4.80841L9.5 5"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M8.49805 6L10.998 4"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
                         />
                       </svg>
                       Private Bathroom
@@ -1362,23 +1432,23 @@ const HotelDetails = () => {
                         <path
                           d="M20.5 14.502V6.50195C20.5 4.61633 20.5 3.67353 19.9142 3.08774C19.3284 2.50195 18.3856 2.50195 16.5 2.50195H8.5C6.61438 2.50195 5.67157 2.50195 5.08579 3.08774C4.5 3.67353 4.5 4.61634 4.5 6.50195V14.502"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                         />
                         <path
                           d="M12.498 5.50195H12.507"
                           stroke="#09090B"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M3.99566 15.5174L4.51758 14.502H20.4498L21.0003 15.5174C22.4432 18.1789 22.8026 19.5097 22.2542 20.5058C21.7057 21.502 20.2516 21.502 17.3434 21.502L7.65267 21.502C4.74446 21.502 3.29036 21.502 2.74192 20.5058C2.19347 19.5097 2.55279 18.1789 3.99566 15.5174Z"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Laptop workspace
@@ -1394,37 +1464,37 @@ const HotelDetails = () => {
                         <path
                           d="M11.5 8.99805H20.4948C20.9907 8.99805 21.2387 8.99805 21.3843 9.15832C21.5299 9.3186 21.5108 9.57065 21.4728 10.0747L20.8518 18.3048C20.7196 20.0569 20.6535 20.9329 20.0893 21.4655C19.5252 21.998 18.6633 21.998 16.9396 21.998H12.4354C10.7116 21.998 9.84972 21.998 9.28559 21.4655C8.44616 20.673 8.58069 19.0674 8.5 17.998"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M11.5 8.90714V14.3617C11.5 16.0759 11.5 16.933 10.9142 17.4655C10.3284 17.998 9.38562 17.998 7.5 17.998C5.61438 17.998 4.67157 17.998 4.08579 17.4655C3.5 16.933 3.5 16.0759 3.5 14.3617V13.4526C3.5 10.8813 3.5 9.59565 4.37868 8.79685C5.25736 7.99805 6.67157 7.99805 9.5 7.99805H10.5C10.9714 7.99805 11.2071 7.99805 11.3536 8.13118C11.5 8.26431 11.5 8.47859 11.5 8.90714Z"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M19.5 8.99805C19.5 5.13205 17.25 1.99805 14.4746 1.99805C11.9428 1.99805 9.84836 4.60575 9.5 7.99805"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M3.5 13.998H11.5"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M11.5 13H20.5"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Daily housekeeping
@@ -1440,37 +1510,37 @@ const HotelDetails = () => {
                         <path
                           d="M22.498 4.00195H2.49805"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M21.498 8.00195H3.49805"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M21.498 12H14.498"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M14.498 8.00195L14.498 18.002C14.498 18.9448 14.498 19.4162 14.7909 19.7091C15.0838 20.002 15.5552 20.002 16.498 20.002H19.498C20.4409 20.002 20.9123 20.002 21.2052 19.7091C21.498 19.4162 21.498 18.9448 21.498 18.002V8.00195"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M3.49805 4.00195V20.002M21.498 4.00195V8.00195"
                           stroke="#09090B"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Desk
@@ -1512,9 +1582,9 @@ const HotelDetails = () => {
                         <path
                           d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Reserve now, pay later
@@ -1530,9 +1600,9 @@ const HotelDetails = () => {
                         <path
                           d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       Free welcome drink
@@ -1604,23 +1674,23 @@ const HotelDetails = () => {
                         <path
                           d="M15 16.6673C15.9205 16.6673 16.6667 15.9212 16.6667 15.0007V5.00065C16.6667 4.08018 15.9205 3.33398 15 3.33398"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M3.33398 5.70577V14.2929C3.33398 15.6205 3.33398 16.2843 3.72107 16.7473C4.10814 17.2103 4.76244 17.329 6.07103 17.5665L8.57107 18.0203C10.3924 18.3508 11.3032 18.5161 11.9019 18.0173C12.5007 17.5185 12.5007 16.5945 12.5007 14.7467V5.25206C12.5007 3.40416 12.5007 2.48021 11.9019 1.98142C11.3032 1.48263 10.3924 1.64791 8.57107 1.97847L6.07103 2.43219C4.76244 2.66968 4.10814 2.78842 3.72107 3.25138C3.33398 3.71434 3.33398 4.37816 3.33398 5.70577Z"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M9.58398 9.99857V9.99023"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       1 bedroom
@@ -1636,26 +1706,26 @@ const HotelDetails = () => {
                         <path
                           d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
                         />
                         <path
                           d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
                           stroke="#27272A"
-                          stroke-width="1.25"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path
                           d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
                           stroke="#27272A"
-                          stroke-width="1.25"
+                          strokeWidth="1.25"
                         />
                       </svg>
                       Sleeps 3
@@ -1680,21 +1750,21 @@ const HotelDetails = () => {
                       <path
                         d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
                         stroke="#09090B"
-                        stroke-width="1.25"
+                        strokeWidth="1.25"
                       />
                       <path
                         d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
                         stroke="#09090B"
-                        stroke-width="1.25"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M9.99203 6.66602H9.99951"
                         stroke="#09090B"
-                        stroke-width="1.66667"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.66667"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Fully refundable
@@ -1723,8 +1793,8 @@ const HotelDetails = () => {
                       <path
                         d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
                         stroke="#00C950"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Totals with taxes and fees
@@ -1743,7 +1813,11 @@ const HotelDetails = () => {
       )}
 
       {/* Image Modal */}
-      <ImageModal isOpen={isImageModalOpen} onClose={handleCloseImageModal} />
+      <ImageModal 
+        isOpen={isImageModalOpen} 
+        onClose={handleCloseImageModal} 
+        hotelImages={(hotelData?.images || []) as any}
+      />
     </main>
   );
 };

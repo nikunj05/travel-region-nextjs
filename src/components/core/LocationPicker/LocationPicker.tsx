@@ -155,10 +155,11 @@ console.log('mapboxSuggestions ==>' , mapboxSuggestions)
 
   const handleLocationClick = (location: Location) => {
     onLocationSelect(location)
+    // Keep the location name in the input for editing
     if (onSearchQueryChange) {
-      onSearchQueryChange('')
+      onSearchQueryChange(location.name)
     } else {
-      setInternalSearchQuery('')
+      setInternalSearchQuery(location.name)
     }
     setMapboxSuggestions([])
   }
