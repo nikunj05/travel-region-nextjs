@@ -897,6 +897,7 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
+      gap: 16px;
     }
 
     .destination-card {
@@ -909,7 +910,7 @@
 
       .destination-card-items {
         border-radius: 12px;
-        width: 322px;
+        width: 300px;
         height: 200px;
 
         .property-location-tag {
@@ -1081,7 +1082,7 @@
       -webkit-overflow-scrolling: touch;
 
       .blog-card-items {
-        flex: 0 0 322px;
+        flex: 0 0 300px;
 
         .blog-card-items-img {
           border-radius: 12px;
@@ -1311,5 +1312,19 @@
     }
   }
 
+  .home-banner-section {
+    .banner-content {
+      .banner-property-filter {
+        .choose-location-and-date {
+          .choose-location-items {
 
+            &:nth-child(2),
+            &:nth-child(3) {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
 }

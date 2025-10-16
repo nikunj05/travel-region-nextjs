@@ -5,12 +5,6 @@
   margin: 0 0 32px 0;
 }
 
-.pageSubtitle {
-  color: #6b7280;
-  /* gray-500 */
-  margin-bottom: 24px;
-}
-
 .cardsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -114,5 +108,15 @@
   .cardsGrid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+}
+
+// RTL Layout
+
+[dir="rtl"] {
+  .numberLink {
+    svg {
+      transform: rotate(180deg);
+    }
   }
 }

@@ -289,7 +289,7 @@
 
     .calendar-weekdays {
       .calendar-weekday {
-        padding: 10px 9.32px;
+        padding: 10px 8.32px;
       }
     }
 
@@ -320,8 +320,10 @@
 @media (max-width: 575.55px) {
   .datepicker-dropdown {
     min-width: auto;
-    width: auto;
-    left: calc(100% + 12px);
+    width: 100%;
+    // left: calc(100% + 12px);
+    left: 50%;
+    max-width: 100%;
   }
 }
 
@@ -341,5 +343,9 @@
     left: auto;
     right: 100%;
     transform: translate(50%);
+
+    @media (max-width: 575.55px) {
+      right: 50%;
+    }
   }
 }

@@ -315,6 +315,7 @@
             font-weight: $font-weight500;
             text-decoration: none;
             cursor: pointer;
+            white-space: nowrap;
 
             &:hover {
               text-decoration: underline;

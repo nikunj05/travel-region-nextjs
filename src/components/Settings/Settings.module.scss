@@ -330,19 +330,10 @@
 
 // RTL Support
 [dir="rtl"] {
-  .preferencesRow {
-    flex-direction: row-reverse;
-  }
-
-  .fieldRow {
-    flex-direction: row-reverse;
-  }
-
-  .mobileInputGroup {
-    flex-direction: row-reverse;
-  }
-
-  .selectWithFlag {
-    flex-direction: row-reverse;
+  .selectwithinputfield {
+    .countryCodeInput {
+      left: auto;
+      right: 3px;
+    }
   }
 }
