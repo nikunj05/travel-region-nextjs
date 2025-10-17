@@ -53,8 +53,9 @@
                 outline: none;
                 font-size: 18px;
                 color: $color-black-zinc-800;
-                flex: 1;
-                min-width: 0;
+                // flex: 1;
+                // min-width: 0;
+                width: 100%;
 
                 &::placeholder {
                   color: $color-black-zinc-800;
@@ -72,7 +73,7 @@
               .clear-location-btn {
                 background: none;
                 border: none;
-                padding: 4px;
+                padding: 0px;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
@@ -82,7 +83,7 @@
                 transition: $transition;
 
                 &:hover {
-                  background-color: rgba(0, 0, 0, 0.05);
+
                   color: $color-black-zinc-800;
                 }
 
@@ -503,7 +504,7 @@
 
               img {
                 width: 100%;
-                height: 100%;
+                height: 146px;
                 object-fit: cover;
                 transition: $transition;
 
@@ -526,6 +527,7 @@
                 img {
                   border-radius: 0px;
                   object-fit: cover;
+                  height: 52px;
                   transition: $transition;
 
                   &:hover {
@@ -1252,7 +1254,17 @@
               justify-content: flex-start;
 
               .main-image {
-                min-height: 170px;
+                img {
+                  height: 95px;
+                }
+              }
+
+              .thumbnail-images {
+                .thumbnail-image {
+                  img {
+                    height: 24px;
+                  }
+                }
               }
             }
 
