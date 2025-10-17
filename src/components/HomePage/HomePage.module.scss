@@ -17,29 +17,30 @@
   font-size: 1.5rem;
   // color: $text-color;
 }
-   .location-actions {
-              gap: 8px;
 
-              .clear-location-btn {
-                background: none;
-                border: none;
-                padding: 4px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 4px;
-                color: $color-black-zinc-600;
-                transition: $transition;
+.location-actions {
+  gap: 8px;
 
-                &:hover {
-                  background-color: rgba(0, 0, 0, 0.05);
-                  color: $color-black-zinc-800;
-                }
+  .clear-location-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: $color-black-zinc-600;
+    transition: $transition;
 
-                svg {
-                  width: 16px;
-                  height: 16px;
-                }
-              }
-            }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: $color-black-zinc-800;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
