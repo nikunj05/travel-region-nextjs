@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import popularDestinationsImg1 from "@/assets/images/popular-destinations-img1.png";
 import popularDestinationsImg2 from "@/assets/images/popular-destinations-img2.png";
 import popularDestinationsImg3 from "@/assets/images/popular-destinations-img3.png";
@@ -8,14 +10,15 @@ import locationFillIcon from "@/assets/images/location-fill-icon.svg";
 import hotelsAvailableIcon from "@/assets/images/hotels-available-icon.svg";
 
 const Popular = () => {
+  const t = useTranslations("PopularSection");
+
   return (
     <section className="popular-destinations-section section-space-tb">
       <div className="container">
         <div className="heading_section">
-          <h1 className="section-title">Popular Destinations Right Now</h1>
+          <h1 className="section-title">{t("title")}</h1>
           <p className="section-description mx-width-790">
-            Explore our top picks, carefully curated from traveler trends and
-            trusted reviews to help you find the perfect stay.
+            {t("description")}
           </p>
         </div>
         <div className="destination-card-mian">
@@ -35,7 +38,7 @@ const Popular = () => {
                   height={16}
                   alt="location icon"
                 />{" "}
-                Santorini, Greece
+                {t("destinations.santorini")}
               </div>
               <div className="destination-card-inner-content">
                 <p className="hotel-available-status d-flex align-items-center">
@@ -45,12 +48,12 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 Hotels Available
+                  31 {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>From</div> $179{" "}
+                  <div>{t("from")}</div> $179{" "}
                   <span className="destination-hotel-pricing-night">
-                    /night
+                    {t("perNight")}
                   </span>
                 </h5>
               </div>
@@ -80,7 +83,7 @@ const Popular = () => {
                       />
                     </svg>
                   </a>
-                  <span>View Details</span>
+                  <span>{t("viewDetails")}</span>
                 </div>
               </div>
             </div>
@@ -99,7 +102,7 @@ const Popular = () => {
                   height={16}
                   alt="location icon"
                 />{" "}
-                Dubai, UAE
+                {t("destinations.dubai")}
               </div>
               <div className="destination-card-inner-content">
                 <p className="hotel-available-status d-flex align-items-center">
@@ -109,12 +112,12 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 Hotels Available
+                  31 {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>From</div> $179{" "}
+                  <div>{t("from")}</div> $179{" "}
                   <span className="destination-hotel-pricing-night">
-                    /night
+                    {t("perNight")}
                   </span>
                 </h5>
               </div>
@@ -144,7 +147,7 @@ const Popular = () => {
                       />
                     </svg>
                   </a>
-                  <span>View Details</span>
+                  <span>{t("viewDetails")}</span>
                 </div>
               </div>
             </div>
@@ -165,7 +168,7 @@ const Popular = () => {
                   height={16}
                   alt="location icon"
                 />
-                Navigo, Greece
+                {t("destinations.navigo")}
               </div>
               <div className="destination-card-inner-content">
                 <p className="hotel-available-status d-flex align-items-center">
@@ -175,12 +178,12 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 Hotels Available
+                  31 {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>From</div> $179{" "}
+                  <div>{t("from")}</div> $179{" "}
                   <span className="destination-hotel-pricing-night">
-                    /night
+                    {t("perNight")}
                   </span>
                 </h5>
               </div>
@@ -210,7 +213,7 @@ const Popular = () => {
                       />
                     </svg>
                   </a>
-                  <span>View Details</span>
+                  <span>{t("viewDetails")}</span>
                 </div>
               </div>
             </div>
@@ -229,7 +232,7 @@ const Popular = () => {
                   height={16}
                   alt="location icon"
                 />{" "}
-                Maldives
+                {t("destinations.maldives")}
               </div>
               <div className="destination-card-inner-content">
                 <p className="hotel-available-status d-flex align-items-center">
@@ -239,12 +242,12 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 Hotels Available
+                  31 {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>From</div> $179{" "}
+                  <div>{t("from")}</div> $179{" "}
                   <span className="destination-hotel-pricing-night">
-                    /night
+                    {t("perNight")}
                   </span>
                 </h5>
               </div>
@@ -274,7 +277,7 @@ const Popular = () => {
                       />
                     </svg>
                   </a>
-                  <span>View Details</span>
+                  <span>{t("viewDetails")}</span>
                 </div>
               </div>
             </div>

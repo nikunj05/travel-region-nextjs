@@ -145,20 +145,46 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
 
   // Parse the dynamic content from page.content
   const parseContent = (content: string) => {
-    // Extract title (first h2)
-    const titleMatch = content.match(/<h2>(.*?)<\/h2>/);
+    // Extract title - handle both <h2>Title</h2> and <h2><sub>Title</sub></h2> structures
+    const titleMatch = content.match(/<h2>(?:<sub>)?(.*?)(?:<\/sub>)?<\/h2>/);
     const title = titleMatch ? titleMatch[1] : "Our Story – How It All Started";
 
-    // Extract description (first p tag content before <br><br><strong>)
-    const descriptionMatch = content.match(/<p>([\s\S]*?)<br><br><strong>/);
-    const description = descriptionMatch 
-      ? descriptionMatch[1].replace(/<br>/g, '').trim()
-      : "Founded in 2015, our journey began with a simple yet powerful vision — to make hotel discovery and booking effortless, transparent, and enjoyable for travelers everywhere. What started as a small idea born from personal travel frustrations quickly grew into a platform trusted by thousands of users every month. Over the years, we've partnered with top hotels, refined our technology, and built a passionate team dedicated to delivering seamless travel experiences. Every booking we facilitate is a step towards our mission.";
+    // Extract description - handle different structures
+    let description = "";
+    
+    // Try to find description in first p tag (for Arabic structure)
+    const firstPMatch = content.match(/<p>([\s\S]*?)<\/p>/);
+    if (firstPMatch && !firstPMatch[1].includes('<br><br><strong>')) {
+      description = firstPMatch[1].replace(/<br>/g, '').trim();
+    } else {
+      // Fallback to original logic for English structure
+      const descriptionMatch = content.match(/<p>([\s\S]*?)<br><br><strong>/);
+      description = descriptionMatch 
+        ? descriptionMatch[1].replace(/<br>/g, '').trim()
+        : "Founded in 2015, our journey began with a simple yet powerful vision — to make hotel discovery and booking effortless, transparent, and enjoyable for travelers everywhere. What started as a small idea born from personal travel frustrations quickly grew into a platform trusted by thousands of users every month. Over the years, we've partnered with top hotels, refined our technology, and built a passionate team dedicated to delivering seamless travel experiences. Every booking we facilitate is a step towards our mission.";
+    }
 
-    // Extract founder name and title
-    const founderMatch = content.match(/<strong>(.*?)<\/strong><br>([\s\S]*?)<\/p>/);
-    const founderName = founderMatch ? founderMatch[1] : "Imran Ahmed";
-    const founderTitle = founderMatch ? founderMatch[2] : "Founder of Travel Region";
+    // Extract founder name and title - handle both <h3> and <strong> structures
+    let founderName = "Imran Ahmed";
+    let founderTitle = "Founder of Travel Region";
+    
+    // Try h3 structure first (Arabic)
+    const h3Match = content.match(/<h3>(.*?)<\/h3>/);
+    if (h3Match) {
+      founderName = h3Match[1];
+      // Look for the next p tag for the title
+      const nextPMatch = content.match(/<h3>.*?<\/h3>\s*<p>(.*?)<\/p>/);
+      if (nextPMatch) {
+        founderTitle = nextPMatch[1];
+      }
+    } else {
+      // Fallback to strong structure (English)
+      const founderMatch = content.match(/<strong>(.*?)<\/strong><br>([\s\S]*?)<\/p>/);
+      if (founderMatch) {
+        founderName = founderMatch[1];
+        founderTitle = founderMatch[2];
+      }
+    }
 
     return { title, description, founderName, founderTitle };
   };

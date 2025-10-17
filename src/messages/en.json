@@ -13,7 +13,8 @@
     "guest": "Guest",
     "guests": "Guests",
     "freeCancellation": "Free Cancellation",
-    "search": "Search"
+    "search": "Search",
+    "searching": "Searching..."
   },
   "Blogs": {
     "pageTitle": "Discover Travel Tips, Destinations & More",
@@ -44,7 +45,11 @@
     "findPerfectHotel": "Find the perfect hotel in Maldives.",
     "findHotelsMaldives": "Find Hotels in Maldives",
     "relatedPost": "Related Post",
-    "authorDefault": "John Doe"
+    "authorDefault": "John Doe",
+    "dashboardTitle": "Inspire Your Next Getaway",
+    "dashboardDescription": "Dive into inspiring stories, smart travel hacks, and detailed guides from real explorers who've been there and done that.",
+    "loadingBlogs": "Loading blogs...",
+    "errorLoadingBlogsDashboard": "Error loading blogs:"
   },
   "FAQ": {
     "loading": "Loading FAQs...",
@@ -217,6 +222,33 @@
   "PaymentMethods": {
     "pageTitle": "Payment Methods",
     "noSavedCards": "No Saved Cards"
+  },
+  "Travelers": {
+    "title": "Travelers Love Us",
+    "description": "Discover real stories from travelers who trusted us with their bookings — and turned their trips into unforgettable experiences.",
+    "rating": "Rating",
+    "hotel": "Hotel:",
+    "stayed": "Stayed:",
+    "defaultDate": "Jan 2025"
+  },
+  "PopularSection": {
+    "title": "Popular Destinations Right Now",
+    "description": "Explore our top picks, carefully curated from traveler trends and trusted reviews to help you find the perfect stay.",
+    "hotelsAvailable": "Hotels Available",
+    "from": "From",
+    "perNight": "/night",
+    "viewDetails": "View Details",
+    "destinations": {
+      "santorini": "Santorini, Greece",
+      "dubai": "Dubai, UAE",
+      "navigo": "Navigo, Greece",
+      "maldives": "Maldives"
+    }
+  },
+  "Contact": {
+    "title": "Contact us for help or information",
+    "description": "Have questions or need help? We're just a message away.",
+    "searchHotel": "Search Hotel"
   },
   "Auth": {
     "login": {

@@ -19,6 +19,7 @@ import {
   Location,
 } from "../../store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
+import { getTodayAtMidnight } from "@/lib/dateUtils";
 
 const Banner = () => {
   const t = useTranslations("Banner");
@@ -43,6 +44,7 @@ const Banner = () => {
   const [locationError, setLocationError] = useState("");
   const [checkInError, setCheckInError] = useState("");
   const [checkOutError, setCheckOutError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestsPickerRef = useRef<HTMLDivElement>(null);
 
@@ -137,6 +139,15 @@ const Banner = () => {
     const isCheckInMissing = !filters.checkInDate;
     const isCheckOutMissing = !filters.checkOutDate;
 
+    // Additional date validation - ensure check-in is today or later
+    const today = getTodayAtMidnight();
+    
+    if (filters.checkInDate && filters.checkInDate < today) {
+      e.preventDefault();
+      setCheckInError("Check-in date must be today or later.");
+      return;
+    }
+
     setCheckInError(isCheckInMissing ? "Select a check-in date." : "");
     setCheckOutError(isCheckOutMissing ? "Select a check-out date." : "");
 
@@ -147,6 +158,9 @@ const Banner = () => {
 
     // Prevent default navigation temporarily to fetch hotels first
     e.preventDefault();
+
+    // Set loading state
+    setIsSearching(true);
 
     try {
       const coords = filters.location?.coordinates;
@@ -174,6 +188,9 @@ const Banner = () => {
       console.error("Failed to fetch hotels:", err);
       // Still navigate even if there's an error
       router.push("/search-result");
+    } finally {
+      // Reset loading state
+      setIsSearching(false);
     }
   };
 
@@ -450,21 +467,33 @@ const Banner = () => {
                 className="text-decoration-none banner-search-button"
                 onClick={handleSearchClick}
               >
-                <button className="btn banner-search-btn">
-                  {t("search")}
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M20 12L4 12M20 12L15.0001 17M20 12L15 7"
-                      stroke="white"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
+                <button 
+                  className="btn banner-search-btn"
+                  disabled={isSearching}
+                >
+                  {isSearching ? (
+                    <>
+                      <div className="search-spinner"></div>
+                      {t("searching") || "Searching..."}
+                    </>
+                  ) : (
+                    <>
+                      {t("search")}
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 12L4 12M20 12L15.0001 17M20 12L15 7"
+                          stroke="white"
+                          strokeWidth="1.5"
+                        />
+                      </svg>
+                    </>
+                  )}
                 </button>
               </Link>
             </div>

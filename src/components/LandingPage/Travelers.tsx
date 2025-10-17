@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useMemo } from 'react'
 import Image from 'next/image'
 import Slider from 'react-slick'
+import { useTranslations } from 'next-intl'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import testimonialsSliderUserImg1 from '@/assets/images/testimonials-slider-user-img1.png'
@@ -10,6 +11,7 @@ import testimonialsSliderUserImg1 from '@/assets/images/testimonials-slider-user
 import { useTestimonialStore } from '@/store/testimonialStore'
 
 const Travelers = () => {
+  const t = useTranslations("Travelers")
   const sliderRef = useRef<Slider>(null)
   const dotsRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -69,10 +71,9 @@ const Travelers = () => {
     <section className="testimonials-section section-space-tb">
       <div className="container" ref={containerRef}>
         <div className="heading_section">
-          <h1 className="section-title">Travelers Love Us</h1>
+          <h1 className="section-title">{t("title")}</h1>
           <p className="section-description mx-width-790">
-            Discover real stories from travelers who trusted us with their bookings — and turned their trips into
-            unforgettable experiences.
+            {t("description")}
           </p>
         </div>
         <Slider ref={sliderRef} {...settings} className="testimonial-slider">
@@ -93,7 +94,7 @@ const Travelers = () => {
                      d="M10.6637 1.04102C11.5381 1.04102 12.2269 1.70146 12.6666 2.59261L14.135 5.55365C14.1795 5.64529 14.285 5.77433 14.4437 5.89238C14.6022 6.0103 14.7575 6.07536 14.8596 6.09252L17.5176 6.53779C18.4777 6.69913 19.2825 7.16976 19.5437 7.98927C19.8048 8.80809 19.4223 9.65902 18.7319 10.3507L18.7312 10.3514L16.6663 12.4334C16.5844 12.5159 16.4927 12.6714 16.4352 12.8739C16.3781 13.075 16.3731 13.2582 16.399 13.3766L16.3993 13.3783L16.9901 15.9538C17.2351 17.0258 17.1539 18.0888 16.3979 18.6445C15.6393 19.2021 14.6026 18.955 13.6608 18.394L11.1691 16.9069C11.0645 16.8443 10.8848 16.7937 10.6679 16.7937C10.4526 16.7937 10.2691 16.8437 10.1577 16.9085L10.1561 16.9094L7.66939 18.3937C6.7287 18.9566 5.69328 19.1994 4.93458 18.6412C4.17907 18.0854 4.09378 17.0244 4.33958 15.9533L4.93024 13.3783L4.9306 13.3766C4.9565 13.2582 4.95143 13.075 4.89432 12.8739C4.83683 12.6714 4.74515 12.5159 4.66331 12.4334L2.59687 10.3499C1.91086 9.65821 1.52966 8.80802 1.78862 7.99039C2.04832 7.17039 2.85152 6.69918 3.81227 6.53773L6.46809 6.09284L6.46894 6.0927C6.5663 6.07581 6.71924 6.01148 6.87739 5.89325C7.03583 5.7748 7.14165 5.64548 7.18626 5.55365L7.1885 5.54907L8.65501 2.59183L8.65559 2.59066C9.09946 1.70025 9.79035 1.04102 10.6637 1.04102Z"
                      fill="#FDC700" />
                  </svg>
-                 <span>{data.rating} Rating</span>
+                 <span>{data.rating} {t("rating")}</span>
                </div>
              </div>
              <p className="testimonial-text">
@@ -122,7 +123,7 @@ const Travelers = () => {
                        </clipPath>
                      </defs>
                    </svg>
-                 </i> <strong>Hotel:</strong> {data.hotel}
+                 </i> <strong>{t("hotel")}</strong> {data.hotel}
                </p>
                <p className="testimonial-hotel-name">
                  <i>
@@ -142,7 +143,7 @@ const Travelers = () => {
                        stroke="#27272A" strokeLinecap="round" />
                  </svg>
                </i>
-               <strong>Stayed:</strong> {formatStayedMonthYear(data.stay_date) || 'Jan 2025'}
+               <strong>{t("stayed")}</strong> {formatStayedMonthYear(data.stay_date) || t("defaultDate")}
              </p>
            </div>
          </div>

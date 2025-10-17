@@ -202,7 +202,7 @@ const Header = () => {
                   {t("home")}
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className="nav-link"
                   href="/deals&offers"
@@ -211,7 +211,7 @@ const Header = () => {
                   {" "}
                   {t("dealsAndOffers")}
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link
                   className="nav-link"

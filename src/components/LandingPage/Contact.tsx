@@ -1,17 +1,20 @@
 import React from 'react'
+import { useTranslations } from 'next-intl'
 
 const Contact = () => {
+  const t = useTranslations('Contact')
+
   return (
     <section className="home-contact-section section-space-tb">
     <div className="container">
       <div className="contact-inner-section">
         <div className="contact-us-content">
           <div className="heading_section">
-            <h1 className="section-title">Contact us for help <br/> or information</h1>
-            <p className="section-description mx-width-790">&ldquo;Have questions or need help? We&rsquo;re just a message away.&rdquo;</p>
+            <h1 className="section-title">{t('title')}</h1>
+            <p className="section-description mx-width-790">&ldquo;{t('description')}&rdquo;</p>
           </div>
           <button className="btn hotel-search-button d-flex align-items-center mx-auto">
-            Search Hotel
+            {t('searchHotel')}
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18 17.5L22.5 22" stroke="white" strokeWidth="1.5" strokeLinecap="round"
                 strokeLinejoin="round" />

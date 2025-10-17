@@ -4,6 +4,9 @@ import { persist } from 'zustand/middleware'
 import { hotelService } from '@/services/hotelService'
 import { GetHotelsRequest, HotelItem } from '@/types/hotel'
 import { FavoriteHotel } from '@/types/favorite'
+import { toast } from 'react-toastify'
+import { formatApiErrorMessage } from '@/lib/formatApiError'
+import { formatDateForAPI } from '@/lib/dateUtils'
 
 export interface HotelSearchFilters {
   checkIn: Date | null
@@ -88,15 +91,17 @@ export const useHotelSearchStore = create<HotelSearchState>()(
         const { filters } = get()
         // Validate minimal required params
         if (!filters.checkIn || !filters.checkOut || filters.latitude == null || filters.longitude == null) {
-          set({ error: 'Missing required search parameters', loading: false })
+          const errorMessage = 'Missing required search parameters'
+          set({ error: errorMessage, loading: false })
+          toast.error(errorMessage)
           return
         }
 
         set({ loading: true, error: null })
         try {
           const payload: GetHotelsRequest = {
-            check_in: filters.checkIn.toISOString().slice(0, 10),
-            check_out: filters.checkOut.toISOString().slice(0, 10),
+            check_in: formatDateForAPI(filters.checkIn),
+            check_out: formatDateForAPI(filters.checkOut),
             rooms: filters.rooms,
             adults: filters.adults,
             children: filters.children,
@@ -111,7 +116,9 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
           set({ hotels, currency, total: hotels.length, loading: false })
         } catch (err: unknown) {
-          set({ error: (err as Error)?.message || 'Failed to fetch hotels', loading: false })
+          const errorMessage = formatApiErrorMessage(err)
+          set({ error: errorMessage, loading: false })
+          toast.error(errorMessage)
         }
       },
     }),

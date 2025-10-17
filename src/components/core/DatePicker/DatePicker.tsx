@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import "./DatePicker.scss";
+import { getTodayAtMidnight } from "@/lib/dateUtils";
 
 interface DatePickerProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, []);
 
   // Use provided minDate or current date, but only after client hydration
-  const effectiveMinDate = minDate || (isClient ? new Date() : null);
+  const effectiveMinDate = minDate || (isClient ? getTodayAtMidnight() : null);
 
   const monthNames = [
     "January",

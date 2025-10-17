@@ -25,24 +25,23 @@ const DashboardBlogs = () => {
   }
 
   if (loading) {
-    return <div className="container"><p>Loading blogs...</p></div>
+    return <div className="container"><p>{t("loadingBlogs")}</p></div>
   }
 
   if (error) {
-    return <div className="container"><p>Error loading blogs: {error}</p></div>
+    return <div className="container"><p>{t("errorLoadingBlogsDashboard")} {error}</p></div>
   }
 
   if (!blogs || blogs.length === 0) {
-    return <div className="container"><p>No blogs available</p></div>
+    return <div className="container"><p>{t("noBlogsAvailable")}</p></div>
   }
 
   return (
     <section className="home-blog-section section-space-tb">
     <div className="container">
       <div className="heading_section">
-        <h1 className="section-title">Inspire Your Next Getaway</h1>
-        <p className="section-description mx-width-790">Dive into inspiring stories, smart travel hacks, and detailed guides
-          from real explorers who’ve been there and done that.</p>
+        <h1 className="section-title">{t("dashboardTitle")}</h1>
+        <p className="section-description mx-width-790">{t("dashboardDescription")}</p>
       </div>
       <div className="blog-single-card d-flex align-items-start" onClick={() => handleBlogClick(blogs[0].slug)} style={{ cursor: 'pointer' }}>
         <div className="blog-single-image">

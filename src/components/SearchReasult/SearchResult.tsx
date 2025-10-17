@@ -30,6 +30,7 @@ import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { buildHotelbedsImageUrl } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
+import { getTodayAtMidnight } from "@/lib/dateUtils";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
@@ -59,6 +60,7 @@ console.log("filters", filters);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Recommended");
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+  const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
 
   // Sort options for the dropdown
   const sortOptions = [
@@ -122,9 +124,19 @@ console.log("filters", filters);
     };
   }, []);
 
+  // Ref to track if initial search has been triggered to prevent continuous calls
+  const hasTriggeredInitialSearch = useRef(false);
+
   useEffect(() => {
-    if (filters.location && !loading && apiHotels && apiHotels.length === 0) {
-      // Trigger search if filters are present but no hotels are loaded (e.g., on page refresh)
+    // Only trigger search once if we have location but no hotels and haven't searched yet
+    if (
+      filters.location && 
+      !loading && 
+      apiHotels && 
+      apiHotels.length === 0 && 
+      !hasTriggeredInitialSearch.current
+    ) {
+      hasTriggeredInitialSearch.current = true;
       handleSearchClick({ preventDefault: () => {} } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
@@ -292,6 +304,14 @@ console.log("filters", filters);
     const isCheckInMissing = !filters.checkInDate;
     const isCheckOutMissing = !filters.checkOutDate;
 
+    // Additional date validation - ensure check-in is today or later
+    const today = getTodayAtMidnight();
+    
+    if (filters.checkInDate && filters.checkInDate < today) {
+      setCheckInError('Check-in date must be today or later.');
+      return;
+    }
+
     setCheckInError(isCheckInMissing ? 'Select a check-in date.' : '');
     setCheckOutError(isCheckOutMissing ? 'Select a check-out date.' : '');
 
@@ -349,6 +369,25 @@ console.log("filters", filters);
       }
       return newSet;
     });
+  };
+
+  const handleViewDetailsClick = async (hotelCode: string | number | undefined) => {
+    if (!hotelCode) return;
+    
+    const hotelId = hotelCode.toString();
+    setLoadingHotelId(hotelId);
+    
+    try {
+      // Navigate to hotel details page
+      await router.push(`/hotel-details/${hotelCode}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+    } finally {
+      // Reset loading state after a short delay to show the loading effect
+      setTimeout(() => {
+        setLoadingHotelId(null);
+      }, 500);
+    }
   };
 
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
@@ -977,8 +1016,19 @@ console.log("filters", filters);
                               </span>
                               <span className="price-period">Per night</span>
                             </div>
-                            <button className="view-details-button button-primary w-100" onClick={() => router.push(`/hotel-details/${getHotelCode(hotel)}`)} >
-                              View Details
+                            <button 
+                              className="view-details-button button-primary w-100" 
+                              onClick={() => handleViewDetailsClick(getHotelCode(hotel))}
+                              disabled={loadingHotelId === getHotelCode(hotel)?.toString()}
+                            >
+                              {loadingHotelId === getHotelCode(hotel)?.toString() ? (
+                                <>
+                                  <div className="view-details-spinner"></div>
+                                  Loading...
+                                </>
+                              ) : (
+                                'View Details'
+                              )}
                             </button>
                           </div>
                         </div>
