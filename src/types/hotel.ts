@@ -153,7 +153,7 @@ export interface RoomCharacteristic {
   description: Content;
 }
 
-export interface RoomFacility {
+export interface Facility {
   facilityCode: number;
   facilityGroupCode: number;
   description: Content;
@@ -162,6 +162,10 @@ export interface RoomFacility {
   indYesOrNo?: boolean;
   number?: number;
   voucher: boolean;
+  timeFrom?: string;
+  timeTo?: string;
+  order?: number;
+  dateTo?: string;
 }
 
 export interface RoomStayFacility {
@@ -189,7 +193,7 @@ export interface Room {
   description: string;
   type: RoomType;
   characteristic: RoomCharacteristic;
-  roomFacilities?: RoomFacility[];
+  roomFacilities?: Facility[];
   roomStays?: RoomStay[];
   PMSRoomCode?: string;
 }
@@ -218,6 +222,7 @@ export interface HotelDetails {
   phones: Phone[];
   rooms: Room[];
   images?: HotelImage[];
+  facilities?: Facility[];
 }
 
 export interface GetHotelDetailsRequest {

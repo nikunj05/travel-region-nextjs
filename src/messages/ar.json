@@ -57,7 +57,10 @@
   },
   "HotelDetails": {
     "readMore": "اقرأ المزيد",
-    "showAllPhotos": "عرض جميع الصور الـ 34"
+    "readLess": "اقرأ أقل",
+    "showAllPhotos": "عرض جميع الصور الـ 34",
+    "showAll": "عرض الكل",
+    "showLess": "عرض أقل"
   },
   "AboutUs": {
     "bannerTitle": "من نحن",

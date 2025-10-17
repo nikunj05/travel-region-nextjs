@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "@/i18/navigation";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
@@ -32,7 +32,7 @@ import { buildHotelbedsImageUrl } from "@/constants";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
-const SearchResult = () => {
+  const SearchResult = () => {
   const router = useRouter();
   const { 
     filters, 
@@ -42,7 +42,7 @@ const SearchResult = () => {
     setCheckOutDate, 
     setGuestCounts 
   } = useSearchFiltersStore();
-
+console.log("filters", filters);
   // Local UI state
   const [locationSearchQuery, setLocationSearchQuery] = useState('');
   const [locationError, setLocationError] = useState('');
@@ -51,6 +51,7 @@ const SearchResult = () => {
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Recommended");
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
 
   // Sort options for the dropdown
   const sortOptions = [
@@ -128,7 +129,7 @@ const SearchResult = () => {
 
   // Dynamic hotels from API (hotel search store)
   const { hotels: apiHotels, filters: hotelFilters, total: apiTotal } = useHotelSearchStore();
-
+console.log("apiHotels", apiHotels);
   const getHotelId = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : (hotel as HotelItem).id);
   const getHotelName = (hotel: HotelItem | FavoriteHotel) => (
     'name' in hotel && typeof hotel.name === 'string' ? hotel.name : (hotel as FavoriteHotel).name?.content
@@ -137,6 +138,16 @@ const SearchResult = () => {
     (hotel as FavoriteHotel).address?.content || (hotel as FavoriteHotel).city?.content || 'Location'
   );
   const getHotelCode = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : undefined);
+
+  // Helper function to extract star rating from categoryCode
+  const getStarRating = (hotel: HotelItem | FavoriteHotel): number => {
+    if ('categoryCode' in hotel && hotel.categoryCode) {
+      // Extract number from categoryCode (e.g., "4EST" -> 4)
+      const match = hotel.categoryCode.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
+    }
+    return 5; // Default fallback
+  };
 
   const getOrderedHotelImages = (hotel: HotelItem | FavoriteHotel) => {
     const images = (hotel as FavoriteHotel).images || [];
@@ -168,7 +179,12 @@ const SearchResult = () => {
   const handleLocationSelect = (location: Location | null) => {
     setLocation(location);
     setIsLocationPickerOpen(false);
-    setLocationSearchQuery('');
+    // Keep the location name in the input for editing
+    if (location) {
+      setLocationSearchQuery(location.name);
+    } else {
+      setLocationSearchQuery(''); // Clear only when location is null
+    }
     setLocationError('');
   };
 
@@ -198,14 +214,48 @@ const SearchResult = () => {
   const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocationSearchQuery(e.target.value);
     if (e.target.value.trim() && !isLocationPickerOpen) {
+      // Close other dropdowns when opening location picker via input
+      setIsDatePickerOpen(false);
+      setIsGuestsPickerOpen(false);
       setIsLocationPickerOpen(true);
     }
   };
 
   const handleLocationInputFocus = () => {
     if (locationSearchQuery.trim()) {
+      // Close other dropdowns when opening location picker via focus
+      setIsDatePickerOpen(false);
+      setIsGuestsPickerOpen(false);
       setIsLocationPickerOpen(true);
     }
+  };
+
+  // Toggle functions with mutual exclusion
+  const toggleLocationPicker = () => {
+    // Close other dropdowns when opening location picker
+    if (!isLocationPickerOpen) {
+      setIsDatePickerOpen(false);
+      setIsGuestsPickerOpen(false);
+    }
+    setIsLocationPickerOpen(!isLocationPickerOpen);
+  };
+
+  const toggleDatePicker = () => {
+    // Close other dropdowns when opening date picker
+    if (!isDatePickerOpen) {
+      setIsLocationPickerOpen(false);
+      setIsGuestsPickerOpen(false);
+    }
+    setIsDatePickerOpen(!isDatePickerOpen);
+  };
+
+  const toggleGuestsPicker = () => {
+    // Close other dropdowns when opening guests picker
+    if (!isGuestsPickerOpen) {
+      setIsLocationPickerOpen(false);
+      setIsDatePickerOpen(false);
+    }
+    setIsGuestsPickerOpen(!isGuestsPickerOpen);
   };
 
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -255,6 +305,19 @@ const SearchResult = () => {
 
   const getTotalGuests = () => {
     return filters.guestCounts.adults + filters.guestCounts.children + filters.guestCounts.pets;
+  };
+
+  const handleReadMoreClick = (e: React.MouseEvent<HTMLAnchorElement>, hotelId: string) => {
+    e.preventDefault();
+    setExpandedDescriptions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(hotelId)) {
+        newSet.delete(hotelId);
+      } else {
+        newSet.add(hotelId);
+      }
+      return newSet;
+    });
   };
 
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
@@ -516,7 +579,7 @@ const SearchResult = () => {
                         value={locationSearchQuery}
                         onChange={handleLocationInputChange}
                         onFocus={handleLocationInputFocus}
-                        onClick={() => setIsLocationPickerOpen(!isLocationPickerOpen)}
+                        onClick={toggleLocationPicker}
                       />
                     </div>
                     <div className="location-actions d-flex align-items-center">
@@ -551,7 +614,7 @@ const SearchResult = () => {
                           height="24"
                           alt="down icon"
                           className="arrow-and-plus-icon"
-                          onClick={() => setIsLocationPickerOpen(!isLocationPickerOpen)}
+                          onClick={toggleLocationPicker}
                           style={{ cursor: 'pointer' }}
                         />
                       )}
@@ -575,7 +638,7 @@ const SearchResult = () => {
                   <label>Check-in Date</label>
                   <div
                     className="search-input-wrapper"
-                    onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+                    onClick={toggleDatePicker}
                   >
                     <div className="search-input-inner">
                       <Image
@@ -607,7 +670,7 @@ const SearchResult = () => {
                   <label>Check-out Date</label>
                   <div
                     className="search-input-wrapper"
-                    onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+                    onClick={toggleDatePicker}
                   >
                     <div className="search-input-inner">
                       <Image
@@ -633,7 +696,7 @@ const SearchResult = () => {
                   <label>Guests and Rooms</label>
                   <div
                     className="search-input-wrapper"
-                    onClick={() => setIsGuestsPickerOpen(!isGuestsPickerOpen)}
+                    onClick={toggleGuestsPicker}
                   >
                     <div className="search-input-inner">
                       <Image
@@ -786,45 +849,24 @@ const SearchResult = () => {
                       </div>
                       <div className="hotel-info-with-action-card d-flex">
                         <div className="hotel-info">
-                          <a href="#" className="hotel-name">
+                          <p className="hotel-name">
                             {getHotelName(hotel)}
-                          </a>
+                          </p>
                           <div className="hotel-rating">
                             <div className="rating-stars d-flex align-items-center">
-                              <Image
-                                src={ReviewStarFill}
-                                alt="star icon"
-                                width="16"
-                                height="16"
-                              />
-                              <Image
-                                src={ReviewStarFill}
-                                alt="star icon"
-                                width="16"
-                                height="16"
-                              />
-                              <Image
-                                src={ReviewStarFill}
-                                alt="star icon"
-                                width="16"
-                                height="16"
-                              />
-                              <Image
-                                src={ReviewStarFill}
-                                alt="star icon"
-                                width="16"
-                                height="16"
-                              />
-                              <Image
-                                src={ReviewStarFill}
-                                alt="star icon"
-                                width="16"
-                                height="16"
-                              />
+                              {Array.from({ length: getStarRating(hotel) }, (_, index) => (
+                                <Image
+                                  key={`${getHotelId(hotel)}-star-${index}`}
+                                  src={ReviewStarFill}
+                                  alt="star icon"
+                                  width="16"
+                                  height="16"
+                                />
+                              ))}
                             </div>
                             <span className="rating-reviews d-flex align-items-center">
                               <span className="rating-score">
-                                {4.5}
+                                {getStarRating(hotel)}
                               </span>
                               ({120} Reviews)
                             </span>
@@ -861,7 +903,27 @@ const SearchResult = () => {
                           </div>
 
                           <p className="hotel-description">
-                            {('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.'}
+                            {(() => {
+                              const hotelId = getHotelId(hotel).toString();
+                              const description = ('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.';
+                              const isExpanded = expandedDescriptions.has(hotelId);
+                              const truncatedDescription = description.length > 100 ? description.substring(0, 100) + '...' : description;
+                              
+                              return (
+                                <>
+                                  {isExpanded ? description : truncatedDescription}
+                                  {description.length > 100 && (
+                                    <a 
+                                      href="#" 
+                                      onClick={(e) => handleReadMoreClick(e, hotelId)}
+                                      style={{ marginLeft: '8px', color: '#3E5B96', textDecoration: 'underline' }}
+                                    >
+                                      {isExpanded ? 'Read Less' : 'Read More'}
+                                    </a>
+                                  )}
+                                </>
+                              );
+                            })()}
                           </p>
                         </div>
                         <div className="property-card-action">
@@ -869,9 +931,9 @@ const SearchResult = () => {
                             <div className="hotel-price">
                               <span className="price-amount">
                                 <span className="property-currency">
-                                  {"US$"} {""}
+                                  {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""}
                                 </span>
-                                {179}
+                                {('maxRate' in hotel && (hotel as HotelItem).maxRate) || 179}
                               </span>
                               <span className="price-period">Per night</span>
                             </div>
@@ -884,7 +946,7 @@ const SearchResult = () => {
                     </div>
                   ))}
                 </div>
-                <div className="pagination">
+                {/* <div className="pagination">
                   <button className="pagination-arrow">
                     <svg
                       width="24"
@@ -924,7 +986,7 @@ const SearchResult = () => {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

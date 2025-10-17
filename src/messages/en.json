@@ -57,7 +57,10 @@
   },
   "HotelDetails": {
     "readMore": "Read More",
-    "showAllPhotos": "Show all 34 photos"
+    "readLess": "Read Less",
+    "showAllPhotos": "Show all photos",
+    "showAll": "Show All",
+    "showLess": "Show Less"
   },
   "AboutUs": {
     "bannerTitle": "Who We Are",
