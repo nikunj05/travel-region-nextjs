@@ -1,0 +1,232 @@
+.hotel-card-skeleton {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 24px;
+  animation: pulse 1.5s ease-in-out infinite;
+
+  .hotel-images-skeleton {
+    position: relative;
+    height: 146px;
+
+    .main-image-skeleton {
+      width: 100%;
+      height: 100%;
+      background: #f0f0f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thumbnail-images-skeleton {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+
+      .thumbnail-image-skeleton {
+        width: 66px;
+        height: 52px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .hotel-info-skeleton {
+    padding: 16px;
+    flex: 1;
+
+    .hotel-name-skeleton {
+      height: 24px;
+      width: 70%;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .hotel-rating-skeleton {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .rating-stars-skeleton {
+        display: flex;
+        gap: 4px;
+
+        .star-skeleton {
+          width: 16px;
+          height: 16px;
+          border-radius: 2px;
+          overflow: hidden;
+        }
+      }
+
+      .rating-reviews-skeleton {
+        width: 80px;
+        height: 16px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+    }
+
+    .hotel-location-skeleton {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .location-icon-skeleton {
+        width: 16px;
+        height: 16px;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .location-text-skeleton {
+        width: 60%;
+        height: 16px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+    }
+
+    .hotel-amenities-skeleton {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+
+      .amenity-skeleton {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .amenity-icon-skeleton {
+          width: 16px;
+          height: 16px;
+          border-radius: 2px;
+          overflow: hidden;
+        }
+
+        .amenity-text-skeleton {
+          width: 60px;
+          height: 14px;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+      }
+    }
+
+    .hotel-description-skeleton {
+      .description-line-skeleton {
+        height: 16px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+
+        &.short {
+          width: 60%;
+        }
+      }
+    }
+  }
+
+  .property-card-action-skeleton {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+
+    .hotel-price-skeleton {
+      text-align: right;
+
+      .price-amount-skeleton {
+        width: 80px;
+        height: 20px;
+        margin-bottom: 4px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .price-period-skeleton {
+        width: 60px;
+        height: 14px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+    }
+
+    .view-details-button-skeleton {
+      width: 120px;
+      height: 40px;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+  }
+}
+
+// Shimmer animation
+.skeleton-shimmer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hotel-card-skeleton {
+    .hotel-info-skeleton {
+      padding: 12px;
+
+      .hotel-name-skeleton {
+        height: 20px;
+        width: 80%;
+      }
+
+      .hotel-amenities-skeleton {
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .amenity-skeleton {
+          .amenity-text-skeleton {
+            width: 50px;
+            height: 12px;
+          }
+        }
+      }
+    }
+
+    .property-card-action-skeleton {
+      padding: 12px;
+
+      .view-details-button-skeleton {
+        width: 100%;
+        height: 36px;
+      }
+    }
+  }
+}

@@ -29,6 +29,7 @@ import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel } from "@/types/favorite";
 import { buildHotelbedsImageUrl } from "@/constants";
+import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
@@ -36,7 +37,6 @@ import { buildHotelbedsImageUrl } from "@/constants";
   const router = useRouter();
   const { 
     filters, 
-    resetFilters, 
     setLocation, 
     setCheckInDate, 
     setCheckOutDate, 
@@ -128,7 +128,7 @@ console.log("filters", filters);
   }, [isMobileFilterOpen]);
 
   // Dynamic hotels from API (hotel search store)
-  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal } = useHotelSearchStore();
+  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
 console.log("apiHotels", apiHotels);
   const getHotelId = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : (hotel as HotelItem).id);
   const getHotelName = (hotel: HotelItem | FavoriteHotel) => (
@@ -285,15 +285,12 @@ console.log("apiHotels", apiHotels);
       useHotelSearchStore.getState().search().then(() => {
         const { hotels, currency, error } = useHotelSearchStore.getState();
         if (error) {
-          // eslint-disable-next-line no-console
           console.error('Hotels API error:', error);
         } else {
-          // eslint-disable-next-line no-console
           console.log('Hotels API result:', { hotels, currency });
         }
       });
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to trigger hotels search:', err);
     }
   };
@@ -765,12 +762,18 @@ console.log("apiHotels", apiHotels);
                 <div className="search-header">
                   <div className="search-header-left">
                     <div className="search-results-info">
-                      Showing {apiTotal ?? apiHotels.length} hotels in {filters.location ? filters.location.name : 'Selected Location'} 
-                      {hotelFilters.checkIn && hotelFilters.checkOut && (
-                        <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
-                      )}
-                      {getTotalGuests() > 0 && (
-                        <span>, {getTotalGuests()} Guests</span>
+                      {loading ? (
+                        <span>Searching hotels...</span>
+                      ) : (
+                        <>
+                          Showing {apiTotal ?? apiHotels.length} hotels in {filters.location ? filters.location.name : 'Selected Location'} 
+                          {hotelFilters.checkIn && hotelFilters.checkOut && (
+                            <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
+                          )}
+                          {getTotalGuests() > 0 && (
+                            <span>, {getTotalGuests()} Guests</span>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -811,7 +814,14 @@ console.log("apiHotels", apiHotels);
                   </div>
                 </div>
                 <div className="hotel-results">
-                  {apiHotels.map((hotel: HotelItem | FavoriteHotel) => (
+                  {loading ? (
+                    // Show loading skeletons
+                    [...Array(6)].map((_, index) => (
+                      <HotelCardSkeleton key={`skeleton-${index}`} />
+                    ))
+                  ) : (
+                    // Show actual hotel results
+                    apiHotels.map((hotel: HotelItem | FavoriteHotel) => (
                     <div key={getHotelId(hotel)} className="hotel-card">
                       <div className="hotel-images">
                         {(() => {
@@ -944,7 +954,8 @@ console.log("apiHotels", apiHotels);
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ))
+                  )}
                 </div>
                 {/* <div className="pagination">
                   <button className="pagination-arrow">

@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import "./HotelDetails.scss";
-import { hotelService } from "@/services/hotelService";
-import { HotelDetails as HotelDetailsType } from "@/types/hotel";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -14,7 +12,7 @@ import mapImage from "@/assets/images/map-image.jpg";
 import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
 import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
 import LocationAddressIcon from "@/assets/images/map-icon.svg";
-import FilterComponents from "../FilterComponents/FilterComponents";
+// import FilterComponents from "../FilterComponents/FilterComponents";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
 import HotelDetailsCardImage from "@/assets/images/hotel-card-image.jpg";
@@ -37,12 +35,10 @@ interface HotelDetailsProps {
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
-  const { hotel: hotelData, loading, error, fetchHotel } = useHotelDetailsStore();
-  // console.log("==> selectedRoom", selectedRoom);
+  const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const router = useRouter();
 
   // Fetch hotel details
@@ -51,13 +47,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       fetchHotel({ hotelId, language: 'ENG' });
     }
   }, [hotelId, fetchHotel]);
-  const handleOpenModal = (roomId: number) => {
-    setSelectedRoom(roomId);
+  const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setSelectedRoom(null);
     setIsModalOpen(false);
   };
 
@@ -580,9 +574,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         {/* Rooms */}
         <section id="rooms" className="rooms-filter-section">
           <h2 className="hotel-section-title">Room</h2>
-          <div className="room-filters">
+          {/* <div className="room-filters">
             <FilterComponents />
-          </div>
+          </div> */}
           <div className="room-filter-bar">
             <div className="room-filter-left">
               <button className="filter-btn active">All rooms</button>
@@ -934,7 +928,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleOpenModal(i);
+                        handleOpenModal();
                       }}
                     >
                       More Details
@@ -1637,7 +1631,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       <ImageModal 
         isOpen={isImageModalOpen} 
         onClose={handleCloseImageModal} 
-        hotelImages={(hotelData?.images || []) as any}
+        hotelImages={hotelData?.images || []}
       />
     </main>
   );

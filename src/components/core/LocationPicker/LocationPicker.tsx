@@ -64,7 +64,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [mapboxSuggestions, setMapboxSuggestions] = useState<Location[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-console.log('mapboxSuggestions ==>' , mapboxSuggestions)
   // Use external search query if provided, otherwise use internal
   const searchQuery = externalSearchQuery || internalSearchQuery
 
@@ -114,7 +113,6 @@ console.log('mapboxSuggestions ==>' , mapboxSuggestions)
       }
 
       const data = await response.json()
-      console.log("data ==>" , data)
       const features: MapboxFeature[] = data.features || []
 
       const suggestions: Location[] = features.map((feature, index) => {
@@ -237,7 +235,7 @@ console.log('mapboxSuggestions ==>' , mapboxSuggestions)
               </ul>
             ) : (
               <div className="locationpicker-no-results">
-                <p>No locations found for "{searchQuery}"</p>
+                <p>No locations found for &ldquo;{searchQuery}&rdquo;</p>
               </div>
             )}
           </div>

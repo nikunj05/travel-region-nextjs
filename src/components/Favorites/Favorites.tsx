@@ -29,7 +29,7 @@ export default function Favorites() {
   useEffect(() => {
     // Fetch favorites on component mount with pagination
     fetchFavorites({ page: currentPage, limit: itemsPerPage });
-  }, [currentPage]);
+  }, [currentPage, fetchFavorites]);
 
   // Calculate total pages
   const totalPages = useMemo(() => {

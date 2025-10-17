@@ -14,7 +14,7 @@ const Travelers = () => {
   const dotsRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { testimonials, loading, error, fetchTestimonials } = useTestimonialStore()
+  const { testimonials, fetchTestimonials } = useTestimonialStore()
 
   const cardColors = ['pink', 'blue', 'yellow'] as const
 
@@ -24,14 +24,10 @@ const Travelers = () => {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
   }
 
-  const formattedStayedDate = useMemo(() => formatStayedMonthYear(testimonials[0]?.stay_date), [testimonials])
 
   useEffect(() => {
     fetchTestimonials({ page: 1, per_page: 15 })
   }, [fetchTestimonials])
-
- 
-
   const handleSliderUpdate = () => {
     setTimeout(() => {
       if (containerRef.current && dotsRef.current) {
@@ -80,8 +76,8 @@ const Travelers = () => {
           </p>
         </div>
         <Slider ref={sliderRef} {...settings} className="testimonial-slider">
-          {testimonials.map((data, index)=>(
-             <div className={`testimonial-card ${cardColors[index % cardColors.length]}`}>
+          {testimonials.map((data, index) => (
+             <div key={data.id || `testimonial-${index}`} className={`testimonial-card ${cardColors[index % cardColors.length]}`}>
              <div className="testimonial-header d-flex align-items-center justify-content-between">
                <div className="testimonial-header-user d-flex align-items-center">
                  <Image src={data.photo_url || testimonialsSliderUserImg1} width={48} height={48} alt={data.name || 'User'}

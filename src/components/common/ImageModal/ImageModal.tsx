@@ -130,7 +130,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, hotelImages = 
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
     };
-  }, [isImageViewerOpen, currentImages.length]);
+  }, [isImageViewerOpen, currentImages.length, handleNextImage, handlePreviousImage]);
 
   if (!isOpen) return null;
 

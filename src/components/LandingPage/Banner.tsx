@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import {
   useSearchFiltersStore,
   Location,
-  GuestCounts,
 } from "../../store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 

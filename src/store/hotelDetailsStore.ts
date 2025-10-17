@@ -27,8 +27,8 @@ export const useHotelDetailsStore = create<HotelDetailsState>((set) => ({
     try {
       const response = await hotelService.getHotelDetails({ hotelId, language })
       set({ hotel: response.data.hotel as HotelDetailsType, loading: false })
-    } catch (err: any) {
-      set({ error: err?.message || 'Failed to fetch hotel details', loading: false })
+    } catch (err: unknown) {
+      set({ error: (err as Error)?.message || 'Failed to fetch hotel details', loading: false })
     }
   },
 

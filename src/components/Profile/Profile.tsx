@@ -105,7 +105,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [t]);
 
   const handleSubmit = async (data: ProfileFormData) => {
     try {

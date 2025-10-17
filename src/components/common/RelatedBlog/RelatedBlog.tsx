@@ -74,7 +74,7 @@ const RelatedBlog: React.FC<RelatedBlogProps> = ({ blogs = [], onBlogClick }) =>
             <a
               href="#"
               className="related-blog-card-img"
-              onClick={(e) => { e.preventDefault(); onBlogClick && blog.slug !== '#' && onBlogClick(blog.slug); }}
+              onClick={(e) => { e.preventDefault(); if (onBlogClick && blog.slug !== '#') onBlogClick(blog.slug); }}
             >
               <Image
                 src={blog.full_image_url || RelatedBlogImage}
@@ -87,7 +87,7 @@ const RelatedBlog: React.FC<RelatedBlogProps> = ({ blogs = [], onBlogClick }) =>
               <a
                 href="#"
                 className="related-blog-name"
-                onClick={(e) => { e.preventDefault(); onBlogClick && blog.slug !== '#' && onBlogClick(blog.slug); }}
+                onClick={(e) => { e.preventDefault(); if (onBlogClick && blog.slug !== '#') onBlogClick(blog.slug); }}
               >
                 {blog.title}
               </a>

@@ -110,8 +110,8 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           const currency = hotels.length > 0 && 'currency' in hotels[0] ? (hotels[0] as HotelItem).currency : null
 
           set({ hotels, currency, total: hotels.length, loading: false })
-        } catch (err: any) {
-          set({ error: err?.message || 'Failed to fetch hotels', loading: false })
+        } catch (err: unknown) {
+          set({ error: (err as Error)?.message || 'Failed to fetch hotels', loading: false })
         }
       },
     }),
