@@ -54,6 +54,7 @@ export interface HotelItem {
   minRate: string;
   maxRate: string;
   currency: string; // e.g., "EUR"
+  images?: HotelImage[];
 }
 
 export interface GetHotelsResponse {

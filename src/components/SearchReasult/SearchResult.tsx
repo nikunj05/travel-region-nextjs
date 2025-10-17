@@ -27,7 +27,7 @@ import "./SearchResult.scss";
 import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem } from "@/types/hotel";
-import { FavoriteHotel } from "@/types/favorite";
+import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { buildHotelbedsImageUrl } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 
@@ -43,9 +43,16 @@ import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
     setGuestCounts 
   } = useSearchFiltersStore();
 console.log("filters", filters);
+
+  // Dynamic hotels from API (hotel search store)
+  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
+  console.log("apiHotels", apiHotels);
+
   // Local UI state
   const [locationSearchQuery, setLocationSearchQuery] = useState('');
   const [locationError, setLocationError] = useState('');
+  const [checkInError, setCheckInError] = useState('');
+  const [checkOutError, setCheckOutError] = useState('');
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
@@ -115,6 +122,13 @@ console.log("filters", filters);
     };
   }, []);
 
+  useEffect(() => {
+    if (filters.location && !loading && apiHotels && apiHotels.length === 0) {
+      // Trigger search if filters are present but no hotels are loaded (e.g., on page refresh)
+      handleSearchClick({ preventDefault: () => {} } as React.MouseEvent<HTMLButtonElement>);
+    }
+  }, [filters.location, apiHotels, loading]);
+
   // Lock body scroll when mobile filter modal is open
   useEffect(() => {
     if (isMobileFilterOpen) {
@@ -127,9 +141,6 @@ console.log("filters", filters);
     };
   }, [isMobileFilterOpen]);
 
-  // Dynamic hotels from API (hotel search store)
-  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
-console.log("apiHotels", apiHotels);
   const getHotelId = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : (hotel as HotelItem).id);
   const getHotelName = (hotel: HotelItem | FavoriteHotel) => (
     'name' in hotel && typeof hotel.name === 'string' ? hotel.name : (hotel as FavoriteHotel).name?.content
@@ -150,14 +161,21 @@ console.log("apiHotels", apiHotels);
   };
 
   const getOrderedHotelImages = (hotel: HotelItem | FavoriteHotel) => {
-    const images = (hotel as FavoriteHotel).images || [];
-    // Sort by 'order' ascending; fallback to 'visualOrder' if needed
-    const sorted = [...images].sort((a, b) => {
-      const orderA = typeof a.order === 'number' ? a.order : a.visualOrder ?? 0;
-      const orderB = typeof b.order === 'number' ? b.order : b.visualOrder ?? 0;
-      return orderA - orderB;
-    });
-    return sorted;
+    const images = (hotel.images || []).filter((img) => !!img?.path);
+    // Prioritize GEN images first; within each group, sort by 'order' then 'visualOrder'
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+    const genImages = images
+      .filter((img) => img.imageTypeCode === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    const otherImages = images
+      .filter((img) => img.imageTypeCode !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    // Return prioritized list (GEN first, then others)
+    return [...genImages, ...otherImages];
   };
 
   const getMainAndThumbImages = (hotel: HotelItem | FavoriteHotel) => {
@@ -168,8 +186,10 @@ console.log("apiHotels", apiHotels);
         thumbs: [] as string[],
       };
     }
-    const mainPath = sorted[0]?.path;
-    const thumbPaths = sorted.slice(1, 5).map((img) => img.path);
+    // Take up to 5 images total; GEN are already prioritized in getOrderedHotelImages
+    const topFive = sorted.slice(0, 5);
+    const mainPath = topFive[0]?.path;
+    const thumbPaths = topFive.slice(1).map((img) => img.path);
     return {
       main: mainPath ? buildHotelbedsImageUrl(mainPath) : null,
       thumbs: thumbPaths.map(buildHotelbedsImageUrl),
@@ -191,11 +211,14 @@ console.log("apiHotels", apiHotels);
   const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
     setCheckInDate(startDate);
     setCheckOutDate(endDate);
-    // Auto-close when both dates are selected
+    if(startDate) {
+      setCheckInError('');
+    }
+    if(endDate) {
+      setCheckOutError('');
+    }
     if (startDate && endDate) {
-      setTimeout(() => {
-        setIsDatePickerOpen(false);
-      }, 200);
+      setTimeout(() => setIsDatePickerOpen(false), 200);
     }
   };
 
@@ -265,6 +288,17 @@ console.log("apiHotels", apiHotels);
       return;
     }
     setLocationError('');
+
+    const isCheckInMissing = !filters.checkInDate;
+    const isCheckOutMissing = !filters.checkOutDate;
+
+    setCheckInError(isCheckInMissing ? 'Select a check-in date.' : '');
+    setCheckOutError(isCheckOutMissing ? 'Select a check-out date.' : '');
+
+    if (isCheckInMissing || isCheckOutMissing) {
+      return;
+    }
+    
     // Wire dynamic filters to hotel search store and call API
     try {
       const coords = filters.location?.coordinates;
@@ -655,6 +689,7 @@ console.log("apiHotels", apiHotels);
                       alt="plus icon"
                     />
                   </div>
+                  {checkInError && <div className="location-error-message">{checkInError}</div>}
                   <DatePicker
                     isOpen={isDatePickerOpen}
                     onDateSelect={handleDateSelect}
@@ -680,13 +715,8 @@ console.log("apiHotels", apiHotels);
                         {formatDate(filters.checkOutDate)}
                       </span>
                     </div>
-                    <Image
-                      src={plusIcon}
-                      width="24"
-                      height="24"
-                      alt="plus icon"
-                    />
                   </div>
+                  {checkOutError && <div className="location-error-message">{checkOutError}</div>}
                 </div>
 
                 <div className="search-field" ref={guestsPickerRef}>
@@ -819,7 +849,7 @@ console.log("apiHotels", apiHotels);
                     [...Array(6)].map((_, index) => (
                       <HotelCardSkeleton key={`skeleton-${index}`} />
                     ))
-                  ) : (
+                  ) : apiHotels && apiHotels.length > 0 ? (
                     // Show actual hotel results
                     apiHotels.map((hotel: HotelItem | FavoriteHotel) => (
                     <div key={getHotelId(hotel)} className="hotel-card">
@@ -955,6 +985,11 @@ console.log("apiHotels", apiHotels);
                       </div>
                     </div>
                   ))
+                  ) : (
+                    <div className="no-hotels-found">
+                      <h2>No Hotels Found</h2>
+                      <p>We couldn&apos;t find any hotels matching your search.</p>
+                    </div>
                   )}
                 </div>
                 {/* <div className="pagination">

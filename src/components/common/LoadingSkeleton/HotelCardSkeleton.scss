@@ -1,232 +1,129 @@
 .hotel-card-skeleton {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 40px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-bottom: 24px;
-  animation: pulse 1.5s ease-in-out infinite;
+
+  .skeleton-line {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
 
   .hotel-images-skeleton {
-    position: relative;
-    height: 146px;
+    min-width: 276px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
     .main-image-skeleton {
-      width: 100%;
-      height: 100%;
-      background: #f0f0f0;
-      position: relative;
-      overflow: hidden;
+      height: 146px;
+      background-color: #f0f0f0;
     }
 
     .thumbnail-images-skeleton {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      display: flex;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
 
       .thumbnail-image-skeleton {
-        width: 66px;
         height: 52px;
-        background: #f0f0f0;
-        border-radius: 4px;
-        overflow: hidden;
+        background-color: #f0f0f0;
       }
     }
   }
 
-  .hotel-info-skeleton {
-    padding: 16px;
+  .hotel-info-with-action-card {
+    display: flex;
+    justify-content: space-between;
     flex: 1;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .hotel-info-skeleton {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 
     .hotel-name-skeleton {
       height: 24px;
-      width: 70%;
+      width: 60%;
       margin-bottom: 12px;
-      border-radius: 4px;
-      overflow: hidden;
     }
 
     .hotel-rating-skeleton {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      height: 20px;
+      width: 40%;
       margin-bottom: 12px;
-
-      .rating-stars-skeleton {
-        display: flex;
-        gap: 4px;
-
-        .star-skeleton {
-          width: 16px;
-          height: 16px;
-          border-radius: 2px;
-          overflow: hidden;
-        }
-      }
-
-      .rating-reviews-skeleton {
-        width: 80px;
-        height: 16px;
-        border-radius: 4px;
-        overflow: hidden;
-      }
     }
 
     .hotel-location-skeleton {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-
-      .location-icon-skeleton {
-        width: 16px;
-        height: 16px;
-        border-radius: 2px;
-        overflow: hidden;
-      }
-
-      .location-text-skeleton {
-        width: 60%;
-        height: 16px;
-        border-radius: 4px;
-        overflow: hidden;
-      }
+      height: 18px;
+      width: 50%;
+      margin-bottom: 24px;
     }
 
     .hotel-amenities-skeleton {
       display: flex;
-      gap: 12px;
+      gap: 24px;
       margin-bottom: 12px;
-
       .amenity-skeleton {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        .amenity-icon-skeleton {
-          width: 16px;
-          height: 16px;
-          border-radius: 2px;
-          overflow: hidden;
-        }
-
-        .amenity-text-skeleton {
-          width: 60px;
-          height: 14px;
-          border-radius: 4px;
-          overflow: hidden;
-        }
+        height: 20px;
+        width: 80px;
       }
     }
 
-    .hotel-description-skeleton {
-      .description-line-skeleton {
-        height: 16px;
-        margin-bottom: 8px;
-        border-radius: 4px;
-        overflow: hidden;
-
-        &.short {
-          width: 60%;
-        }
+    .description-skeleton {
+      height: 16px;
+      margin-bottom: 8px;
+      &.short {
+        width: 70%;
       }
     }
   }
 
   .property-card-action-skeleton {
-    padding: 16px;
+    min-width: 173px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    justify-content: space-between;
     align-items: flex-end;
 
     .hotel-price-skeleton {
       text-align: right;
-
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      
       .price-amount-skeleton {
+        height: 28px;
         width: 80px;
-        height: 20px;
-        margin-bottom: 4px;
-        border-radius: 4px;
-        overflow: hidden;
       }
-
       .price-period-skeleton {
+        height: 16px;
         width: 60px;
-        height: 14px;
-        border-radius: 4px;
-        overflow: hidden;
       }
     }
 
     .view-details-button-skeleton {
-      width: 120px;
       height: 40px;
-      border-radius: 6px;
-      overflow: hidden;
+      width: 100%;
+      border-radius: 4px;
     }
   }
 }
 
 // Shimmer animation
-.skeleton-shimmer {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
   }
   100% {
     background-position: 200% 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .hotel-card-skeleton {
-    .hotel-info-skeleton {
-      padding: 12px;
-
-      .hotel-name-skeleton {
-        height: 20px;
-        width: 80%;
-      }
-
-      .hotel-amenities-skeleton {
-        flex-wrap: wrap;
-        gap: 8px;
-
-        .amenity-skeleton {
-          .amenity-text-skeleton {
-            width: 50px;
-            height: 12px;
-          }
-        }
-      }
-    }
-
-    .property-card-action-skeleton {
-      padding: 12px;
-
-      .view-details-button-skeleton {
-        width: 100%;
-        height: 36px;
-      }
-    }
   }
 }

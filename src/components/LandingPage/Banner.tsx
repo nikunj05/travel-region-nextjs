@@ -41,7 +41,10 @@ const Banner = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [freeCancellation, setFreeCancellationLocal] = useState(false);
   const [locationError, setLocationError] = useState("");
+  const [checkInError, setCheckInError] = useState("");
+  const [checkOutError, setCheckOutError] = useState("");
   const datePickerRef = useRef<HTMLDivElement>(null);
+  const guestsPickerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -53,15 +56,15 @@ const Banner = () => {
         setIsDatePickerOpen(false);
       }
 
-      // Close all dropdowns when clicking outside any of them
-      // This ensures only one dropdown can be open at a time
-      const isClickInsideAnyDropdown =
-        datePickerRef.current?.contains(target) ||
-        document.querySelector(".dropdown")?.contains(target);
-
-      if (!isClickInsideAnyDropdown) {
-        setIsLocationDropdownOpen(false);
+      // Check if click is outside guests picker
+      if (guestsPickerRef.current && !guestsPickerRef.current.contains(target)) {
         setIsGuestsDropdownOpen(false);
+      }
+
+      // Close location dropdown when clicking outside
+      const isClickInsideLocationDropdown = document.querySelector(".dropdown")?.contains(target);
+      if (!isClickInsideLocationDropdown) {
+        setIsLocationDropdownOpen(false);
       }
     };
 
@@ -130,6 +133,18 @@ const Banner = () => {
     // Clear any existing error if location is selected
     setLocationError("");
 
+    // Validate dates before searching
+    const isCheckInMissing = !filters.checkInDate;
+    const isCheckOutMissing = !filters.checkOutDate;
+
+    setCheckInError(isCheckInMissing ? "Select a check-in date." : "");
+    setCheckOutError(isCheckOutMissing ? "Select a check-out date." : "");
+
+    if (isCheckInMissing || isCheckOutMissing) {
+      e.preventDefault();
+      return;
+    }
+
     // Prevent default navigation temporarily to fetch hotels first
     e.preventDefault();
 
@@ -193,6 +208,8 @@ const Banner = () => {
   const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
     setCheckInDate(startDate);
     setCheckOutDate(endDate);
+    setCheckInError(startDate ? "" : checkInError);
+    setCheckOutError(endDate ? "" : checkOutError);
     if (startDate && endDate) {
       // Auto-close when both dates are selected
       setTimeout(() => {
@@ -343,6 +360,9 @@ const Banner = () => {
                     minDate={undefined}
                   />
                 </div>
+                {checkInError && (
+                  <div className="location-error-message">{checkInError}</div>
+                )}
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">
@@ -370,12 +390,15 @@ const Banner = () => {
                     className="arrow-and-plus-icon"
                   />
                 </button>
+                {checkOutError && (
+                  <div className="location-error-message">{checkOutError}</div>
+                )}
               </div>
               <div className="choose-location-items">
                 <h4 className="choose-location-items-title">
                   {t("guestsAndRooms")}
                 </h4>
-                <div className="dropdown">
+                <div className="dropdown" ref={guestsPickerRef}>
                   <button
                     className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
                     onClick={toggleGuestsDropdown}

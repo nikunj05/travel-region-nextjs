@@ -29,7 +29,11 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
     if (increment) {
       newCounts[type] = currentCount + 1;
     } else {
-      newCounts[type] = Math.max(0, currentCount - 1);
+      if (type === "adults") {
+        newCounts[type] = Math.max(1, currentCount - 1);
+      } else {
+        newCounts[type] = Math.max(0, currentCount - 1);
+      }
     }
 
     onGuestCountChange(newCounts);

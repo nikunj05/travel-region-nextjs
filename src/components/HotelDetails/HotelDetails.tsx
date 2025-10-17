@@ -27,6 +27,7 @@ import ImageModal from "../common/ImageModal/ImageModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
+import { HotelImage } from "@/types/favorite";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -71,11 +72,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   // Helper functions for hotel images
   const getOrderedHotelImages = () => {
     if (!hotelData?.images) return [];
-    return [...hotelData.images].sort((a, b) => {
-      const orderA = typeof a.order === 'number' ? a.order : a.visualOrder ?? 0;
-      const orderB = typeof b.order === 'number' ? b.order : b.visualOrder ?? 0;
-      return orderA - orderB;
-    });
+    const images = hotelData.images.filter((img) => !!img?.path);
+    // Prioritize GEN images first; within each group, sort by 'order' then 'visualOrder'
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+    const genImages = images
+      .filter((img) => img.type?.code === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    const otherImages = images
+      .filter((img) => img.type?.code !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    // Return prioritized list (GEN first, then others)
+    return [...genImages, ...otherImages];
   };
 
   const getMainAndThumbImages = () => {
