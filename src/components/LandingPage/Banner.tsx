@@ -128,7 +128,7 @@ const Banner = () => {
   const handleSearchClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!filters.location) {
       e.preventDefault(); // Prevent navigation
-      setLocationError("Enter a destination to start searching.");
+      setLocationError(t("validation.locationRequired"));
       return;
     }
 
@@ -144,12 +144,12 @@ const Banner = () => {
     
     if (filters.checkInDate && filters.checkInDate < today) {
       e.preventDefault();
-      setCheckInError("Check-in date must be today or later.");
+      setCheckInError(t("validation.checkInDateInvalid"));
       return;
     }
 
-    setCheckInError(isCheckInMissing ? "Select a check-in date." : "");
-    setCheckOutError(isCheckOutMissing ? "Select a check-out date." : "");
+    setCheckInError(isCheckInMissing ? t("validation.checkInDateRequired") : "");
+    setCheckOutError(isCheckOutMissing ? t("validation.checkOutDateRequired") : "");
 
     if (isCheckInMissing || isCheckOutMissing) {
       e.preventDefault();

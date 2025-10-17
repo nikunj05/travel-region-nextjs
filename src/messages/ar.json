@@ -14,7 +14,13 @@
     "guests": "ضيوف",
     "freeCancellation": "إلغاء مجاني",
     "search": "بحث",
-    "searching": "جاري البحث..."
+    "searching": "جاري البحث...",
+    "validation": {
+      "locationRequired": "أدخل وجهة للبدء في البحث.",
+      "checkInDateRequired": "اختر تاريخ الوصول.",
+      "checkOutDateRequired": "اختر تاريخ المغادرة.",
+      "checkInDateInvalid": "يجب أن يكون تاريخ الوصول اليوم أو لاحقاً."
+    }
   },
   "Blogs": {
     "pageTitle": "اكتشف نصائح السفر والوجهات والمزيد",
@@ -249,6 +255,20 @@
     "title": "اتصل بنا للحصول على المساعدة أو المعلومات",
     "description": "لديك أسئلة أو تحتاج مساعدة؟ نحن على بعد رسالة واحدة فقط.",
     "searchHotel": "ابحث عن فندق"
+  },
+  "SearchResult": {
+    "validation": {
+      "locationRequired": "أدخل وجهة للبدء في البحث.",
+      "checkInDateRequired": "اختر تاريخ الوصول.",
+      "checkOutDateRequired": "اختر تاريخ المغادرة.",
+      "checkInDateInvalid": "يجب أن يكون تاريخ الوصول اليوم أو لاحقاً."
+    },
+    "searchingHotels": "جاري البحث عن الفنادق...",
+    "showingHotels": "عرض {total} فندق في {location}",
+    "guests": "ضيوف",
+    "noHotelsFound": "لم يتم العثور على فنادق",
+    "noHotelsFoundDescription": "لم نتمكن من العثور على أي فنادق تطابق بحثك.",
+    "loading": "جاري التحميل..."
   },
   "Auth": {
     "login": {

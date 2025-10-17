@@ -14,7 +14,13 @@
     "guests": "Guests",
     "freeCancellation": "Free Cancellation",
     "search": "Search",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "validation": {
+      "locationRequired": "Enter a destination to start searching.",
+      "checkInDateRequired": "Select a check-in date.",
+      "checkOutDateRequired": "Select a check-out date.",
+      "checkInDateInvalid": "Check-in date must be today or later."
+    }
   },
   "Blogs": {
     "pageTitle": "Discover Travel Tips, Destinations & More",
@@ -249,6 +255,20 @@
     "title": "Contact us for help or information",
     "description": "Have questions or need help? We're just a message away.",
     "searchHotel": "Search Hotel"
+  },
+  "SearchResult": {
+    "validation": {
+      "locationRequired": "Enter a destination to start searching.",
+      "checkInDateRequired": "Select a check-in date.",
+      "checkOutDateRequired": "Select a check-out date.",
+      "checkInDateInvalid": "Check-in date must be today or later."
+    },
+    "searchingHotels": "Searching hotels...",
+    "showingHotels": "Showing {total} hotels in {location}",
+    "guests": "Guests",
+    "noHotelsFound": "No Hotels Found",
+    "noHotelsFoundDescription": "We couldn't find any hotels matching your search.",
+    "loading": "Loading..."
   },
   "Auth": {
     "login": {

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "@/i18/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
@@ -36,6 +37,7 @@ import { getTodayAtMidnight } from "@/lib/dateUtils";
 
   const SearchResult = () => {
   const router = useRouter();
+  const t = useTranslations("SearchResult");
   const { 
     filters, 
     setLocation, 
@@ -296,7 +298,7 @@ console.log("filters", filters);
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!filters.location) {
       e.preventDefault();
-      setLocationError('Enter a destination to start searching.');
+      setLocationError(t('validation.locationRequired'));
       return;
     }
     setLocationError('');
@@ -308,12 +310,12 @@ console.log("filters", filters);
     const today = getTodayAtMidnight();
     
     if (filters.checkInDate && filters.checkInDate < today) {
-      setCheckInError('Check-in date must be today or later.');
+      setCheckInError(t('validation.checkInDateInvalid'));
       return;
     }
 
-    setCheckInError(isCheckInMissing ? 'Select a check-in date.' : '');
-    setCheckOutError(isCheckOutMissing ? 'Select a check-out date.' : '');
+    setCheckInError(isCheckInMissing ? t('validation.checkInDateRequired') : '');
+    setCheckOutError(isCheckOutMissing ? t('validation.checkOutDateRequired') : '');
 
     if (isCheckInMissing || isCheckOutMissing) {
       return;
@@ -832,15 +834,15 @@ console.log("filters", filters);
                   <div className="search-header-left">
                     <div className="search-results-info">
                       {loading ? (
-                        <span>Searching hotels...</span>
+                        <span>{t('searchingHotels')}</span>
                       ) : (
                         <>
-                          Showing {apiTotal ?? apiHotels.length} hotels in {filters.location ? filters.location.name : 'Selected Location'} 
+                          {t('showingHotels', { total: apiTotal ?? apiHotels.length, location: filters.location ? filters.location.name : 'Selected Location' })} 
                           {hotelFilters.checkIn && hotelFilters.checkOut && (
                             <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
                           )}
                           {getTotalGuests() > 0 && (
-                            <span>, {getTotalGuests()} Guests</span>
+                            <span>, {getTotalGuests()} {t('guests')}</span>
                           )}
                         </>
                       )}
@@ -1024,7 +1026,7 @@ console.log("filters", filters);
                               {loadingHotelId === getHotelCode(hotel)?.toString() ? (
                                 <>
                                   <div className="view-details-spinner"></div>
-                                  Loading...
+                                  {t('loading')}
                                 </>
                               ) : (
                                 'View Details'
@@ -1037,8 +1039,8 @@ console.log("filters", filters);
                   ))
                   ) : (
                     <div className="no-hotels-found">
-                      <h2>No Hotels Found</h2>
-                      <p>We couldn&apos;t find any hotels matching your search.</p>
+                      <h2>{t('noHotelsFound')}</h2>
+                      <p>{t('noHotelsFoundDescription')}</p>
                     </div>
                   )}
                 </div>
