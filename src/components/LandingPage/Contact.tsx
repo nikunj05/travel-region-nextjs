@@ -10,7 +10,7 @@ const Contact = () => {
       <div className="contact-inner-section">
         <div className="contact-us-content">
           <div className="heading_section">
-            <h1 className="section-title">{t('title')}</h1>
+            <h1 className="section-title" dangerouslySetInnerHTML={{ __html: t('title').replace(/help|المساعدة/g, (match) => match + '<br/>') }}></h1>
             <p className="section-description mx-width-790">&ldquo;{t('description')}&rdquo;</p>
           </div>
           <button className="btn hotel-search-button d-flex align-items-center mx-auto">
