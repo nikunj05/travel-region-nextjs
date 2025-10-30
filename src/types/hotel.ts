@@ -9,6 +9,9 @@ export interface GetHotelsRequest {
   language: string; // e.g., "eng"
   latitude: number;
   longitude: number;
+  star_rating?: number; // Single star rating (1-5)
+  min_price?: number;
+  max_price?: number;
 }
 
 export interface HotelRateCancellationPolicy {

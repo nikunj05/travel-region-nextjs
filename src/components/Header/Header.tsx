@@ -62,7 +62,7 @@ const Header = () => {
     const checkHeaderSticky = () => {
       // On search-result path: always sticky
       if (
-        pathname === "/search-result" ||
+        pathname.startsWith("/search-result") ||
         pathname.startsWith("/hotel-details") ||
         // pathname === "/blogs" ||
         pathname === "/booking-review" ||

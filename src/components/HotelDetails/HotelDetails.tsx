@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import "./HotelDetails.scss";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -35,6 +35,7 @@ interface HotelDetailsProps {
 
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
+  const locale = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -42,12 +43,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const router = useRouter();
 
-  // Fetch hotel details
+  // Helper function to map locale to API language code
+  const getLanguageCode = (currentLocale: string): string => {
+    return currentLocale === 'ar' ? 'ARA' : 'ENG';
+  };
+
+  // Fetch hotel details on mount and when locale changes
   useEffect(() => {
     if (hotelId) {
-      fetchHotel({ hotelId, language: 'ENG' });
+      const languageCode = getLanguageCode(locale);
+      console.log('Fetching hotel details with language:', languageCode, 'for hotelId:', hotelId);
+      fetchHotel({ hotelId, language: languageCode });
     }
-  }, [hotelId, fetchHotel]);
+  }, [hotelId, locale, fetchHotel]);
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };

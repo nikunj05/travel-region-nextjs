@@ -50,6 +50,10 @@ export interface UserSettings {
   email: string;
   country_code: string;
   mobile: string;
+  // Home hero content (optional, provided by server settings)
+  home_hero_image?: string | null;
+  home_title?: string | null;
+  home_subtitle?: string | null;
 }
 
 export interface UserSettingsResponse {
@@ -67,6 +71,10 @@ export interface UpdateUserSettingsRequest {
   country_code?: string;
   mobile?: string;
   password?: string;
+  // Optional: allow updating homepage hero content if backend supports it
+  home_hero_image?: string;
+  home_title?: string;
+  home_subtitle?: string;
 }
 
 export interface UpdateUserSettingsResponse {
