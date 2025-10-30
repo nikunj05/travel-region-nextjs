@@ -20,6 +20,7 @@ export interface HotelSearchFilters {
   starRating: number | null // Single selected star rating (1-5)
   minPrice: number | null
   maxPrice: number | null
+  accommodations: string | null // Comma-separated accommodation codes
 }
 
 interface HotelSearchState {
@@ -61,6 +62,7 @@ const defaultFilters: HotelSearchFilters = {
   starRating: null,
   minPrice: null,
   maxPrice: null,
+  accommodations: null,
 }
 
 export const useHotelSearchStore = create<HotelSearchState>()(
@@ -135,6 +137,9 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           }
           if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
             payload.max_price = filters.maxPrice
+          }
+          if (filters.accommodations) {
+            payload.accommodations = filters.accommodations
           }
 
           console.log('Hotel search API payload:', payload)

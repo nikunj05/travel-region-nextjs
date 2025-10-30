@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useEffect, useMemo } from 'react'
+import React, { useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Slider from 'react-slick'
 import { useTranslations } from 'next-intl'

@@ -27,7 +27,8 @@ import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
 import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
-import { HotelItem } from "@/types/hotel";
+import { HotelItem, AccommodationType } from "@/types/hotel";
+import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { buildHotelbedsImageUrl } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
@@ -79,6 +80,7 @@ console.log("filters", filters);
   const [selectedStarRating, setSelectedStarRating] = useState<number | null>(null);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(5000);
+  const [activePriceSlider, setActivePriceSlider] = useState<'min' | 'max' | null>(null);
 
   // Sort options for the dropdown
   const sortOptions = [
@@ -94,8 +96,8 @@ console.log("filters", filters);
     // Ensure all sections are open when modal opens
     setIsPriceRangeOpen(true);
     setIsStarRatingOpen(true);
-    setIsGuestRatingOpen(true);
-    setIsAmenitiesOpen(true);
+    // setIsGuestRatingOpen(true);
+    // setIsAmenitiesOpen(true);
     setIsPropertyTypeOpen(true);
     setIsLocationTypeOpen(true);
   };
@@ -103,10 +105,42 @@ console.log("filters", filters);
   // Filter sidebar dropdown states
   const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(true);
   const [isStarRatingOpen, setIsStarRatingOpen] = useState(true);
-  const [isGuestRatingOpen, setIsGuestRatingOpen] = useState(true);
-  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
+  // const [isGuestRatingOpen, setIsGuestRatingOpen] = useState(true);
+  // const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
   const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(true);
   const [isLocationTypeOpen, setIsLocationTypeOpen] = useState(true);
+  const [accommodationTypes, setAccommodationTypes] = useState<AccommodationType[]>([]);
+  const [selectedAccommodationCodes, setSelectedAccommodationCodes] = useState<string[]>([]);
+  const [showAllAccommodationTypes, setShowAllAccommodationTypes] = useState<boolean>(false);
+
+  // Derived hotel lists
+  const sortedHotels = useMemo(() => {
+    const sortable = [...apiHotels];
+    switch (sortBy) {
+      case 'Price: Low to High':
+        return sortable.sort((a, b) => {
+          const rateA = 'minRate' in a ? parseFloat(String((a as HotelItem).minRate)) || 0 : 0;
+          const rateB = 'minRate' in b ? parseFloat(String((b as HotelItem).minRate)) || 0 : 0;
+          return rateA - rateB;
+        });
+      case 'Price: High to Low':
+        return sortable.sort((a, b) => {
+          const rateA = 'maxRate' in a ? parseFloat(String((a as HotelItem).maxRate)) || 0 : 0;
+          const rateB = 'maxRate' in b ? parseFloat(String((b as HotelItem).maxRate)) || 0 : 0;
+          return rateB - rateA;
+        });
+      case 'Rating':
+        return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
+      default: // Recommended
+        return sortable;
+    }
+  }, [apiHotels, sortBy]);
+
+  const totalPages = useMemo(() => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE), [sortedHotels]);
+  const paginatedHotels = useMemo(
+    () => sortedHotels.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE),
+    [sortedHotels, currentPage]
+  );
 
   // Refs for click outside detection
   const locationPickerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +152,25 @@ console.log("filters", filters);
   useEffect(() => {
     setCurrentPage(1);
   }, [sortBy]);
+
+  // Load accommodation types on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await hotelService.getAccommodationTypes();
+        const list = res?.data?.accommodation_types || [];
+        setAccommodationTypes(list);
+        // hydrate selected from store if present
+        const codes = (useHotelSearchStore.getState().filters.accommodations || '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        setSelectedAccommodationCodes(codes);
+      } catch (e) {
+        console.error('Failed to load accommodation types', e);
+      }
+    })();
+  }, []);
 
   // Scroll to top when page changes
   useEffect(() => {
@@ -503,15 +556,36 @@ console.log("filters", filters);
     }
   };
 
+  // Toggle accommodation selection (store sync happens in effect below)
+  const handleAccommodationToggle = (code: string) => {
+    setSelectedAccommodationCodes((prev) => {
+      const exists = prev.includes(code);
+      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+    });
+  };
+
+  // Sync selected accommodation codes to store and trigger search
+  useEffect(() => {
+    const csv = selectedAccommodationCodes.join(',') || null;
+    useHotelSearchStore.getState().updateFilters({ accommodations: csv });
+
+    const storeFilters = useHotelSearchStore.getState().filters;
+    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      useHotelSearchStore.getState().search();
+    }
+  }, [selectedAccommodationCodes]);
+
   // Handler for clearing all filters
   const handleClearFilters = () => {
     setSelectedStarRating(null);
     setMinPrice(0);
     setMaxPrice(5000);
+    setSelectedAccommodationCodes([]);
     
     // Reset filters in store
     useHotelSearchStore.getState().setStarRating(null);
     useHotelSearchStore.getState().setPriceRange(null, null);
+    useHotelSearchStore.getState().updateFilters({ accommodations: null });
     
     // Re-search with cleared filters
     const storeFilters = useHotelSearchStore.getState().filters;
@@ -523,16 +597,14 @@ console.log("filters", filters);
   // Price slider handlers
   const handleMinPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (value <= maxPrice - 100) {
-      setMinPrice(value);
-    }
+    const clamped = Math.min(value, maxPrice - 100);
+    setMinPrice(clamped);
   };
 
   const handleMaxPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (value >= minPrice + 100) {
-      setMaxPrice(value);
-    }
+    const clamped = Math.max(value, minPrice + 100);
+    setMaxPrice(clamped);
   };
 
   const handlePriceSliderMouseUp = () => {
@@ -645,15 +717,17 @@ console.log("filters", filters);
                 step="50"
                 value={minPrice}
                 onChange={handleMinPriceSliderChange}
-                onMouseUp={handlePriceSliderMouseUp}
-                onTouchEnd={handlePriceSliderMouseUp}
+                onMouseDown={() => setActivePriceSlider('min')}
+                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onTouchStart={() => setActivePriceSlider('min')}
+                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
                 style={{
                   position: 'absolute',
                   width: '100%',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   pointerEvents: 'all',
-                  zIndex: minPrice > (maxPrice - 500) ? 5 : 3,
+                  zIndex: activePriceSlider === 'min' ? 5 : 3,
                 }}
                 className="price-range-input price-range-input-min"
               />
@@ -664,15 +738,17 @@ console.log("filters", filters);
                 step="50"
                 value={maxPrice}
                 onChange={handleMaxPriceSliderChange}
-                onMouseUp={handlePriceSliderMouseUp}
-                onTouchEnd={handlePriceSliderMouseUp}
+                onMouseDown={() => setActivePriceSlider('max')}
+                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onTouchStart={() => setActivePriceSlider('max')}
+                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
                 style={{
                   position: 'absolute',
                   width: '100%',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   pointerEvents: 'all',
-                  zIndex: 4,
+                  zIndex: activePriceSlider === 'max' ? 5 : 3,
                 }}
                 className="price-range-input price-range-input-max"
               />
@@ -723,7 +799,7 @@ console.log("filters", filters);
         )}
       </div>
 
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <div
           className="filter-title"
           onClick={() => setIsGuestRatingOpen(!isGuestRatingOpen)}
@@ -756,8 +832,8 @@ console.log("filters", filters);
             </label>
           </div>
         )}
-      </div>
-
+      </div> */}
+{/* 
       <div className="filter-section">
         <div
           className="filter-title"
@@ -785,7 +861,7 @@ console.log("filters", filters);
             )}
           </div>
         )}
-      </div>
+      </div> */}
 
       <div className="filter-section">
         <div
@@ -803,17 +879,28 @@ console.log("filters", filters);
         </div>
         {isPropertyTypeOpen && (
           <div className="filter-options">
-            {["hotel", "resort", "apartment", "villa"].map((type) => (
-              <label key={type} className="filter-option">
+            {(showAllAccommodationTypes ? accommodationTypes : accommodationTypes.slice(0, 5)).map((item) => (
+              <label key={item.code} className="filter-option">
                 <input
-                  type="radio"
-                  name="property-type"
-                  defaultChecked={type === "hotel"}
+                  type="checkbox"
+                  checked={selectedAccommodationCodes.includes(item.code)}
+                  onChange={() => handleAccommodationToggle(item.code)}
                 />
-                <span className="radio-mark"></span>
-                {tSearch(type)}
+                <span className="checkmark"></span>
+                {item.typeMultiDescription?.content || item.typeDescription}
               </label>
             ))}
+            {accommodationTypes.length > 5 && (
+              <div style={{ marginTop: '8px' }}>
+                <a
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); setShowAllAccommodationTypes(!showAllAccommodationTypes); }}
+                  style={{ color: '#3E5B96', textDecoration: 'none' }}
+                >
+                  {showAllAccommodationTypes ? (tSearch('showLess') || 'View less') : (tSearch('showMore') || 'View more')}
+                </a>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1109,34 +1196,7 @@ console.log("filters", filters);
                   </div>
                 </div>
 
-                {(() => {
-                  const sortedHotels = useMemo(() => {
-                    const sortable = [...apiHotels];
-                    switch (sortBy) {
-                      case 'Price: Low to High':
-                        return sortable.sort((a, b) => {
-                          const rateA = 'minRate' in a ? parseFloat(String((a as HotelItem).minRate)) || 0 : 0;
-                          const rateB = 'minRate' in b ? parseFloat(String((b as HotelItem).minRate)) || 0 : 0;
-                          return rateA - rateB;
-                        });
-                      case 'Price: High to Low':
-                        return sortable.sort((a, b) => {
-                          const rateA = 'maxRate' in a ? parseFloat(String((a as HotelItem).maxRate)) || 0 : 0;
-                          const rateB = 'maxRate' in b ? parseFloat(String((b as HotelItem).maxRate)) || 0 : 0;
-                          return rateB - rateA;
-                        });
-                      case 'Rating':
-                        return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
-                      default: // Recommended
-                        return sortable;
-                    }
-                  }, [apiHotels, sortBy]);
-
-                  const totalPages = Math.ceil(sortedHotels.length / ITEMS_PER_PAGE);
-                  const paginatedHotels = sortedHotels.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-                  return (
-                    <>
+                <>
                       <div className="hotel-results">
                         {loading ? (
                           // Show loading skeletons
@@ -1304,9 +1364,7 @@ console.log("filters", filters);
                           onChange={(page) => setCurrentPage(page)}
                         />
                       )}
-                    </>
-                  );
-                })()}
+                </>
               </div>
             </div>
           </div>
