@@ -45,6 +45,14 @@
     }
   }
 
+  .popular-destinations-section {
+    .destination-card-items {
+      .destination-card-image {
+        height: 313px;
+      }
+    }
+  }
+
   .page-footer {
     .usefull-link {
       gap: 24px;
@@ -598,6 +606,14 @@
           width: 20px;
           height: 20px;
         }
+      }
+    }
+  }
+
+  .popular-destinations-section {
+    .destination-card-items {
+      .destination-card-image {
+        height: 260px;
       }
     }
   }
@@ -1279,6 +1295,14 @@
   .read-more-btn {
     margin: 0 8px;
     font-size: 14px;
+  }
+
+  .popular-destinations-section {
+    .destination-card-items {
+      .destination-card-image {
+        height: 100%;
+      }
+    }
   }
 }
 
