@@ -164,10 +164,10 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 {t("hotelsAvailable")}
+                  {destinations[0]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> $179{" "}
+                  <div>{t("from")}</div> ${destinations[0]?.hotel_min_price ?? 0}{" "}
                   <span className="destination-hotel-pricing-night">
                     {t("perNight")}
                   </span>
@@ -229,10 +229,10 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 {t("hotelsAvailable")}
+                  {destinations[1]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> $179{" "}
+                  <div>{t("from")}</div> ${destinations[1]?.hotel_min_price ?? 0}{" "}
                   <span className="destination-hotel-pricing-night">
                     {t("perNight")}
                   </span>
@@ -296,10 +296,10 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 {t("hotelsAvailable")}
+                  {destinations[2]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> $179{" "}
+                  <div>{t("from")}</div> ${destinations[2]?.hotel_min_price ?? 0}{" "}
                   <span className="destination-hotel-pricing-night">
                     {t("perNight")}
                   </span>
@@ -361,10 +361,10 @@ const Popular = () => {
                     height={20}
                     alt="hotel icon"
                   />{" "}
-                  31 {t("hotelsAvailable")}
+                  {destinations[3]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
                 <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> $179{" "}
+                  <div>{t("from")}</div> ${destinations[3]?.hotel_min_price ?? 0}{" "}
                   <span className="destination-hotel-pricing-night">
                     {t("perNight")}
                   </span>
