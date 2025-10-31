@@ -58,7 +58,7 @@ const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
   const iconProps = {
     color: "#2B7FFF",
     size: 24,
-    style: { marginRight: "8px" },
+    style: { marginRight: "0px" },
   };
 
   switch (facilityCode) {

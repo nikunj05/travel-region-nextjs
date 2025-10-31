@@ -139,7 +139,8 @@
 
   .image-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
+    // grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     padding: 0px 20px 24px;
     overflow-y: auto;
@@ -367,12 +368,16 @@
 
 // Responsive design
 
-@media (max-width: 911.55px) {
+@media (max-width: 991.55px) {
   .image-modal {
     .image-modal-header {
       .hotel-name {
         font-size: 21px;
       }
+    }
+
+    .image-grid {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -439,7 +444,8 @@
     }
 
     .image-grid {
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      // grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       padding: 0px 15px 15px;
 
