@@ -17,6 +17,10 @@ export interface HotelSearchFilters {
   language: string // e.g., 'eng'
   latitude: number | null
   longitude: number | null
+  starRating: number | null // Single selected star rating (1-5)
+  minPrice: number | null
+  maxPrice: number | null
+  accommodations: string | null // Comma-separated accommodation codes
 }
 
 interface HotelSearchState {
@@ -37,6 +41,8 @@ interface HotelSearchState {
   setGuests: (adults: number, children: number, rooms?: number) => void
   setLanguage: (language: string) => void
   setCoordinates: (latitude: number | null, longitude: number | null) => void
+  setStarRating: (starRating: number | null) => void
+  setPriceRange: (minPrice: number | null, maxPrice: number | null) => void
   updateFilters: (patch: Partial<HotelSearchFilters>) => void
   resetFilters: () => void
 
@@ -53,6 +59,10 @@ const defaultFilters: HotelSearchFilters = {
   language: 'eng',
   latitude: null,
   longitude: null,
+  starRating: null,
+  minPrice: null,
+  maxPrice: null,
+  accommodations: null,
 }
 
 export const useHotelSearchStore = create<HotelSearchState>()(
@@ -79,6 +89,14 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
       setCoordinates: (latitude, longitude) => set((state) => ({
         filters: { ...state.filters, latitude, longitude }
+      })),
+
+      setStarRating: (starRating) => set((state) => ({
+        filters: { ...state.filters, starRating }
+      })),
+
+      setPriceRange: (minPrice, maxPrice) => set((state) => ({
+        filters: { ...state.filters, minPrice, maxPrice }
       })),
 
       updateFilters: (patch) => set((state) => ({
@@ -110,14 +128,37 @@ export const useHotelSearchStore = create<HotelSearchState>()(
             longitude: filters.longitude,
           }
 
+          // Add optional filters only if they have values
+          if (filters.starRating !== null && filters.starRating !== undefined) {
+            payload.star_rating = filters.starRating
+          }
+          if (filters.minPrice !== null && filters.minPrice !== undefined) {
+            payload.min_price = filters.minPrice
+          }
+          if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
+            payload.max_price = filters.maxPrice
+          }
+          if (filters.accommodations) {
+            payload.accommodations = filters.accommodations
+          }
+
+          console.log('Hotel search API payload:', payload)
+
           const res = await hotelService.getHotels(payload)
-          const hotels = (res.data?.hotels ?? []) as unknown as (HotelItem | FavoriteHotel)[]
+          console.log('Hotel search API response:', res)
+          
+          // Safely extract hotels array
+          const hotelsData = res?.data?.hotels
+          const hotels = Array.isArray(hotelsData) ? hotelsData : []
           const currency = hotels.length > 0 && 'currency' in hotels[0] ? (hotels[0] as HotelItem).currency : null
 
+          console.log('Processed hotels:', { count: hotels.length, currency })
+          
           set({ hotels, currency, total: hotels.length, loading: false })
         } catch (err: unknown) {
+          console.error('Hotel search error details:', err)
           const errorMessage = formatApiErrorMessage(err)
-          set({ error: errorMessage, loading: false })
+          set({ error: errorMessage, loading: false, hotels: [] })
           toast.error(errorMessage)
         }
       },

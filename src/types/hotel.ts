@@ -9,6 +9,10 @@ export interface GetHotelsRequest {
   language: string; // e.g., "eng"
   latitude: number;
   longitude: number;
+  star_rating?: number; // Single star rating (1-5)
+  min_price?: number;
+  max_price?: number;
+  accommodations?: string; // Comma-separated accommodation codes (e.g., "H,I")
 }
 
 export interface HotelRateCancellationPolicy {
@@ -117,6 +121,14 @@ export interface AccommodationType {
   code: string;
   typeMultiDescription: Content;
   typeDescription: string;
+}
+
+export interface GetAccommodationTypesResponse {
+  status: boolean;
+  message: string;
+  data: {
+    accommodation_types: AccommodationType[];
+  };
 }
 
 export interface Board {

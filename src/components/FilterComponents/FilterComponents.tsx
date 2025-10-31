@@ -130,7 +130,7 @@ const FilterComponents = () => {
   return (
     <div className="search-bar-common">
       <div className="search-bar-container">
-        <div className="search-field" ref={locationPickerRef}>
+        {/* <div className="search-field" ref={locationPickerRef}>
           <label>Location</label>
           <div
             className="search-input-wrapper"
@@ -159,7 +159,7 @@ const FilterComponents = () => {
             onLocationSelect={handleLocationSelect}
             selectedLocation={selectedLocation}
           />
-        </div>
+        </div> */}
 
         <div className="search-field" ref={datePickerRef}>
           <label>Check-in Date</label>

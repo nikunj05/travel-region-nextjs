@@ -50,6 +50,7 @@ export default async function LocaleLayout({
     const settingsRes = await settingsService.getSettingsCached(locale);
     console.log('settingsRes', settingsRes);
     setting = settingsRes.data?.setting || null;
+    console.log('setting', setting);
   } catch (error) {
     console.error('Failed to fetch settings in layout:', error);
     // Continue rendering with null setting - components should handle this

@@ -20,10 +20,15 @@ import {
 } from "../../store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
+import { useSettingsStore } from "@/store/settingsStore";
 
 const Banner = () => {
   const t = useTranslations("Banner");
   const router = useRouter();
+
+  // App settings store (hydrated from server) for dynamic hero content
+  const setting = useSettingsStore((s) => s.setting);
+  console.log('setting from store', setting);
 
   // Use the search filters store
   const {
@@ -75,6 +80,13 @@ const Banner = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Dynamic hero content with fallbacks
+  const heroImage = setting?.home_hero_image && setting.home_hero_image.trim()
+    ? setting.home_hero_image
+    : null;
+  const heroTitle = (setting?.home_title && setting.home_title.trim()) || t("title");
+  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim()) || t("description");
 
   const toggleLocationDropdown = () => {
     // Close other dropdowns when opening location dropdown
@@ -256,13 +268,25 @@ const Banner = () => {
   };
 
   return (
-    <section className="home-banner-section">
+    <section
+      className="home-banner-section"
+      style={
+        heroImage
+          ? {
+              backgroundImage: `url(${heroImage})`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+            }
+          : undefined
+      }
+    >
       <div className="container">
         <div className="banner-overlay"></div>
         <div className="banner-content">
           <div className="heading_section">
-            <h1 className="section-title">{t("title")}</h1>
-            <p className="section-description">{t("description")}</p>
+            <h1 className="section-title">{heroTitle }</h1>
+            <p className="section-description">{heroSubtitle }</p>
           </div>
           <div className="banner-property-filter">
             <h3 className="property-filter-title">{t("exploreJourney")}</h3>

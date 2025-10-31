@@ -3,7 +3,8 @@ import {
   GetHotelsRequest, 
   GetHotelsResponse, 
   GetHotelDetailsRequest, 
-  GetHotelDetailsResponse 
+  GetHotelDetailsResponse,
+  GetAccommodationTypesResponse,
 } from '@/types/hotel';
 
 export const hotelService = {
@@ -21,6 +22,17 @@ export const hotelService = {
       const { hotelId, language = 'ENG' } = payload;
       const response = await api.get<GetHotelDetailsResponse>(
         `/hotels/${hotelId}/details?language=${language}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAccommodationTypes: async (): Promise<GetAccommodationTypesResponse> => {
+    try {
+      const response = await api.get<GetAccommodationTypesResponse>(
+        `/hotels/accommodation-types`
       );
       return response.data;
     } catch (error) {

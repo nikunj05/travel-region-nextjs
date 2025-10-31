@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "@/i18/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
@@ -27,17 +27,27 @@ import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
 import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
-import { HotelItem } from "@/types/hotel";
+import { HotelItem, AccommodationType } from "@/types/hotel";
+import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { buildHotelbedsImageUrl } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
+import Pagination from "../common/Pagination/Pagination";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
   const SearchResult = () => {
   const router = useRouter();
-  const t = useTranslations("SearchResult");
+  const locale = useLocale();
+  const t = useTranslations('Banner');
+  const tSearch = useTranslations('SearchResult');
+  
+  // Helper function to map locale to API language code
+  const getLanguageCode = (currentLocale: string): string => {
+    return currentLocale === 'ar' ? 'ara' : 'eng';
+  };
+
   const { 
     filters, 
     setLocation, 
@@ -48,7 +58,7 @@ import { getTodayAtMidnight } from "@/lib/dateUtils";
 console.log("filters", filters);
 
   // Dynamic hotels from API (hotel search store)
-  const { hotels: apiHotels, filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
+  const { hotels: apiHotels = [], filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
   console.log("apiHotels", apiHotels);
 
   // Local UI state
@@ -63,13 +73,21 @@ console.log("filters", filters);
   const [sortBy, setSortBy] = useState("Recommended");
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10; // Number of hotels per page
+  
+  // Filter states
+  const [selectedStarRating, setSelectedStarRating] = useState<number | null>(null);
+  const [minPrice, setMinPrice] = useState<number>(0);
+  const [maxPrice, setMaxPrice] = useState<number>(5000);
+  const [activePriceSlider, setActivePriceSlider] = useState<'min' | 'max' | null>(null);
 
   // Sort options for the dropdown
   const sortOptions = [
-    { value: "Recommended", label: "Recommended" },
-    { value: "Price: Low to High", label: "Price: Low to High" },
-    { value: "Price: High to Low", label: "Price: High to Low" },
-    { value: "Rating", label: "Rating" },
+    { value: "Recommended", label: tSearch('sortRecommended') },
+    { value: "Price: Low to High", label: tSearch('sortPriceLowToHigh') },
+    { value: "Price: High to Low", label: tSearch('sortPriceHighToLow') },
+    { value: "Rating", label: tSearch('sortRating') },
   ];
 
   // Reset filter states when mobile modal opens
@@ -78,8 +96,8 @@ console.log("filters", filters);
     // Ensure all sections are open when modal opens
     setIsPriceRangeOpen(true);
     setIsStarRatingOpen(true);
-    setIsGuestRatingOpen(true);
-    setIsAmenitiesOpen(true);
+    // setIsGuestRatingOpen(true);
+    // setIsAmenitiesOpen(true);
     setIsPropertyTypeOpen(true);
     setIsLocationTypeOpen(true);
   };
@@ -87,15 +105,79 @@ console.log("filters", filters);
   // Filter sidebar dropdown states
   const [isPriceRangeOpen, setIsPriceRangeOpen] = useState(true);
   const [isStarRatingOpen, setIsStarRatingOpen] = useState(true);
-  const [isGuestRatingOpen, setIsGuestRatingOpen] = useState(true);
-  const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
+  // const [isGuestRatingOpen, setIsGuestRatingOpen] = useState(true);
+  // const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
   const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(true);
   const [isLocationTypeOpen, setIsLocationTypeOpen] = useState(true);
+  const [accommodationTypes, setAccommodationTypes] = useState<AccommodationType[]>([]);
+  const [selectedAccommodationCodes, setSelectedAccommodationCodes] = useState<string[]>([]);
+  const [showAllAccommodationTypes, setShowAllAccommodationTypes] = useState<boolean>(false);
+
+  // Derived hotel lists
+  const sortedHotels = useMemo(() => {
+    const sortable = [...apiHotels];
+    switch (sortBy) {
+      case 'Price: Low to High':
+        return sortable.sort((a, b) => {
+          const rateA = 'minRate' in a ? parseFloat(String((a as HotelItem).minRate)) || 0 : 0;
+          const rateB = 'minRate' in b ? parseFloat(String((b as HotelItem).minRate)) || 0 : 0;
+          return rateA - rateB;
+        });
+      case 'Price: High to Low':
+        return sortable.sort((a, b) => {
+          const rateA = 'maxRate' in a ? parseFloat(String((a as HotelItem).maxRate)) || 0 : 0;
+          const rateB = 'maxRate' in b ? parseFloat(String((b as HotelItem).maxRate)) || 0 : 0;
+          return rateB - rateA;
+        });
+      case 'Rating':
+        return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
+      default: // Recommended
+        return sortable;
+    }
+  }, [apiHotels, sortBy]);
+
+  const totalPages = useMemo(() => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE), [sortedHotels]);
+  const paginatedHotels = useMemo(
+    () => sortedHotels.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE),
+    [sortedHotels, currentPage]
+  );
 
   // Refs for click outside detection
   const locationPickerRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestsPickerRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Reset to first page when sort criteria changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy]);
+
+  // Load accommodation types on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await hotelService.getAccommodationTypes();
+        const list = res?.data?.accommodation_types || [];
+        setAccommodationTypes(list);
+        // hydrate selected from store if present
+        const codes = (useHotelSearchStore.getState().filters.accommodations || '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        setSelectedAccommodationCodes(codes);
+      } catch (e) {
+        console.error('Failed to load accommodation types', e);
+      }
+    })();
+  }, []);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    if (resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentPage]);
 
   // Close modals when clicking outside
   useEffect(() => {
@@ -134,7 +216,6 @@ console.log("filters", filters);
     if (
       filters.location && 
       !loading && 
-      apiHotels && 
       apiHotels.length === 0 && 
       !hasTriggeredInitialSearch.current
     ) {
@@ -142,6 +223,53 @@ console.log("filters", filters);
       handleSearchClick({ preventDefault: () => {} } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
+
+  // Re-trigger search when locale changes (if we have valid search criteria)
+  useEffect(() => {
+    // Check if we have all required search parameters and the store has search data
+    const storeFilters = useHotelSearchStore.getState().filters;
+    const hasValidSearchCriteria = 
+      storeFilters.checkIn && 
+      storeFilters.checkOut && 
+      storeFilters.latitude !== null && 
+      storeFilters.longitude !== null;
+
+    // Get current language code from store
+    const currentStoreLanguage = storeFilters.language;
+    const newLanguageCode = getLanguageCode(locale);
+
+    console.log('Locale effect triggered:', {
+      locale,
+      currentStoreLanguage,
+      newLanguageCode,
+      hasValidSearchCriteria,
+      loading
+    });
+
+    // Only re-search if:
+    // 1. We have valid search criteria
+    // 2. The language has changed
+    // 3. We're not already loading
+    if (hasValidSearchCriteria && currentStoreLanguage !== newLanguageCode && !loading) {
+      console.log('Language changed - re-triggering search with language:', newLanguageCode);
+      
+      // Update the language in the hotel search store
+      useHotelSearchStore.getState().setLanguage(newLanguageCode);
+      
+      // Re-trigger the search with the new language
+      useHotelSearchStore.getState().search().then(() => {
+        const { hotels, currency, error } = useHotelSearchStore.getState();
+        if (error) {
+          console.error('Hotels API error after locale change:', error);
+        } else {
+          const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
+          console.log('Hotels reloaded with new language:', { count: hotelCount, currency });
+        }
+      }).catch((err) => {
+        console.error('Locale search promise error:', err);
+      });
+    }
+  }, [locale, loading]);
 
   // Lock body scroll when mobile filter modal is open
   useEffect(() => {
@@ -334,7 +462,8 @@ console.log("filters", filters);
         filters.guestCounts.children,
         1 // rooms (fallback to 1 for now)
       );
-      useHotelSearchStore.getState().setLanguage('eng');
+      // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
+      useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 
       // Execute search and log the raw response data held in the store
@@ -343,8 +472,11 @@ console.log("filters", filters);
         if (error) {
           console.error('Hotels API error:', error);
         } else {
-          console.log('Hotels API result:', { hotels, currency });
+          const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
+          console.log('Hotels API result:', { hotelCount, currency });
         }
+      }).catch((err) => {
+        console.error('Search promise error:', err);
       });
     } catch (err) {
       console.error('Failed to trigger hotels search:', err);
@@ -392,6 +524,103 @@ console.log("filters", filters);
     }
   };
 
+  // Handler for star rating radio button changes
+  const handleStarRatingChange = (star: number) => {
+    // If clicking the same star, unselect it
+    const newRating = selectedStarRating === star ? null : star;
+    
+    setSelectedStarRating(newRating);
+    
+    // Update store and trigger search
+    useHotelSearchStore.getState().setStarRating(newRating);
+    
+    // Only search if we have valid criteria
+    const storeFilters = useHotelSearchStore.getState().filters;
+    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      useHotelSearchStore.getState().search();
+    }
+  };
+
+  // Handler for price range changes
+  const handlePriceRangeChange = (min: number, max: number) => {
+    setMinPrice(min);
+    setMaxPrice(max);
+    
+    // Update store and trigger search
+    useHotelSearchStore.getState().setPriceRange(min, max);
+    
+    // Only search if we have valid criteria
+    const storeFilters = useHotelSearchStore.getState().filters;
+    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      useHotelSearchStore.getState().search();
+    }
+  };
+
+  // Toggle accommodation selection (store sync happens in effect below)
+  const handleAccommodationToggle = (code: string) => {
+    setSelectedAccommodationCodes((prev) => {
+      const exists = prev.includes(code);
+      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+    });
+  };
+
+  // Sync selected accommodation codes to store and trigger search
+  useEffect(() => {
+    const csv = selectedAccommodationCodes.join(',') || null;
+    useHotelSearchStore.getState().updateFilters({ accommodations: csv });
+
+    const storeFilters = useHotelSearchStore.getState().filters;
+    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      useHotelSearchStore.getState().search();
+    }
+  }, [selectedAccommodationCodes]);
+
+  // Handler for clearing all filters
+  const handleClearFilters = () => {
+    setSelectedStarRating(null);
+    setMinPrice(0);
+    setMaxPrice(5000);
+    setSelectedAccommodationCodes([]);
+    
+    // Reset filters in store
+    useHotelSearchStore.getState().setStarRating(null);
+    useHotelSearchStore.getState().setPriceRange(null, null);
+    useHotelSearchStore.getState().updateFilters({ accommodations: null });
+    
+    // Re-search with cleared filters
+    const storeFilters = useHotelSearchStore.getState().filters;
+    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      useHotelSearchStore.getState().search();
+    }
+  };
+
+  // Price slider handlers
+  const handleMinPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    const clamped = Math.min(value, maxPrice - 100);
+    setMinPrice(clamped);
+  };
+
+  const handleMaxPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    const clamped = Math.max(value, minPrice + 100);
+    setMaxPrice(clamped);
+  };
+
+  const handlePriceSliderMouseUp = () => {
+    // Trigger search when slider is released
+    if (minPrice > 0 || maxPrice < 5000) {
+      handlePriceRangeChange(minPrice, maxPrice);
+    } else {
+      // If both are at default, clear the filter
+      useHotelSearchStore.getState().setPriceRange(null, null);
+      const storeFilters = useHotelSearchStore.getState().filters;
+      if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+        useHotelSearchStore.getState().search();
+      }
+    }
+  };
+
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
   const renderFilters = (isMobile = false) => (
     <>
@@ -426,12 +655,12 @@ console.log("filters", filters);
               strokeLinejoin="round"
             />
           </svg>
-          Map View
+          {tSearch('mapView')}
         </button>
       </div>
       <div className={`filter-header ${isMobile ? "d-none" : ""}`}>
-        <h3>Filter by</h3>
-        <button className="clear-filters">Clear</button>
+        <h3>{tSearch('filterBy')}</h3>
+        <button className="clear-filters" onClick={handleClearFilters}>{tSearch('clear')}</button>
       </div>
 
       <div className="filter-section">
@@ -439,7 +668,7 @@ console.log("filters", filters);
           className="filter-title"
           onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
         >
-          Price Range
+          {tSearch('priceRange')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -451,12 +680,78 @@ console.log("filters", filters);
         {isPriceRangeOpen && (
           <div className="price-range">
             <div className="pricing-range-slider d-flex align-items-center justify-content-between">
-              <span>$500</span>
-              <span>$1500</span>
+              <span>${minPrice}</span>
+              <span>${maxPrice}</span>
             </div>
-            <div className="price-slider">
-              <div className="slider-track"></div>
-              <div className="slider-thumb"></div>
+            <div className="price-slider-container" style={{ position: 'relative', height: '40px', marginTop: '10px', width: '100%' }}>
+              <div 
+                className="slider-track"
+                style={{
+                  position: 'absolute',
+                  height: '6px',
+                  background: '#F3F4F6',
+                  width: '100%',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  borderRadius: '10px',
+                  left: 0,
+                  pointerEvents: 'none',
+                }}
+              >
+                <div 
+                  className="slider-range"
+                  style={{
+                    position: 'absolute',
+                    height: '100%',
+                    background: '#3E5B96',
+                    left: `${(minPrice / 5000) * 100}%`,
+                    width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                    borderRadius: '10px',
+                  }}
+                />
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="5000"
+                step="50"
+                value={minPrice}
+                onChange={handleMinPriceSliderChange}
+                onMouseDown={() => setActivePriceSlider('min')}
+                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onTouchStart={() => setActivePriceSlider('min')}
+                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'all',
+                  zIndex: activePriceSlider === 'min' ? 5 : 3,
+                }}
+                className="price-range-input price-range-input-min"
+              />
+              <input
+                type="range"
+                min="0"
+                max="5000"
+                step="50"
+                value={maxPrice}
+                onChange={handleMaxPriceSliderChange}
+                onMouseDown={() => setActivePriceSlider('max')}
+                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onTouchStart={() => setActivePriceSlider('max')}
+                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'all',
+                  zIndex: activePriceSlider === 'max' ? 5 : 3,
+                }}
+                className="price-range-input price-range-input-max"
+              />
             </div>
           </div>
         )}
@@ -467,7 +762,7 @@ console.log("filters", filters);
           className="filter-title"
           onClick={() => setIsStarRatingOpen(!isStarRatingOpen)}
         >
-          Star Rating
+          {tSearch('starRating')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -480,8 +775,13 @@ console.log("filters", filters);
           <div className="filter-options">
             {[5, 4, 3, 2, 1].map((stars) => (
               <label key={stars} className="filter-option">
-                <input type="checkbox" defaultChecked={stars === 5} />
-                <span className="checkmark"></span>
+                <input 
+                  type="radio" 
+                  name="star-rating-filter"
+                  checked={selectedStarRating === stars}
+                  onChange={() => handleStarRatingChange(stars)}
+                />
+                <span className="radio-mark"></span>
                 <span className="stars">
                   {stars}
                   <span>
@@ -499,12 +799,12 @@ console.log("filters", filters);
         )}
       </div>
 
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <div
           className="filter-title"
           onClick={() => setIsGuestRatingOpen(!isGuestRatingOpen)}
         >
-          Guest Rating
+          {tSearch('guestRating')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -518,28 +818,28 @@ console.log("filters", filters);
             <label className="filter-option">
               <input type="radio" name="guest-rating" defaultChecked />
               <span className="radio-mark"></span>
-              Excellent
+              {tSearch('excellent')}
             </label>
             <label className="filter-option">
               <input type="radio" name="guest-rating" />
               <span className="radio-mark"></span>
-              Very Good
+              {tSearch('veryGood')}
             </label>
             <label className="filter-option">
               <input type="radio" name="guest-rating" />
               <span className="radio-mark"></span>
-              Good
+              {tSearch('good')}
             </label>
           </div>
         )}
-      </div>
-
+      </div> */}
+{/* 
       <div className="filter-section">
         <div
           className="filter-title"
           onClick={() => setIsAmenitiesOpen(!isAmenitiesOpen)}
         >
-          Amenities
+          {tSearch('amenities')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -550,25 +850,25 @@ console.log("filters", filters);
         </div>
         {isAmenitiesOpen && (
           <div className="filter-options">
-            {["Wi-Fi", "Parking", "Pet Friendly", "Breakfast"].map(
+            {["wifi", "parking", "petFriendly", "breakfast"].map(
               (amenity) => (
                 <label key={amenity} className="filter-option">
-                  <input type="checkbox" defaultChecked={amenity === "Wi-Fi"} />
+                  <input type="checkbox" defaultChecked={amenity === "wifi"} />
                   <span className="checkmark"></span>
-                  {amenity}
+                  {tSearch(amenity)}
                 </label>
               )
             )}
           </div>
         )}
-      </div>
+      </div> */}
 
       <div className="filter-section">
         <div
           className="filter-title"
           onClick={() => setIsPropertyTypeOpen(!isPropertyTypeOpen)}
         >
-          Property Type
+          {tSearch('propertyType')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -579,17 +879,28 @@ console.log("filters", filters);
         </div>
         {isPropertyTypeOpen && (
           <div className="filter-options">
-            {["Hotel", "Resort", "Apartment", "Villa"].map((type) => (
-              <label key={type} className="filter-option">
+            {(showAllAccommodationTypes ? accommodationTypes : accommodationTypes.slice(0, 5)).map((item) => (
+              <label key={item.code} className="filter-option">
                 <input
-                  type="radio"
-                  name="property-type"
-                  defaultChecked={type === "Hotel"}
+                  type="checkbox"
+                  checked={selectedAccommodationCodes.includes(item.code)}
+                  onChange={() => handleAccommodationToggle(item.code)}
                 />
-                <span className="radio-mark"></span>
-                {type}
+                <span className="checkmark"></span>
+                {item.typeMultiDescription?.content || item.typeDescription}
               </label>
             ))}
+            {accommodationTypes.length > 5 && (
+              <div style={{ marginTop: '8px' }}>
+                <a
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); setShowAllAccommodationTypes(!showAllAccommodationTypes); }}
+                  style={{ color: '#3E5B96', textDecoration: 'none' }}
+                >
+                  {showAllAccommodationTypes ? (tSearch('showLess') || 'View less') : (tSearch('showMore') || 'View more')}
+                </a>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -599,7 +910,7 @@ console.log("filters", filters);
           className="filter-title"
           onClick={() => setIsLocationTypeOpen(!isLocationTypeOpen)}
         >
-          Location Type
+          {tSearch('locationType')}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -613,12 +924,12 @@ console.log("filters", filters);
             <label className="filter-option">
               <input type="checkbox" defaultChecked />
               <span className="checkmark"></span>
-              Near Beach
+              {tSearch('nearBeach')}
             </label>
             <label className="filter-option">
               <input type="checkbox" />
               <span className="checkmark"></span>
-              City Center
+              {tSearch('cityCenter')}
             </label>
           </div>
         )}
@@ -635,7 +946,7 @@ console.log("filters", filters);
             <div className="search-bar">
               <div className="search-bar-container">
                 <div className="search-field" ref={locationPickerRef}>
-                  <label>Location</label>
+                  <label>{t('location')}</label>
                   <div className="search-input-wrapper">
                     <div className="search-input-inner">
                       <Image
@@ -647,7 +958,7 @@ console.log("filters", filters);
                       <input
                         type="text"
                         className="location-input-field"
-                        placeholder={filters.location ? filters.location.name : "Find Location"}
+                        placeholder={filters.location ? filters.location.name : t('findLocation')}
                         value={locationSearchQuery}
                         onChange={handleLocationInputChange}
                         onFocus={handleLocationInputFocus}
@@ -707,7 +1018,7 @@ console.log("filters", filters);
                 </div>
 
                 <div className="search-field" ref={datePickerRef}>
-                  <label>Check-in Date</label>
+                  <label>{t('checkInDate')}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleDatePicker}
@@ -740,7 +1051,7 @@ console.log("filters", filters);
                 </div>
 
                 <div className="search-field">
-                  <label>Check-out Date</label>
+                  <label>{t('checkOutDate')}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleDatePicker}
@@ -761,7 +1072,7 @@ console.log("filters", filters);
                 </div>
 
                 <div className="search-field" ref={guestsPickerRef}>
-                  <label>Guests and Rooms</label>
+                  <label>{t('guestsAndRooms')}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleGuestsPicker}
@@ -775,8 +1086,8 @@ console.log("filters", filters);
                       />
                       <span className="search-input-text">
                         {getTotalGuests() > 0
-                          ? `${getTotalGuests()} Guests`
-                          : "Add Guests"}
+                          ? `${getTotalGuests()} ${t('guests')}`
+                          : t('addGuests')}
                       </span>
                     </div>
                     <Image
@@ -822,7 +1133,7 @@ console.log("filters", filters);
         </div>
 
         {/* Main Content */}
-        <div className="main-content">
+        <div className="main-content" ref={resultsRef}>
           <div className="container">
             <div className="search-content">
               {/* Left Filter Sidebar */}
@@ -834,15 +1145,15 @@ console.log("filters", filters);
                   <div className="search-header-left">
                     <div className="search-results-info">
                       {loading ? (
-                        <span>{t('searchingHotels')}</span>
+                        <span>{tSearch('searchingHotels')}</span>
                       ) : (
                         <>
-                          {t('showingHotels', { total: apiTotal ?? apiHotels.length, location: filters.location ? filters.location.name : 'Selected Location' })} 
+                          {tSearch('showingHotels', { count: apiHotels.length, total: apiTotal ?? apiHotels.length, location: filters.location ? filters.location.name : 'Selected Location' })}
                           {hotelFilters.checkIn && hotelFilters.checkOut && (
                             <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
                           )}
                           {getTotalGuests() > 0 && (
-                            <span>, {getTotalGuests()} {t('guests')}</span>
+                            <span>, {getTotalGuests()} {tSearch('guests')}</span>
                           )}
                         </>
                       )}
@@ -862,7 +1173,7 @@ console.log("filters", filters);
                             height={20}
                             className="sort-filter-icon"
                           />
-                          Filter
+                          {tSearch('filter')}
                         </span>
                         <Image
                           src={downBlackArrowIcon}
@@ -878,213 +1189,182 @@ console.log("filters", filters);
                         options={sortOptions}
                         value={sortBy}
                         onChange={setSortBy}
-                        label="Sort by"
+                        label={tSearch('sortBy')}
                         className="sort-dropdown"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="hotel-results">
-                  {loading ? (
-                    // Show loading skeletons
-                    [...Array(6)].map((_, index) => (
-                      <HotelCardSkeleton key={`skeleton-${index}`} />
-                    ))
-                  ) : apiHotels && apiHotels.length > 0 ? (
-                    // Show actual hotel results
-                    apiHotels.map((hotel: HotelItem | FavoriteHotel) => (
-                    <div key={getHotelId(hotel)} className="hotel-card">
-                      <div className="hotel-images">
-                        {(() => {
-                          const images = getMainAndThumbImages(hotel);
-                          return (
-                            <>
-                              <div className="main-image">
-                                <Image
-                                  src={images.main || (mainImage1 as unknown as string)}
-                                  alt={getHotelName(hotel) || 'Hotel'}
-                                  width={276}
-                                  height={146}
-                                  className="property-main-img"
-                                />
-                              </div>
-                              <div className="thumbnail-images">
-                                {(images.thumbs.length > 0
-                                  ? images.thumbs
-                                  : [thumbnailImages1, thumbnailImages2, thumbnailImages3, thumbnailImages4] as unknown as string[]
-                                ).slice(0, 4).map((imgSrc, index) => (
-                                  <div key={`${getHotelId(hotel)}-thumb-${index}`} className="thumbnail-image">
-                                    <Image
-                                      width={66}
-                                      height={52}
-                                      src={imgSrc}
-                                      alt={`${getHotelName(hotel)} ${index + 1}`}
-                                      className="property-thumb-img"
-                                    />
+
+                <>
+                      <div className="hotel-results">
+                        {loading ? (
+                          // Show loading skeletons
+                          [...Array(6)].map((_, index) => (
+                            <HotelCardSkeleton key={`skeleton-${index}`} />
+                          ))
+                        ) : apiHotels.length > 0 ? (
+                          // Show actual hotel results
+                          paginatedHotels.map((hotel: HotelItem | FavoriteHotel) => (
+                          <div key={getHotelId(hotel)} className="hotel-card">
+                            <div className="hotel-images">
+                              {(() => {
+                                const images = getMainAndThumbImages(hotel);
+                                return (
+                                  <>
+                                    <div className="main-image">
+                                      <Image
+                                        src={images.main || (mainImage1 as unknown as string)}
+                                        alt={getHotelName(hotel) || 'Hotel'}
+                                        width={276}
+                                        height={146}
+                                        className="property-main-img"
+                                      />
+                                    </div>
+                                    <div className="thumbnail-images">
+                                      {(images.thumbs.length > 0
+                                        ? images.thumbs
+                                        : [thumbnailImages1, thumbnailImages2, thumbnailImages3, thumbnailImages4] as unknown as string[]
+                                      ).slice(0, 4).map((imgSrc, index) => (
+                                        <div key={`${getHotelId(hotel)}-thumb-${index}`} className="thumbnail-image">
+                                          <Image
+                                            width={66}
+                                            height={52}
+                                            src={imgSrc}
+                                            alt={`${getHotelName(hotel)} ${index + 1}`}
+                                            className="property-thumb-img"
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </>
+                                );
+                              })()}
+                            </div>
+                            <div className="hotel-info-with-action-card d-flex">
+                              <div className="hotel-info">
+                                <p className="hotel-name">
+                                  {getHotelName(hotel)}
+                                </p>
+                                <div className="hotel-rating">
+                                  <div className="rating-stars d-flex align-items-center">
+                                    {Array.from({ length: getStarRating(hotel) }, (_, index) => (
+                                      <Image
+                                        key={`${getHotelId(hotel)}-star-${index}`}
+                                        src={ReviewStarFill}
+                                        alt="star icon"
+                                        width="16"
+                                        height="16"
+                                      />
+                                    ))}
                                   </div>
-                                ))}
+                                  <span className="rating-reviews d-flex align-items-center">
+                                    <span className="rating-score">
+                                      {getStarRating(hotel)}
+                                    </span>
+                                    {/* ({120} {tSearch('reviews')}) */}
+                                  </span>
+                                </div>
+
+                                <div className="hotel-location">
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
+                                      fill="#6F8DC1"
+                                    />
+                                  </svg>
+
+                                  <span>{getHotelLocation(hotel)}</span>
+                                </div>
+
+                                <div className="hotel-amenities">
+                                  {[
+                                    { name: 'Breakfast', icon: BreaFastIcon },
+                                    { name: 'Parking', icon: ParkingIcon },
+                                    { name: 'Pool', icon: PoolIcon },
+                                  ].map((amenity, index) => (
+                                    <div key={`${getHotelId(hotel)}-amenity-${index}`} className="amenity-tag d-flex align-items-center">
+                                      <Image src={amenity.icon} width="16" height="16" alt={amenity.name} />
+                                      <span className="amenity-tag-name">{amenity.name}</span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                <p className="hotel-description">
+                                  {(() => {
+                                    const hotelId = getHotelId(hotel).toString();
+                                    const description = ('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.';
+                                    const isExpanded = expandedDescriptions.has(hotelId);
+                                    const truncatedDescription = description.length > 100 ? description.substring(0, 100) + '...' : description;
+                                    
+                                    return (
+                                      <>
+                                        {isExpanded ? description : truncatedDescription}
+                                        {description.length > 100 && (
+                                          <a 
+                                            href="#" 
+                                            onClick={(e) => handleReadMoreClick(e, hotelId)}
+                                            style={{ marginLeft: '8px', color: '#3E5B96', textDecoration: 'underline' }}
+                                          >
+                                            {isExpanded ? tSearch('readLess') : tSearch('readMore')}
+                                          </a>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </p>
                               </div>
-                            </>
-                          );
-                        })()}
-                      </div>
-                      <div className="hotel-info-with-action-card d-flex">
-                        <div className="hotel-info">
-                          <p className="hotel-name">
-                            {getHotelName(hotel)}
-                          </p>
-                          <div className="hotel-rating">
-                            <div className="rating-stars d-flex align-items-center">
-                              {Array.from({ length: getStarRating(hotel) }, (_, index) => (
-                                <Image
-                                  key={`${getHotelId(hotel)}-star-${index}`}
-                                  src={ReviewStarFill}
-                                  alt="star icon"
-                                  width="16"
-                                  height="16"
-                                />
-                              ))}
-                            </div>
-                            <span className="rating-reviews d-flex align-items-center">
-                              <span className="rating-score">
-                                {getStarRating(hotel)}
-                              </span>
-                              ({120} Reviews)
-                            </span>
-                          </div>
-
-                          <div className="hotel-location">
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
-                                fill="#6F8DC1"
-                              />
-                            </svg>
-
-                            <span>{getHotelLocation(hotel)}</span>
-                          </div>
-
-                          <div className="hotel-amenities">
-                            {[
-                              { name: 'Breakfast', icon: BreaFastIcon },
-                              { name: 'Parking', icon: ParkingIcon },
-                              { name: 'Pool', icon: PoolIcon },
-                            ].map((amenity, index) => (
-                              <div key={`${getHotelId(hotel)}-amenity-${index}`} className="amenity-tag d-flex align-items-center">
-                                <Image src={amenity.icon} width="16" height="16" alt={amenity.name} />
-                                <span className="amenity-tag-name">{amenity.name}</span>
+                              <div className="property-card-action">
+                                <div className="hotel-footer">
+                                  <div className="hotel-price">
+                                    <span className="price-amount">
+                                      <span className="property-currency">
+                                        {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""}
+                                      </span>
+                                      {('maxRate' in hotel && (hotel as HotelItem).maxRate) || 179}
+                                    </span>
+                                    <span className="price-period">{tSearch('perNight')}</span>
+                                  </div>
+                                  <button 
+                                    className="view-details-button button-primary w-100" 
+                                    onClick={() => handleViewDetailsClick(getHotelCode(hotel))}
+                                    disabled={loadingHotelId === getHotelCode(hotel)?.toString()}
+                                  >
+                                    {loadingHotelId === getHotelCode(hotel)?.toString() ? (
+                                      <>
+                                        <div className="view-details-spinner"></div>
+                                        {tSearch('loading')}
+                                      </>
+                                    ) : (
+                                      tSearch('viewDetails')
+                                    )}
+                                  </button>
+                                </div>
                               </div>
-                            ))}
-                          </div>
-
-                          <p className="hotel-description">
-                            {(() => {
-                              const hotelId = getHotelId(hotel).toString();
-                              const description = ('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.';
-                              const isExpanded = expandedDescriptions.has(hotelId);
-                              const truncatedDescription = description.length > 100 ? description.substring(0, 100) + '...' : description;
-                              
-                              return (
-                                <>
-                                  {isExpanded ? description : truncatedDescription}
-                                  {description.length > 100 && (
-                                    <a 
-                                      href="#" 
-                                      onClick={(e) => handleReadMoreClick(e, hotelId)}
-                                      style={{ marginLeft: '8px', color: '#3E5B96', textDecoration: 'underline' }}
-                                    >
-                                      {isExpanded ? 'Read Less' : 'Read More'}
-                                    </a>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </p>
-                        </div>
-                        <div className="property-card-action">
-                          <div className="hotel-footer">
-                            <div className="hotel-price">
-                              <span className="price-amount">
-                                <span className="property-currency">
-                                  {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""}
-                                </span>
-                                {('maxRate' in hotel && (hotel as HotelItem).maxRate) || 179}
-                              </span>
-                              <span className="price-period">Per night</span>
                             </div>
-                            <button 
-                              className="view-details-button button-primary w-100" 
-                              onClick={() => handleViewDetailsClick(getHotelCode(hotel))}
-                              disabled={loadingHotelId === getHotelCode(hotel)?.toString()}
-                            >
-                              {loadingHotelId === getHotelCode(hotel)?.toString() ? (
-                                <>
-                                  <div className="view-details-spinner"></div>
-                                  {t('loading')}
-                                </>
-                              ) : (
-                                'View Details'
-                              )}
-                            </button>
                           </div>
-                        </div>
+                        ))
+                        ) : (
+                          <div className="no-hotels-found">
+                            <h2>{tSearch('noHotelsFound')}</h2>
+                            <p>{tSearch('noHotelsFoundDesc')}</p>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))
-                  ) : (
-                    <div className="no-hotels-found">
-                      <h2>{t('noHotelsFound')}</h2>
-                      <p>{t('noHotelsFoundDescription')}</p>
-                    </div>
-                  )}
-                </div>
-                {/* <div className="pagination">
-                  <button className="pagination-arrow">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15 6L9 12L15 18"
-                        stroke="#09090B"
-                      strokeWidth="1.5"
-                      strokeMiterlimit="16"
-                      />
-                    </svg>
-                  </button>
-
-                  <button className="pagination-page active">1</button>
-                  <button className="pagination-page">2</button>
-                  <button className="pagination-page">3</button>
-                  <button className="pagination-page">4</button>
-                  <button className="pagination-page">5</button>
-
-                  <button className="pagination-arrow">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M9.00005 6L15 12L9 18"
-                        stroke="#09090B"
-                      strokeWidth="1.5"
-                      strokeMiterlimit="16"
-                      />
-                    </svg>
-                  </button>
-                </div> */}
+                      {totalPages > 1 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onChange={(page) => setCurrentPage(page)}
+                        />
+                      )}
+                </>
               </div>
             </div>
           </div>
@@ -1099,7 +1379,7 @@ console.log("filters", filters);
             ></div>
             <div className="mobile-filter-panel">
               <div className="mobile-filter-header">
-                <h3>Filter</h3>
+                <h3>{tSearch('filter')}</h3>
                 <button
                   className="close-btn"
                   aria-label="Close filters"
@@ -1115,12 +1395,12 @@ console.log("filters", filters);
               </div>
               <div className="mobile-filter-body">{renderFilters(true)}</div>
               <div className="mobile-filter-footer">
-                <button className="reset-btn button-primary">Reset</button>
+                <button className="reset-btn button-primary" onClick={handleClearFilters}>{tSearch('reset')}</button>
                 <button
                   className="apply-btn button-primary"
                   onClick={() => setIsMobileFilterOpen(false)}
                 >
-                  Show hotels
+                  {tSearch('showHotels')}
                 </button>
               </div>
             </div>

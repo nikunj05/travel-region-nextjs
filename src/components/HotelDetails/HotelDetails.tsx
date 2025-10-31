@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import "./HotelDetails.scss";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -12,7 +12,7 @@ import mapImage from "@/assets/images/map-image.jpg";
 import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
 import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
 import LocationAddressIcon from "@/assets/images/map-icon.svg";
-// import FilterComponents from "../FilterComponents/FilterComponents";
+import FilterComponents from "../FilterComponents/FilterComponents";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
 import HotelDetailsCardImage from "@/assets/images/hotel-card-image.jpg";
@@ -35,19 +35,116 @@ interface HotelDetailsProps {
 
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
+  const locale = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
+  console.log('hotelData', hotelData);
   const router = useRouter();
 
-  // Fetch hotel details
+  // Helper function to map locale to API language code
+  const getLanguageCode = (currentLocale: string): string => {
+    return currentLocale === 'ar' ? 'ARA' : 'ENG';
+  };
+
+  // Fetch hotel details on mount and when locale changes
   useEffect(() => {
     if (hotelId) {
-      fetchHotel({ hotelId, language: 'ENG' });
+      const languageCode = getLanguageCode(locale);
+      console.log('Fetching hotel details with language:', languageCode, 'for hotelId:', hotelId);
+      fetchHotel({ hotelId, language: languageCode });
     }
-  }, [hotelId, fetchHotel]);
+  }, [hotelId, locale, fetchHotel]);
+
+  // Process and combine rooms with images and facilities
+  useEffect(() => {
+    if (hotelData && hotelData.rooms && hotelData.images) {
+      const roomsWithDetails = hotelData.rooms.map((room) => {
+        // Filter images for this room
+        const roomImages = (hotelData.images || []).filter(
+          (img) => img.roomCode === room.roomCode && img.path
+        ).map((img) => ({
+          path: img.path,
+          fullUrl: buildHotelbedsImageUrl(img.path),
+          type: img.type?.code || 'Unknown',
+          typeDescription: img.type?.description?.content || '',
+          order: img.order || img.visualOrder || 0,
+          characteristicCode: img.characteristicCode || ''
+        })).sort((a, b) => a.order - b.order);
+
+        // Extract room facilities
+        const facilities = (room.roomFacilities || []).map((facility) => ({
+          code: facility.facilityCode,
+          groupCode: facility.facilityGroupCode,
+          description: facility.description?.content || '',
+          hasLogic: facility.indLogic || false,
+          hasFee: facility.indFee || false,
+          number: facility.number || null,
+          isYesOrNo: facility.indYesOrNo || false
+        }));
+
+        // Extract room stays info
+        const roomStays = (room.roomStays || []).map((stay) => ({
+          type: stay.stayType,
+          order: stay.order,
+          description: stay.description || '',
+          facilities: (stay.roomStayFacilities || []).map((f) => ({
+            code: f.facilityCode,
+            groupCode: f.facilityGroupCode,
+            description: f.description?.content || '',
+            number: f.number || null
+          }))
+        }));
+
+        return {
+          roomCode: room.roomCode,
+          description: room.description,
+          type: room.type?.code || '',
+          typeDescription: room.type?.description?.content || '',
+          characteristic: room.characteristic?.code || '',
+          characteristicDescription: room.characteristic?.description?.content || '',
+          isParentRoom: room.isParentRoom,
+          capacity: {
+            minPax: room.minPax,
+            maxPax: room.maxPax,
+            minAdults: room.minAdults,
+            maxAdults: room.maxAdults,
+            maxChildren: room.maxChildren || 0
+          },
+          images: roomImages,
+          imageCount: roomImages.length,
+          facilities: facilities,
+          facilityCount: facilities.length,
+          roomStays: roomStays,
+          PMSRoomCode: room.PMSRoomCode || ''
+        };
+      });
+
+      // Console log with proper formatting
+      console.group('🏨 ROOMS WITH COMPLETE DETAILS');
+      console.log(`Total Rooms: ${roomsWithDetails.length}`);
+      console.log(`Total Images Available: ${hotelData.images.length}`);
+      console.log('─'.repeat(80));
+      
+      // roomsWithDetails.forEach((room, index) => {
+      //   console.group(`\n📍 Room ${index + 1}: ${room.roomCode}`);
+      //   console.log('Description:', room.description);
+      //   console.log('Type:', `${room.type} - ${room.typeDescription}`);
+      //   console.log('Characteristic:', `${room.characteristic} - ${room.characteristicDescription}`);
+      //   console.log('Capacity:', `${room.capacity.minPax}-${room.capacity.maxPax} people (Max ${room.capacity.maxAdults} adults, ${room.capacity.maxChildren} children)`);
+      //   console.log(`Images (${room.imageCount}):`, room.images);
+      //   console.log(`Facilities (${room.facilityCount}):`, room.facilities);
+      //   console.log('Room Stays:', room.roomStays);
+      //   console.groupEnd();
+      // });
+      
+
+
+      // Store for later use if needed
+    }
+  }, [hotelData]);
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -585,9 +682,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         {/* Rooms */}
         <section id="rooms" className="rooms-filter-section">
           <h2 className="hotel-section-title">Room</h2>
-          {/* <div className="room-filters">
+          <div className="room-filters">
             <FilterComponents />
-          </div> */}
+          </div>
           <div className="room-filter-bar">
             <div className="room-filter-left">
               <button className="filter-btn active">All rooms</button>

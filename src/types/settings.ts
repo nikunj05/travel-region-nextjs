@@ -13,6 +13,10 @@ export interface AppSetting {
   contact_us: string;
   whatsapp_number: string;
   social_media_links: SocialMediaLink[];
+  // Optional homepage hero fields provided by backend
+  home_hero_image?: string | null;
+  home_title?: string | null;
+  home_subtitle?: string | null;
 }
 
 export interface GetSettingsResponse {
