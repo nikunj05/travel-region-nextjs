@@ -548,6 +548,8 @@
           .hotel-info-with-action-card {
             gap: 32px;
             height: 100%;
+            justify-content: space-between;
+            width: 100%;
           }
 
           .hotel-info {
@@ -807,6 +809,8 @@
                 .view-details-button {
                   padding: 8.7px 15px;
                   font-size: 14px;
+                  max-width: fit-content;
+                  margin-left: auto;
                 }
               }
             }
