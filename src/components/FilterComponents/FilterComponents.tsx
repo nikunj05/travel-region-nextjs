@@ -10,18 +10,8 @@ import calendarIcon from "@/assets/images/calendar-icon.svg";
 import plusIcon from "@/assets/images/plus-icon.svg";
 import guestsIcon from "@/assets/images/guests-icon.svg";
 import "./FilterComponents.scss";
-
-interface Location {
-  id: string;
-  name: string;
-  country: string;
-}
-
-interface GuestCounts {
-  adults: number;
-  children: number;
-  pets: number;
-}
+import { useSearchFiltersStore } from "@/store/searchFiltersStore";
+import type { Location, Room } from "@/store/searchFiltersStore";
 
 // interface Hotel {
 //   id: string;
@@ -39,25 +29,36 @@ interface GuestCounts {
 // }
 
 const FilterComponents = () => {
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>({
-    id: "1",
-    name: "Bangkok",
-    country: "Thailand",
-  });
-  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
-    new Date(2024, 7, 8)
-  ); // Aug 08
-  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(
-    new Date(2024, 7, 18)
-  ); // Aug 18
-  const [guestCounts, setGuestCounts] = useState<GuestCounts>({
-    adults: 3,
-    children: 0,
-    pets: 0,
-  });
+  // Use global search filters store
+  const { 
+    filters, 
+    setLocation, 
+    setCheckInDate, 
+    setCheckOutDate, 
+    setRooms
+  } = useSearchFiltersStore();
+
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Wait for Zustand store to hydrate from localStorage
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  // Debug: Log filters to console
+  useEffect(() => {
+    if (isHydrated) {
+      console.log('🔍 FilterComponents - Current filters:', {
+        checkInDate: filters.checkInDate,
+        checkOutDate: filters.checkOutDate,
+        rooms: filters.rooms,
+        location: filters.location
+      });
+    }
+  }, [filters, isHydrated]);
 
 
 
@@ -97,13 +98,13 @@ const FilterComponents = () => {
 
 
   const handleLocationSelect = (location: Location | null) => {
-    setSelectedLocation(location);
+    setLocation(location);
     setIsLocationPickerOpen(false);
   };
 
   const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
-    setSelectedStartDate(startDate);
-    setSelectedEndDate(endDate);
+    setCheckInDate(startDate);
+    setCheckOutDate(endDate);
     // Auto-close when both dates are selected
     if (startDate && endDate) {
       setTimeout(() => {
@@ -112,20 +113,44 @@ const FilterComponents = () => {
     }
   };
 
-  const handleGuestCountChange = (counts: GuestCounts) => {
-    setGuestCounts(counts);
+  const handleRoomsChange = (rooms: Room[]) => {
+    setRooms(rooms);
     // Don't auto-close guests picker, let user manually close or click outside
   };
 
   const formatDate = (date: Date | null) => {
     if (!date) return "Add Date";
-    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+    // Ensure date is a valid Date object
+    const validDate = date instanceof Date ? date : new Date(date);
+    if (isNaN(validDate.getTime())) return "Add Date";
+    return validDate.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
   };
 
-  const getTotalGuests = () => {
-    return guestCounts.adults + guestCounts.children + guestCounts.pets;
-  };
+  const getGuestsDisplayText = () => {
+    // Safety check for rooms array
+    const rooms = filters.rooms || [{ adults: 0, children: 0 }];
+    
+    const totalAdults = rooms.reduce(
+      (acc, room) => acc + (room?.adults || 0),
+      0
+    );
+    const totalChildren = rooms.reduce(
+      (acc, room) => acc + (room?.children || 0),
+      0
+    );
+    const totalGuests = totalAdults + totalChildren;
 
+    if (totalGuests === 0) return "Add Guests";
+
+    const guestsText = `${totalGuests} ${
+      totalGuests > 1 ? "Guests" : "Guest"
+    }`;
+    const roomsText = `${rooms.length} ${
+      rooms.length > 1 ? "Rooms" : "Room"
+    }`;
+
+    return `${guestsText} • ${roomsText}`;
+  };
 
   return (
     <div className="search-bar-common">
@@ -144,7 +169,7 @@ const FilterComponents = () => {
                 alt="location icon"
               />
               <span className="search-input-text">
-                {selectedLocation ? selectedLocation.name : "Find Location"}
+                {filters.location ? filters.location.name : "Find Location"}
               </span>
             </div>
             <Image
@@ -157,7 +182,7 @@ const FilterComponents = () => {
           <LocationPicker
             isOpen={isLocationPickerOpen}
             onLocationSelect={handleLocationSelect}
-            selectedLocation={selectedLocation}
+            selectedLocation={filters.location}
           />
         </div> */}
 
@@ -175,7 +200,7 @@ const FilterComponents = () => {
                 alt="calendar icon"
               />
               <span className="search-input-text">
-                {formatDate(selectedStartDate)}
+                {formatDate(filters.checkInDate)}
               </span>
             </div>
             <Image src={plusIcon} width="24" height="24" alt="plus icon" />
@@ -183,8 +208,8 @@ const FilterComponents = () => {
           <DatePicker
             isOpen={isDatePickerOpen}
             onDateSelect={handleDateSelect}
-            selectedStartDate={selectedStartDate}
-            selectedEndDate={selectedEndDate}
+            selectedStartDate={filters.checkInDate}
+            selectedEndDate={filters.checkOutDate}
           />
         </div>
 
@@ -202,7 +227,7 @@ const FilterComponents = () => {
                 alt="calendar icon"
               />
               <span className="search-input-text">
-                {formatDate(selectedEndDate)}
+                {formatDate(filters.checkOutDate)}
               </span>
             </div>
             <Image src={plusIcon} width="24" height="24" alt="plus icon" />
@@ -223,9 +248,7 @@ const FilterComponents = () => {
                 alt="guests icon"
               />
               <span className="search-input-text">
-                {getTotalGuests() > 0
-                  ? `${getTotalGuests()} Guests`
-                  : "Add Guests"}
+                {getGuestsDisplayText()}
               </span>
             </div>
             <Image
@@ -237,8 +260,8 @@ const FilterComponents = () => {
           </div>
           <GuestsPicker
             isOpen={isGuestsPickerOpen}
-            onGuestCountChange={handleGuestCountChange}
-            guestCounts={guestCounts}
+            onRoomsChange={handleRoomsChange}
+            rooms={filters.rooms || [{ adults: 2, children: 1 }]}
           />
         </div>
 

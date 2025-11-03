@@ -4,42 +4,52 @@ import Image from "next/image";
 import minusRoundIcon from "@/assets/images/minus-round-icon.svg";
 import plusRoundIcon from "@/assets/images/plus-round-icon.svg";
 import "./GuestsPicker.scss";
-
-interface GuestCounts {
-  adults: number;
-  children: number;
-  pets: number;
-}
+import { Room } from "../../../store/searchFiltersStore";
 
 interface GuestsPickerProps {
   isOpen: boolean;
-  onGuestCountChange: (counts: GuestCounts) => void;
-  guestCounts: GuestCounts;
+  onRoomsChange: (rooms: Room[]) => void;
+  rooms: Room[];
 }
 
 const GuestsPicker: React.FC<GuestsPickerProps> = ({
   isOpen,
-  onGuestCountChange,
-  guestCounts,
+  onRoomsChange,
+  rooms,
 }) => {
-  const updateGuestCount = (type: keyof GuestCounts, increment: boolean) => {
-    const newCounts = { ...guestCounts };
-    const currentCount = newCounts[type];
+  const updateRoomCount = (
+    roomIndex: number,
+    type: keyof Room,
+    increment: boolean
+  ) => {
+    const newRooms = [...rooms];
+    const currentCount = newRooms[roomIndex][type];
 
     if (increment) {
-      newCounts[type] = currentCount + 1;
+      newRooms[roomIndex][type] = currentCount + 1;
     } else {
       if (type === "adults") {
-        newCounts[type] = Math.max(1, currentCount - 1);
+        newRooms[roomIndex][type] = Math.max(1, currentCount - 1);
       } else {
-        newCounts[type] = Math.max(0, currentCount - 1);
+        newRooms[roomIndex][type] = Math.max(0, currentCount - 1);
       }
     }
 
-    onGuestCountChange(newCounts);
+    onRoomsChange(newRooms);
   };
 
-  const renderGuestIcon = (type: "adults" | "children" | "pets") => {
+  const addRoom = () => {
+    onRoomsChange([...rooms, { adults: 1, children: 0 }]);
+  };
+
+  const removeRoom = (roomIndex: number) => {
+    if (rooms.length > 1) {
+      const newRooms = rooms.filter((_, index) => index !== roomIndex);
+      onRoomsChange(newRooms);
+    }
+  };
+
+  const renderGuestIcon = (type: "adults" | "children") => {
     switch (type) {
       case "adults":
         return (
@@ -79,21 +89,6 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
             />
           </svg>
         );
-      case "pets":
-        return (
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M23.14 12.3535C22.9154 13.1463 22.4663 13.8334 21.8763 14.2876C21.4052 14.6508 20.8702 14.8408 20.344 14.8408C20.1459 14.8408 19.9522 14.8143 19.7606 14.7602C19.065 14.5612 18.5013 14.0086 18.2152 13.2437C17.9532 12.5465 17.9356 11.7262 18.1601 10.9332C18.3869 10.1404 18.836 9.4533 19.4238 8.99913C20.0711 8.50028 20.8416 8.32787 21.5395 8.52648C22.2352 8.72552 22.801 9.27808 23.0872 10.0429C23.347 10.7402 23.3667 11.5605 23.14 12.3535ZM8.42036 10.3496C9.24817 10.3496 10.0385 9.88886 10.5889 9.08486C11.0886 8.35591 11.3638 7.40111 11.3638 6.39587C11.3638 5.38975 11.0886 4.43495 10.5889 3.706C10.0385 2.90223 9.24812 2.44141 8.42036 2.44141C7.59034 2.44141 6.80003 2.90219 6.24962 3.706C5.75209 4.43495 5.47689 5.38975 5.47689 6.39587C5.47689 7.40111 5.75209 8.35591 6.24962 9.08486C6.80003 9.88886 7.59039 10.3496 8.42036 10.3496ZM15.5799 10.3496C16.4099 10.3496 17.2002 9.88886 17.7506 9.08486C18.2481 8.35591 18.5233 7.40111 18.5233 6.39587C18.5233 5.38975 18.2481 4.43495 17.7506 3.706C17.2002 2.90223 16.4098 2.44141 15.5799 2.44141C14.752 2.44141 13.9617 2.90219 13.4113 3.706C12.9116 4.43495 12.6364 5.38975 12.6364 6.39587C12.6364 7.40111 12.9116 8.35591 13.4113 9.08486C13.9617 9.88886 14.752 10.3496 15.5799 10.3496ZM5.84012 10.9337C5.61339 10.1405 5.16428 9.45339 4.57642 8.99917C3.92917 8.50033 3.15864 8.32792 2.46072 8.52653C1.76284 8.72556 1.19922 9.27812 0.912998 10.043C0.653217 10.7402 0.633435 11.5605 0.86017 12.3535C1.08475 13.1463 1.53386 13.8334 2.12383 14.2876C2.59497 14.6508 3.12995 14.8408 3.65612 14.8408C3.85206 14.8408 4.048 14.8144 4.23733 14.7602C4.9352 14.5612 5.49883 14.0087 5.785 13.2438C6.04708 12.5466 6.0647 11.7263 5.84012 10.9337ZM16.3195 12.8669C15.1131 11.5988 13.5808 10.9009 12.0001 10.9009C10.4194 10.9009 8.88489 11.5988 7.68283 12.8669C6.53359 14.0762 5.73226 15.7543 5.42401 17.5928C5.22808 18.7655 5.5847 19.8943 6.4059 20.6893C7.26011 21.5166 8.3763 21.7678 9.4683 21.3795C10.2763 21.091 11.1283 20.9449 12.0001 20.9449C12.8719 20.9449 13.7239 21.0911 14.5319 21.3795C14.8688 21.4992 15.2078 21.5584 15.5402 21.5584C16.2865 21.5584 17.0021 21.2617 17.5921 20.6893C18.4155 19.8943 18.7721 18.7656 18.5762 17.5928C18.268 15.7542 17.4666 14.0762 16.3195 12.8669Z"
-              fill="black"
-            />
-          </svg>
-        );
       default:
         return null;
     }
@@ -104,114 +99,110 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
   return (
     <div className="guestspicker-dropdown">
       <div className="guestspicker-content">
-        <div className="guestspicker-section">
-          <div className="guestspicker-room-title">Room 1</div>
-
-          <div className="guestspicker-item">
-            <div className="guestspicker-icon-with-text">
-              {renderGuestIcon("adults")}
-              <span className="guestspicker-label">Adults</span>
+        {rooms.map((room, index) => (
+          <div className="guestspicker-section" key={index}>
+            <div className="guestspicker-room-title-wrapper">
+              <div className="guestspicker-room-title">
+                Room {index + 1}
+              </div>
+              {rooms.length > 1 && (
+                <button
+                  className="guestspicker-remove-room"
+                  onClick={() => removeRoom(index)}
+                  type="button"
+                >
+                  Remove room
+                </button>
+              )}
             </div>
-            <div className="guestspicker-counter">
-              <button
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount("adults", false)}
-              >
-                <Image
-                  src={minusRoundIcon}
-                  width="20"
-                  height="20"
-                  alt="minus icon"
-                />
-              </button>
-              <span className="guestspicker-count">{guestCounts.adults}</span>
-              <button
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount("adults", true)}
-              >
-                <Image
-                  src={plusRoundIcon}
-                  width="20"
-                  height="20"
-                  alt="plus icon"
-                />
-              </button>
+
+            <div className="guestspicker-item">
+              <div className="guestspicker-icon-with-text">
+                {renderGuestIcon("adults")}
+                <span className="guestspicker-label">Adults</span>
+              </div>
+              <div className="guestspicker-counter">
+                <button
+                  className="guestspicker-btn"
+                  onClick={() => updateRoomCount(index, "adults", false)}
+                >
+                  <Image
+                    src={minusRoundIcon}
+                    width="20"
+                    height="20"
+                    alt="minus icon"
+                  />
+                </button>
+                <span className="guestspicker-count">{room.adults}</span>
+                <button
+                  className="guestspicker-btn"
+                  onClick={() => updateRoomCount(index, "adults", true)}
+                >
+                  <Image
+                    src={plusRoundIcon}
+                    width="20"
+                    height="20"
+                    alt="plus icon"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="guestspicker-item">
+              <div className="guestspicker-icon-with-text">
+                {renderGuestIcon("children")}
+                <span className="guestspicker-label">Children</span>
+              </div>
+              <div className="guestspicker-counter">
+                <button
+                  className="guestspicker-btn"
+                  onClick={() => updateRoomCount(index, "children", false)}
+                >
+                  <Image
+                    src={minusRoundIcon}
+                    width="20"
+                    height="20"
+                    alt="minus icon"
+                  />
+                </button>
+                <span className="guestspicker-count">{room.children}</span>
+                <button
+                  className="guestspicker-btn"
+                  onClick={() => updateRoomCount(index, "children", true)}
+                >
+                  <Image
+                    src={plusRoundIcon}
+                    width="20"
+                    height="20"
+                    alt="plus icon"
+                  />
+                </button>
+              </div>
             </div>
           </div>
-
-          <div className="guestspicker-item">
-            <div className="guestspicker-icon-with-text">
-              {renderGuestIcon("children")}
-              <span className="guestspicker-label">Children</span>
-            </div>
-            <div className="guestspicker-counter">
-              <button
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount("children", false)}
-              >
-                <Image
-                  src={minusRoundIcon}
-                  width="20"
-                  height="20"
-                  alt="minus icon"
-                />
-              </button>
-              <span className="guestspicker-count">{guestCounts.children}</span>
-              <button
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount("children", true)}
-              >
-                <Image
-                  src={plusRoundIcon}
-                  width="20"
-                  height="20"
-                  alt="plus icon"
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* <div className="guestspicker-item">
-            <div className="guestspicker-icon-with-text">
-              {renderGuestIcon('pets')}
-              <span className="guestspicker-label">Pets</span>
-            </div>
-            <div className="guestspicker-counter">
-              <button 
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount('pets', false)}
-              >
-                <Image src={minusRoundIcon} width="20" height="20" alt="minus icon" />
-              </button>
-              <span className="guestspicker-count">{guestCounts.pets}</span>
-              <button 
-                className="guestspicker-btn"
-                onClick={() => updateGuestCount('pets', true)}
-              >
-                <Image src={plusRoundIcon} width="20" height="20" alt="plus icon" />
-              </button>
-            </div>
-          </div> */}
-
-          <button className="guestspicker-add-room">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12.0007 5.3335V18.6668M18.6673 12.0002H5.33398"
-                stroke="#3E5B96"
-                strokeWidth="1.25"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Add another Room
-          </button>
-        </div>
+        ))}
+        <button 
+          className="guestspicker-add-room" 
+          onClick={addRoom}
+          type="button"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12.0007 5.3335V18.6668M18.6673 12.0002H5.33398"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Add another Room
+        </button>
       </div>
     </div>
   );

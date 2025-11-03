@@ -36,7 +36,7 @@ const Banner = () => {
     setLocation,
     setCheckInDate,
     setCheckOutDate,
-    setGuestCounts,
+    setRooms,
     setFreeCancellation,
   } = useSearchFiltersStore();
 
@@ -167,12 +167,12 @@ const Banner = () => {
       e.preventDefault();
       return;
     }
-
-    // Prevent default navigation temporarily to fetch hotels first
+    
+    // Prevent default navigation to set store state before navigating
     e.preventDefault();
 
     // Set loading state
-    setIsSearching(true);
+    // setIsSearching(true); // This will be handled by the search result page
 
     try {
       const coords = filters.location?.coordinates;
@@ -183,27 +183,24 @@ const Banner = () => {
       useHotelSearchStore
         .getState()
         .setDates(filters.checkInDate, filters.checkOutDate);
-      useHotelSearchStore.getState().setGuests(
-        filters.guestCounts.adults,
-        filters.guestCounts.children,
-        1 // rooms (fallback to 1 for now)
-      );
-      useHotelSearchStore.getState().setLanguage("eng");
+      useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
+      useHotelSearchStore.getState().setLanguage("eng"); // Default to English initially
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 
-      // Execute search and then navigate
-      await useHotelSearchStore.getState().search();
+      // Don't execute search here; just navigate
+      // await useHotelSearchStore.getState().search();
 
-      // Navigate to search result page after hotels are fetched (client-side to preserve state)
+      // Navigate to search result page (client-side to preserve state)
       router.push("/search-result");
     } catch (err) {
-      console.error("Failed to fetch hotels:", err);
-      // Still navigate even if there's an error
+      console.error("Failed to set search store state:", err);
+      // Still navigate even if there's an error setting state
       router.push("/search-result");
-    } finally {
+    } 
+    // finally {
       // Reset loading state
-      setIsSearching(false);
-    }
+      // setIsSearching(false);
+    // }
   };
 
   const toggleGuestsDropdown = () => {
@@ -216,12 +213,29 @@ const Banner = () => {
   };
 
   const getGuestsDisplayText = () => {
-    const total =
-      filters.guestCounts.adults +
-      filters.guestCounts.children +
-      filters.guestCounts.pets;
-    if (total === 0) return t("addGuests");
-    return `${total} ${total > 1 ? t("guests") : t("guest")}`;
+    // Safety check for rooms array
+    const rooms = filters.rooms || [{ adults: 0, children: 0 }];
+    
+    const totalAdults = rooms.reduce(
+      (acc, room) => acc + (room?.adults || 0),
+      0
+    );
+    const totalChildren = rooms.reduce(
+      (acc, room) => acc + (room?.children || 0),
+      0
+    );
+    const totalGuests = totalAdults + totalChildren;
+
+    if (totalGuests === 0) return t("addGuests");
+    
+    const guestsText = `${totalGuests} ${
+      totalGuests > 1 ? t("guests") : t("guest")
+    }`;
+    const roomsText = `${rooms.length} ${
+      rooms.length > 1 ? t("rooms") : t("room")
+    }`;
+
+    return `${guestsText} • ${roomsText}`;
   };
 
   // Date picker functions
@@ -464,8 +478,8 @@ const Banner = () => {
                   </button>
                   <GuestsPicker
                     isOpen={isGuestsDropdownOpen}
-                    onGuestCountChange={setGuestCounts}
-                    guestCounts={filters.guestCounts}
+                    onRoomsChange={setRooms}
+                    rooms={filters.rooms || [{ adults: 2, children: 1 }]}
                   />
                 </div>
               </div>

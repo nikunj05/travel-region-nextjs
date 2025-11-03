@@ -37,7 +37,7 @@ const Popular = () => {
     })();
   }, []);
 
-  const handleViewDetails = async (
+  const handleViewDetails = (
     e: React.MouseEvent<HTMLAnchorElement>,
     item?: PopularDestinationItem
   ) => {
@@ -52,27 +52,23 @@ const Popular = () => {
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
-    try {
-      // Set visible location (country) for header/search UI
-      setLocation({
-        id: String(item.id),
-        name: item.country || item.location,
-        country: item.country || "",
-        region: item.state,
-        coordinates: { lat: latitude, lng: longitude },
-      });
+    // Set visible location (city) for header/search UI
+    setLocation({
+      id: String(item.id),
+      name: item.city || item.location,
+      country: item.country || "",
+      region: item.state,
+      coordinates: { lat: latitude, lng: longitude },
+    });
 
-      useHotelSearchStore.getState().setDates(today, tomorrow);
-      useHotelSearchStore.getState().setGuests(2, 0, 1);
-      useHotelSearchStore.getState().setLanguage("eng");
-      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
-
-      await useHotelSearchStore.getState().search();
-    } catch (err) {
-      console.error("Failed to pre-search for destination:", err);
-    } finally {
-      router.push("/search-result");
-    }
+    useHotelSearchStore.getState().setDates(today, tomorrow);
+    useHotelSearchStore.getState().setRooms([{ adults: 2, children: 0 }]);
+    useHotelSearchStore.getState().setLanguage("eng");
+    useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+    
+    // We don't search here. Just set the state and navigate.
+    // The search-result page will trigger the search.
+    router.push("/search-result");
   };
 
   return (

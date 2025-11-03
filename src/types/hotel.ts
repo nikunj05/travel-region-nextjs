@@ -1,11 +1,10 @@
 import { HotelImage } from './favorite';
+import { Room } from '@/store/searchFiltersStore';
 
 export interface GetHotelsRequest {
   check_in: string; // YYYY-MM-DD
   check_out: string; // YYYY-MM-DD
-  rooms: number;
-  adults: number;
-  children: number;
+  rooms: Room[];
   language: string; // e.g., "eng"
   latitude: number;
   longitude: number;
@@ -195,7 +194,7 @@ export interface RoomStay {
   roomStayFacilities: RoomStayFacility[];
 }
 
-export interface Room {
+export interface HotelRoom {
   roomCode: string;
   isParentRoom: boolean;
   minPax: number;
@@ -233,7 +232,7 @@ export interface HotelDetails {
   license: string;
   giataCode: number;
   phones: Phone[];
-  rooms: Room[];
+  rooms: HotelRoom[];
   images?: HotelImage[];
   facilities?: Facility[];
 }

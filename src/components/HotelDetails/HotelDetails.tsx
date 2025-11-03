@@ -9,7 +9,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { buildHotelbedsImageUrl } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
-import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
+// import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
 import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
 import LocationAddressIcon from "@/assets/images/map-icon.svg";
 import FilterComponents from "../FilterComponents/FilterComponents";
@@ -33,6 +33,62 @@ interface HotelDetailsProps {
   hotelId: string;
 }
 
+interface ProcessedRoomImage {
+  path: string;
+  fullUrl: string;
+  type: string;
+  typeDescription: string;
+  order: number;
+  characteristicCode: string;
+}
+
+interface ProcessedRoomFacility {
+  code: number;
+  groupCode: number;
+  description: string;
+  hasLogic: boolean;
+  hasFee: boolean;
+  number: number | null;
+  isYesOrNo: boolean;
+}
+
+interface ProcessedRoomStayFacility {
+  code: number;
+  groupCode: number;
+  description: string;
+  number: number | null;
+}
+
+interface ProcessedRoomStay {
+  type: string;
+  order: string;
+  description: string;
+  facilities: ProcessedRoomStayFacility[];
+}
+
+interface ProcessedRoom {
+  roomCode: string;
+  description: string;
+  type: string;
+  typeDescription: string;
+  characteristic: string;
+  characteristicDescription: string;
+  isParentRoom: boolean;
+  capacity: {
+    minPax: number;
+    maxPax: number;
+    minAdults: number;
+    maxAdults: number;
+    maxChildren: number;
+  };
+  images: ProcessedRoomImage[];
+  imageCount: number;
+  facilities: ProcessedRoomFacility[];
+  facilityCount: number;
+  roomStays: ProcessedRoomStay[];
+  PMSRoomCode: string;
+}
+
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const locale = useLocale();
@@ -40,6 +96,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   console.log('hotelData', hotelData);
   const router = useRouter();
@@ -140,9 +197,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       //   console.groupEnd();
       // });
       
+      console.groupEnd();
 
-
-      // Store for later use if needed
+      // Store processed rooms in state
+      setProcessedRooms(roomsWithDetails);
+      console.log('✅ Processed rooms stored in state:', roomsWithDetails);
     }
   }, [hotelData]);
   const handleOpenModal = () => {
@@ -294,7 +353,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         {!loading && (
           <>
         {/* Breadcrumbs */}
-        <nav className="breadcrumbs" aria-label="Breadcrumb">
+        {/* <nav className="breadcrumbs" aria-label="Breadcrumb">
           <ol>
             <li>
               <Link href="/">Home</Link>
@@ -328,9 +387,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             </li>
             <li aria-current="page">Novotel</li>
           </ol>
-        </nav>
+        </nav> */}
 
-        <div className="hotel-details-main-content">
+        <div className="hotel-details-main-content mt-4">
           <div className="hotel-details-left">
             {/* Image Gallery */}
             <div className="image-gallery-section">
