@@ -65,12 +65,12 @@ const Header = () => {
         pathname.startsWith("/search-result") ||
         pathname.startsWith("/hotel-details") ||
         // pathname === "/blogs" ||
-        pathname === "/booking-review" ||
-        pathname === "/checkout" ||
-        pathname === "/booking-confirmation" ||
+        pathname.startsWith("/booking-review")||
+        pathname.startsWith("/checkout") ||
+        pathname.startsWith("/booking-confirmation") ||
         pathname.startsWith("/blogs/") ||
-        pathname.startsWith("/privacy-policy") ||
-        pathname.startsWith("/terms-conditions") ||
+        // pathname.startsWith("/privacy-policy") ||
+        // pathname.startsWith("/terms-conditions") ||
         // private routes are below
         pathname.startsWith("/profile") ||
         pathname.startsWith("/bookings") ||

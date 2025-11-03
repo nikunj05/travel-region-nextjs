@@ -14,11 +14,10 @@ export interface Location {
   }
 }
 
-// Guest counts interface
-export interface GuestCounts {
-  adults: number
-  children: number
-  pets: number
+// Room interface for guest counts
+export interface Room {
+  adults: number;
+  children: number;
 }
 
 // Search filters interface
@@ -26,7 +25,7 @@ export interface SearchFilters {
   location: Location | null
   checkInDate: Date | null
   checkOutDate: Date | null
-  guestCounts: GuestCounts
+  rooms: Room[]
   freeCancellation: boolean
 }
 
@@ -38,7 +37,7 @@ interface SearchFiltersState {
   setLocation: (location: Location | null) => void
   setCheckInDate: (date: Date | null) => void
   setCheckOutDate: (date: Date | null) => void
-  setGuestCounts: (guestCounts: GuestCounts) => void
+  setRooms: (rooms: Room[]) => void
   setFreeCancellation: (enabled: boolean) => void
   
   // Bulk actions
@@ -54,11 +53,7 @@ const defaultFilters: SearchFilters = {
   location: null,
   checkInDate: null,
   checkOutDate: null,
-  guestCounts: {
-    adults: 2,
-    children: 1,
-    pets: 0,
-  },
+  rooms: [{ adults: 2, children: 1 }],
   freeCancellation: false,
 }
 
@@ -82,9 +77,9 @@ export const useSearchFiltersStore = create<SearchFiltersState>()(
           filters: { ...state.filters, checkOutDate: date }
         })),
 
-      setGuestCounts: (guestCounts) =>
+      setRooms: (rooms) =>
         set((state) => ({
-          filters: { ...state.filters, guestCounts }
+          filters: { ...state.filters, rooms }
         })),
 
       setFreeCancellation: (enabled) =>
@@ -102,34 +97,64 @@ export const useSearchFiltersStore = create<SearchFiltersState>()(
 
       isValidForSearch: () => {
         const { filters } = get()
+        const rooms = filters.rooms || []
+        const totalAdults = rooms.reduce((acc, room) => acc + (room?.adults || 0), 0);
         return !!(
           filters.location &&
           filters.checkInDate &&
           filters.checkOutDate &&
-          filters.guestCounts.adults > 0
+          totalAdults > 0
         )
       },
     }),
     {
-      name: 'search-filters-storage', // unique name for localStorage key
-      // Only persist certain fields to avoid storing Date objects directly
-      partialize: (state) => ({
-        filters: {
-          ...state.filters,
-          checkInDate: state.filters.checkInDate?.toISOString() || null,
-          checkOutDate: state.filters.checkOutDate?.toISOString() || null,
-        }
-      }),
-      // Restore Date objects from ISO strings
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          if (state.filters.checkInDate && typeof state.filters.checkInDate === 'string') {
-            state.filters.checkInDate = new Date(state.filters.checkInDate)
+      name: 'search-filters-storage',
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name)
+          if (!str) return null
+          const { state } = JSON.parse(str)
+          
+          // Migrate from old guestCounts structure to new rooms structure
+          let rooms = state.filters?.rooms
+          if (!rooms && state.filters?.guestCounts) {
+            // Migrate old guestCounts to rooms array
+            const guestCounts = state.filters.guestCounts
+            rooms = [{ adults: guestCounts.adults || 2, children: guestCounts.children || 1 }]
           }
-          if (state.filters.checkOutDate && typeof state.filters.checkOutDate === 'string') {
-            state.filters.checkOutDate = new Date(state.filters.checkOutDate)
+          // Ensure rooms is an array, fallback to default
+          if (!Array.isArray(rooms) || rooms.length === 0) {
+            rooms = [{ adults: 2, children: 1 }]
           }
-        }
+          
+          return {
+            state: {
+              ...state,
+              filters: {
+                ...state.filters,
+                checkInDate: state.filters.checkInDate ? new Date(state.filters.checkInDate) : null,
+                checkOutDate: state.filters.checkOutDate ? new Date(state.filters.checkOutDate) : null,
+                rooms: rooms,
+                // Remove old guestCounts if it exists
+                guestCounts: undefined,
+              }
+            }
+          }
+        },
+        setItem: (name, newValue) => {
+          const str = JSON.stringify({
+            state: {
+              ...newValue.state,
+              filters: {
+                ...newValue.state.filters,
+                checkInDate: newValue.state.filters.checkInDate?.toISOString() || null,
+                checkOutDate: newValue.state.filters.checkOutDate?.toISOString() || null,
+              }
+            }
+          })
+          localStorage.setItem(name, str)
+        },
+        removeItem: (name) => localStorage.removeItem(name),
       },
     }
   )

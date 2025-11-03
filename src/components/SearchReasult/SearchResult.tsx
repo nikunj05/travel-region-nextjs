@@ -19,13 +19,13 @@ import thumbnailImages2 from "@/assets/images/property-thumb-img2.jpg";
 import thumbnailImages3 from "@/assets/images/property-thumb-img3.jpg";
 import thumbnailImages4 from "@/assets/images/property-thumb-img4.jpg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
-import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
-import ParkingIcon from "@/assets/images/parking-icon.svg";
-import PoolIcon from "@/assets/images/pool-icon.svg";
+// import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
+// import ParkingIcon from "@/assets/images/parking-icon.svg";
+// import PoolIcon from "@/assets/images/pool-icon.svg";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
-import { useSearchFiltersStore, Location, GuestCounts } from "@/store/searchFiltersStore";
+import { useSearchFiltersStore, Location, Room } from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem, AccommodationType } from "@/types/hotel";
 import { hotelService } from "@/services/hotelService";
@@ -53,7 +53,7 @@ import Pagination from "../common/Pagination/Pagination";
     setLocation, 
     setCheckInDate, 
     setCheckOutDate, 
-    setGuestCounts 
+    setRooms
   } = useSearchFiltersStore();
 console.log("filters", filters);
 
@@ -71,7 +71,7 @@ console.log("filters", filters);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Recommended");
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+  // const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; // Number of hotels per page
@@ -147,6 +147,7 @@ console.log("filters", filters);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestsPickerRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
 
   // Reset to first page when sort criteria changes
   useEffect(() => {
@@ -364,8 +365,8 @@ console.log("filters", filters);
     }
   };
 
-  const handleGuestCountChange = (counts: GuestCounts) => {
-    setGuestCounts(counts);
+  const handleRoomsChange = (rooms: Room[]) => {
+    setRooms(rooms);
     // Don't auto-close guests picker, let user manually close or click outside
   };
 
@@ -426,7 +427,7 @@ console.log("filters", filters);
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!filters.location) {
       e.preventDefault();
-      setLocationError('Enter a destination to start searching.');
+      setLocationError(t('validation.locationRequired'));
       return;
     }
     setLocationError('');
@@ -438,12 +439,12 @@ console.log("filters", filters);
     const today = getTodayAtMidnight();
     
     if (filters.checkInDate && filters.checkInDate < today) {
-      setCheckInError('Check-in date must be today or later.');
+      setCheckInError(t('validation.checkInDateInvalid'));
       return;
     }
 
-    setCheckInError(isCheckInMissing ? 'Select a check-in date.' : '');
-    setCheckOutError(isCheckOutMissing ? 'Select a check-out date.' : '');
+    setCheckInError(isCheckInMissing ? t('validation.checkInDateRequired') : '');
+    setCheckOutError(isCheckOutMissing ? t('validation.checkOutDateRequired') : '');
 
     if (isCheckInMissing || isCheckOutMissing) {
       return;
@@ -457,11 +458,7 @@ console.log("filters", filters);
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore.getState().setDates(filters.checkInDate, filters.checkOutDate);
-      useHotelSearchStore.getState().setGuests(
-        filters.guestCounts.adults,
-        filters.guestCounts.children,
-        1 // rooms (fallback to 1 for now)
-      );
+      useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
       // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
       useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
@@ -488,22 +485,44 @@ console.log("filters", filters);
     return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
   };
 
-  const getTotalGuests = () => {
-    return filters.guestCounts.adults + filters.guestCounts.children + filters.guestCounts.pets;
+  const getGuestsDisplayText = () => {
+    // Safety check for rooms array
+    const rooms = filters.rooms || [{ adults: 0, children: 0 }];
+    
+    const totalAdults = rooms.reduce(
+      (acc, room) => acc + (room?.adults || 0),
+      0
+    );
+    const totalChildren = rooms.reduce(
+      (acc, room) => acc + (room?.children || 0),
+      0
+    );
+    const totalGuests = totalAdults + totalChildren;
+
+    if (totalGuests === 0) return t("addGuests");
+    
+    const guestsText = `${totalGuests} ${
+      totalGuests > 1 ? t("guests") : t("guest")
+    }`;
+    const roomsText = `${rooms.length} ${
+      rooms.length > 1 ? t("rooms") : t("room")
+    }`;
+
+    return `${guestsText} • ${roomsText}`;
   };
 
-  const handleReadMoreClick = (e: React.MouseEvent<HTMLAnchorElement>, hotelId: string) => {
-    e.preventDefault();
-    setExpandedDescriptions(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(hotelId)) {
-        newSet.delete(hotelId);
-      } else {
-        newSet.add(hotelId);
-      }
-      return newSet;
-    });
-  };
+  // const handleReadMoreClick = (e: React.MouseEvent<HTMLAnchorElement>, hotelId: string) => {
+  //   e.preventDefault();
+  //   setExpandedDescriptions(prev => {
+  //     const newSet = new Set(prev);
+  //     if (newSet.has(hotelId)) {
+  //       newSet.delete(hotelId);
+  //     } else {
+  //       newSet.add(hotelId);
+  //     }
+  //     return newSet;
+  //   });
+  // };
 
   const handleViewDetailsClick = async (hotelCode: string | number | undefined) => {
     if (!hotelCode) return;
@@ -568,6 +587,11 @@ console.log("filters", filters);
   useEffect(() => {
     const csv = selectedAccommodationCodes.join(',') || null;
     useHotelSearchStore.getState().updateFilters({ accommodations: csv });
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
 
     const storeFilters = useHotelSearchStore.getState().filters;
     if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
@@ -1085,9 +1109,7 @@ console.log("filters", filters);
                         alt="guests icon"
                       />
                       <span className="search-input-text">
-                        {getTotalGuests() > 0
-                          ? `${getTotalGuests()} ${t('guests')}`
-                          : t('addGuests')}
+                        {getGuestsDisplayText()}
                       </span>
                     </div>
                     <Image
@@ -1099,8 +1121,8 @@ console.log("filters", filters);
                   </div>
                   <GuestsPicker
                     isOpen={isGuestsPickerOpen}
-                    onGuestCountChange={handleGuestCountChange}
-                    guestCounts={filters.guestCounts}
+                    onRoomsChange={handleRoomsChange}
+                    rooms={filters.rooms || [{ adults: 2, children: 1 }]}
                   />
                 </div>
 
@@ -1152,8 +1174,8 @@ console.log("filters", filters);
                           {hotelFilters.checkIn && hotelFilters.checkOut && (
                             <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
                           )}
-                          {getTotalGuests() > 0 && (
-                            <span>, {getTotalGuests()} {tSearch('guests')}</span>
+                          {getGuestsDisplayText() && (
+                            <span>, {getGuestsDisplayText()}</span>
                           )}
                         </>
                       )}
@@ -1283,7 +1305,7 @@ console.log("filters", filters);
                                   <span>{getHotelLocation(hotel)}</span>
                                 </div>
 
-                                <div className="hotel-amenities">
+                                {/* <div className="hotel-amenities">
                                   {[
                                     { name: 'Breakfast', icon: BreaFastIcon },
                                     { name: 'Parking', icon: ParkingIcon },
@@ -1294,9 +1316,9 @@ console.log("filters", filters);
                                       <span className="amenity-tag-name">{amenity.name}</span>
                                     </div>
                                   ))}
-                                </div>
+                                </div> */}
 
-                                <p className="hotel-description">
+                                {/* <p className="hotel-description">
                                   {(() => {
                                     const hotelId = getHotelId(hotel).toString();
                                     const description = ('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.';
@@ -1318,7 +1340,7 @@ console.log("filters", filters);
                                       </>
                                     );
                                   })()}
-                                </p>
+                                </p> */}
                               </div>
                               <div className="property-card-action">
                                 <div className="hotel-footer">
@@ -1327,7 +1349,7 @@ console.log("filters", filters);
                                       <span className="property-currency">
                                         {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""}
                                       </span>
-                                      {('maxRate' in hotel && (hotel as HotelItem).maxRate) || 179}
+                                      {('maxRate' in hotel && (hotel as HotelItem).minRate) || 179}
                                     </span>
                                     <span className="price-period">{tSearch('perNight')}</span>
                                   </div>

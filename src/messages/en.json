@@ -12,9 +12,17 @@
     "addGuests": "Add Guests",
     "guests": "Guests",
     "guest": "Guest",
+    "rooms": "Rooms",
+    "room": "Room",
     "freeCancellation": "I'm looking for a free cancellation",
     "search": "Search",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "validation": {
+      "locationRequired": "Enter a destination to start searching.",
+      "checkInDateRequired": "Select a check-in date.",
+      "checkOutDateRequired": "Select a check-out date.",
+      "checkInDateInvalid": "Check-in date must be today or later."
+    }
   },
   "SearchResult": {
     "sortRecommended": "Recommended",

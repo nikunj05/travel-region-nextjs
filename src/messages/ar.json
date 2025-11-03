@@ -12,9 +12,17 @@
     "addGuests": "أضف ضيوف",
     "guests": "ضيوف",
     "guest": "ضيف",
+    "rooms": "غرف",
+    "room": "غرفة",
     "freeCancellation": "أبحث عن إلغاء مجاني",
     "search": "بحث",
-    "searching": "جاري البحث..."
+    "searching": "جاري البحث...",
+    "validation": {
+      "locationRequired": "أدخل وجهة للبدء في البحث.",
+      "checkInDateRequired": "اختر تاريخ الوصول.",
+      "checkOutDateRequired": "اختر تاريخ المغادرة.",
+      "checkInDateInvalid": "يجب أن يكون تاريخ الوصول اليوم أو لاحقاً."
+    }
   },
   "SearchResult": {
     "sortRecommended": "موصى به",

@@ -7,13 +7,12 @@ import { FavoriteHotel } from '@/types/favorite'
 import { toast } from 'react-toastify'
 import { formatApiErrorMessage } from '@/lib/formatApiError'
 import { formatDateForAPI } from '@/lib/dateUtils'
+import { Room } from './searchFiltersStore'
 
 export interface HotelSearchFilters {
   checkIn: Date | null
   checkOut: Date | null
-  rooms: number
-  adults: number
-  children: number
+  rooms: Room[]
   language: string // e.g., 'eng'
   latitude: number | null
   longitude: number | null
@@ -38,7 +37,7 @@ interface HotelSearchState {
 
   // Actions - filters
   setDates: (checkIn: Date | null, checkOut: Date | null) => void
-  setGuests: (adults: number, children: number, rooms?: number) => void
+  setRooms: (rooms: Room[]) => void
   setLanguage: (language: string) => void
   setCoordinates: (latitude: number | null, longitude: number | null) => void
   setStarRating: (starRating: number | null) => void
@@ -53,9 +52,7 @@ interface HotelSearchState {
 const defaultFilters: HotelSearchFilters = {
   checkIn: null,
   checkOut: null,
-  rooms: 1,
-  adults: 1,
-  children: 0,
+  rooms: [{ adults: 1, children: 0 }],
   language: 'eng',
   latitude: null,
   longitude: null,
@@ -79,8 +76,8 @@ export const useHotelSearchStore = create<HotelSearchState>()(
         filters: { ...state.filters, checkIn, checkOut }
       })),
 
-      setGuests: (adults, children, rooms) => set((state) => ({
-        filters: { ...state.filters, adults, children, rooms: rooms ?? state.filters.rooms }
+      setRooms: (rooms) => set((state) => ({
+        filters: { ...state.filters, rooms }
       })),
 
       setLanguage: (language) => set((state) => ({
@@ -121,8 +118,6 @@ export const useHotelSearchStore = create<HotelSearchState>()(
             check_in: formatDateForAPI(filters.checkIn),
             check_out: formatDateForAPI(filters.checkOut),
             rooms: filters.rooms,
-            adults: filters.adults,
-            children: filters.children,
             language: filters.language,
             latitude: filters.latitude,
             longitude: filters.longitude,

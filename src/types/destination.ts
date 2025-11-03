@@ -8,6 +8,8 @@ export interface PopularDestinationItem {
   country: string;
   latitude: string;
   longitude: string;
+  hotel_count: number;
+  hotel_min_price: string; // API returns string, format on render
 }
 
 export interface GetPopularDestinationsResponse {

@@ -24,7 +24,9 @@ export const settingsService = {
           Accept: "application/json",
           "Accept-Language": locale, // Add locale header that API expects
         },
-        next: { revalidate: 3600 }, // Cache for 1 hour
+        // Disable caching to revalidate on every request
+        cache: "no-store",
+        next: { revalidate: 0 },
       });
 
       if (!res.ok) {
