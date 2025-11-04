@@ -929,7 +929,7 @@ console.log("filters", filters);
         )}
       </div>
 
-      <div className="filter-section">
+      {/* <div className="filter-section">
         <div
           className="filter-title"
           onClick={() => setIsLocationTypeOpen(!isLocationTypeOpen)}
@@ -957,7 +957,7 @@ console.log("filters", filters);
             </label>
           </div>
         )}
-      </div>
+      </div> */}
     </>
   );
 
@@ -1351,7 +1351,7 @@ console.log("filters", filters);
                                       </span>
                                       {('maxRate' in hotel && (hotel as HotelItem).minRate) || 179}
                                     </span>
-                                    <span className="price-period">{tSearch('perNight')}</span>
+                                    {/* <span className="price-period">{tSearch('perNight')}</span> */}
                                   </div>
                                   <button 
                                     className="view-details-button button-primary w-100" 

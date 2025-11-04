@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { hotelService } from '@/services/hotelService'
 import { HotelDetails as HotelDetailsType } from '@/types/hotel'
+import { useSearchFiltersStore } from './searchFiltersStore'
 
 interface FetchParams {
   hotelId: string
@@ -25,7 +26,22 @@ export const useHotelDetailsStore = create<HotelDetailsState>((set) => ({
   fetchHotel: async ({ hotelId, language = 'ENG' }: FetchParams) => {
     set({ loading: true, error: null })
     try {
-      const response = await hotelService.getHotelDetails({ hotelId, language })
+      const { filters } = useSearchFiltersStore.getState()
+      
+      if (!filters.checkInDate || !filters.checkOutDate) {
+        set({ error: 'Please select check-in and check-out dates.', loading: false });
+        return;
+      }
+
+      const payload = {
+        hotelId,
+        language,
+        check_in: filters.checkInDate.toISOString().split('T')[0],
+        check_out: filters.checkOutDate.toISOString().split('T')[0],
+        rooms: filters.rooms
+      }
+      
+      const response = await hotelService.getHotelDetails(payload)
       set({ hotel: response.data.hotel as HotelDetailsType, loading: false })
     } catch (err: unknown) {
       set({ error: (err as Error)?.message || 'Failed to fetch hotel details', loading: false })

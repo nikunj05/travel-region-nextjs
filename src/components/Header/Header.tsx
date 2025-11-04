@@ -8,8 +8,8 @@ import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import UserImage from "@/assets/images/user-image.png";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
-import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
-import arabicFlagIcon from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
+// import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
+// import arabicFlagIcon from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
 import Link from "next/link";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useAuth } from "@/hooks/useAuth";
@@ -212,6 +212,17 @@ const Header = () => {
                   {t("dealsAndOffers")}
                 </Link>
               </li> */}
+               {isAuthenticated && (
+                <li className="nav-item">
+                  <Link
+                    className="nav-link"
+                    href="/bookings"
+                    onClick={closeMobileMenu}
+                  >
+                    My Bookings
+                  </Link>
+                </li>
+              )}
               <li className="nav-item">
                 <Link
                   className="nav-link"
@@ -221,6 +232,7 @@ const Header = () => {
                   {t("blog")}
                 </Link>
               </li>
+             
               <li className="nav-item">
                 <Link
                   className="nav-link"
@@ -287,13 +299,13 @@ const Header = () => {
                 onClick={toggleLanguageMenu}
                 disabled={isPending}
               >
-                <Image
+                {/* <Image
                   src={locale === "ar" ? arabicFlagIcon : englishFlagIcon}
                   width="36"
                   height="24"
                   alt={locale === "ar" ? "AR" : "EN"}
                   className="flag-icon"
-                />
+                /> */}
                 <span className="lang-text">
                   {locale === "ar" ? "AR" : "EN"}
                 </span>
@@ -320,13 +332,13 @@ const Header = () => {
                   onClick={() => handleLanguageChange("en")}
                   style={{ cursor: "pointer" }}
                 >
-                  <Image
+                  {/* <Image
                     src={englishFlagIcon}
                     width="36"
                     height="24"
                     alt="EN"
                     className="flag"
-                  />{" "}
+                  />{" "} */}
                   EN
                 </li>
                 <li
@@ -334,13 +346,13 @@ const Header = () => {
                   onClick={() => handleLanguageChange("ar")}
                   style={{ cursor: "pointer" }}
                 >
-                  <Image
+                  {/* <Image
                     src={arabicFlagIcon}
                     width="36"
                     height="24"
                     alt="AR"
                     className="flag"
-                  />{" "}
+                  />{" "} */}
                   AR
                 </li>
               </ul>

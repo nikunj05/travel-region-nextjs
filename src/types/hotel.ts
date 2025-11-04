@@ -239,7 +239,10 @@ export interface HotelDetails {
 
 export interface GetHotelDetailsRequest {
   hotelId: string;
-  language?: string;
+  check_in: string;
+  check_out: string;
+  language: string;
+  rooms: Room[];
 }
 
 export interface GetHotelDetailsResponse {

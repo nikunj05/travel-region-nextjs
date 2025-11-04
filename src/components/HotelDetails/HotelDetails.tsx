@@ -653,7 +653,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   <span className="rating-value">4.5</span> (120 Reviews)
                 </span>
               </div>
-              <div className="distance d-flex align-items-center">
+              {/* <div className="distance d-flex align-items-center">
                 <Image
                   src={LocationMapIcon}
                   width={20}
@@ -662,7 +662,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   className="hotel-rating-icon"
                 />
                 2.4km away from city center
-              </div>
+              </div> */}
               <div className="location-address d-flex align-items-start">
                 <Image
                   src={LocationAddressIcon}
@@ -675,9 +675,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               </div>
 
               <div className="hotel-price-info">
-                <div className="price">
+                {/* <div className="price">
                   Price: Starts from <span>$500</span>/night
-                </div>
+                </div> */}
                 <div className="check-availability-action">
                   <button
                     className="button-primary check-availability-btn"
@@ -862,9 +862,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         className="hotel-rating-icon"
                       />
                     </div>
-                    <span className="rating-value-wrapper d-flex align-items-center">
+                    {/* <span className="rating-value-wrapper d-flex align-items-center">
                       <span className="rating-value">4.5</span> (120 Reviews)
-                    </span>
+                    </span> */}
                   </div>
 
                   <div className="room-card-amenities-list">

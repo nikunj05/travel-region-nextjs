@@ -19,9 +19,10 @@ export const hotelService = {
 
   getHotelDetails: async (payload: GetHotelDetailsRequest): Promise<GetHotelDetailsResponse> => {
     try {
-      const { hotelId, language = 'ENG' } = payload;
-      const response = await api.get<GetHotelDetailsResponse>(
-        `/hotels/${hotelId}/details?language=${language}`
+      const { hotelId, ...body } = payload;
+      const response = await api.post<GetHotelDetailsResponse>(
+        `/hotels/${hotelId}/details`,
+        body
       );
       return response.data;
     } catch (error) {

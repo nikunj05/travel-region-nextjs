@@ -76,9 +76,9 @@ const Popular = () => {
       <div className="container">
         <div className="heading_section">
           <h1 className="section-title">{t("title")}</h1>
-          <p className="section-description mx-width-790">
+          {/* <p className="section-description mx-width-790">
             {t("description")}
-          </p>
+          </p> */}
         </div>
         <div className="destination-card-mian">
           {isLoading ? (
