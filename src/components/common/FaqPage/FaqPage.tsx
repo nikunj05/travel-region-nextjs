@@ -62,7 +62,7 @@ const CloseIcon = () => (
 );
 
 const FaqPage = () => {
-  const t = useTranslations('FAQ');
+  const t = useTranslations("FAQ");
   const [faqCategories, setFaqCategories] = useState<FaqCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -114,7 +114,11 @@ const FaqPage = () => {
             <div className="heading_section text-center">
               <SkeletonTheme baseColor="#f0f0f0" highlightColor="#e0e0e0">
                 <Skeleton height={48} style={{ marginBottom: "16px" }} />
-                <Skeleton height={20} count={2} style={{ marginBottom: "24px" }} />
+                <Skeleton
+                  height={20}
+                  count={2}
+                  style={{ marginBottom: "24px" }}
+                />
                 <Skeleton width={200} height={40} borderRadius={20} />
               </SkeletonTheme>
             </div>
@@ -152,7 +156,11 @@ const FaqPage = () => {
                   <div className="faq-items">
                     {Array.from({ length: 4 }).map((_, itemIndex) => (
                       <div key={itemIndex} className="faq-item">
-                        <Skeleton height={60} style={{ marginBottom: "8px" }} borderRadius={8} />
+                        <Skeleton
+                          height={60}
+                          style={{ marginBottom: "8px" }}
+                          borderRadius={8}
+                        />
                       </div>
                     ))}
                   </div>
@@ -171,14 +179,17 @@ const FaqPage = () => {
 
   return (
     <div className="faq-page section-space-b">
-      <section className="banner-section-common faq-banner-section">
+      <section
+        className="banner-section-common faq-banner-section"
+        style={{
+          background: "linear-gradient(360deg, #CEDEFF 0.52%, #6C9CFF 100%)",
+        }}
+      >
         <div className="container">
           <div className="banner-content">
             <div className="heading_section text-center">
-              <h1 className="section-title">{t('title')}</h1>
-              <p className="section-description">
-                {t('description')}
-              </p>
+              <h1 className="section-title">{t("title")}</h1>
+              <p className="section-description">{t("description")}</p>
               <button className="button-primary mx-auto banner-common-button">
                 <svg
                   width="25"
@@ -192,7 +203,7 @@ const FaqPage = () => {
                     fill="white"
                   />
                 </svg>
-                {t('chatWithTeam')}
+                {t("chatWithTeam")}
               </button>
             </div>
           </div>
@@ -225,7 +236,7 @@ const FaqPage = () => {
                 <SearchIcon />
                 <input
                   type="text"
-                  placeholder={t('searchPlaceholder')}
+                  placeholder={t("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -264,9 +275,7 @@ const FaqPage = () => {
                 ))
               ) : (
                 <div className="no-results">
-                  {searchQuery
-                    ? t('noResultsFound')
-                    : t('noFaqsAvailable')}
+                  {searchQuery ? t("noResultsFound") : t("noFaqsAvailable")}
                 </div>
               )}
             </div>

@@ -1359,17 +1359,17 @@ img {
   .contact-inner-section {
     margin: 0 auto;
     width: 100%;
-    border-radius: 24px;
-    background: rgba(0, 0, 0, 0.06) url('../assets/images/contact-us-image.jpg') center/cover no-repeat;
+    border-radius: 16px;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)), url('../assets/images/contact-us-image.jpg') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: 500px;
+    min-height: auto;
     color: $color-white;
     position: relative;
     overflow: hidden;
-    padding: 116px 15px;
+    padding: 45px 15px;
   }
 
   .contact-inner-section {
@@ -1378,13 +1378,13 @@ img {
 
       .section-title {
         color: $color-white;
-        font-size: 56px;
+        font-size: 52px;
         font-weight: $font-weight600;
       }
 
       .section-description {
         color: $color-white;
-        font-size: 18px;
+        font-size: 16px;
       }
     }
 
@@ -1706,6 +1706,8 @@ img {
 
   &.faq-banner-section {
     background: url("../assets/images/faq-page-banner-image.jpg") no-repeat center center/cover;
+    min-height: auto;
+    padding: 140px 0 80px 0;
   }
 
   &.privacy-policy-banner-section {
@@ -1743,7 +1745,9 @@ img {
   }
 
   &.about-us-banner-section {
-    background: url("../assets/images/about-us-banner-section.jpg") no-repeat center center/cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)), url("../assets/images/about-us-banner-section.jpg") no-repeat center center/cover;
+    min-height: auto;
+    padding: 140px 0 80px 0;
   }
 
   .banner-content {

@@ -1,33 +1,57 @@
-import React from 'react'
-import { useTranslations } from 'next-intl'
+import React from "react";
+import { useTranslations } from "next-intl";
 
 const Contact = () => {
-  const t = useTranslations('Contact')
+  const t = useTranslations("Contact");
 
   return (
     <section className="home-contact-section section-space-tb">
-    <div className="container">
-      <div className="contact-inner-section">
-        <div className="contact-us-content">
-          <div className="heading_section">
-            <h1 className="section-title" dangerouslySetInnerHTML={{ __html: t('title').replace(/help|المساعدة/g, (match) => match + '<br/>') }}></h1>
-            <p className="section-description mx-width-790">&ldquo;{t('description')}&rdquo;</p>
+      <div className="container">
+        <div className="contact-inner-section">
+          <div className="contact-us-content">
+            <div className="heading_section">
+              <h1
+                className="section-title"
+                dangerouslySetInnerHTML={{
+                  __html: t("title").replace(
+                    /help|المساعدة/g,
+                    (match) => match + ""
+                  ),
+                }}
+              ></h1>
+              <p className="section-description mx-width-790">
+                &ldquo;{t("description")}&rdquo;
+              </p>
+            </div>
+            <button className="btn hotel-search-button d-flex align-items-center mx-auto">
+              {t("searchHotel")}
+              <svg
+                width="25"
+                height="24"
+                viewBox="0 0 25 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 17.5L22.5 22"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M20.5 11C20.5 6.02944 16.4706 2 11.5 2C6.52944 2 2.5 6.02944 2.5 11C2.5 15.9706 6.52944 20 11.5 20C16.4706 20 20.5 15.9706 20.5 11Z"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           </div>
-          <button className="btn hotel-search-button d-flex align-items-center mx-auto">
-            {t('searchHotel')}
-            <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 17.5L22.5 22" stroke="white" strokeWidth="1.5" strokeLinecap="round"
-                strokeLinejoin="round" />
-              <path
-                d="M20.5 11C20.5 6.02944 16.4706 2 11.5 2C6.52944 2 2.5 6.02944 2.5 11C2.5 15.9706 6.52944 20 11.5 20C16.4706 20 20.5 15.9706 20.5 11Z"
-                stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
-            </svg>
-          </button>
         </div>
       </div>
-    </div>
-  </section>
-  )
-}
+    </section>
+  );
+};
 
-export default Contact
+export default Contact;
