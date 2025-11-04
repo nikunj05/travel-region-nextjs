@@ -134,6 +134,7 @@
               background-color: $color-white;
               border: 1px solid $color-white;
               color: $color-black;
+              max-width: 90%;
 
               &:hover {
                 border-color: $brand-color;
@@ -1036,7 +1037,7 @@
 @media (max-width: 1199.55px) {
   .hotel-details-page {
     .hotel-details-main-content {
-      grid-template-columns: 1fr 267px;
+      grid-template-columns: 1fr 240px;
       gap: 24px;
 
       .hotel-details-left {
@@ -1230,7 +1231,7 @@
                 padding: 3px;
                 bottom: 4px;
                 right: 4px;
-                max-width: 75%;
+                // max-width: 75%;
                 text-align: center;
               }
             }
