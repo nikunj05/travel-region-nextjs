@@ -435,10 +435,32 @@
     }
 
     .room-list {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      overflow-x: auto;
       gap: 32px;
       margin-bottom: 36px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 10px;
+
+      /* Custom scrollbar styling */
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
 
       .room-card {
         display: flex;
@@ -446,6 +468,10 @@
         gap: 0px;
         border: 1px solid $border-color;
         border-radius: 8px;
+        min-width: calc((100% - 64px) / 3);
+        max-width: calc((100% - 64px) / 3);
+        flex: 0 0 auto;
+        scroll-snap-align: start;
 
         .room-card-image {
           position: relative;

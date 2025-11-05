@@ -12,23 +12,13 @@ import guestsIcon from "@/assets/images/guests-icon.svg";
 import "./FilterComponents.scss";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import type { Location, Room } from "@/store/searchFiltersStore";
+  
 
-// interface Hotel {
-//   id: string;
-//   name: string;
-//   rating: number;
-//   reviewCount: number;
-//   location: string;
-//   amenities: string[];
-//   description: string;
-//   price: number;
-//   currency: string;
-//   mainImage: any;
-//   thumbnailImages: any[];
-//   ame: { name: string; icon: string }[];
-// }
+interface FilterComponentsProps {
+  onCheckAvailability?: () => void;
+}
 
-const FilterComponents = () => {
+const FilterComponents = ({ onCheckAvailability }: FilterComponentsProps) => {
   // Use global search filters store
   const { 
     filters, 
@@ -265,7 +255,7 @@ const FilterComponents = () => {
           />
         </div>
 
-        <button className="search-button">Check Availability</button>
+        <button className="search-button" onClick={onCheckAvailability}>Check Availability</button>
       </div>
     </div>
   );

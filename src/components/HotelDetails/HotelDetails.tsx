@@ -1,11 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import "./HotelDetails.scss";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { buildHotelbedsImageUrl } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
@@ -15,7 +18,7 @@ import LocationAddressIcon from "@/assets/images/map-icon.svg";
 import FilterComponents from "../FilterComponents/FilterComponents";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
-import HotelDetailsCardImage from "@/assets/images/hotel-card-image.jpg";
+import HotelDetailsCardImage from "@/assets/images/no-image.jpg";
 import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
 import SelfParking from "@/assets/images/parking-icon.svg";
 import ReviewSlider from "../common/ReviewSlider/ReviewSlider";
@@ -39,7 +42,9 @@ interface ProcessedRoomImage {
   type: string;
   typeDescription: string;
   order: number;
+  visualOrder: number;
   characteristicCode: string;
+  roomType: string;
 }
 
 interface ProcessedRoomFacility {
@@ -50,6 +55,7 @@ interface ProcessedRoomFacility {
   hasFee: boolean;
   number: number | null;
   isYesOrNo: boolean;
+  voucher: boolean;
 }
 
 interface ProcessedRoomStayFacility {
@@ -68,12 +74,14 @@ interface ProcessedRoomStay {
 
 interface ProcessedRoom {
   roomCode: string;
+  name: string;
   description: string;
   type: string;
   typeDescription: string;
   characteristic: string;
   characteristicDescription: string;
   isParentRoom: boolean;
+  PMSRoomCode: string;
   capacity: {
     minPax: number;
     maxPax: number;
@@ -83,55 +91,83 @@ interface ProcessedRoom {
   };
   images: ProcessedRoomImage[];
   imageCount: number;
+  mainImage: string | null;
   facilities: ProcessedRoomFacility[];
   facilityCount: number;
   roomStays: ProcessedRoomStay[];
-  PMSRoomCode: string;
+  rates: Array<{
+    rateKey: string;
+    rateClass: string;
+    net: number;
+    sellingRate: number;
+    hotelSellingRate: number;
+    boardCode: string;
+    boardName: string;
+    cancellationPolicies: any[];
+  }>;
+  rateCount: number;
 }
 
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const locale = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   console.log('hotelData', hotelData);
+  console.log('processedRooms', processedRooms);
   const router = useRouter();
+  const sliderRefs = useRef<(Slider | null)[]>([]);
+  const modalSliderRef = useRef<Slider>(null);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
     return currentLocale === 'ar' ? 'ARA' : 'ENG';
   };
 
+  const handleCheckAvailability = () => {
+    if (hotelId) {
+      const languageCode = getLanguageCode(locale);
+      fetchHotel({ hotelId, language: languageCode });
+    }
+  };
+
   // Fetch hotel details on mount and when locale changes
   useEffect(() => {
     if (hotelId) {
       const languageCode = getLanguageCode(locale);
-      console.log('Fetching hotel details with language:', languageCode, 'for hotelId:', hotelId);
       fetchHotel({ hotelId, language: languageCode });
     }
   }, [hotelId, locale, fetchHotel]);
 
   // Process and combine rooms with images and facilities
   useEffect(() => {
-    if (hotelData && hotelData.rooms && hotelData.images) {
+    if (hotelData && hotelData.rooms) {
       const roomsWithDetails = hotelData.rooms.map((room) => {
-        // Filter images for this room
-        const roomImages = (hotelData.images || []).filter(
-          (img) => img.roomCode === room.roomCode && img.path
-        ).map((img) => ({
-          path: img.path,
-          fullUrl: buildHotelbedsImageUrl(img.path),
-          type: img.type?.code || 'Unknown',
-          typeDescription: img.type?.description?.content || '',
-          order: img.order || img.visualOrder || 0,
-          characteristicCode: img.characteristicCode || ''
-        })).sort((a, b) => a.order - b.order);
+        // Filter images for this specific room by matching roomCode exactly
+        const roomImages = (hotelData.images || [])
+          .filter((img) => img.roomCode === room.roomCode && img.path)
+          .map((img) => ({
+            path: img.path,
+            fullUrl: buildHotelbedsImageUrl(img.path),
+            type: img.type?.code || 'Unknown',
+            typeDescription: img.type?.description?.content || '',
+            order: img.order || img.visualOrder || 0,
+            visualOrder: img.visualOrder || 0,
+            characteristicCode: img.characteristicCode || '',
+            roomType: img.roomType || ''
+          }))
+          .sort((a, b) => {
+            // Sort by order first, then by visualOrder
+            const orderDiff = a.order - b.order;
+            return orderDiff !== 0 ? orderDiff : a.visualOrder - b.visualOrder;
+          });
 
-        // Extract room facilities
+        // Extract room facilities with full details
         const facilities = (room.roomFacilities || []).map((facility) => ({
           code: facility.facilityCode,
           groupCode: facility.facilityGroupCode,
@@ -139,10 +175,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           hasLogic: facility.indLogic || false,
           hasFee: facility.indFee || false,
           number: facility.number || null,
-          isYesOrNo: facility.indYesOrNo || false
+          isYesOrNo: facility.indYesOrNo || false,
+          voucher: facility.voucher || false
         }));
 
-        // Extract room stays info
+        // Extract room stays info with facilities
         const roomStays = (room.roomStays || []).map((stay) => ({
           type: stay.stayType,
           order: stay.order,
@@ -155,61 +192,75 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           }))
         }));
 
+        // Extract rates information if available (rates may come from availability API)
+        const rates = ((room as any).rates || []).map((rate: any) => ({
+          rateKey: rate.rateKey || '',
+          rateClass: rate.rateClass || '',
+          net: rate.net || 0,
+          sellingRate: rate.sellingRate || 0,
+          hotelSellingRate: rate.hotelSellingRate || 0,
+          boardCode: rate.boardCode || '',
+          boardName: rate.boardName || '',
+          cancellationPolicies: rate.cancellationPolicies || []
+        }));
+
         return {
+          // Basic room information
           roomCode: room.roomCode,
-          description: room.description,
+          name: (room as any).name || room.description || '',
+          description: room.description || '',
+          
+          // Room type details
           type: room.type?.code || '',
           typeDescription: room.type?.description?.content || '',
+          
+          // Room characteristic details
           characteristic: room.characteristic?.code || '',
           characteristicDescription: room.characteristic?.description?.content || '',
-          isParentRoom: room.isParentRoom,
+          
+          // Room metadata
+          isParentRoom: room.isParentRoom || false,
+          PMSRoomCode: room.PMSRoomCode || '',
+          
+          // Capacity information
           capacity: {
-            minPax: room.minPax,
-            maxPax: room.maxPax,
-            minAdults: room.minAdults,
-            maxAdults: room.maxAdults,
+            minPax: room.minPax || 1,
+            maxPax: room.maxPax || 1,
+            minAdults: room.minAdults || 1,
+            maxAdults: room.maxAdults || 1,
             maxChildren: room.maxChildren || 0
           },
+          
+          // Images associated with this room
           images: roomImages,
           imageCount: roomImages.length,
+          mainImage: roomImages.length > 0 ? roomImages[0].fullUrl : null,
+          
+          // Facilities associated with this room
           facilities: facilities,
           facilityCount: facilities.length,
+          
+          // Room stays information
           roomStays: roomStays,
-          PMSRoomCode: room.PMSRoomCode || ''
+          
+          // Rates information
+          rates: rates,
+          rateCount: rates.length
         };
       });
 
-      // Console log with proper formatting
-      console.group('🏨 ROOMS WITH COMPLETE DETAILS');
-      console.log(`Total Rooms: ${roomsWithDetails.length}`);
-      console.log(`Total Images Available: ${hotelData.images.length}`);
-      console.log('─'.repeat(80));
-      
-      // roomsWithDetails.forEach((room, index) => {
-      //   console.group(`\n📍 Room ${index + 1}: ${room.roomCode}`);
-      //   console.log('Description:', room.description);
-      //   console.log('Type:', `${room.type} - ${room.typeDescription}`);
-      //   console.log('Characteristic:', `${room.characteristic} - ${room.characteristicDescription}`);
-      //   console.log('Capacity:', `${room.capacity.minPax}-${room.capacity.maxPax} people (Max ${room.capacity.maxAdults} adults, ${room.capacity.maxChildren} children)`);
-      //   console.log(`Images (${room.imageCount}):`, room.images);
-      //   console.log(`Facilities (${room.facilityCount}):`, room.facilities);
-      //   console.log('Room Stays:', room.roomStays);
-      //   console.groupEnd();
-      // });
-      
-      console.groupEnd();
-
       // Store processed rooms in state
       setProcessedRooms(roomsWithDetails);
-      console.log('✅ Processed rooms stored in state:', roomsWithDetails);
     }
   }, [hotelData]);
-  const handleOpenModal = () => {
+  const handleOpenModal = (room: ProcessedRoom) => {
+    setSelectedRoom(room);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedRoom(null);
   };
 
   const handleOpenImageModal = () => {
@@ -742,88 +793,128 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         <section id="rooms" className="rooms-filter-section">
           <h2 className="hotel-section-title">Room</h2>
           <div className="room-filters">
-            <FilterComponents />
+            <FilterComponents onCheckAvailability={handleCheckAvailability} />
           </div>
-          <div className="room-filter-bar">
+          {/* <div className="room-filter-bar">
             <div className="room-filter-left">
               <button className="filter-btn active">All rooms</button>
               <button className="filter-btn">1 Bed</button>
               <button className="filter-btn">2 Bed</button>
             </div>
             <div className="room-filter-right">Showing 3 of 3 rooms</div>
-          </div>
+          </div> */}
 
           <div className="room-list">
             {/* Room Cards */}
-            {[1, 2, 3].map((i) => (
-              <div className="room-card" key={i}>
-                <div className="room-card-image">
-                  <Image
-                    src={HotelDetailsCardImage}
-                    width={378}
-                    height={203}
-                    alt="Premium Double Room"
-                  />
-                  <div className="hotel-best-value d-flex align-items-center">
-                    <span>Best Value</span>
-                  </div>
-                  <div className="hotel-image-action d-flex align-items-center justify-content-between">
-                    <button className="hotel-img-btn border-0 p-0 bg-transparent">
+            {processedRooms.map((room, roomIndex) => {
+              const sliderSettings = {
+                dots: false,
+                infinite: room.images.length > 1,
+                speed: 500,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: false
+              };
+              
+              return (
+                <div className="room-card" key={room.roomCode}>
+                  <div className="room-card-image">
+                    {room.images.length > 0 ? (
+                      <>
+                        <Slider 
+                          ref={(el) => { sliderRefs.current[roomIndex] = el; }}
+                          {...sliderSettings}
+                        >
+                          {room.images.map((image, imgIndex) => (
+                            <div key={imgIndex}>
+                              <Image
+                                src={image.fullUrl}
+                                width={378}
+                                height={203}
+                                alt={room.name || 'Room Image'}
+                                style={{ objectFit: 'cover', width: '100%', height: '203px' }}
+                              />
+                            </div>
+                          ))}
+                        </Slider>
+                        {room.images.length > 1 && (
+                          <div className="hotel-image-action d-flex align-items-center justify-content-between">
+                            <button 
+                              className="hotel-img-btn border-0 p-0 bg-transparent"
+                              onClick={() => sliderRefs.current[roomIndex]?.slickPrev()}
+                            >
+                              <Image
+                                src={HotelImgPrevIcon}
+                                width={48}
+                                height={48}
+                                alt="Previous"
+                                className="arrow-icon"
+                              />
+                            </button>
+                            <button 
+                              className="hotel-img-btn border-0 p-0 bg-transparent"
+                              onClick={() => sliderRefs.current[roomIndex]?.slickNext()}
+                            >
+                              <Image
+                                src={HotelImgNextIcon}
+                                width={48}
+                                height={48}
+                                alt="Next"
+                                className="arrow-icon"
+                              />
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
                       <Image
-                        src={HotelImgPrevIcon}
-                        width={48}
-                        height={48}
-                        alt="arrow icon"
-                        className="arrow-icon"
+                        src={HotelDetailsCardImage}
+                        width={378}
+                        height={203}
+                        alt={room.name || 'Room'}
                       />
-                    </button>
-                    <button className="hotel-img-btn border-0 p-0 bg-transparent">
-                      <Image
-                        src={HotelImgNextIcon}
-                        width={48}
-                        height={48}
-                        alt="arrow icon"
-                        className="arrow-icon"
-                      />
-                    </button>
+                    )}
+                   
+                      <div className="hotel-best-value d-flex align-items-center">
+                        <span>Best Value</span>
+                      </div>
+                    <div className="hotel-card-total-image d-flex align-items-center">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 14.9787C5.10725 16.0691 5.34963 16.803 5.89743 17.3508C6.87997 18.3333 8.46135 18.3333 11.6241 18.3333C14.7869 18.3333 16.3682 18.3333 17.3508 17.3508C18.3333 16.3682 18.3333 14.7869 18.3333 11.6241C18.3333 8.46135 18.3333 6.87997 17.3508 5.89743C16.803 5.34963 16.0691 5.10725 14.9787 5"
+                          stroke="white"
+                          strokeWidth="1.25"
+                        />
+                        <path
+                          d="M1.66602 8.33268C1.66602 5.18999 1.66602 3.61864 2.64233 2.64233C3.61864 1.66602 5.18999 1.66602 8.33268 1.66602C11.4754 1.66602 13.0467 1.66602 14.023 2.64233C14.9993 3.61864 14.9993 5.18999 14.9993 8.33268C14.9993 11.4754 14.9993 13.0467 14.023 14.023C13.0467 14.9993 11.4754 14.9993 8.33268 14.9993C5.18999 14.9993 3.61864 14.9993 2.64233 14.023C1.66602 13.0467 1.66602 11.4754 1.66602 8.33268Z"
+                          stroke="white"
+                          strokeWidth="1.25"
+                        />
+                        <path
+                          d="M1.66602 9.26477C2.18186 9.19922 2.70338 9.16682 3.22578 9.16797C5.43573 9.1271 7.59155 9.72962 9.30858 10.868C10.901 11.9238 12.02 13.3769 12.4993 14.9993"
+                          stroke="white"
+                          strokeWidth="1.25"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M10.8338 5.83398H10.8413"
+                          stroke="white"
+                          strokeWidth="1.66667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {room.imageCount}
+                    </div>
                   </div>
-                  <div className="hotel-card-total-image d-flex align-items-center">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M5 14.9787C5.10725 16.0691 5.34963 16.803 5.89743 17.3508C6.87997 18.3333 8.46135 18.3333 11.6241 18.3333C14.7869 18.3333 16.3682 18.3333 17.3508 17.3508C18.3333 16.3682 18.3333 14.7869 18.3333 11.6241C18.3333 8.46135 18.3333 6.87997 17.3508 5.89743C16.803 5.34963 16.0691 5.10725 14.9787 5"
-                        stroke="white"
-                        strokeWidth="1.25"
-                      />
-                      <path
-                        d="M1.66602 8.33268C1.66602 5.18999 1.66602 3.61864 2.64233 2.64233C3.61864 1.66602 5.18999 1.66602 8.33268 1.66602C11.4754 1.66602 13.0467 1.66602 14.023 2.64233C14.9993 3.61864 14.9993 5.18999 14.9993 8.33268C14.9993 11.4754 14.9993 13.0467 14.023 14.023C13.0467 14.9993 11.4754 14.9993 8.33268 14.9993C5.18999 14.9993 3.61864 14.9993 2.64233 14.023C1.66602 13.0467 1.66602 11.4754 1.66602 8.33268Z"
-                        stroke="white"
-                        strokeWidth="1.25"
-                      />
-                      <path
-                        d="M1.66602 9.26477C2.18186 9.19922 2.70338 9.16682 3.22578 9.16797C5.43573 9.1271 7.59155 9.72962 9.30858 10.868C10.901 11.9238 12.02 13.3769 12.4993 14.9993"
-                        stroke="white"
-                        strokeWidth="1.25"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M10.8338 5.83398H10.8413"
-                        stroke="white"
-                        strokeWidth="1.66667"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    4
-                  </div>
-                </div>
-                <div className="room-card-details">
-                  <h3 className="hotel-room-name">Premium Double Room</h3>
+                  <div className="room-card-details">
+                    <h3 className="hotel-room-name">{room.name || room.description || 'Room'}</h3>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
                       <Image
@@ -1095,7 +1186,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleOpenModal();
+                        handleOpenModal(room);
                       }}
                     >
                       More Details
@@ -1152,7 +1243,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         </section>
 
@@ -1183,7 +1275,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         </>
         )}
       </div>
-      {isModalOpen && (
+      {isModalOpen && selectedRoom && (
         <div className="room-modal-overlay" onClick={handleCloseModal}>
           <div className="room-modal" onClick={(e) => e.stopPropagation()}>
             <div className="room-modal-header d-flex align-items-center">
@@ -1204,35 +1296,71 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             <div className="room-modal-body">
               <div className="room-modal-content">
                 <div className="room-modal-images">
-                  <Image
-                    src={RoomInfoImage}
-                    width={742}
-                    height={362}
-                    alt="room info image"
-                  />
-                  <div className="hotel-image-action d-flex align-items-center justify-content-between">
-                    <button className="hotel-img-btn border-0 p-0 bg-transparent">
-                      <Image
-                        src={HotelImgPrevIcon}
-                        width={48}
-                        height={48}
-                        alt="arrow icon"
-                        className="arrow-icon"
-                      />
-                    </button>
-                    <button className="hotel-img-btn border-0 p-0 bg-transparent">
-                      <Image
-                        src={HotelImgNextIcon}
-                        width={48}
-                        height={48}
-                        alt="arrow icon"
-                        className="arrow-icon"
-                      />
-                    </button>
-                  </div>
+                  {selectedRoom.images.length > 0 ? (
+                    <>
+                      <Slider
+                        ref={modalSliderRef}
+                        {...{
+                          dots: false,
+                          infinite: selectedRoom.images.length > 1,
+                          speed: 500,
+                          slidesToShow: 1,
+                          slidesToScroll: 1,
+                          arrows: false
+                        }}
+                      >
+                        {selectedRoom.images.map((image, imgIndex) => (
+                          <div key={imgIndex}>
+                            <Image
+                              src={image.fullUrl}
+                              width={742}
+                              height={362}
+                              alt={selectedRoom.name || 'Room Image'}
+                              style={{ objectFit: 'cover', width: '100%', height: '362px' }}
+                            />
+                          </div>
+                        ))}
+                      </Slider>
+                      {selectedRoom.images.length > 1 && (
+                        <div className="hotel-image-action d-flex align-items-center justify-content-between">
+                          <button 
+                            className="hotel-img-btn border-0 p-0 bg-transparent"
+                            onClick={() => modalSliderRef.current?.slickPrev()}
+                          >
+                            <Image
+                              src={HotelImgPrevIcon}
+                              width={48}
+                              height={48}
+                              alt="Previous"
+                              className="arrow-icon"
+                            />
+                          </button>
+                          <button 
+                            className="hotel-img-btn border-0 p-0 bg-transparent"
+                            onClick={() => modalSliderRef.current?.slickNext()}
+                          >
+                            <Image
+                              src={HotelImgNextIcon}
+                              width={48}
+                              height={48}
+                              alt="Next"
+                              className="arrow-icon"
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Image
+                      src={RoomInfoImage}
+                      width={742}
+                      height={362}
+                      alt="room info image"
+                    />
+                  )}
                 </div>
                 <div className="modal-room-name-with-review">
-                  <h3 className="modal-room-title">Premium Double Room</h3>
+                  <h3 className="modal-room-title">{selectedRoom.name || selectedRoom.description || 'Room'}</h3>
                   <div className="modal-room-rating d-flex align-items-center">
                     <div className="modal-room-rating-star d-flex align-items-center">
                       <Image
