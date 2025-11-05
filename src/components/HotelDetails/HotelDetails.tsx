@@ -13,7 +13,7 @@ import { buildHotelbedsImageUrl } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
 // import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
-import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
+// import LocationMapIcon from "@/assets/images/location-distance-icon.svg";
 import LocationAddressIcon from "@/assets/images/map-icon.svg";
 import FilterComponents from "../FilterComponents/FilterComponents";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
@@ -31,6 +31,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
+import { HotelRate, HotelRateCancellationPolicy, HotelRoom, HotelAvailabilityRoom } from "@/types/hotel";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -95,17 +96,19 @@ interface ProcessedRoom {
   facilities: ProcessedRoomFacility[];
   facilityCount: number;
   roomStays: ProcessedRoomStay[];
-  rates: Array<{
-    rateKey: string;
-    rateClass: string;
-    net: number;
-    sellingRate: number;
-    hotelSellingRate: number;
-    boardCode: string;
-    boardName: string;
-    cancellationPolicies: any[];
-  }>;
+  rates: ProcessedRate[];
   rateCount: number;
+}
+
+interface ProcessedRate {
+  rateKey: string;
+  rateClass: string;
+  net: number;
+  sellingRate: number;
+  hotelSellingRate: number;
+  boardCode: string;
+  boardName: string;
+  cancellationPolicies: HotelRateCancellationPolicy[];
 }
 
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
@@ -193,12 +196,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         }));
 
         // Extract rates information if available (rates may come from availability API)
-        const rates = ((room as any).rates || []).map((rate: any) => ({
+        type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
+        const ratesSource: HotelRate[] = ((room as RoomWithOptionalRates).rates) || [];
+        const rates: ProcessedRate[] = ratesSource.map((rate) => ({
           rateKey: rate.rateKey || '',
           rateClass: rate.rateClass || '',
-          net: rate.net || 0,
-          sellingRate: rate.sellingRate || 0,
-          hotelSellingRate: rate.hotelSellingRate || 0,
+          net: Number(rate.net) || 0,
+          sellingRate: (rate as unknown as { sellingRate?: number }).sellingRate ?? 0,
+          hotelSellingRate: (rate as unknown as { hotelSellingRate?: number }).hotelSellingRate ?? 0,
           boardCode: rate.boardCode || '',
           boardName: rate.boardName || '',
           cancellationPolicies: rate.cancellationPolicies || []
@@ -207,7 +212,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         return {
           // Basic room information
           roomCode: room.roomCode,
-          name: (room as any).name || room.description || '',
+          name: ((room as RoomWithOptionalRates).name) || room.description || '',
           description: room.description || '',
           
           // Room type details
