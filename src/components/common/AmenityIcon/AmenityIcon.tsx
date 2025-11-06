@@ -6,6 +6,7 @@ import {
   ParkingCircle,
   Dumbbell,
   ArrowUpDown,
+  Bath,
   Clock,
   Bus,
   ConciergeBell,
@@ -33,6 +34,7 @@ import {
   Phone,
   CakeSlice,
   Flame,
+  Wind,
   Presentation,
   LogIn,
   CreditCard,
@@ -110,7 +112,7 @@ const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
     case 390:
       return <Goal {...iconProps} />;
     case 40:
-      return <Lock {...iconProps} />;
+      return <Wind {...iconProps} />; // Hairdryer
     case 50:
       return <Building {...iconProps} />;
     case 90:
@@ -121,6 +123,8 @@ const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
     case 190:
       return <Gamepad2 {...iconProps} />;
     case 193:
+      return <Tv {...iconProps} />;
+    case 55:
       return <Tv {...iconProps} />;
     case 240:
       return <Signal {...iconProps} />;
@@ -168,6 +172,8 @@ const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
       return <WashingMachine {...iconProps} />; // Towels and bed linen
     case 225:
       return <FireExtinguisher {...iconProps} />; // Smoking area
+    case 230:
+      return <Bath {...iconProps} />; // Bathroom
     case 595:
       return <Briefcase {...iconProps} />; // Secretarial service
     case 600:
@@ -187,7 +193,7 @@ const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
     case 495:
       return <Plane {...iconProps} />; // Transfer service
     default:
-      return null;
+      return <Info {...iconProps} />;
   }
 };
 
