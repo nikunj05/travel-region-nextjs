@@ -16,11 +16,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const t = useTranslations("Header");
-  const [isSticky, setIsSticky] = useState(false);
+  const [isSticky, setIsSticky] = useState(true);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-
   // Language switching logic
   const locale = useLocale();
   const router = useRouter();
@@ -59,36 +58,37 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const checkHeaderSticky = () => {
-      // On search-result path: always sticky
-      if (
-        pathname.startsWith("/search-result") ||
-        pathname.startsWith("/hotel-details") ||
-        // pathname === "/blogs" ||
-        pathname.startsWith("/booking-review")||
-        pathname.startsWith("/checkout") ||
-        pathname.startsWith("/booking-confirmation") ||
-        pathname.startsWith("/blogs/") ||
-        // pathname.startsWith("/privacy-policy") ||
-        // pathname.startsWith("/terms-conditions") ||
-        // private routes are below
-        pathname.startsWith("/profile") ||
-        pathname.startsWith("/bookings") ||
-        pathname.startsWith("/favorites") ||
-        pathname.startsWith("/payment-methods") ||
-        pathname.startsWith("/notification") ||
-        pathname.startsWith("/settings") ||
-        pathname.startsWith("/support")
-      ) {
-        setIsSticky(true);
-      }
-      // On other paths: sticky only on scroll
-      else if (typeof window !== "undefined" && window.scrollY > 5) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
+    setIsSticky(true);
+    // const checkHeaderSticky = () => {
+    //   // On search-result path: always sticky
+    //   if (
+    //     pathname.startsWith("/search-result") ||
+    //     pathname.startsWith("/hotel-details") ||
+    //     // pathname === "/blogs" ||
+    //     pathname.startsWith("/booking-review")||
+    //     pathname.startsWith("/checkout") ||
+    //     pathname.startsWith("/booking-confirmation") ||
+    //     pathname.startsWith("/blogs/") ||
+    //     // pathname.startsWith("/privacy-policy") ||
+    //     // pathname.startsWith("/terms-conditions") ||
+    //     // private routes are below
+    //     pathname.startsWith("/profile") ||
+    //     pathname.startsWith("/bookings") ||
+    //     pathname.startsWith("/favorites") ||
+    //     pathname.startsWith("/payment-methods") ||
+    //     pathname.startsWith("/notification") ||
+    //     pathname.startsWith("/settings") ||
+    //     pathname.startsWith("/support")
+    //   ) {
+    //     setIsSticky(true);
+    //   }
+    //   // On other paths: sticky only on scroll
+    //   else if (typeof window !== "undefined" && window.scrollY > 5) {
+    //     setIsSticky(true);
+    //   } else {
+    //     setIsSticky(false);
+    //   }
+    // };
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -101,19 +101,19 @@ const Header = () => {
     };
 
     // Check on mount
-    checkHeaderSticky();
+    // checkHeaderSticky();
 
     // Add event listeners only on client side
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", checkHeaderSticky);
-      document.addEventListener("click", handleClickOutside);
+    // if (typeof window !== "undefined") {
+    //   window.addEventListener("scroll", checkHeaderSticky);
+    //   document.addEventListener("click", handleClickOutside);
 
-      // Cleanup event listeners on unmount
-      return () => {
-        window.removeEventListener("scroll", checkHeaderSticky);
-        document.removeEventListener("click", handleClickOutside);
-      };
-    }
+    //   // Cleanup event listeners on unmount
+    //   return () => {
+    //     window.removeEventListener("scroll", checkHeaderSticky);
+    //     document.removeEventListener("click", handleClickOutside);
+    //   };
+    // }
   }, [pathname]);
 
   // Handle mobile menu body class toggle
