@@ -729,9 +729,63 @@
     margin: 44px 0;
 
     .map-container {
+      width: 100%;
+      height: 344px;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+
       img {
         width: 100%;
+        height: 100%;
+        object-fit: cover;
         border-radius: 8px;
+      }
+
+      .hotel-location-map {
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        .mapboxgl-map {
+          width: 100%;
+          height: 100%;
+        }
+
+        .hotel-location-map__marker {
+          position: relative;
+          width: 34px;
+          height: 34px;
+          background: linear-gradient(135deg, #1b2236 0%, #2e3f68 100%);
+          border: 3px solid #ffffff;
+          border-radius: 50% 50% 50% 0;
+          box-shadow: 0 10px 18px rgba(27, 34, 54, 0.24);
+          transform: rotate(-45deg);
+          transform-origin: center;
+          margin-bottom: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hotel-location-map__marker-inner {
+          width: 14px;
+          height: 14px;
+          background: radial-gradient(circle at center, #ffffff 0%, #f4f6fb 100%);
+          border-radius: 50%;
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
+          transform: rotate(45deg);
+        }
+
+        .hotel-location-map__controls {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+        }
+
+        .mapboxgl-control-container .mapboxgl-ctrl-top-right {
+          margin: 0;
+        }
       }
     }
   }

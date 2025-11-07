@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { faqService } from "@/services/faqService";
 import { FaqCategory } from "@/types/faq";
+import { useSettingsStore } from "@/store/settingsStore";
 import "./FaqPage.scss";
 
 const SearchIcon = () => (
@@ -70,7 +71,41 @@ const FaqPage = () => {
     [key: string]: boolean;
   }>({});
   const [loading, setLoading] = useState<boolean>(true);
+  const setting = useSettingsStore((s) => s.setting);
 
+  const faqBackground = useMemo(() => {
+    const gradient = setting?.faq_background_color;
+    if (!gradient) {
+      return "linear-gradient(360deg, #CEDEFF 0.52%, #6C9CFF 100%)";
+    }
+
+    if (gradient.css && gradient.css.trim()) {
+      return gradient.css.trim();
+    }
+
+    const colors = gradient.colors?.filter((colorStop) => colorStop?.color);
+    if (colors && colors.length > 0) {
+      const sortedStops = [...colors].sort(
+        (a, b) => (a.position ?? 0) - (b.position ?? 0)
+      );
+      const stops = sortedStops
+        .map((stop) => {
+          const stopPosition =
+            typeof stop.position === "number" && !Number.isNaN(stop.position)
+              ? `${stop.position}%`
+              : "";
+          return stopPosition ? `${stop.color} ${stopPosition}` : stop.color;
+        })
+        .join(", ");
+      if (stops) {
+        const direction = gradient.direction?.trim() || "360deg";
+        return `linear-gradient(${direction}, ${stops})`;
+      }
+    }
+
+    return "linear-gradient(360deg, #CEDEFF 0.52%, #6C9CFF 100%)";
+  }, [setting?.faq_background_color]);
+console.log("faqBackground", faqBackground);
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
@@ -182,7 +217,7 @@ const FaqPage = () => {
       <section
         className="banner-section-common faq-banner-section"
         style={{
-          background: "linear-gradient(360deg, #CEDEFF 0.52%, #6C9CFF 100%)",
+          background: faqBackground,
         }}
       >
         <div className="container">

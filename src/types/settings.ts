@@ -4,6 +4,17 @@ export interface SocialMediaLink {
   icon: string | null;
 }
 
+export interface GradientColorStop {
+  color: string;
+  position: number;
+}
+
+export interface FaqBackgroundColor {
+  colors: GradientColorStop[];
+  css?: string | null;
+  direction?: string | null;
+}
+
 export interface AppSetting {
   logo: string;
   favicon: string;
@@ -17,6 +28,7 @@ export interface AppSetting {
   home_hero_image?: string | null;
   home_title?: string | null;
   home_subtitle?: string | null;
+  faq_background_color?: FaqBackgroundColor | null;
 }
 
 export interface GetSettingsResponse {

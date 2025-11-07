@@ -35,6 +35,9 @@ import {
   HotelRoom,
   HotelAvailabilityRoom,
 } from "@/types/hotel";
+import HotelLocationMap from "../common/HotelLocationMap/HotelLocationMap";
+import { useHotelSearchStore } from "@/store/hotelSearchStore";
+import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -129,10 +132,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const router = useRouter();
   const sliderRefs = useRef<(Slider | null)[]>([]);
   const modalSliderRef = useRef<Slider>(null);
+  const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
+  const hasRequestedNearbySearch = useRef(false);
+
+  const nearbyHotelsCount = useHotelSearchStore((state) => state.hotels.length);
+  const nearbyHotelsLoading = useHotelSearchStore((state) => state.loading);
+
+  const searchFilters = useSearchFiltersStore((state) => state.filters);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
     return currentLocale === "ar" ? "ARA" : "ENG";
+  };
+
+  const getSearchLanguageCode = (currentLocale: string): string => {
+    return currentLocale === "ar" ? "ara" : "eng";
   };
 
   const handleCheckAvailability = () => {
@@ -149,6 +163,59 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       fetchHotel({ hotelId, language: languageCode });
     }
   }, [hotelId, locale, fetchHotel]);
+
+  // Ensure nearby hotels data is available for the details page
+  useEffect(() => {
+    if (hasRequestedNearbySearch.current) {
+      return;
+    }
+
+    if (nearbyHotelsLoading) {
+      return;
+    }
+
+    const searchStore = useHotelSearchStore.getState();
+    const hasExistingResults = nearbyHotelsCount > 0;
+    if (hasExistingResults) {
+      return;
+    }
+
+    const { checkIn, checkOut, latitude, longitude } = searchStore.filters;
+    const hasStoredCriteria =
+      !!checkIn &&
+      !!checkOut &&
+      latitude !== null &&
+      longitude !== null;
+
+    const executeSearch = () => {
+      hasRequestedNearbySearch.current = true;
+      searchStore
+        .search()
+        .catch((error) => {
+          console.error("Failed to fetch nearby hotels:", error);
+          hasRequestedNearbySearch.current = false;
+        });
+    };
+
+    const searchLanguage = getSearchLanguageCode(locale);
+
+    if (hasStoredCriteria) {
+      searchStore.setLanguage(searchLanguage);
+      executeSearch();
+      return;
+    }
+
+    const coordinates = searchFilters.location?.coordinates;
+    if (coordinates && searchFilters.checkInDate && searchFilters.checkOutDate) {
+      searchStore.setDates(searchFilters.checkInDate, searchFilters.checkOutDate);
+      searchStore.setRooms(
+        searchFilters.rooms && searchFilters.rooms.length > 0 ? searchFilters.rooms : [{ adults: 2, children: 1 }]
+      );
+      searchStore.setLanguage(searchLanguage);
+      searchStore.setCoordinates(coordinates.lat, coordinates.lng);
+      executeSearch();
+    }
+  }, [nearbyHotelsCount, nearbyHotelsLoading, searchFilters, locale]);
 
   // Process and combine rooms with images and facilities
   useEffect(() => {
@@ -431,7 +498,17 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   );
 
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
-
+  const hotelLatitude = hotelData?.coordinates?.latitude;
+  const hotelLongitude = hotelData?.coordinates?.longitude;
+  // console.log("hotelLatitude", hotelLatitude);
+  // console.log("hotelLongitude", hotelLongitude);
+  const hasValidCoordinates =
+    typeof hotelLatitude === "number" &&
+    Number.isFinite(hotelLatitude) &&
+    typeof hotelLongitude === "number" &&
+    Number.isFinite(hotelLongitude);
+  const canRenderInteractiveMap = hasValidCoordinates && Boolean(mapboxAccessToken);
+// console.log("canRenderInteractiveMap", canRenderInteractiveMap);
   return (
     <main className="hotel-details-page padding-top-100 section-space-b">
       <div className="container">
@@ -874,9 +951,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         className="hotel-rating-icon"
                       />
                     </div>
-                    <span className="rating-value-wrapper d-flex align-items-center">
+                    {/* <span className="rating-value-wrapper d-flex align-items-center">
                       <span className="rating-value">4.5</span> (120 Reviews)
-                    </span>
+                    </span> */}
                   </div>
                   {/* <div className="distance d-flex align-items-center">
                 <Image
@@ -1454,13 +1531,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             <section id="map" className="hotel-map-section">
               <h2 className="hotel-section-title">Map</h2>
               <div className="map-container">
-                <Image src={mapImage} width={1201} height={344} alt="Map" />
+                {canRenderInteractiveMap ? (
+                  <HotelLocationMap
+                    latitude={hotelLatitude as number}
+                    longitude={hotelLongitude as number}
+                    hotelName={hotelData?.name?.content}
+                  />
+                ) : (
+                  <Image src={mapImage} width={1200} height={344} alt="Map" />
+                )}
               </div>
             </section>
             <section className="nearby-hotel-section">
               <h2 className="hotel-section-title">Similar Hotels Nearby</h2>
               <div className="near-hotel-container">
-                <NearByHotels />
+                <NearByHotels currentHotelCode={hotelData?.code} />
               </div>
             </section>
             <section className="hotel-faq-section">

@@ -48,7 +48,6 @@ export default async function LocaleLayout({
   let setting = null;
   try {
     const settingsRes = await settingsService.getSettingsCached(locale);
-    console.log('settingsRes', settingsRes);
     setting = settingsRes.data?.setting || null;
     console.log('setting', setting);
   } catch (error) {

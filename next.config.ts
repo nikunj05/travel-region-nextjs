@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'photos.hotelbeds.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.mapbox.com',
+      },
     ],
   },
 };
