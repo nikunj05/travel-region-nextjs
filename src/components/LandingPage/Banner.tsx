@@ -85,8 +85,8 @@ const Banner = () => {
   const heroImage = setting?.home_hero_image && setting.home_hero_image.trim()
     ? setting.home_hero_image
     : null;
-  const heroTitle = (setting?.home_title && setting.home_title.trim()) || t("title");
-  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim()) || t("description");
+  const heroTitle = (setting?.home_title && setting.home_title.trim()) ;
+  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim()) ;
 
   const toggleLocationDropdown = () => {
     // Close other dropdowns when opening location dropdown
