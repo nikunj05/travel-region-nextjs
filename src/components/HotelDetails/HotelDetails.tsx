@@ -38,6 +38,7 @@ import {
 import HotelLocationMap from "../common/HotelLocationMap/HotelLocationMap";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
+import { toast } from "react-toastify";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -155,6 +156,47 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       fetchHotel({ hotelId, language: languageCode });
     }
   };
+
+  const handleShareClick = useCallback(async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const shareUrl = window.location.href;
+
+    if (!shareUrl) {
+      return;
+    }
+
+    try {
+      if (window.navigator?.clipboard?.writeText) {
+        await window.navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = shareUrl;
+        textarea.style.position = "fixed";
+        textarea.style.top = "0";
+        textarea.style.left = "0";
+        textarea.style.width = "1px";
+        textarea.style.height = "1px";
+        textarea.style.padding = "0";
+        textarea.style.border = "none";
+        textarea.style.outline = "none";
+        textarea.style.boxShadow = "none";
+        textarea.style.background = "transparent";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      toast.success(t("shareLinkCopied"));
+    } catch (error) {
+      console.error("Failed to copy share link", error);
+      toast.error(t("shareLinkCopyFailed"));
+    }
+  }, [t]);
 
   // Fetch hotel details on mount and when locale changes
   useEffect(() => {
@@ -1011,7 +1053,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </svg>
                       Favorite
                     </button>
-                    <button className="share-btn">
+                    <button className="share-btn" onClick={handleShareClick}>
                       <svg
                         width="24"
                         height="24"

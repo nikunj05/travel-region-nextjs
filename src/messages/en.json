@@ -118,7 +118,9 @@
     "readLess": "Read Less",
     "showAllPhotos": "Show all photos",
     "showAll": "Show All",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "shareLinkCopied": "Link copied to clipboard",
+    "shareLinkCopyFailed": "Unable to copy link. Please try again."
   },
   "AboutUs": {
     "bannerTitle": "Who We Are",

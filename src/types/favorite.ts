@@ -181,7 +181,7 @@ export interface FavoriteHotelsResponse {
 }
 
 export interface AddFavoriteRequest {
-  hotel_code: number;
+  hotel_code: number | string;
 }
 
 export interface FavoriteRecord {

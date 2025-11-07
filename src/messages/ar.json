@@ -118,7 +118,9 @@
     "readLess": "اقرأ أقل",
     "showAllPhotos": "عرض جميع الصور الـ 34",
     "showAll": "عرض الكل",
-    "showLess": "عرض أقل"
+    "showLess": "عرض أقل",
+    "shareLinkCopied": "تم نسخ الرابط إلى الحافظة",
+    "shareLinkCopyFailed": "تعذر نسخ الرابط. يرجى المحاولة مرة أخرى."
   },
   "AboutUs": {
     "bannerTitle": "من نحن",
