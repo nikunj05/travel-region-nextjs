@@ -586,9 +586,11 @@ img {
   min-height: 800px;
   position: relative;
   display: flex;
-  align-items: flex-start;
+  // align-items: flex-start;
+  align-items: end;
   justify-content: flex-start;
-  padding: 213px 0 125px 0;
+  padding: 213px 0 90px 0;
+  // padding: 213px 0 125px 0;
   width: 100%;
 
   .banner-content {
