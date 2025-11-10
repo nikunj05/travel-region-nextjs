@@ -4,7 +4,7 @@ import Banner from '../LandingPage/Banner';
 // import Travelers from '../LandingPage/Travelers';
 import Popular from '../LandingPage/PopularSection';
 // import DashboardBlogs from '../LandingPage/DashboardBlogs';
-import Contact from '../LandingPage/Contact';
+// import Contact from '../LandingPage/Contact';
 
 const HomePage = () => {
   // const t = useTranslations('Home');
@@ -16,7 +16,7 @@ const HomePage = () => {
       <Popular />
       {/* <Travelers /> */}
       {/* <DashboardBlogs /> */}
-      <Contact />
+      {/* <Contact /> */}
     </>
   );
 };
