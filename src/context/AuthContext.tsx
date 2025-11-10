@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const response: RegisterResponse = await authService.register(data);
       
-      console.log('Register service response:', response);
+      // console.log('Register service response:', response);
       
       // Note: Register response doesn't include token, user needs to login after registration
       // You might want to automatically login after registration or redirect to login page

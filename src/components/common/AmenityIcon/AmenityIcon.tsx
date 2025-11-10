@@ -23,7 +23,7 @@ import {
   BaggageClaim,
   Goal,
   ShipWheel,
-  Lock,
+  // Lock,
   Building,
   Newspaper,
   Beer,
