@@ -1,5 +1,12 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useContext,
+} from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import "./HotelDetails.scss";
@@ -132,12 +139,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
-  const {
-    favorites,
-    addFavorite,
-    removeFavorite,
-    fetchFavorites,
-  } = useFavoriteStore();
+  const { favorites, addFavorite, removeFavorite, fetchFavorites } =
+    useFavoriteStore();
 
   console.log("hotelData", hotelData);
   console.log("processedRooms", processedRooms);
@@ -248,19 +251,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
     const { checkIn, checkOut, latitude, longitude } = searchStore.filters;
     const hasStoredCriteria =
-      !!checkIn &&
-      !!checkOut &&
-      latitude !== null &&
-      longitude !== null;
+      !!checkIn && !!checkOut && latitude !== null && longitude !== null;
 
     const executeSearch = () => {
       hasRequestedNearbySearch.current = true;
-      searchStore
-        .search()
-        .catch((error) => {
-          console.error("Failed to fetch nearby hotels:", error);
-          hasRequestedNearbySearch.current = false;
-        });
+      searchStore.search().catch((error) => {
+        console.error("Failed to fetch nearby hotels:", error);
+        hasRequestedNearbySearch.current = false;
+      });
     };
 
     const searchLanguage = getSearchLanguageCode(locale);
@@ -272,10 +270,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
 
     const coordinates = searchFilters.location?.coordinates;
-    if (coordinates && searchFilters.checkInDate && searchFilters.checkOutDate) {
-      searchStore.setDates(searchFilters.checkInDate, searchFilters.checkOutDate);
+    if (
+      coordinates &&
+      searchFilters.checkInDate &&
+      searchFilters.checkOutDate
+    ) {
+      searchStore.setDates(
+        searchFilters.checkInDate,
+        searchFilters.checkOutDate
+      );
       searchStore.setRooms(
-        searchFilters.rooms && searchFilters.rooms.length > 0 ? searchFilters.rooms : [{ adults: 2, children: 1 }]
+        searchFilters.rooms && searchFilters.rooms.length > 0
+          ? searchFilters.rooms
+          : [{ adults: 2, children: 1 }]
       );
       searchStore.setLanguage(searchLanguage);
       searchStore.setCoordinates(coordinates.lat, coordinates.lng);
@@ -573,8 +580,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     Number.isFinite(hotelLatitude) &&
     typeof hotelLongitude === "number" &&
     Number.isFinite(hotelLongitude);
-  const canRenderInteractiveMap = hasValidCoordinates && Boolean(mapboxAccessToken);
-// console.log("canRenderInteractiveMap", canRenderInteractiveMap);
+  const canRenderInteractiveMap =
+    hasValidCoordinates && Boolean(mapboxAccessToken);
+  // console.log("canRenderInteractiveMap", canRenderInteractiveMap);
   const handleFavoriteClick = () => {
     if (authContext?.isAuthenticated) {
       if (isFavorited) {
@@ -1073,7 +1081,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <span>No Repay</span>
                   </div>
                   <div className="share-like-section d-flex align-items-center">
-                    <button className="share-btn favarite-btn" onClick={handleFavoriteClick}>
+                    <button
+                      className="share-btn favarite-btn"
+                      onClick={handleFavoriteClick}
+                    >
                       <svg
                         width="24"
                         height="24"
@@ -1177,9 +1188,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             >
                               {room.images.map((image, imgIndex) => (
                                 <div
-                                  key={`room-${room.roomCode || roomIndex}-image-${
-                                    image.path || imgIndex
-                                  }`}
+                                  key={`room-${
+                                    room.roomCode || roomIndex
+                                  }-image-${image.path || imgIndex}`}
                                 >
                                   <Image
                                     src={image.fullUrl}
@@ -1440,7 +1451,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   strokeWidth="1.25"
                                 />
                               </svg>
-                        Sleeps {room.capacity?.maxAdults ?? room.capacity?.maxPax ?? "-"}
+                              Sleeps{" "}
+                              {room.capacity?.maxAdults ??
+                                room.capacity?.maxPax ??
+                                "-"}
                             </li>
                           </ul>
                         </div>
@@ -1567,7 +1581,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </div> */}
                           {/* <span className="nightly-price">$40 nightly</span> */}
                           <span className="total-price">
-                            {primaryRateDetails?.formattedPrice ?? "Price unavailable"}
+                            {primaryRateDetails?.formattedPrice ??
+                              "Price unavailable"}
                           </span>
                           {primaryRateDetails?.rate.boardName && (
                             <div className="hotel-room-number">
@@ -1779,7 +1794,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 </div>
                 <div className="modal-room-facility-list">
                   {selectedRoomFacilities.length > 0 ? (
-                    <ul className="facility-item d-flex">
+                    <ul className="facility-item d-grid">
                       {selectedRoomFacilities.map((facility) => (
                         <li
                           key={`${selectedRoom.roomCode}-${facility.groupCode}-${facility.code}`}
@@ -1934,7 +1949,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           strokeWidth="1.25"
                         />
                       </svg>
-                      Sleeps {selectedRoom?.capacity?.maxAdults ?? selectedRoom?.capacity?.maxPax ?? "-"}
+                      Sleeps{" "}
+                      {selectedRoom?.capacity?.maxAdults ??
+                        selectedRoom?.capacity?.maxPax ??
+                        "-"}
                     </li>
                   </ul>
                 </div>
@@ -1998,7 +2016,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                   <span className="nightly-price">$40 nightly</span> */}
                   <span className="total-price">
-                    {selectedRoomRateDetails?.formattedPrice ?? "Price unavailable"}
+                    {selectedRoomRateDetails?.formattedPrice ??
+                      "Price unavailable"}
                   </span>
                   {selectedRoomRateDetails?.rate.boardName && (
                     <div className="hotel-room-number">

@@ -450,6 +450,8 @@
         max-width: calc((100% - 64px) / 3);
 
         .room-card-image {
+          height: 203px;
+          min-height: 203px;
           position: relative;
           overflow: hidden;
 
@@ -496,6 +498,9 @@
 
         .room-card-details {
           padding: 12px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
 
           .hotel-room-name {
             font-size: 20px;
@@ -689,7 +694,8 @@
           }
 
           .hotel-room-booking-action {
-            margin-top: 40px;
+            margin-top: auto;
+            padding-top: 40px;
 
             .room-booking-btn {
               font-size: 16px;
@@ -895,6 +901,7 @@
           padding: 24px;
           border-radius: 8px;
           gap: 20px;
+          grid-template-columns: repeat(6, 1fr);
           background-color: #F3F4F6;
 
           li {
@@ -998,6 +1005,7 @@
         padding: 20px;
         border: 1px solid $border-color;
         border-radius: 8px;
+        margin-top: 24px;
 
         .modal-room-refund {
           margin-bottom: 14px;
@@ -1092,6 +1100,12 @@
 
 @media (max-width: 1199.55px) {
   .hotel-details-page {
+    .rooms-filter-section {
+      .room-list {
+        gap: 24px;
+      }
+    }
+
     .hotel-details-main-content {
       grid-template-columns: 1fr 240px;
       gap: 24px;
@@ -1125,6 +1139,7 @@
       .room-filters {
         .search-bar-container {
           gap: 15px;
+          align-items: start;
 
           .guestspicker-dropdown {
             width: auto;
@@ -1137,6 +1152,7 @@
             width: min-content;
             font-size: 14px;
             line-height: 1.4;
+            margin-top: auto;
           }
         }
       }
@@ -1224,8 +1240,8 @@
         padding-bottom: 0;
 
         .room-card {
-          flex: 0 0 calc((100% - 32px) / 3);
-          max-width: calc((100% - 32px) / 3);
+          flex: 0 0 calc((100% - 32px) / 2);
+          max-width: calc((100% - 32px) / 2);
 
           .hotel-img-btn {
             width: 32px;
@@ -1241,6 +1257,7 @@
           .facility-item {
             gap: 15px;
             padding: 15px;
+            grid-template-columns: repeat(4, 1fr);
 
             li {
               padding: 0 6px;
@@ -1554,7 +1571,7 @@
             }
 
             .hotel-room-booking-action {
-              margin-top: 24px;
+              padding-top: 24px;
 
               .room-booking-btn {
                 padding: 10.7px 15px;
@@ -1706,6 +1723,7 @@
 
         .modal-room-pricing {
           padding: 15px;
+          margin-top: 16px;
 
           .modal-room-refund {
             .refund-item {

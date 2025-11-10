@@ -125,6 +125,7 @@
     .search-bar-container {
       grid-template-columns: 1fr;
       gap: 12px;
+      align-items: start;
 
       .search-field {
 
