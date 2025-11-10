@@ -34,6 +34,9 @@
     .nearby-hotels-card-img {
       img {
         border-radius: 8px 8px 0 0;
+        height: 203px;
+        min-height: 203px;
+        max-height: 203px;
       }
     }
 
@@ -46,6 +49,12 @@
         color: $color-black;
         line-height: 28px;
         margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-height: 56px;
       }
 
       .hotel-details-rating {
@@ -211,6 +220,19 @@
   }
 }
 
+@media (max-width: 1199.55px) {
+  .nearby-hotels-slider {
+    .nearby-hotels-card {
+      .nearby-hotels-card-img {
+        img {
+          height: 190px;
+          min-height: 190px;
+          max-height: 190px;
+        }
+      }
+    }
+  }
+}
 
 @media (max-width: 991.55px) {
   .nearby-hotels-slider {
@@ -253,6 +275,7 @@
           font-size: 18px;
           line-height: normal;
           margin-bottom: 10px;
+          min-height: 43px;
         }
 
         .nearby-hotels-price-info {

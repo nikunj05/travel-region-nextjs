@@ -142,7 +142,7 @@ const Header = () => {
   return (
     <header
       id="siteHeader"
-      className={`header ${isSticky ? "header_sticky" : ""}`}
+      className={`header header_sticky ${isSticky ? "header_sticky" : ""}`}
     >
       <div className="container">
         <nav className="navbar navbar-expand-lg justify-content-between align-items-center py-0">
@@ -212,7 +212,7 @@ const Header = () => {
                   {t("dealsAndOffers")}
                 </Link>
               </li> */}
-               {isAuthenticated && (
+              {isAuthenticated && (
                 <li className="nav-item">
                   <Link
                     className="nav-link"
@@ -232,7 +232,7 @@ const Header = () => {
                   {t("blog")}
                 </Link>
               </li>
-             
+
               <li className="nav-item">
                 <Link
                   className="nav-link"
@@ -396,8 +396,18 @@ const Header = () => {
                   </button>
 
                   <div className="profile-menu">
-                    <Link href="/profile" onClick={() => setIsProfileMenuOpen(false)}>{t("myProfile")}</Link>
-                    <Link href="/settings" onClick={() => setIsProfileMenuOpen(false)}>{t("settings")}</Link>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      {t("myProfile")}
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      {t("settings")}
+                    </Link>
                     <a
                       href="#"
                       onClick={(e) => {
