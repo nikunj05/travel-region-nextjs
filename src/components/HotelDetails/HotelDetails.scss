@@ -436,31 +436,9 @@
 
     .room-list {
       display: flex;
-      overflow-x: auto;
+      flex-wrap: wrap;
       gap: 32px;
       margin-bottom: 36px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 10px;
-
-      /* Custom scrollbar styling */
-      &::-webkit-scrollbar {
-        height: 8px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-      }
-
-      &::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
 
       .room-card {
         display: flex;
@@ -468,10 +446,8 @@
         gap: 0px;
         border: 1px solid $border-color;
         border-radius: 8px;
-        min-width: calc((100% - 64px) / 3);
+        flex: 0 0 calc((100% - 64px) / 3);
         max-width: calc((100% - 64px) / 3);
-        flex: 0 0 auto;
-        scroll-snap-align: start;
 
         .room-card-image {
           position: relative;
@@ -1241,19 +1217,15 @@
 
     .rooms-filter-section {
       .room-list {
+        display: flex;
+        flex-wrap: wrap;
         gap: 16px;
         margin-bottom: 32px;
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 10px;
+        padding-bottom: 0;
 
         .room-card {
-          min-width: 250px;
-          max-width: 310px;
-          flex: 0 0 auto;
-          scroll-snap-align: start;
+          flex: 0 0 calc((100% - 32px) / 3);
+          max-width: calc((100% - 32px) / 3);
 
           .hotel-img-btn {
             width: 32px;
@@ -1427,6 +1399,13 @@
     }
 
     .rooms-filter-section {
+      .room-list {
+        .room-card {
+          flex: 0 0 calc((100% - 16px) / 2);
+          max-width: calc((100% - 16px) / 2);
+        }
+      }
+
       .room-filter-bar {
         flex-wrap: wrap;
         gap: 16px;
@@ -1733,6 +1712,17 @@
               font-size: 14px;
             }
           }
+        }
+      }
+    }
+
+    .rooms-filter-section {
+      .room-list {
+        gap: 12px;
+
+        .room-card {
+          flex: 0 0 100%;
+          max-width: 100%;
         }
       }
     }

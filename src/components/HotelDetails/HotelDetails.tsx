@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import "./HotelDetails.scss";
@@ -19,12 +19,14 @@ import FilterComponents from "../FilterComponents/FilterComponents";
 import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
 import HotelDetailsCardImage from "@/assets/images/no-image.jpg";
-import ReviewSlider from "../common/ReviewSlider/ReviewSlider";
+// import ReviewSlider from "../common/ReviewSlider/ReviewSlider";
 import NearByHotels from "../common/NearbyHotels/NearbyHotels";
 import FaqSection from "../common/FaqSection/FaqSection";
 import RoomInfoImage from "@/assets/images/room-information-image.jpg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import ImageModal from "../common/ImageModal/ImageModal";
+import LoginModal from "../common/LoginModal/LoginModal";
+import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
@@ -39,6 +41,7 @@ import HotelLocationMap from "../common/HotelLocationMap/HotelLocationMap";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { toast } from "react-toastify";
+import { useFavoriteStore } from "@/store/favoriteStore";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -124,10 +127,18 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
+  const {
+    favorites,
+    addFavorite,
+    removeFavorite,
+    fetchFavorites,
+  } = useFavoriteStore();
+
   console.log("hotelData", hotelData);
   console.log("processedRooms", processedRooms);
   const router = useRouter();
@@ -135,6 +146,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const modalSliderRef = useRef<Slider>(null);
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
   const hasRequestedNearbySearch = useRef(false);
+
+  const authContext = useContext(AuthContext);
+
+  const isFavorited = useMemo(
+    () => favorites.some((fav) => String(fav.code) === String(hotelId)),
+    [favorites, hotelId]
+  );
+
+  useEffect(() => {
+    if (authContext?.isAuthenticated) {
+      fetchFavorites();
+    }
+  }, [authContext?.isAuthenticated, fetchFavorites]);
 
   const nearbyHotelsCount = useHotelSearchStore((state) => state.hotels.length);
   const nearbyHotelsLoading = useHotelSearchStore((state) => state.loading);
@@ -551,6 +575,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     Number.isFinite(hotelLongitude);
   const canRenderInteractiveMap = hasValidCoordinates && Boolean(mapboxAccessToken);
 // console.log("canRenderInteractiveMap", canRenderInteractiveMap);
+  const handleFavoriteClick = () => {
+    if (authContext?.isAuthenticated) {
+      if (isFavorited) {
+        removeFavorite(hotelId);
+        toast.success("Removed from favorites!");
+      } else {
+        addFavorite(hotelId);
+        toast.success("Added to favorites!");
+      }
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
   return (
     <main className="hotel-details-page padding-top-100 section-space-b">
       <div className="container">
@@ -1036,12 +1073,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <span>No Repay</span>
                   </div>
                   <div className="share-like-section d-flex align-items-center">
-                    <button className="share-btn favarite-btn">
+                    <button className="share-btn favarite-btn" onClick={handleFavoriteClick}>
                       <svg
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
+                        fill={isFavorited ? "#FB2C36" : "none"}
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
@@ -1125,7 +1162,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   const primaryRateDetails = findPrimaryRate(room);
 
                   return (
-                    <div className="room-card" key={room.roomCode}>
+                    <div
+                      className="room-card"
+                      key={`room-${room.roomCode || roomIndex}`}
+                    >
                       <div className="room-card-image">
                         {room.images.length > 0 ? (
                           <>
@@ -1136,7 +1176,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               {...sliderSettings}
                             >
                               {room.images.map((image, imgIndex) => (
-                                <div key={imgIndex}>
+                                <div
+                                  key={`room-${room.roomCode || roomIndex}-image-${
+                                    image.path || imgIndex
+                                  }`}
+                                >
                                   <Image
                                     src={image.fullUrl}
                                     width={378}
@@ -1998,6 +2042,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         isOpen={isImageModalOpen}
         onClose={handleCloseImageModal}
         hotelImages={hotelData?.images || []}
+      />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          // You might want to trigger the favorite action again here
+          handleFavoriteClick();
+          console.log("Logged in, now can favorite");
+        }}
       />
     </main>
   );
