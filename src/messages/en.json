@@ -122,6 +122,15 @@
     "shareLinkCopied": "Link copied to clipboard",
     "shareLinkCopyFailed": "Unable to copy link. Please try again."
   },
+  "LoginModal": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "loading": "Loading...",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up"
+  },
   "AboutUs": {
     "bannerTitle": "Who We Are",
     "bannerDescription": "Your trusted partner in discovering the perfect stay, anywhere.",

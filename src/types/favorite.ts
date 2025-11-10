@@ -1,19 +1,19 @@
 // Favorite Hotels API Types
 
 export interface HotelImage {
-  imageTypeCode: string;
   path: string;
-  order: number;
-  visualOrder: number;
-  roomCode?: string;
-  roomType?: string;
-  characteristicCode?: string;
   type?: {
     code: string;
     description: {
       content: string;
     };
   };
+  imageTypeCode?: string;
+  order?: number;
+  visualOrder?: number;
+  roomCode?: string;
+  roomType?: string;
+  characteristicCode?: string;
 }
 
 export interface HotelPhone {

@@ -229,7 +229,7 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                     <div className="nearby-hotels-price-info">
                       <span className="total-price">
                         {currency} {minRate}
-                        <span>/per night</span>
+                        {/* <span>/per night</span> */}
                       </span>
                       <div className="hotel-room-number">includes taxes & fees</div>
                     </div>

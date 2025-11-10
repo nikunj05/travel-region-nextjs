@@ -122,6 +122,15 @@
     "shareLinkCopied": "تم نسخ الرابط إلى الحافظة",
     "shareLinkCopyFailed": "تعذر نسخ الرابط. يرجى المحاولة مرة أخرى."
   },
+  "LoginModal": {
+    "title": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "loginButton": "تسجيل الدخول",
+    "loading": "جاري التحميل...",
+    "noAccount": "ليس لديك حساب؟",
+    "signUp": "انشاء حساب"
+  },
   "AboutUs": {
     "bannerTitle": "من نحن",
     "bannerDescription": "شريكك الموثوق في اكتشاف الإقامة المثالية، في أي مكان.",
