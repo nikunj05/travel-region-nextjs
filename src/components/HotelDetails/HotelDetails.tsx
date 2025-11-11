@@ -16,7 +16,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { buildHotelbedsImageUrl } from "@/constants";
+import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
 // import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
@@ -497,14 +497,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         .map((facility) => facility.description)
         .find((description) => description) ||
       selectedRoom.characteristicDescription ||
-      ""
-    : "";
+      null
+    : null;
 
-  const currencyFormatter = useMemo(
+  const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-        style: "currency",
-        currency: "SAR",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),
@@ -558,19 +556,51 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       return {
         rate: preferredRate,
         net,
-        formattedPrice: currencyFormatter.format(net),
+        formattedPrice: priceFormatter.format(net),
         cancellationPolicy,
         refundDate,
         policyAmount,
         policyAmountFormatted:
-          policyAmount !== null ? currencyFormatter.format(policyAmount) : null,
+          policyAmount !== null ? priceFormatter.format(policyAmount) : null,
         isFullyRefundable,
       };
     },
-    [currencyFormatter, formatCancellationDate]
+    [priceFormatter, formatCancellationDate]
   );
 
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
+  const descriptionContent =
+    hotelData?.description?.content || t("description.fallback");
+  const hotelName = hotelData?.name?.content || t("placeholders.hotelName");
+  const hotelAddress =
+    hotelData?.address?.content || t("placeholders.hotelAddress");
+  const descriptionPreviewLength = 300;
+  const truncatedDescription =
+    descriptionContent.length > descriptionPreviewLength
+      ? `${descriptionContent.substring(0, descriptionPreviewLength)}...`
+      : descriptionContent;
+  const checkInTime = "2:00 PM";
+  const checkOutTime = "11:00 AM";
+  const receptionCloseTime = "12:00 PM";
+  const selectedRoomDisplayName =
+    selectedRoom?.name || selectedRoom?.description || t("placeholders.roomName");
+  const selectedRoomSleepsLabel = t("labels.sleeps", {
+    count:
+      selectedRoom?.capacity?.maxAdults ??
+      selectedRoom?.capacity?.maxPax ??
+      "-",
+  });
+  const selectedRoomRefundStatus = selectedRoomRateDetails
+    ? selectedRoomRateDetails.isFullyRefundable
+      ? t("refund.fullyRefundable")
+      : t("refund.notFullyRefundable")
+    : t("placeholders.refundPolicyUnavailable");
+  const selectedRoomRefundDateLabel =
+    selectedRoomRateDetails?.refundDate
+      ? t("refund.beforeDate", {
+          date: selectedRoomRateDetails.refundDate,
+        })
+      : t("placeholders.refundDateUnavailable");
   const hotelLatitude = hotelData?.coordinates?.latitude;
   const hotelLongitude = hotelData?.coordinates?.longitude;
   // console.log("hotelLatitude", hotelLatitude);
@@ -587,10 +617,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     if (authContext?.isAuthenticated) {
       if (isFavorited) {
         removeFavorite(hotelId);
-        toast.success("Removed from favorites!");
+        toast.success(t("toast.removedFromFavorites"));
       } else {
         addFavorite(hotelId);
-        toast.success("Added to favorites!");
+        toast.success(t("toast.addedToFavorites"));
       }
     } else {
       setIsLoginModalOpen(true);
@@ -767,7 +797,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               src={images.main}
                               width={892}
                               height={260}
-                              alt={hotelData?.name?.content || "Hotel"}
+                              alt={hotelName}
                               className="hotel-details-main-image"
                             />
                           )}
@@ -783,7 +813,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 >
                                   <Image
                                     src={imgSrc}
-                                    alt={`Thumbnail ${index + 1}`}
+                                    alt={t("alts.thumbnail", {
+                                      index: index + 1,
+                                    })}
                                     width={66}
                                     height={52}
                                   />
@@ -820,42 +852,41 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         href="#overview"
                         onClick={(e) => handleTabClick(e, "overview")}
                       >
-                        Overview
+                        {t("tabs.overview")}
                       </a>
                       <a
                         href="#amenities"
                         onClick={(e) => handleTabClick(e, "amenities")}
                       >
-                        Amenities
+                        {t("tabs.amenities")}
                       </a>
                       <a
                         href="#rooms"
                         onClick={(e) => handleTabClick(e, "rooms")}
                       >
-                        Rooms
+                        {t("tabs.rooms")}
                       </a>
                       <a
                         href="#reviews"
                         onClick={(e) => handleTabClick(e, "reviews")}
                       >
-                        Reviews
+                        {t("tabs.reviews")}
                       </a>
                       <a href="#map" onClick={(e) => handleTabClick(e, "map")}>
-                        Map
+                        {t("tabs.map")}
                       </a>
                     </div>
                   </div>
 
                   {/* Overview */}
                   <section id="overview" className="hotel-tab-section">
-                    <h2 className="tabbing-sub-title">Description</h2>
+                    <h2 className="tabbing-sub-title">
+                      {t("sections.descriptionTitle")}
+                    </h2>
                     <p className="hotel-description">
                       {isDescriptionExpanded
-                        ? hotelData?.description?.content || "Hotel Description"
-                        : (
-                            hotelData?.description?.content ||
-                            "Hotel Description"
-                          ).substring(0, 300) + "..."}
+                        ? descriptionContent
+                        : truncatedDescription}
                       <a
                         href="#"
                         onClick={handleReadMoreClick}
@@ -870,7 +901,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     </p>
                   </section>
                   <section className="hotel-tab-section important-tab-content">
-                    <h2 className="tabbing-sub-title">Important</h2>
+                    <h2 className="tabbing-sub-title">
+                      {t("sections.importantTitle")}
+                    </h2>
                     <div className="important-info">
                       <div className="important-item">
                         <div className="important-icon arrow_icon d-flex align-items-center">
@@ -896,9 +929,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          Check-in
+                          {t("important.checkInLabel")}
                         </div>
-                        <p className="important-text">2:00 PM</p>
+                        <p className="important-text">{checkInTime}</p>
                       </div>
                       <div className="important-item">
                         <div className="important-icon arrow_icon d-flex align-items-center">
@@ -924,9 +957,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          Check-out
+                          {t("important.checkOutLabel")}
                         </div>
-                        <p className="important-text">11:00 AM</p>
+                        <p className="important-text">{checkOutTime}</p>
                       </div>
                       <div className="important-item">
                         <div className="important-icon d-flex align-items-center">
@@ -957,10 +990,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          Additional Facts
+                          {t("important.additionalFactsLabel")}
                         </div>
                         <p className="important-text">
-                          Reception Open Until 12:00 PM
+                          {t("important.receptionOpenUntil", {
+                            time: receptionCloseTime,
+                          })}
                         </p>
                       </div>
                     </div>
@@ -971,7 +1006,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     className="hotel-tab-section amenities-tab-content"
                   >
                     <h2 className="tabbing-sub-title">
-                      Hotel Room & Facilities
+                      {t("sections.amenitiesTitle")}
                     </h2>
                     <div className="amenities-info d-grid">
                       {displayedAmenities.map((facility) => (
@@ -998,7 +1033,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               <div className="hotel-details-right">
                 <div className="hotel-info-header">
                   <h2 className="hotel-name">
-                    {hotelData?.name?.content || "Hotel Name"}
+                    {hotelName}
                   </h2>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
@@ -1060,25 +1095,25 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       alt="location"
                       className="hotel-address-icon"
                     />
-                    {hotelData?.address?.content || "Hotel Address"}
+                    {hotelAddress}
                   </div>
 
                   <div className="hotel-price-info">
                     {/* <div className="price">
                   Price: Starts from <span>$500</span>/night
                 </div> */}
-                    <div className="check-availability-action">
+                    {/* <div className="check-availability-action">
                       <button
                         className="button-primary check-availability-btn"
                         onClick={() => router.push(`/booking-review`)}
                       >
                         Check Availability
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="free-cancellation-section d-flex align-items-center">
-                    <span>Free Cancellation</span>
-                    <span>No Repay</span>
+                    <span>{t("labels.freeCancellation")}</span>
+                    <span>{t("labels.noRepay")}</span>
                   </div>
                   <div className="share-like-section d-flex align-items-center">
                     <button
@@ -1099,7 +1134,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           strokeLinecap="round"
                         />
                       </svg>
-                      Favorite
+                      {t("actions.favorite")}
                     </button>
                     <button className="share-btn" onClick={handleShareClick}>
                       <svg
@@ -1123,7 +1158,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           strokeLinejoin="round"
                         />
                       </svg>
-                      Share
+                      {t("actions.share")}
                     </button>
                   </div>
                 </div>
@@ -1132,7 +1167,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
             {/* Rooms */}
             <section id="rooms" className="rooms-filter-section">
-              <h2 className="hotel-section-title">Room</h2>
+              <h2 className="hotel-section-title">
+                {t("sections.roomsTitle")}
+              </h2>
               <div className="room-filters">
                 <FilterComponents
                   onCheckAvailability={handleCheckAvailability}
@@ -1158,6 +1195,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     slidesToScroll: 1,
                     arrows: false,
                   };
+                  const roomDisplayName =
+                    room.name || room.description || t("placeholders.roomName");
                   const roomFacilitiesWithDescriptions = room.facilities.filter(
                     (facility) => facility.description
                   );
@@ -1169,8 +1208,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       .map((facility) => facility.description)
                       .find((description) => description) ||
                     room.characteristicDescription ||
-                    "";
+                    null;
                   const primaryRateDetails = findPrimaryRate(room);
+                  const refundStatusLabel = primaryRateDetails
+                    ? primaryRateDetails.isFullyRefundable
+                      ? t("refund.fullyRefundable")
+                      : t("refund.notFullyRefundable")
+                    : t("placeholders.refundPolicyUnavailable");
+                  const refundDateLabel =
+                    primaryRateDetails?.refundDate
+                      ? t("refund.beforeDate", {
+                          date: primaryRateDetails.refundDate,
+                        })
+                      : t("placeholders.refundDateUnavailable");
 
                   return (
                     <div
@@ -1196,7 +1246,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     src={image.fullUrl}
                                     width={378}
                                     height={203}
-                                    alt={room.name || "Room Image"}
+                                alt={roomDisplayName}
                                     style={{
                                       objectFit: "cover",
                                       width: "100%",
@@ -1244,12 +1294,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             src={HotelDetailsCardImage}
                             width={378}
                             height={203}
-                            alt={room.name || "Room"}
+                            alt={roomDisplayName}
                           />
                         )}
 
                         <div className="hotel-best-value d-flex align-items-center">
-                          <span>Best Value</span>
+                          <span>{t("labels.bestValue")}</span>
                         </div>
                         <div className="hotel-card-total-image d-flex align-items-center">
                           <svg
@@ -1287,9 +1337,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         </div>
                       </div>
                       <div className="room-card-details">
-                        <h3 className="hotel-room-name">
-                          {room.name || room.description || "Room"}
-                        </h3>
+                        <h3 className="hotel-room-name">{roomDisplayName}</h3>
                         <div className="hotel-details-rating d-flex align-items-center">
                           {/* <div className="hotel-details-rating-star d-flex align-items-center">
                             <Image
@@ -1342,13 +1390,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 >
                                   <AmenityIcon facilityCode={facility.code} />
                                   {facility.description ||
-                                    `Facility ${facility.code}`}
+                                    t("placeholders.facilityFallback", {
+                                      code: facility.code,
+                                    })}
                                 </li>
                               ))}
                             </ul>
                           ) : (
                             <p className="amenities-item no-facilities">
-                              No facility information available
+                              {t("placeholders.noFacilityInfo")}
                             </p>
                           )}
                         </div>
@@ -1368,7 +1418,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   fill="#27272A"
                                 />
                               </svg>
-                              {bedDescription || "Bed information unavailable"}
+                              {bedDescription ?? t("placeholders.bedInfoUnavailable")}
                             </li>
 
                             {/* <li>
@@ -1451,10 +1501,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   strokeWidth="1.25"
                                 />
                               </svg>
-                              Sleeps{" "}
-                              {room.capacity?.maxAdults ??
-                                room.capacity?.maxPax ??
-                                "-"}
+                              {t("labels.sleeps", {
+                                count:
+                                  room.capacity?.maxAdults ??
+                                  room.capacity?.maxPax ??
+                                  "-",
+                              })}
                             </li>
                           </ul>
                         </div>
@@ -1529,22 +1581,23 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 strokeLinejoin="round"
                               />
                             </svg>
-                            {primaryRateDetails
-                              ? primaryRateDetails.isFullyRefundable
-                                ? "Fully refundable"
-                                : "Not fully refundable"
-                              : "Refund policy unavailable"}
+                            {refundStatusLabel}
                             {primaryRateDetails?.policyAmountFormatted && (
-                              <span className="refund-amount">
-                                {` (${primaryRateDetails.policyAmountFormatted})`}
+                              <span className="refund-amount d-inline-flex align-items-center">
+                                {" ("}
+                                <Image
+                                  src={currencyImage}
+                                  width={16}
+                                  height={16}
+                                  alt="currency icon"
+                                /> {" "}
+                                {` ${primaryRateDetails.policyAmountFormatted})`}
                               </span>
                             )}
                           </div>
                           {primaryRateDetails ? (
                             <span className="refund-valid-date">
-                              {primaryRateDetails.refundDate
-                                ? `Before ${primaryRateDetails.refundDate}`
-                                : "Refund date unavailable"}
+                              {refundDateLabel}
                             </span>
                           ) : null}
                         </div>
@@ -1558,7 +1611,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               handleOpenModal(room);
                             }}
                           >
-                            More Details
+                            {t("actions.moreDetails")}
                             <svg
                               width="20"
                               height="20"
@@ -1580,9 +1633,20 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             <span className="discount">$51 off</span>
                           </div> */}
                           {/* <span className="nightly-price">$40 nightly</span> */}
-                          <span className="total-price">
-                            {primaryRateDetails?.formattedPrice ??
-                              "Price unavailable"}
+                          <span className="total-price d-inline-flex align-items-center gap-1">
+                            {primaryRateDetails ? (
+                              <>
+                                <Image
+                                  src={currencyImage}
+                                  width={16}
+                                  height={16}
+                                  alt="currency icon"
+                                />{" "}
+                                {primaryRateDetails.formattedPrice}
+                              </>
+                            ) : (
+                              t("placeholders.priceUnavailable")
+                            )}
                           </span>
                           {primaryRateDetails?.rate.boardName && (
                             <div className="hotel-room-number">
@@ -1606,13 +1670,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 strokeLinejoin="round"
                               />
                             </svg>
-                            Totals with taxes and fees
+                            {t("labels.totalWithTaxesAndFees")}
                           </div>
                           {/* <div className="hotel-room-left">We have 5 left</div> */}
                         </div>
                         <div className="hotel-room-booking-action">
                           <button className="button-primary room-booking-btn w-100">
-                            Book Now
+                            {t("actions.bookNow")}
                           </button>
                         </div>
                       </div>
@@ -1630,7 +1694,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
             {/* Map */}
             <section id="map" className="hotel-map-section">
-              <h2 className="hotel-section-title">Map</h2>
+              <h2 className="hotel-section-title">{t("sections.mapTitle")}</h2>
               <div className="map-container">
                 {canRenderInteractiveMap ? (
                   <HotelLocationMap
@@ -1639,12 +1703,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     hotelName={hotelData?.name?.content}
                   />
                 ) : (
-                  <Image src={mapImage} width={1200} height={344} alt="Map" />
+                  <Image
+                    src={mapImage}
+                    width={1200}
+                    height={344}
+                    alt={t("alts.map")}
+                  />
                 )}
               </div>
             </section>
             <section className="nearby-hotel-section">
-              <h2 className="hotel-section-title">Similar Hotels Nearby</h2>
+              <h2 className="hotel-section-title">
+                {t("sections.similarHotelsTitle")}
+              </h2>
               <div className="near-hotel-container">
                 <NearByHotels currentHotelCode={hotelData?.code} />
               </div>
@@ -1672,7 +1743,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   alt="close icon"
                 />
               </button>
-              <h2 className="room-modal-title">Room Information</h2>
+              <h2 className="room-modal-title">
+                {t("modal.roomInformationTitle")}
+              </h2>
             </div>
 
             <div className="room-modal-body">
@@ -1697,7 +1770,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               src={image.fullUrl}
                               width={742}
                               height={362}
-                              alt={selectedRoom.name || "Room Image"}
+                              alt={selectedRoomDisplayName}
                               style={{
                                 objectFit: "cover",
                                 width: "100%",
@@ -1741,13 +1814,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       src={RoomInfoImage}
                       width={742}
                       height={362}
-                      alt="room info image"
+                      alt={t("alts.roomPlaceholder")}
                     />
                   )}
                 </div>
                 <div className="modal-room-name-with-review">
                   <h3 className="modal-room-title">
-                    {selectedRoom.name || selectedRoom.description || "Room"}
+                    {selectedRoomDisplayName}
                   </h3>
                   {/* <div className="modal-room-rating d-flex align-items-center">
                     <div className="modal-room-rating-star d-flex align-items-center">
@@ -1800,13 +1873,16 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           key={`${selectedRoom.roomCode}-${facility.groupCode}-${facility.code}`}
                         >
                           <AmenityIcon facilityCode={facility.code} />
-                          {facility.description || `Facility ${facility.code}`}
+                          {facility.description ||
+                            t("placeholders.facilityFallback", {
+                              code: facility.code,
+                            })}
                         </li>
                       ))}
                     </ul>
                   ) : (
                     <p className="facility-item no-facilities">
-                      No facility information available
+                      {t("placeholders.noFacilityInfo")}
                     </p>
                   )}
                 </div>
@@ -1865,8 +1941,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           fill="#27272A"
                         />
                       </svg>
-                      {selectedRoomBedDescription ||
-                        "Bed information unavailable"}
+                      {selectedRoomBedDescription ??
+                        t("placeholders.bedInfoUnavailable")}
                     </li>
 
                     {/* <li>
@@ -1949,10 +2025,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           strokeWidth="1.25"
                         />
                       </svg>
-                      Sleeps{" "}
-                      {selectedRoom?.capacity?.maxAdults ??
-                        selectedRoom?.capacity?.maxPax ??
-                        "-"}
+                      {selectedRoomSleepsLabel}
                     </li>
                   </ul>
                 </div>
@@ -1991,22 +2064,24 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    {selectedRoomRateDetails
-                      ? selectedRoomRateDetails.isFullyRefundable
-                        ? "Fully refundable"
-                        : "Not fully refundable"
-                      : "Refund policy unavailable"}
+                    {selectedRoomRefundStatus}
                     {selectedRoomRateDetails?.policyAmountFormatted && (
-                      <span className="refund-amount">
-                        {` (${selectedRoomRateDetails.policyAmountFormatted})`}
+                      <span className="refund-amount d-inline-flex align-items-center">
+                        {" ("}
+                        <Image
+                          src={currencyImage}
+                          width={16}
+                          height={16}
+                          alt="currency icon"
+                        /> 
+                        {" "}
+                        {` ${selectedRoomRateDetails.policyAmountFormatted})`}
                       </span>
                     )}
                   </div>
                   {selectedRoomRateDetails ? (
                     <span className="refund-valid-date">
-                      {selectedRoomRateDetails.refundDate
-                        ? `Before ${selectedRoomRateDetails.refundDate}`
-                        : "Refund date unavailable"}
+                      {selectedRoomRefundDateLabel}
                     </span>
                   ) : null}
                 </div>
@@ -2015,9 +2090,20 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <span className="discount">$51 off</span>
                   </div>
                   <span className="nightly-price">$40 nightly</span> */}
-                  <span className="total-price">
-                    {selectedRoomRateDetails?.formattedPrice ??
-                      "Price unavailable"}
+                  <span className="total-price d-inline-flex align-items-center gap-1">
+                    {selectedRoomRateDetails ? (
+                      <>
+                        <Image
+                          src={currencyImage}
+                          width={16}
+                          height={16}
+                          alt="currency icon"
+                        />
+                        {selectedRoomRateDetails.formattedPrice}
+                      </>
+                    ) : (
+                      t("placeholders.priceUnavailable")
+                    )}
                   </span>
                   {selectedRoomRateDetails?.rate.boardName && (
                     <div className="hotel-room-number">
@@ -2041,13 +2127,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Totals with taxes and fees
+                    {t("labels.totalWithTaxesAndFees")}
                   </div>
                   {/* <div className="hotel-room-left">We have 5 left</div> */}
                 </div>
                 <div className="modal-room-booking-action">
                   <button className="button-primary room-booking-btn w-100">
-                    Book Now
+                    {t("actions.bookNow")}
                   </button>
                 </div>
               </div>

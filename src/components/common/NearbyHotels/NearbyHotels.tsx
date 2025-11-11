@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import { useRouter } from "next/navigation";
-import { buildHotelbedsImageUrl } from "@/constants";
+import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
@@ -64,18 +64,15 @@ const getMainImage = (hotel: HotelItem | FavoriteHotel) => {
   return mainPath ? buildHotelbedsImageUrl(mainPath) : null;
 };
 
-const getHotelCurrency = (hotel: HotelItem | FavoriteHotel) => {
-  if ("currency" in hotel && hotel.currency) {
-    return hotel.currency;
-  }
-  return "US$";
-};
-
 const getHotelMinRate = (hotel: HotelItem | FavoriteHotel) => {
   if ("minRate" in hotel && hotel.minRate) {
-    return hotel.minRate;
+    const numericValue = Number(hotel.minRate);
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+      return null;
+    }
+    return numericValue;
   }
-  return "";
+  return null;
 };
 
 const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
@@ -194,7 +191,6 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
               const hotelCode = getHotelCode(hotel);
               const mainImage = getMainImage(hotel) || NearHotelImage;
               const rating = getStarRating(hotel);
-              const currency = getHotelCurrency(hotel);
               const minRate = getHotelMinRate(hotel);
 
               return (
@@ -228,7 +224,22 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                     </div>
                     <div className="nearby-hotels-price-info">
                       <span className="total-price">
-                        {currency} {minRate}
+                        {minRate !== null ? (
+                          <span className="d-inline-flex align-items-center gap-1">
+                            <Image
+                              src={currencyImage}
+                              width={12}
+                              height={12}
+                              alt="currency icon"
+                            />
+                            {minRate.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        ) : (
+                          "Price unavailable"
+                        )}
                         {/* <span>/per night</span> */}
                       </span>
                       <div className="hotel-room-number">includes taxes & fees</div>

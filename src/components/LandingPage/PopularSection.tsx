@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
+import { buildCurrencySvgMarkup } from "@/constants";
 
 const Popular = () => {
   const t = useTranslations("PopularSection");
@@ -21,6 +22,33 @@ const Popular = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const router = useRouter();
   const setLocation = useSearchFiltersStore((s) => s.setLocation);
+
+  const renderPricing = (price?: PopularDestinationItem["hotel_min_price"]) => {
+    const displayPrice = price && price.trim().length > 0 ? price : "0";
+
+    return (
+      <h5 className="destination-hotel-pricing">
+        <div>{t("from")}</div>
+        <span
+          className="currency-icon"
+          aria-hidden="true"
+          dangerouslySetInnerHTML={{ __html: buildCurrencySvgMarkup("#FFFFFF") }}
+          style={{ width: 18, height: 18, display: "inline-flex" }}
+        />
+
+        {/* <Image
+          src={currencyImage}
+          width={16}
+          height={16}
+          alt="currency icon"
+        /> */}
+        <span>{displayPrice}</span>
+        <span className="destination-hotel-pricing-night">
+          {t("perNight")}
+        </span>
+      </h5>
+    );
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -162,12 +190,7 @@ const Popular = () => {
                   />{" "}
                   {destinations[0]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
-                <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> ${destinations[0]?.hotel_min_price ?? 0}{" "}
-                  <span className="destination-hotel-pricing-night">
-                    {t("perNight")}
-                  </span>
-                </h5>
+                {renderPricing(destinations[0]?.hotel_min_price)}
               </div>
               <div className="overlay">
                 <div className="overlay-content">
@@ -227,12 +250,7 @@ const Popular = () => {
                   />{" "}
                   {destinations[1]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
-                <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> ${destinations[1]?.hotel_min_price ?? 0}{" "}
-                  <span className="destination-hotel-pricing-night">
-                    {t("perNight")}
-                  </span>
-                </h5>
+                {renderPricing(destinations[1]?.hotel_min_price)}
               </div>
               <div className="overlay">
                 <div className="overlay-content">
@@ -294,12 +312,7 @@ const Popular = () => {
                   />{" "}
                   {destinations[2]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
-                <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> ${destinations[2]?.hotel_min_price ?? 0}{" "}
-                  <span className="destination-hotel-pricing-night">
-                    {t("perNight")}
-                  </span>
-                </h5>
+                {renderPricing(destinations[2]?.hotel_min_price)}
               </div>
               <div className="overlay">
                 <div className="overlay-content">
@@ -359,12 +372,7 @@ const Popular = () => {
                   />{" "}
                   {destinations[3]?.hotel_count ?? 0} {t("hotelsAvailable")}
                 </p>
-                <h5 className="destination-hotel-pricing">
-                  <div>{t("from")}</div> ${destinations[3]?.hotel_min_price ?? 0}{" "}
-                  <span className="destination-hotel-pricing-night">
-                    {t("perNight")}
-                  </span>
-                </h5>
+                {renderPricing(destinations[3]?.hotel_min_price)}
               </div>
               <div className="overlay">
                 <div className="overlay-content">

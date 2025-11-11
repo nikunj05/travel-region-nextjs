@@ -120,7 +120,87 @@
     "showAll": "Show All",
     "showLess": "Show Less",
     "shareLinkCopied": "Link copied to clipboard",
-    "shareLinkCopyFailed": "Unable to copy link. Please try again."
+    "shareLinkCopyFailed": "Unable to copy link. Please try again.",
+    "tabs": {
+      "overview": "Overview",
+      "amenities": "Amenities",
+      "rooms": "Rooms",
+      "reviews": "Reviews",
+      "map": "Map"
+    },
+    "sections": {
+      "descriptionTitle": "Description",
+      "importantTitle": "Important",
+      "amenitiesTitle": "Hotel Room & Facilities",
+      "roomsTitle": "Rooms",
+      "mapTitle": "Map",
+      "similarHotelsTitle": "Similar Hotels Nearby"
+    },
+    "description": {
+      "fallback": "Hotel description not available."
+    },
+    "important": {
+      "checkInLabel": "Check-in",
+      "checkOutLabel": "Check-out",
+      "additionalFactsLabel": "Additional Facts",
+      "receptionOpenUntil": "Reception open until {time}"
+    },
+    "placeholders": {
+      "hotelName": "Hotel Name",
+      "hotelAddress": "Hotel Address",
+      "roomName": "Room",
+      "facilityFallback": "Facility {code}",
+      "noFacilityInfo": "No facility information available",
+      "bedInfoUnavailable": "Bed information unavailable",
+      "priceUnavailable": "Price unavailable",
+      "refundPolicyUnavailable": "Refund policy unavailable",
+      "refundDateUnavailable": "Refund date unavailable"
+    },
+    "labels": {
+      "freeCancellation": "Free Cancellation",
+      "noRepay": "No Repay",
+      "bestValue": "Best Value",
+      "sleeps": "Sleeps {count}",
+      "totalWithTaxesAndFees": "Totals with taxes and fees"
+    },
+    "actions": {
+      "favorite": "Favorite",
+      "share": "Share",
+      "bookNow": "Book Now",
+      "moreDetails": "More Details"
+    },
+    "toast": {
+      "addedToFavorites": "Added to favorites!",
+      "removedFromFavorites": "Removed from favorites!"
+    },
+    "refund": {
+      "fullyRefundable": "Fully refundable",
+      "notFullyRefundable": "Not fully refundable",
+      "beforeDate": "Before {date}"
+    },
+    "alts": {
+      "thumbnail": "Thumbnail {index}",
+      "map": "Map preview",
+      "roomPlaceholder": "Room placeholder image"
+    },
+    "modal": {
+      "roomInformationTitle": "Room Information"
+    },
+    "filters": {
+      "checkInLabel": "Check-in Date",
+      "checkOutLabel": "Check-out Date",
+      "guestsAndRoomsLabel": "Guests & Rooms",
+      "addDate": "Add Date",
+      "addGuests": "Add Guests",
+      "guestsLabel": "{count, plural, one {# Guest} other {# Guests}}",
+      "roomsLabel": "{count, plural, one {# Room} other {# Rooms}}",
+      "guestsRoomsSeparator": "{guests} • {rooms}",
+      "calendarIconAlt": "calendar icon",
+      "plusIconAlt": "open picker",
+      "guestsIconAlt": "guests icon",
+      "dropdownIconAlt": "toggle dropdown",
+      "checkAvailabilityButton": "Check Availability"
+    }
   },
   "LoginModal": {
     "title": "Login",
@@ -172,7 +252,8 @@
     "settings": "Settings",
     "blogs": "Blogs",
     "favorites": "Favorites",
-    "bookings": "Bookings"
+    "bookings": "Bookings",
+    "myBookings": "My Bookings"
   },
   "Footer": {
     "caption": "Your trusted travel partner across the Middle East —bringing you handpicked stays, personalized experiences, and effortless booking wherever your journey takes you.",

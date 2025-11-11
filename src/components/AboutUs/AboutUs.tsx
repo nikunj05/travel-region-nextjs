@@ -492,12 +492,12 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
           </div>
         </div>
       </section>
-      <section className="about-testimonails-section">
+      {/* <section className="about-testimonails-section">
         <div className="testimonials-container">
           <Travelers />
         </div>
-      </section>
-      <section className="home-contact-section about-ready-to-explore-section section-space-t">
+      </section> */}
+      {/* <section className="home-contact-section about-ready-to-explore-section section-space-t">
         <div className="container">
           <div className="contact-inner-section">
             <div className="contact-us-content">
@@ -534,7 +534,7 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }

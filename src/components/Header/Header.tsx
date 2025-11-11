@@ -219,7 +219,7 @@ const Header = () => {
                     href="/bookings"
                     onClick={closeMobileMenu}
                   >
-                    My Bookings
+                    {t("myBookings")}
                   </Link>
                 </li>
               )}

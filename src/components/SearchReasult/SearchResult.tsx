@@ -30,7 +30,7 @@ import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem, AccommodationType } from "@/types/hotel";
 import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
-import { buildHotelbedsImageUrl } from "@/constants";
+import {  buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import Pagination from "../common/Pagination/Pagination";
@@ -55,7 +55,7 @@ import Pagination from "../common/Pagination/Pagination";
     setCheckOutDate, 
     setRooms
   } = useSearchFiltersStore();
-console.log("filters", filters);
+// console.log("filters", filters);
 
   // Dynamic hotels from API (hotel search store)
   const { hotels: apiHotels = [], filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
@@ -87,7 +87,7 @@ console.log("filters", filters);
     { value: "Recommended", label: tSearch('sortRecommended') },
     { value: "Price: Low to High", label: tSearch('sortPriceLowToHigh') },
     { value: "Price: High to Low", label: tSearch('sortPriceHighToLow') },
-    { value: "Rating", label: tSearch('sortRating') },
+    // { value: "Rating", label: tSearch('sortRating') },
   ];
 
   // Reset filter states when mobile modal opens
@@ -99,7 +99,7 @@ console.log("filters", filters);
     // setIsGuestRatingOpen(true);
     // setIsAmenitiesOpen(true);
     setIsPropertyTypeOpen(true);
-    setIsLocationTypeOpen(true);
+    // setIsLocationTypeOpen(true);
   };
 
   // Filter sidebar dropdown states
@@ -108,29 +108,42 @@ console.log("filters", filters);
   // const [isGuestRatingOpen, setIsGuestRatingOpen] = useState(true);
   // const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
   const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(true);
-  const [isLocationTypeOpen, setIsLocationTypeOpen] = useState(true);
+  // const [isLocationTypeOpen, setIsLocationTypeOpen] = useState(true);
   const [accommodationTypes, setAccommodationTypes] = useState<AccommodationType[]>([]);
   const [selectedAccommodationCodes, setSelectedAccommodationCodes] = useState<string[]>([]);
   const [showAllAccommodationTypes, setShowAllAccommodationTypes] = useState<boolean>(false);
 
   // Derived hotel lists
+  const getHotelRateValue = (hotel: HotelItem | FavoriteHotel, preference: 'min' | 'max') => {
+    if ('minRate' in hotel || 'maxRate' in hotel) {
+      const item = hotel as HotelItem;
+      const minRate = parseFloat(String(item.minRate ?? '')) || 0;
+      const maxRate = parseFloat(String(item.maxRate ?? '')) || 0;
+      if (preference === 'max') {
+        return maxRate || minRate;
+      }
+      return minRate || maxRate;
+    }
+    return 0;
+  };
+
   const sortedHotels = useMemo(() => {
     const sortable = [...apiHotels];
     switch (sortBy) {
       case 'Price: Low to High':
         return sortable.sort((a, b) => {
-          const rateA = 'minRate' in a ? parseFloat(String((a as HotelItem).minRate)) || 0 : 0;
-          const rateB = 'minRate' in b ? parseFloat(String((b as HotelItem).minRate)) || 0 : 0;
+          const rateA = getHotelRateValue(a, 'min');
+          const rateB = getHotelRateValue(b, 'min');
           return rateA - rateB;
         });
       case 'Price: High to Low':
         return sortable.sort((a, b) => {
-          const rateA = 'maxRate' in a ? parseFloat(String((a as HotelItem).maxRate)) || 0 : 0;
-          const rateB = 'maxRate' in b ? parseFloat(String((b as HotelItem).maxRate)) || 0 : 0;
+          const rateA = getHotelRateValue(a, 'max');
+          const rateB = getHotelRateValue(b, 'max');
           return rateB - rateA;
         });
-      case 'Rating':
-        return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
+      // case 'Rating':
+      //   return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
       default: // Recommended
         return sortable;
     }
@@ -704,8 +717,12 @@ console.log("filters", filters);
         {isPriceRangeOpen && (
           <div className="price-range">
             <div className="pricing-range-slider d-flex align-items-center justify-content-between">
-              <span>${minPrice}</span>
-              <span>${maxPrice}</span>
+             <div>
+             <Image src={currencyImage} width={16} height={16} alt="currency icon" /> <span >{minPrice}</span>
+             </div>
+             <div>
+             <Image src={currencyImage} width={16} height={16} alt="currency icon" /> <span >{maxPrice}</span>
+             </div>
             </div>
             <div className="price-slider-container" style={{ position: 'relative', height: '40px', marginTop: '10px', width: '100%' }}>
               <div 
@@ -1346,9 +1363,10 @@ console.log("filters", filters);
                                 <div className="hotel-footer">
                                   <div className="hotel-price">
                                     <span className="price-amount">
-                                      <span className="property-currency">
-                                        {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""}
-                                      </span>
+                                      <span >
+                                        {/* {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""} */}
+                                        <Image src={currencyImage} width={16} height={16} alt="currency icon" />
+                                      </span>{" "}
                                       {('maxRate' in hotel && (hotel as HotelItem).minRate) || 179}
                                     </span>
                                     {/* <span className="price-period">{tSearch('perNight')}</span> */}

@@ -116,11 +116,91 @@
   "HotelDetails": {
     "readMore": "اقرأ المزيد",
     "readLess": "اقرأ أقل",
-    "showAllPhotos": "عرض جميع الصور الـ 34",
+    "showAllPhotos": "عرض جميع الصور",
     "showAll": "عرض الكل",
     "showLess": "عرض أقل",
     "shareLinkCopied": "تم نسخ الرابط إلى الحافظة",
-    "shareLinkCopyFailed": "تعذر نسخ الرابط. يرجى المحاولة مرة أخرى."
+    "shareLinkCopyFailed": "تعذر نسخ الرابط. يرجى المحاولة مرة أخرى.",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "amenities": "المرافق",
+      "rooms": "الغرف",
+      "reviews": "التقييمات",
+      "map": "الخريطة"
+    },
+    "sections": {
+      "descriptionTitle": "الوصف",
+      "importantTitle": "معلومات مهمة",
+      "amenitiesTitle": "مرافق الفندق والغرف",
+      "roomsTitle": "الغرف",
+      "mapTitle": "الخريطة",
+      "similarHotelsTitle": "فنادق مشابهة بالقرب"
+    },
+    "description": {
+      "fallback": "وصف الفندق غير متوفر."
+    },
+    "important": {
+      "checkInLabel": "تسجيل الوصول",
+      "checkOutLabel": "تسجيل المغادرة",
+      "additionalFactsLabel": "معلومات إضافية",
+      "receptionOpenUntil": "الاستقبال مفتوح حتى {time}"
+    },
+    "placeholders": {
+      "hotelName": "اسم الفندق",
+      "hotelAddress": "عنوان الفندق",
+      "roomName": "الغرفة",
+      "facilityFallback": "مرفق {code}",
+      "noFacilityInfo": "لا تتوفر معلومات عن المرافق",
+      "bedInfoUnavailable": "معلومات السرير غير متوفرة",
+      "priceUnavailable": "السعر غير متوفر",
+      "refundPolicyUnavailable": "سياسة الاسترداد غير متوفرة",
+      "refundDateUnavailable": "تاريخ الاسترداد غير متوفر"
+    },
+    "labels": {
+      "freeCancellation": "إلغاء مجاني",
+      "noRepay": "لا حاجة للدفع مقدماً",
+      "bestValue": "أفضل قيمة",
+      "sleeps": "يتسع لـ {count}",
+      "totalWithTaxesAndFees": "الإجمالي مع الضرائب والرسوم"
+    },
+    "actions": {
+      "favorite": "المفضلة",
+      "share": "مشاركة",
+      "bookNow": "احجز الآن",
+      "moreDetails": "المزيد من التفاصيل"
+    },
+    "toast": {
+      "addedToFavorites": "تمت الإضافة إلى المفضلة!",
+      "removedFromFavorites": "تمت الإزالة من المفضلة!"
+    },
+    "refund": {
+      "fullyRefundable": "قابل للاسترداد بالكامل",
+      "notFullyRefundable": "غير قابل للاسترداد بالكامل",
+      "beforeDate": "قبل {date}"
+    },
+    "alts": {
+      "thumbnail": "صورة مصغرة {index}",
+      "map": "معاينة الخريطة",
+      "roomPlaceholder": "صورة توضيحية للغرفة"
+    },
+    "modal": {
+      "roomInformationTitle": "معلومات الغرفة"
+    },
+    "filters": {
+      "checkInLabel": "تاريخ تسجيل الوصول",
+      "checkOutLabel": "تاريخ تسجيل المغادرة",
+      "guestsAndRoomsLabel": "الضيوف والغرف",
+      "addDate": "أضف تاريخًا",
+      "addGuests": "أضف ضيوفاً",
+      "guestsLabel": "{count, plural, one {ضيف واحد} two {ضيفان} few {# ضيوف} many {# ضيفاً} other {# ضيف}}",
+      "roomsLabel": "{count, plural, one {غرفة واحدة} two {غرفتان} few {# غرف} many {# غرفة} other {# غرفة}}",
+      "guestsRoomsSeparator": "{guests} • {rooms}",
+      "calendarIconAlt": "أيقونة التقويم",
+      "plusIconAlt": "فتح منتقي التواريخ",
+      "guestsIconAlt": "أيقونة الضيوف",
+      "dropdownIconAlt": "تبديل القائمة المنسدلة",
+      "checkAvailabilityButton": "تحقق من التوفر"
+    }
   },
   "LoginModal": {
     "title": "تسجيل الدخول",
@@ -169,7 +249,11 @@
     "logIn": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "myProfile": "ملفي الشخصي",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "blogs": "المدونات",
+    "favorites": "المفضلة",
+    "bookings": "الحجوزات",
+    "myBookings": "حجوزاتي"
   },
   "Footer": {
     "caption": "شريكك الموثوق في السفر عبر الشرق الأوسط - نقدم لك إقامات مختارة بعناية، تجارب شخصية، وحجز سهل أينما كانت رحلتك.",
