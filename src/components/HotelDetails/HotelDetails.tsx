@@ -49,6 +49,7 @@ import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { toast } from "react-toastify";
 import { useFavoriteStore } from "@/store/favoriteStore";
+import { buildCurrencySvgMarkup } from "@/constants";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -583,7 +584,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const checkOutTime = "11:00 AM";
   const receptionCloseTime = "12:00 PM";
   const selectedRoomDisplayName =
-    selectedRoom?.name || selectedRoom?.description || t("placeholders.roomName");
+    selectedRoom?.name ||
+    selectedRoom?.description ||
+    t("placeholders.roomName");
   const selectedRoomSleepsLabel = t("labels.sleeps", {
     count:
       selectedRoom?.capacity?.maxAdults ??
@@ -595,12 +598,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       ? t("refund.fullyRefundable")
       : t("refund.notFullyRefundable")
     : t("placeholders.refundPolicyUnavailable");
-  const selectedRoomRefundDateLabel =
-    selectedRoomRateDetails?.refundDate
-      ? t("refund.beforeDate", {
-          date: selectedRoomRateDetails.refundDate,
-        })
-      : t("placeholders.refundDateUnavailable");
+  const selectedRoomRefundDateLabel = selectedRoomRateDetails?.refundDate
+    ? t("refund.beforeDate", {
+        date: selectedRoomRateDetails.refundDate,
+      })
+    : t("placeholders.refundDateUnavailable");
   const hotelLatitude = hotelData?.coordinates?.latitude;
   const hotelLongitude = hotelData?.coordinates?.longitude;
   // console.log("hotelLatitude", hotelLatitude);
@@ -1032,9 +1034,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               </div>
               <div className="hotel-details-right">
                 <div className="hotel-info-header">
-                  <h2 className="hotel-name">
-                    {hotelName}
-                  </h2>
+                  <h2 className="hotel-name">{hotelName}</h2>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
                       <Image
@@ -1215,12 +1215,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       ? t("refund.fullyRefundable")
                       : t("refund.notFullyRefundable")
                     : t("placeholders.refundPolicyUnavailable");
-                  const refundDateLabel =
-                    primaryRateDetails?.refundDate
-                      ? t("refund.beforeDate", {
-                          date: primaryRateDetails.refundDate,
-                        })
-                      : t("placeholders.refundDateUnavailable");
+                  const refundDateLabel = primaryRateDetails?.refundDate
+                    ? t("refund.beforeDate", {
+                        date: primaryRateDetails.refundDate,
+                      })
+                    : t("placeholders.refundDateUnavailable");
 
                   return (
                     <div
@@ -1246,7 +1245,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     src={image.fullUrl}
                                     width={378}
                                     height={203}
-                                alt={roomDisplayName}
+                                    alt={roomDisplayName}
                                     style={{
                                       objectFit: "cover",
                                       width: "100%",
@@ -1338,8 +1337,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </div>
                       <div className="room-card-details">
                         <h3 className="hotel-room-name">{roomDisplayName}</h3>
-                        <div className="hotel-details-rating d-flex align-items-center">
-                          {/* <div className="hotel-details-rating-star d-flex align-items-center">
+                        {/* <div className="hotel-details-rating d-flex align-items-center">
+                           <div className="hotel-details-rating-star d-flex align-items-center">
                             <Image
                               src={starFillIcon}
                               width={12}
@@ -1376,12 +1375,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               className="hotel-rating-icon"
                             />
                           </div> */}
-                          {/* <span className="rating-value-wrapper d-flex align-items-center">
+                        {/* <span className="rating-value-wrapper d-flex align-items-center">
                       <span className="rating-value">4.5</span> (120 Reviews)
-                    </span> */}
-                        </div>
+                    </span> 
+                        </div>*/}
 
-                        <div className="room-card-amenities-list">
+                        <div className="room-card-amenities-list mt-0">
                           {displayedFacilities.length > 0 ? (
                             <ul className="amenities-item d-flex">
                               {displayedFacilities.map((facility) => (
@@ -1403,7 +1402,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           )}
                         </div>
 
-                        <div className="room-card-specs">
+                        <div className="room-card-specs mt-0">
                           <ul className="card-specs-item d-flex align-items-center">
                             <li>
                               <svg
@@ -1418,7 +1417,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   fill="#27272A"
                                 />
                               </svg>
-                              {bedDescription ?? t("placeholders.bedInfoUnavailable")}
+                              {bedDescription ??
+                                t("placeholders.bedInfoUnavailable")}
                             </li>
 
                             {/* <li>
@@ -1584,13 +1584,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             {refundStatusLabel}
                             {primaryRateDetails?.policyAmountFormatted && (
                               <span className="refund-amount d-inline-flex align-items-center">
-                                {" ("}
-                                <Image
+                                {" ( "}
+                                {/* <Image
                                   src={currencyImage}
                                   width={16}
                                   height={16}
                                   alt="currency icon"
-                                /> {" "}
+                                /> */}
+                                <span
+                                  className="currency-icon"
+                                  aria-hidden="true"
+                                  dangerouslySetInnerHTML={{
+                                    __html: buildCurrencySvgMarkup("#09090b"),
+                                  }}
+                                  style={{ display: "inline-flex" }}
+                                />{" "}
                                 {` ${primaryRateDetails.policyAmountFormatted})`}
                               </span>
                             )}
@@ -1636,11 +1644,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <span className="total-price d-inline-flex align-items-center gap-1">
                             {primaryRateDetails ? (
                               <>
-                                <Image
+                                {/* <Image
                                   src={currencyImage}
                                   width={16}
                                   height={16}
                                   alt="currency icon"
+                                /> */}
+                                <span
+                                  className="currency-icon"
+                                  aria-hidden="true"
+                                  dangerouslySetInnerHTML={{
+                                    __html: buildCurrencySvgMarkup("#09090b"),
+                                  }}
+                                  style={{ display: "inline-flex" }}
                                 />{" "}
                                 {primaryRateDetails.formattedPrice}
                               </>
@@ -2068,13 +2084,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     {selectedRoomRateDetails?.policyAmountFormatted && (
                       <span className="refund-amount d-inline-flex align-items-center">
                         {" ("}
-                        <Image
-                          src={currencyImage}
-                          width={16}
-                          height={16}
-                          alt="currency icon"
-                        /> 
-                        {" "}
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />{" "}
                         {` ${selectedRoomRateDetails.policyAmountFormatted})`}
                       </span>
                     )}
@@ -2093,11 +2110,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   <span className="total-price d-inline-flex align-items-center gap-1">
                     {selectedRoomRateDetails ? (
                       <>
-                        <Image
-                          src={currencyImage}
-                          width={16}
-                          height={16}
-                          alt="currency icon"
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
                         />
                         {selectedRoomRateDetails.formattedPrice}
                       </>

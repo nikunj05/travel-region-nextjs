@@ -18,7 +18,9 @@ import { buildCurrencySvgMarkup } from "@/constants";
 
 const Popular = () => {
   const t = useTranslations("PopularSection");
-  const [destinations, setDestinations] = React.useState<PopularDestinationItem[]>([]);
+  const [destinations, setDestinations] = React.useState<
+    PopularDestinationItem[]
+  >([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const router = useRouter();
   const setLocation = useSearchFiltersStore((s) => s.setLocation);
@@ -29,12 +31,6 @@ const Popular = () => {
     return (
       <h5 className="destination-hotel-pricing">
         <div>{t("from")}</div>
-        <span
-          className="currency-icon"
-          aria-hidden="true"
-          dangerouslySetInnerHTML={{ __html: buildCurrencySvgMarkup("#FFFFFF") }}
-          style={{ width: 18, height: 18, display: "inline-flex" }}
-        />
 
         {/* <Image
           src={currencyImage}
@@ -42,10 +38,18 @@ const Popular = () => {
           height={16}
           alt="currency icon"
         /> */}
-        <span>{displayPrice}</span>
-        <span className="destination-hotel-pricing-night">
-          {t("perNight")}
+        <span>
+          <span
+            className="currency-icon"
+            aria-hidden="true"
+            dangerouslySetInnerHTML={{
+              __html: buildCurrencySvgMarkup("#FFFFFF"),
+            }}
+            style={{ display: "inline-flex" }}
+          />
+          {displayPrice}
         </span>
+        <span className="destination-hotel-pricing-night">{t("perNight")}</span>
       </h5>
     );
   };
@@ -93,7 +97,7 @@ const Popular = () => {
     useHotelSearchStore.getState().setRooms([{ adults: 2, children: 0 }]);
     useHotelSearchStore.getState().setLanguage("eng");
     useHotelSearchStore.getState().setCoordinates(latitude, longitude);
-    
+
     // We don't search here. Just set the state and navigate.
     // The search-result page will trigger the search.
     router.push("/search-result");
@@ -115,23 +119,47 @@ const Popular = () => {
                 <div className="destination-card-items">
                   <div
                     className="destination-card-image"
-                    style={{ width: 789, height: 408, background: '#f0f0f0' }}
+                    style={{ width: 789, height: 408, background: "#f0f0f0" }}
                   />
-                  <div className="property-location-tag" style={{ width: 180, height: 24, background: '#f0f0f0' }} />
+                  <div
+                    className="property-location-tag"
+                    style={{ width: 180, height: 24, background: "#f0f0f0" }}
+                  />
                   <div className="destination-card-inner-content">
-                    <div style={{ width: 140, height: 20, background: '#f0f0f0' }} />
-                    <div style={{ width: 120, height: 28, background: '#f0f0f0', marginTop: 8 }} />
+                    <div
+                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
+                    />
+                    <div
+                      style={{
+                        width: 120,
+                        height: 28,
+                        background: "#f0f0f0",
+                        marginTop: 8,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="destination-card-items">
                   <div
                     className="destination-card-image"
-                    style={{ width: 379, height: 408, background: '#f0f0f0' }}
+                    style={{ width: 379, height: 408, background: "#f0f0f0" }}
                   />
-                  <div className="property-location-tag" style={{ width: 160, height: 24, background: '#f0f0f0' }} />
+                  <div
+                    className="property-location-tag"
+                    style={{ width: 160, height: 24, background: "#f0f0f0" }}
+                  />
                   <div className="destination-card-inner-content">
-                    <div style={{ width: 140, height: 20, background: '#f0f0f0' }} />
-                    <div style={{ width: 120, height: 28, background: '#f0f0f0', marginTop: 8 }} />
+                    <div
+                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
+                    />
+                    <div
+                      style={{
+                        width: 120,
+                        height: 28,
+                        background: "#f0f0f0",
+                        marginTop: 8,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -139,273 +167,305 @@ const Popular = () => {
                 <div className="destination-card-items">
                   <div
                     className="destination-card-image"
-                    style={{ width: 379, height: 408, background: '#f0f0f0' }}
+                    style={{ width: 379, height: 408, background: "#f0f0f0" }}
                   />
-                  <div className="property-location-tag" style={{ width: 160, height: 24, background: '#f0f0f0' }} />
+                  <div
+                    className="property-location-tag"
+                    style={{ width: 160, height: 24, background: "#f0f0f0" }}
+                  />
                   <div className="destination-card-inner-content">
-                    <div style={{ width: 140, height: 20, background: '#f0f0f0' }} />
-                    <div style={{ width: 120, height: 28, background: '#f0f0f0', marginTop: 8 }} />
+                    <div
+                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
+                    />
+                    <div
+                      style={{
+                        width: 120,
+                        height: 28,
+                        background: "#f0f0f0",
+                        marginTop: 8,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="destination-card-items">
                   <div
                     className="destination-card-image"
-                    style={{ width: 789, height: 408, background: '#f0f0f0' }}
+                    style={{ width: 789, height: 408, background: "#f0f0f0" }}
                   />
-                  <div className="property-location-tag" style={{ width: 180, height: 24, background: '#f0f0f0' }} />
+                  <div
+                    className="property-location-tag"
+                    style={{ width: 180, height: 24, background: "#f0f0f0" }}
+                  />
                   <div className="destination-card-inner-content">
-                    <div style={{ width: 140, height: 20, background: '#f0f0f0' }} />
-                    <div style={{ width: 120, height: 28, background: '#f0f0f0', marginTop: 8 }} />
+                    <div
+                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
+                    />
+                    <div
+                      style={{
+                        width: 120,
+                        height: 28,
+                        background: "#f0f0f0",
+                        marginTop: 8,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
             </>
           ) : (
             <>
-          <div className="destination-card d-flex card-first-row">
-            <div className="destination-card-items">
-              <Image
-                src={destinations[0]?.full_image_url || popularDestinationsImg1}
-                width={789}
-                height={408}
-                alt={destinations[0]?.location || "Santorini, Greece"}
-                className="destination-card-image"
-              />
-              <div className="property-location-tag">
-                <Image
-                  src={locationFillIcon}
-                  width={16}
-                  height={16}
-                  alt="location icon"
-                />{" "}
-                {destinations[0]?.location || t("destinations.santorini")}
-              </div>
-              <div className="destination-card-inner-content">
-                <p className="hotel-available-status d-flex align-items-center">
+              <div className="destination-card d-flex card-first-row">
+                <div className="destination-card-items">
                   <Image
-                    src={hotelsAvailableIcon}
-                    width={20}
-                    height={20}
-                    alt="hotel icon"
-                  />{" "}
-                  {destinations[0]?.hotel_count ?? 0} {t("hotelsAvailable")}
-                </p>
-                {renderPricing(destinations[0]?.hotel_min_price)}
-              </div>
-              <div className="overlay">
-                <div className="overlay-content">
-                  <a
-                    href="#"
-                    className="d-flex justify-content-center view-more-details-btn"
-                    onClick={(e) => handleViewDetails(e, destinations[0])}
-                  >
-                    <svg
-                      width="65"
-                      height="64"
-                      viewBox="0 0 65 64"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        x="0.5"
-                        width="64"
-                        height="64"
-                        rx="32"
-                        fill="white"
-                      />
-                      <path
-                        d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
-                        fill="#09090B"
-                      />
-                    </svg>
-                  </a>
-                  <span>{t("viewDetails")}</span>
+                    src={
+                      destinations[0]?.full_image_url || popularDestinationsImg1
+                    }
+                    width={789}
+                    height={408}
+                    alt={destinations[0]?.location || "Santorini, Greece"}
+                    className="destination-card-image"
+                  />
+                  <div className="property-location-tag">
+                    <Image
+                      src={locationFillIcon}
+                      width={16}
+                      height={16}
+                      alt="location icon"
+                    />{" "}
+                    {destinations[0]?.location || t("destinations.santorini")}
+                  </div>
+                  <div className="destination-card-inner-content">
+                    <p className="hotel-available-status d-flex align-items-center">
+                      <Image
+                        src={hotelsAvailableIcon}
+                        width={20}
+                        height={20}
+                        alt="hotel icon"
+                      />{" "}
+                      {destinations[0]?.hotel_count ?? 0} {t("hotelsAvailable")}
+                    </p>
+                    {renderPricing(destinations[0]?.hotel_min_price)}
+                  </div>
+                  <div className="overlay">
+                    <div className="overlay-content">
+                      <a
+                        href="#"
+                        className="d-flex justify-content-center view-more-details-btn"
+                        onClick={(e) => handleViewDetails(e, destinations[0])}
+                      >
+                        <svg
+                          width="65"
+                          height="64"
+                          viewBox="0 0 65 64"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="0.5"
+                            width="64"
+                            height="64"
+                            rx="32"
+                            fill="white"
+                          />
+                          <path
+                            d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
+                            fill="#09090B"
+                          />
+                        </svg>
+                      </a>
+                      <span>{t("viewDetails")}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="destination-card-items">
+                  <Image
+                    src={
+                      destinations[1]?.full_image_url || popularDestinationsImg2
+                    }
+                    width={379}
+                    height={408}
+                    alt={destinations[1]?.location || "Dubai, UAE"}
+                    className="destination-card-image"
+                  />
+                  <div className="property-location-tag">
+                    <Image
+                      src={locationFillIcon}
+                      width={16}
+                      height={16}
+                      alt="location icon"
+                    />{" "}
+                    {destinations[1]?.location || t("destinations.dubai")}
+                  </div>
+                  <div className="destination-card-inner-content">
+                    <p className="hotel-available-status d-flex align-items-center">
+                      <Image
+                        src={hotelsAvailableIcon}
+                        width={20}
+                        height={20}
+                        alt="hotel icon"
+                      />{" "}
+                      {destinations[1]?.hotel_count ?? 0} {t("hotelsAvailable")}
+                    </p>
+                    {renderPricing(destinations[1]?.hotel_min_price)}
+                  </div>
+                  <div className="overlay">
+                    <div className="overlay-content">
+                      <a
+                        href="#"
+                        className="d-flex justify-content-center view-more-details-btn"
+                        onClick={(e) => handleViewDetails(e, destinations[1])}
+                      >
+                        <svg
+                          width="65"
+                          height="64"
+                          viewBox="0 0 65 64"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="0.5"
+                            width="64"
+                            height="64"
+                            rx="32"
+                            fill="white"
+                          />
+                          <path
+                            d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
+                            fill="#09090B"
+                          />
+                        </svg>
+                      </a>
+                      <span>{t("viewDetails")}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="destination-card-items">
-              <Image
-                src={destinations[1]?.full_image_url || popularDestinationsImg2}
-                width={379}
-                height={408}
-                alt={destinations[1]?.location || "Dubai, UAE"}
-                className="destination-card-image"
-              />
-              <div className="property-location-tag">
-                <Image
-                  src={locationFillIcon}
-                  width={16}
-                  height={16}
-                  alt="location icon"
-                />{" "}
-                {destinations[1]?.location || t("destinations.dubai")}
-              </div>
-              <div className="destination-card-inner-content">
-                <p className="hotel-available-status d-flex align-items-center">
+              <div className="destination-card d-flex">
+                <div className="destination-card-items">
                   <Image
-                    src={hotelsAvailableIcon}
-                    width={20}
-                    height={20}
-                    alt="hotel icon"
-                  />{" "}
-                  {destinations[1]?.hotel_count ?? 0} {t("hotelsAvailable")}
-                </p>
-                {renderPricing(destinations[1]?.hotel_min_price)}
-              </div>
-              <div className="overlay">
-                <div className="overlay-content">
-                  <a
-                    href="#"
-                    className="d-flex justify-content-center view-more-details-btn"
-                    onClick={(e) => handleViewDetails(e, destinations[1])}
-                  >
-                    <svg
-                      width="65"
-                      height="64"
-                      viewBox="0 0 65 64"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        x="0.5"
-                        width="64"
-                        height="64"
-                        rx="32"
-                        fill="white"
-                      />
-                      <path
-                        d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
-                        fill="#09090B"
-                      />
-                    </svg>
-                  </a>
-                  <span>{t("viewDetails")}</span>
+                    src={
+                      destinations[2]?.full_image_url || popularDestinationsImg3
+                    }
+                    width={379}
+                    height={408}
+                    alt={destinations[2]?.location || "Navigo, Greece"}
+                    className="destination-card-image"
+                  />
+                  <div className="property-location-tag">
+                    <Image
+                      src={locationFillIcon}
+                      width={16}
+                      height={16}
+                      alt="location icon"
+                    />
+                    {destinations[2]?.location || t("destinations.navigo")}
+                  </div>
+                  <div className="destination-card-inner-content">
+                    <p className="hotel-available-status d-flex align-items-center">
+                      <Image
+                        src={hotelsAvailableIcon}
+                        width={20}
+                        height={20}
+                        alt="hotel icon"
+                      />{" "}
+                      {destinations[2]?.hotel_count ?? 0} {t("hotelsAvailable")}
+                    </p>
+                    {renderPricing(destinations[2]?.hotel_min_price)}
+                  </div>
+                  <div className="overlay">
+                    <div className="overlay-content">
+                      <a
+                        href="#"
+                        className="d-flex justify-content-center view-more-details-btn"
+                        onClick={(e) => handleViewDetails(e, destinations[2])}
+                      >
+                        <svg
+                          width="65"
+                          height="64"
+                          viewBox="0 0 65 64"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="0.5"
+                            width="64"
+                            height="64"
+                            rx="32"
+                            fill="white"
+                          />
+                          <path
+                            d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
+                            fill="#09090B"
+                          />
+                        </svg>
+                      </a>
+                      <span>{t("viewDetails")}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="destination-card-items">
+                  <Image
+                    src={
+                      destinations[3]?.full_image_url || popularDestinationsImg4
+                    }
+                    width={789}
+                    height={408}
+                    alt={destinations[3]?.location || "Maldives"}
+                    className="destination-card-image"
+                  />
+                  <div className="property-location-tag">
+                    <Image
+                      src={locationFillIcon}
+                      width={16}
+                      height={16}
+                      alt="location icon"
+                    />{" "}
+                    {destinations[3]?.location || t("destinations.maldives")}
+                  </div>
+                  <div className="destination-card-inner-content">
+                    <p className="hotel-available-status d-flex align-items-center">
+                      <Image
+                        src={hotelsAvailableIcon}
+                        width={20}
+                        height={20}
+                        alt="hotel icon"
+                      />{" "}
+                      {destinations[3]?.hotel_count ?? 0} {t("hotelsAvailable")}
+                    </p>
+                    {renderPricing(destinations[3]?.hotel_min_price)}
+                  </div>
+                  <div className="overlay">
+                    <div className="overlay-content">
+                      <a
+                        href="#"
+                        className="d-flex justify-content-center view-more-details-btn"
+                        onClick={(e) => handleViewDetails(e, destinations[3])}
+                      >
+                        <svg
+                          width="65"
+                          height="64"
+                          viewBox="0 0 65 64"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="0.5"
+                            width="64"
+                            height="64"
+                            rx="32"
+                            fill="white"
+                          />
+                          <path
+                            d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
+                            fill="#09090B"
+                          />
+                        </svg>
+                      </a>
+                      <span>{t("viewDetails")}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="destination-card d-flex">
-            <div className="destination-card-items">
-              <Image
-                src={destinations[2]?.full_image_url || popularDestinationsImg3}
-                width={379}
-                height={408}
-                alt={destinations[2]?.location || "Navigo, Greece"}
-                className="destination-card-image"
-              />
-              <div className="property-location-tag">
-                <Image
-                  src={locationFillIcon}
-                  width={16}
-                  height={16}
-                  alt="location icon"
-                />
-                {destinations[2]?.location || t("destinations.navigo")}
-              </div>
-              <div className="destination-card-inner-content">
-                <p className="hotel-available-status d-flex align-items-center">
-                  <Image
-                    src={hotelsAvailableIcon}
-                    width={20}
-                    height={20}
-                    alt="hotel icon"
-                  />{" "}
-                  {destinations[2]?.hotel_count ?? 0} {t("hotelsAvailable")}
-                </p>
-                {renderPricing(destinations[2]?.hotel_min_price)}
-              </div>
-              <div className="overlay">
-                <div className="overlay-content">
-                  <a
-                    href="#"
-                    className="d-flex justify-content-center view-more-details-btn"
-                    onClick={(e) => handleViewDetails(e, destinations[2])}
-                  >
-                    <svg
-                      width="65"
-                      height="64"
-                      viewBox="0 0 65 64"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        x="0.5"
-                        width="64"
-                        height="64"
-                        rx="32"
-                        fill="white"
-                      />
-                      <path
-                        d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
-                        fill="#09090B"
-                      />
-                    </svg>
-                  </a>
-                  <span>{t("viewDetails")}</span>
-                </div>
-              </div>
-            </div>
-            <div className="destination-card-items">
-              <Image
-                src={destinations[3]?.full_image_url || popularDestinationsImg4}
-                width={789}
-                height={408}
-                alt={destinations[3]?.location || "Maldives"}
-                className="destination-card-image"
-              />
-              <div className="property-location-tag">
-                <Image
-                  src={locationFillIcon}
-                  width={16}
-                  height={16}
-                  alt="location icon"
-                />{" "}
-                {destinations[3]?.location || t("destinations.maldives")}
-              </div>
-              <div className="destination-card-inner-content">
-                <p className="hotel-available-status d-flex align-items-center">
-                  <Image
-                    src={hotelsAvailableIcon}
-                    width={20}
-                    height={20}
-                    alt="hotel icon"
-                  />{" "}
-                  {destinations[3]?.hotel_count ?? 0} {t("hotelsAvailable")}
-                </p>
-                {renderPricing(destinations[3]?.hotel_min_price)}
-              </div>
-              <div className="overlay">
-                <div className="overlay-content">
-                  <a
-                    href="#"
-                    className="d-flex justify-content-center view-more-details-btn"
-                    onClick={(e) => handleViewDetails(e, destinations[3])}
-                  >
-                    <svg
-                      width="65"
-                      height="64"
-                      viewBox="0 0 65 64"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        x="0.5"
-                        width="64"
-                        height="64"
-                        rx="32"
-                        fill="white"
-                      />
-                      <path
-                        d="M40.5 24H41.5V23H40.5V24ZM40.5 24L39.7929 23.2929L23.7929 39.293L24.5 40.0001L25.2071 40.7072L41.2071 24.7071L40.5 24ZM31.1667 24V25H40.5V24V23H31.1667V24ZM40.5 24H39.5V33.3333H40.5H41.5V24H40.5Z"
-                        fill="#09090B"
-                      />
-                    </svg>
-                  </a>
-                  <span>{t("viewDetails")}</span>
-                </div>
-              </div>
-            </div>
-          </div>
             </>
           )}
         </div>

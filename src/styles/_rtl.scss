@@ -202,6 +202,13 @@
       .destination-card-inner-content {
         left: auto;
         right: 16px;
+
+        .destination-hotel-pricing {
+          .currency-icon {
+            margin-right: 0px;
+            margin-left: 4px;
+          }
+        }
       }
 
       .overlay {
@@ -516,6 +523,12 @@
 
         .destination-card-inner-content {
           right: 10px;
+
+          .destination-hotel-pricing {
+            .currency-icon {
+              margin-left: 3px;
+            }
+          }
         }
       }
     }

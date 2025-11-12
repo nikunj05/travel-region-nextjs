@@ -25,48 +25,53 @@ import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import "./SearchResult.scss";
-import { useSearchFiltersStore, Location, Room } from "@/store/searchFiltersStore";
+import {
+  useSearchFiltersStore,
+  Location,
+  Room,
+} from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem, AccommodationType } from "@/types/hotel";
 import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
-import {  buildHotelbedsImageUrl, currencyImage } from "@/constants";
+import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { buildHotelSlug } from "@/lib/hotelSlug";
 import Pagination from "../common/Pagination/Pagination";
+import { buildCurrencySvgMarkup } from "@/constants";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
-  const SearchResult = () => {
+const SearchResult = () => {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('Banner');
-  const tSearch = useTranslations('SearchResult');
-  
+  const t = useTranslations("Banner");
+  const tSearch = useTranslations("SearchResult");
+
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
-    return currentLocale === 'ar' ? 'ara' : 'eng';
+    return currentLocale === "ar" ? "ara" : "eng";
   };
 
-  const { 
-    filters, 
-    setLocation, 
-    setCheckInDate, 
-    setCheckOutDate, 
-    setRooms
-  } = useSearchFiltersStore();
-// console.log("filters", filters);
+  const { filters, setLocation, setCheckInDate, setCheckOutDate, setRooms } =
+    useSearchFiltersStore();
+  // console.log("filters", filters);
 
   // Dynamic hotels from API (hotel search store)
-  const { hotels: apiHotels = [], filters: hotelFilters, total: apiTotal, loading } = useHotelSearchStore();
+  const {
+    hotels: apiHotels = [],
+    filters: hotelFilters,
+    total: apiTotal,
+    loading,
+  } = useHotelSearchStore();
   console.log("apiHotels", apiHotels);
 
   // Local UI state
-  const [locationSearchQuery, setLocationSearchQuery] = useState('');
-  const [locationError, setLocationError] = useState('');
-  const [checkInError, setCheckInError] = useState('');
-  const [checkOutError, setCheckOutError] = useState('');
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
+  const [locationError, setLocationError] = useState("");
+  const [checkInError, setCheckInError] = useState("");
+  const [checkOutError, setCheckOutError] = useState("");
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
@@ -76,18 +81,22 @@ import Pagination from "../common/Pagination/Pagination";
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10; // Number of hotels per page
-  
+
   // Filter states
-  const [selectedStarRating, setSelectedStarRating] = useState<number | null>(null);
+  const [selectedStarRating, setSelectedStarRating] = useState<number | null>(
+    null
+  );
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(5000);
-  const [activePriceSlider, setActivePriceSlider] = useState<'min' | 'max' | null>(null);
+  const [activePriceSlider, setActivePriceSlider] = useState<
+    "min" | "max" | null
+  >(null);
 
   // Sort options for the dropdown
   const sortOptions = [
-    { value: "Recommended", label: tSearch('sortRecommended') },
-    { value: "Price: Low to High", label: tSearch('sortPriceLowToHigh') },
-    { value: "Price: High to Low", label: tSearch('sortPriceHighToLow') },
+    { value: "Recommended", label: tSearch("sortRecommended") },
+    { value: "Price: Low to High", label: tSearch("sortPriceLowToHigh") },
+    { value: "Price: High to Low", label: tSearch("sortPriceHighToLow") },
     // { value: "Rating", label: tSearch('sortRating') },
   ];
 
@@ -110,17 +119,25 @@ import Pagination from "../common/Pagination/Pagination";
   // const [isAmenitiesOpen, setIsAmenitiesOpen] = useState(true);
   const [isPropertyTypeOpen, setIsPropertyTypeOpen] = useState(true);
   // const [isLocationTypeOpen, setIsLocationTypeOpen] = useState(true);
-  const [accommodationTypes, setAccommodationTypes] = useState<AccommodationType[]>([]);
-  const [selectedAccommodationCodes, setSelectedAccommodationCodes] = useState<string[]>([]);
-  const [showAllAccommodationTypes, setShowAllAccommodationTypes] = useState<boolean>(false);
+  const [accommodationTypes, setAccommodationTypes] = useState<
+    AccommodationType[]
+  >([]);
+  const [selectedAccommodationCodes, setSelectedAccommodationCodes] = useState<
+    string[]
+  >([]);
+  const [showAllAccommodationTypes, setShowAllAccommodationTypes] =
+    useState<boolean>(false);
 
   // Derived hotel lists
-  const getHotelRateValue = (hotel: HotelItem | FavoriteHotel, preference: 'min' | 'max') => {
-    if ('minRate' in hotel || 'maxRate' in hotel) {
+  const getHotelRateValue = (
+    hotel: HotelItem | FavoriteHotel,
+    preference: "min" | "max"
+  ) => {
+    if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
-      const minRate = parseFloat(String(item.minRate ?? '')) || 0;
-      const maxRate = parseFloat(String(item.maxRate ?? '')) || 0;
-      if (preference === 'max') {
+      const minRate = parseFloat(String(item.minRate ?? "")) || 0;
+      const maxRate = parseFloat(String(item.maxRate ?? "")) || 0;
+      if (preference === "max") {
         return maxRate || minRate;
       }
       return minRate || maxRate;
@@ -131,16 +148,16 @@ import Pagination from "../common/Pagination/Pagination";
   const sortedHotels = useMemo(() => {
     const sortable = [...apiHotels];
     switch (sortBy) {
-      case 'Price: Low to High':
+      case "Price: Low to High":
         return sortable.sort((a, b) => {
-          const rateA = getHotelRateValue(a, 'min');
-          const rateB = getHotelRateValue(b, 'min');
+          const rateA = getHotelRateValue(a, "min");
+          const rateB = getHotelRateValue(b, "min");
           return rateA - rateB;
         });
-      case 'Price: High to Low':
+      case "Price: High to Low":
         return sortable.sort((a, b) => {
-          const rateA = getHotelRateValue(a, 'max');
-          const rateB = getHotelRateValue(b, 'max');
+          const rateA = getHotelRateValue(a, "max");
+          const rateB = getHotelRateValue(b, "max");
           return rateB - rateA;
         });
       // case 'Rating':
@@ -150,9 +167,16 @@ import Pagination from "../common/Pagination/Pagination";
     }
   }, [apiHotels, sortBy]);
 
-  const totalPages = useMemo(() => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE), [sortedHotels]);
+  const totalPages = useMemo(
+    () => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE),
+    [sortedHotels]
+  );
   const paginatedHotels = useMemo(
-    () => sortedHotels.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE),
+    () =>
+      sortedHotels.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+      ),
     [sortedHotels, currentPage]
   );
 
@@ -176,13 +200,15 @@ import Pagination from "../common/Pagination/Pagination";
         const list = res?.data?.accommodation_types || [];
         setAccommodationTypes(list);
         // hydrate selected from store if present
-        const codes = (useHotelSearchStore.getState().filters.accommodations || '')
-          .split(',')
+        const codes = (
+          useHotelSearchStore.getState().filters.accommodations || ""
+        )
+          .split(",")
           .map((s) => s.trim())
           .filter(Boolean);
         setSelectedAccommodationCodes(codes);
       } catch (e) {
-        console.error('Failed to load accommodation types', e);
+        console.error("Failed to load accommodation types", e);
       }
     })();
   }, []);
@@ -190,7 +216,7 @@ import Pagination from "../common/Pagination/Pagination";
   // Scroll to top when page changes
   useEffect(() => {
     if (resultsRef.current) {
-      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [currentPage]);
 
@@ -229,13 +255,15 @@ import Pagination from "../common/Pagination/Pagination";
   useEffect(() => {
     // Only trigger search once if we have location but no hotels and haven't searched yet
     if (
-      filters.location && 
-      !loading && 
-      apiHotels.length === 0 && 
+      filters.location &&
+      !loading &&
+      apiHotels.length === 0 &&
       !hasTriggeredInitialSearch.current
     ) {
       hasTriggeredInitialSearch.current = true;
-      handleSearchClick({ preventDefault: () => {} } as React.MouseEvent<HTMLButtonElement>);
+      handleSearchClick({
+        preventDefault: () => {},
+      } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
 
@@ -243,46 +271,60 @@ import Pagination from "../common/Pagination/Pagination";
   useEffect(() => {
     // Check if we have all required search parameters and the store has search data
     const storeFilters = useHotelSearchStore.getState().filters;
-    const hasValidSearchCriteria = 
-      storeFilters.checkIn && 
-      storeFilters.checkOut && 
-      storeFilters.latitude !== null && 
+    const hasValidSearchCriteria =
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
       storeFilters.longitude !== null;
 
     // Get current language code from store
     const currentStoreLanguage = storeFilters.language;
     const newLanguageCode = getLanguageCode(locale);
 
-    console.log('Locale effect triggered:', {
+    console.log("Locale effect triggered:", {
       locale,
       currentStoreLanguage,
       newLanguageCode,
       hasValidSearchCriteria,
-      loading
+      loading,
     });
 
     // Only re-search if:
     // 1. We have valid search criteria
     // 2. The language has changed
     // 3. We're not already loading
-    if (hasValidSearchCriteria && currentStoreLanguage !== newLanguageCode && !loading) {
-      console.log('Language changed - re-triggering search with language:', newLanguageCode);
-      
+    if (
+      hasValidSearchCriteria &&
+      currentStoreLanguage !== newLanguageCode &&
+      !loading
+    ) {
+      console.log(
+        "Language changed - re-triggering search with language:",
+        newLanguageCode
+      );
+
       // Update the language in the hotel search store
       useHotelSearchStore.getState().setLanguage(newLanguageCode);
-      
+
       // Re-trigger the search with the new language
-      useHotelSearchStore.getState().search().then(() => {
-        const { hotels, currency, error } = useHotelSearchStore.getState();
-        if (error) {
-          console.error('Hotels API error after locale change:', error);
-        } else {
-          const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
-          console.log('Hotels reloaded with new language:', { count: hotelCount, currency });
-        }
-      }).catch((err) => {
-        console.error('Locale search promise error:', err);
-      });
+      useHotelSearchStore
+        .getState()
+        .search()
+        .then(() => {
+          const { hotels, currency, error } = useHotelSearchStore.getState();
+          if (error) {
+            console.error("Hotels API error after locale change:", error);
+          } else {
+            const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
+            console.log("Hotels reloaded with new language:", {
+              count: hotelCount,
+              currency,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Locale search promise error:", err);
+        });
     }
   }, [locale, loading]);
 
@@ -298,19 +340,23 @@ import Pagination from "../common/Pagination/Pagination";
     };
   }, [isMobileFilterOpen]);
 
-  const getHotelId = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : (hotel as HotelItem).id);
-  const getHotelName = (hotel: HotelItem | FavoriteHotel) => (
-    'name' in hotel && typeof hotel.name === 'string' ? hotel.name : (hotel as FavoriteHotel).name?.content
-  ) || 'Hotel';
-  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) => (
-    (hotel as FavoriteHotel).address?.content || (hotel as FavoriteHotel).city?.content || 'Location'
-  );
-  
-  const getHotelCode = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : undefined);
+  const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : (hotel as HotelItem).id;
+  const getHotelName = (hotel: HotelItem | FavoriteHotel) =>
+    ("name" in hotel && typeof hotel.name === "string"
+      ? hotel.name
+      : (hotel as FavoriteHotel).name?.content) || "Hotel";
+  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
+    (hotel as FavoriteHotel).address?.content ||
+    (hotel as FavoriteHotel).city?.content ||
+    "Location";
+
+  const getHotelCode = (hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : undefined;
 
   // Helper function to extract star rating from categoryCode
   const getStarRating = (hotel: HotelItem | FavoriteHotel): number => {
-    if ('categoryCode' in hotel && hotel.categoryCode) {
+    if ("categoryCode" in hotel && hotel.categoryCode) {
       // Extract number from categoryCode (e.g., "4EST" -> 4)
       const match = hotel.categoryCode.match(/^(\d+)/);
       return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
@@ -361,19 +407,19 @@ import Pagination from "../common/Pagination/Pagination";
     if (location) {
       setLocationSearchQuery(location.name);
     } else {
-      setLocationSearchQuery(''); // Clear only when location is null
+      setLocationSearchQuery(""); // Clear only when location is null
     }
-    setLocationError('');
+    setLocationError("");
   };
 
   const handleDateSelect = (startDate: Date | null, endDate: Date | null) => {
     setCheckInDate(startDate);
     setCheckOutDate(endDate);
-    if(startDate) {
-      setCheckInError('');
+    if (startDate) {
+      setCheckInError("");
     }
-    if(endDate) {
-      setCheckOutError('');
+    if (endDate) {
+      setCheckOutError("");
     }
     if (startDate && endDate) {
       setTimeout(() => setIsDatePickerOpen(false), 200);
@@ -387,12 +433,14 @@ import Pagination from "../common/Pagination/Pagination";
 
   const handleClearLocation = () => {
     setLocation(null);
-    setLocationSearchQuery('');
+    setLocationSearchQuery("");
     setIsLocationPickerOpen(false);
-    setLocationError('');
+    setLocationError("");
   };
 
-  const handleLocationInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLocationInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setLocationSearchQuery(e.target.value);
     if (e.target.value.trim() && !isLocationPickerOpen) {
       // Close other dropdowns when opening location picker via input
@@ -442,29 +490,33 @@ import Pagination from "../common/Pagination/Pagination";
   const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!filters.location) {
       e.preventDefault();
-      setLocationError(t('validation.locationRequired'));
+      setLocationError(t("validation.locationRequired"));
       return;
     }
-    setLocationError('');
+    setLocationError("");
 
     const isCheckInMissing = !filters.checkInDate;
     const isCheckOutMissing = !filters.checkOutDate;
 
     // Additional date validation - ensure check-in is today or later
     const today = getTodayAtMidnight();
-    
+
     if (filters.checkInDate && filters.checkInDate < today) {
-      setCheckInError(t('validation.checkInDateInvalid'));
+      setCheckInError(t("validation.checkInDateInvalid"));
       return;
     }
 
-    setCheckInError(isCheckInMissing ? t('validation.checkInDateRequired') : '');
-    setCheckOutError(isCheckOutMissing ? t('validation.checkOutDateRequired') : '');
+    setCheckInError(
+      isCheckInMissing ? t("validation.checkInDateRequired") : ""
+    );
+    setCheckOutError(
+      isCheckOutMissing ? t("validation.checkOutDateRequired") : ""
+    );
 
     if (isCheckInMissing || isCheckOutMissing) {
       return;
     }
-    
+
     // Wire dynamic filters to hotel search store and call API
     try {
       const coords = filters.location?.coordinates;
@@ -472,26 +524,34 @@ import Pagination from "../common/Pagination/Pagination";
       const longitude = coords?.lng ?? null;
 
       // Push current UI filters into the hotel search store
-      useHotelSearchStore.getState().setDates(filters.checkInDate, filters.checkOutDate);
-      useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
+      useHotelSearchStore
+        .getState()
+        .setDates(filters.checkInDate, filters.checkOutDate);
+      useHotelSearchStore
+        .getState()
+        .setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
       // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
       useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 
       // Execute search and log the raw response data held in the store
-      useHotelSearchStore.getState().search().then(() => {
-        const { hotels, currency, error } = useHotelSearchStore.getState();
-        if (error) {
-          console.error('Hotels API error:', error);
-        } else {
-          const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
-          console.log('Hotels API result:', { hotelCount, currency });
-        }
-      }).catch((err) => {
-        console.error('Search promise error:', err);
-      });
+      useHotelSearchStore
+        .getState()
+        .search()
+        .then(() => {
+          const { hotels, currency, error } = useHotelSearchStore.getState();
+          if (error) {
+            console.error("Hotels API error:", error);
+          } else {
+            const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
+            console.log("Hotels API result:", { hotelCount, currency });
+          }
+        })
+        .catch((err) => {
+          console.error("Search promise error:", err);
+        });
     } catch (err) {
-      console.error('Failed to trigger hotels search:', err);
+      console.error("Failed to trigger hotels search:", err);
     }
   };
 
@@ -503,7 +563,7 @@ import Pagination from "../common/Pagination/Pagination";
   const getGuestsDisplayText = () => {
     // Safety check for rooms array
     const rooms = filters.rooms || [{ adults: 0, children: 0 }];
-    
+
     const totalAdults = rooms.reduce(
       (acc, room) => acc + (room?.adults || 0),
       0
@@ -515,7 +575,7 @@ import Pagination from "../common/Pagination/Pagination";
     const totalGuests = totalAdults + totalChildren;
 
     if (totalGuests === 0) return t("addGuests");
-    
+
     const guestsText = `${totalGuests} ${
       totalGuests > 1 ? t("guests") : t("guest")
     }`;
@@ -539,9 +599,12 @@ import Pagination from "../common/Pagination/Pagination";
   //   });
   // };
 
-  const handleViewDetailsClick = async (hotelCode: string | number | undefined, hotelName: string | undefined) => {
+  const handleViewDetailsClick = async (
+    hotelCode: string | number | undefined,
+    hotelName: string | undefined
+  ) => {
     if (!hotelCode) return;
-    
+
     const hotelId = hotelCode.toString();
     setLoadingHotelId(hotelId);
     const hotelSlug = buildHotelSlug(hotelName, hotelId);
@@ -549,7 +612,7 @@ import Pagination from "../common/Pagination/Pagination";
       // Navigate to hotel details page
       await router.push(`/hotel-details/${hotelSlug}`);
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error("Navigation error:", error);
     } finally {
       // Reset loading state after a short delay to show the loading effect
       setTimeout(() => {
@@ -562,15 +625,20 @@ import Pagination from "../common/Pagination/Pagination";
   const handleStarRatingChange = (star: number) => {
     // If clicking the same star, unselect it
     const newRating = selectedStarRating === star ? null : star;
-    
+
     setSelectedStarRating(newRating);
-    
+
     // Update store and trigger search
     useHotelSearchStore.getState().setStarRating(newRating);
-    
+
     // Only search if we have valid criteria
     const storeFilters = useHotelSearchStore.getState().filters;
-    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+    if (
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
+      storeFilters.longitude !== null
+    ) {
       useHotelSearchStore.getState().search();
     }
   };
@@ -579,13 +647,18 @@ import Pagination from "../common/Pagination/Pagination";
   const handlePriceRangeChange = (min: number, max: number) => {
     setMinPrice(min);
     setMaxPrice(max);
-    
+
     // Update store and trigger search
     useHotelSearchStore.getState().setPriceRange(min, max);
-    
+
     // Only search if we have valid criteria
     const storeFilters = useHotelSearchStore.getState().filters;
-    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+    if (
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
+      storeFilters.longitude !== null
+    ) {
       useHotelSearchStore.getState().search();
     }
   };
@@ -600,7 +673,7 @@ import Pagination from "../common/Pagination/Pagination";
 
   // Sync selected accommodation codes to store and trigger search
   useEffect(() => {
-    const csv = selectedAccommodationCodes.join(',') || null;
+    const csv = selectedAccommodationCodes.join(",") || null;
     useHotelSearchStore.getState().updateFilters({ accommodations: csv });
 
     if (isInitialMount.current) {
@@ -609,7 +682,12 @@ import Pagination from "../common/Pagination/Pagination";
     }
 
     const storeFilters = useHotelSearchStore.getState().filters;
-    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+    if (
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
+      storeFilters.longitude !== null
+    ) {
       useHotelSearchStore.getState().search();
     }
   }, [selectedAccommodationCodes]);
@@ -620,27 +698,36 @@ import Pagination from "../common/Pagination/Pagination";
     setMinPrice(0);
     setMaxPrice(5000);
     setSelectedAccommodationCodes([]);
-    
+
     // Reset filters in store
     useHotelSearchStore.getState().setStarRating(null);
     useHotelSearchStore.getState().setPriceRange(null, null);
     useHotelSearchStore.getState().updateFilters({ accommodations: null });
-    
+
     // Re-search with cleared filters
     const storeFilters = useHotelSearchStore.getState().filters;
-    if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+    if (
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
+      storeFilters.longitude !== null
+    ) {
       useHotelSearchStore.getState().search();
     }
   };
 
   // Price slider handlers
-  const handleMinPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMinPriceSliderChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = parseInt(e.target.value);
     const clamped = Math.min(value, maxPrice - 100);
     setMinPrice(clamped);
   };
 
-  const handleMaxPriceSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMaxPriceSliderChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = parseInt(e.target.value);
     const clamped = Math.max(value, minPrice + 100);
     setMaxPrice(clamped);
@@ -654,7 +741,12 @@ import Pagination from "../common/Pagination/Pagination";
       // If both are at default, clear the filter
       useHotelSearchStore.getState().setPriceRange(null, null);
       const storeFilters = useHotelSearchStore.getState().filters;
-      if (storeFilters.checkIn && storeFilters.checkOut && storeFilters.latitude !== null && storeFilters.longitude !== null) {
+      if (
+        storeFilters.checkIn &&
+        storeFilters.checkOut &&
+        storeFilters.latitude !== null &&
+        storeFilters.longitude !== null
+      ) {
         useHotelSearchStore.getState().search();
       }
     }
@@ -694,12 +786,14 @@ import Pagination from "../common/Pagination/Pagination";
               strokeLinejoin="round"
             />
           </svg>
-          {tSearch('mapView')}
+          {tSearch("mapView")}
         </button>
       </div>
       <div className={`filter-header ${isMobile ? "d-none" : ""}`}>
-        <h3>{tSearch('filterBy')}</h3>
-        <button className="clear-filters" onClick={handleClearFilters}>{tSearch('clear')}</button>
+        <h3>{tSearch("filterBy")}</h3>
+        <button className="clear-filters" onClick={handleClearFilters}>
+          {tSearch("clear")}
+        </button>
       </div>
 
       <div className="filter-section">
@@ -707,7 +801,7 @@ import Pagination from "../common/Pagination/Pagination";
           className="filter-title"
           onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
         >
-          {tSearch('priceRange')}
+          {tSearch("priceRange")}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -719,37 +813,61 @@ import Pagination from "../common/Pagination/Pagination";
         {isPriceRangeOpen && (
           <div className="price-range">
             <div className="pricing-range-slider d-flex align-items-center justify-content-between">
-             <div>
-             <Image src={currencyImage} width={16} height={16} alt="currency icon" /> <span >{minPrice}</span>
-             </div>
-             <div>
-             <Image src={currencyImage} width={16} height={16} alt="currency icon" /> <span >{maxPrice}</span>
-             </div>
+              <div>
+                <span
+                  className="currency-icon"
+                  aria-hidden="true"
+                  dangerouslySetInnerHTML={{
+                    __html: buildCurrencySvgMarkup("#27272a"),
+                  }}
+                  style={{ display: "inline-flex" }}
+                />{" "}
+                <span>{minPrice}</span>
+              </div>
+              <div>
+                <span
+                  className="currency-icon"
+                  aria-hidden="true"
+                  dangerouslySetInnerHTML={{
+                    __html: buildCurrencySvgMarkup("#27272a"),
+                  }}
+                  style={{ display: "inline-flex" }}
+                />{" "}
+                <span>{maxPrice}</span>
+              </div>
             </div>
-            <div className="price-slider-container" style={{ position: 'relative', height: '40px', marginTop: '10px', width: '100%' }}>
-              <div 
+            <div
+              className="price-slider-container"
+              style={{
+                position: "relative",
+                height: "40px",
+                marginTop: "10px",
+                width: "100%",
+              }}
+            >
+              <div
                 className="slider-track"
                 style={{
-                  position: 'absolute',
-                  height: '6px',
-                  background: '#F3F4F6',
-                  width: '100%',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  borderRadius: '10px',
+                  position: "absolute",
+                  height: "6px",
+                  background: "#F3F4F6",
+                  width: "100%",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  borderRadius: "10px",
                   left: 0,
-                  pointerEvents: 'none',
+                  pointerEvents: "none",
                 }}
               >
-                <div 
+                <div
                   className="slider-range"
                   style={{
-                    position: 'absolute',
-                    height: '100%',
-                    background: '#3E5B96',
+                    position: "absolute",
+                    height: "100%",
+                    background: "#3E5B96",
                     left: `${(minPrice / 5000) * 100}%`,
                     width: `${((maxPrice - minPrice) / 5000) * 100}%`,
-                    borderRadius: '10px',
+                    borderRadius: "10px",
                   }}
                 />
               </div>
@@ -760,17 +878,23 @@ import Pagination from "../common/Pagination/Pagination";
                 step="50"
                 value={minPrice}
                 onChange={handleMinPriceSliderChange}
-                onMouseDown={() => setActivePriceSlider('min')}
-                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
-                onTouchStart={() => setActivePriceSlider('min')}
-                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onMouseDown={() => setActivePriceSlider("min")}
+                onMouseUp={() => {
+                  setActivePriceSlider(null);
+                  handlePriceSliderMouseUp();
+                }}
+                onTouchStart={() => setActivePriceSlider("min")}
+                onTouchEnd={() => {
+                  setActivePriceSlider(null);
+                  handlePriceSliderMouseUp();
+                }}
                 style={{
-                  position: 'absolute',
-                  width: '100%',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'all',
-                  zIndex: activePriceSlider === 'min' ? 5 : 3,
+                  position: "absolute",
+                  width: "100%",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "all",
+                  zIndex: activePriceSlider === "min" ? 5 : 3,
                 }}
                 className="price-range-input price-range-input-min"
               />
@@ -781,17 +905,23 @@ import Pagination from "../common/Pagination/Pagination";
                 step="50"
                 value={maxPrice}
                 onChange={handleMaxPriceSliderChange}
-                onMouseDown={() => setActivePriceSlider('max')}
-                onMouseUp={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
-                onTouchStart={() => setActivePriceSlider('max')}
-                onTouchEnd={() => { setActivePriceSlider(null); handlePriceSliderMouseUp(); }}
+                onMouseDown={() => setActivePriceSlider("max")}
+                onMouseUp={() => {
+                  setActivePriceSlider(null);
+                  handlePriceSliderMouseUp();
+                }}
+                onTouchStart={() => setActivePriceSlider("max")}
+                onTouchEnd={() => {
+                  setActivePriceSlider(null);
+                  handlePriceSliderMouseUp();
+                }}
                 style={{
-                  position: 'absolute',
-                  width: '100%',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'all',
-                  zIndex: activePriceSlider === 'max' ? 5 : 3,
+                  position: "absolute",
+                  width: "100%",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "all",
+                  zIndex: activePriceSlider === "max" ? 5 : 3,
                 }}
                 className="price-range-input price-range-input-max"
               />
@@ -805,7 +935,7 @@ import Pagination from "../common/Pagination/Pagination";
           className="filter-title"
           onClick={() => setIsStarRatingOpen(!isStarRatingOpen)}
         >
-          {tSearch('starRating')}
+          {tSearch("starRating")}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -818,8 +948,8 @@ import Pagination from "../common/Pagination/Pagination";
           <div className="filter-options">
             {[5, 4, 3, 2, 1].map((stars) => (
               <label key={stars} className="filter-option">
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="star-rating-filter"
                   checked={selectedStarRating === stars}
                   onChange={() => handleStarRatingChange(stars)}
@@ -876,7 +1006,7 @@ import Pagination from "../common/Pagination/Pagination";
           </div>
         )}
       </div> */}
-{/* 
+      {/* 
       <div className="filter-section">
         <div
           className="filter-title"
@@ -911,7 +1041,7 @@ import Pagination from "../common/Pagination/Pagination";
           className="filter-title"
           onClick={() => setIsPropertyTypeOpen(!isPropertyTypeOpen)}
         >
-          {tSearch('propertyType')}
+          {tSearch("propertyType")}
           <Image
             src={downBlackArrowIcon}
             width="20"
@@ -922,7 +1052,10 @@ import Pagination from "../common/Pagination/Pagination";
         </div>
         {isPropertyTypeOpen && (
           <div className="filter-options">
-            {(showAllAccommodationTypes ? accommodationTypes : accommodationTypes.slice(0, 5)).map((item) => (
+            {(showAllAccommodationTypes
+              ? accommodationTypes
+              : accommodationTypes.slice(0, 5)
+            ).map((item) => (
               <label key={item.code} className="filter-option">
                 <input
                   type="checkbox"
@@ -934,13 +1067,18 @@ import Pagination from "../common/Pagination/Pagination";
               </label>
             ))}
             {accommodationTypes.length > 5 && (
-              <div style={{ marginTop: '8px' }}>
+              <div style={{ marginTop: "8px" }}>
                 <a
                   href="#"
-                  onClick={(e) => { e.preventDefault(); setShowAllAccommodationTypes(!showAllAccommodationTypes); }}
-                  style={{ color: '#3E5B96', textDecoration: 'none' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAllAccommodationTypes(!showAllAccommodationTypes);
+                  }}
+                  style={{ color: "#3E5B96", textDecoration: "none" }}
                 >
-                  {showAllAccommodationTypes ? (tSearch('showLess') || 'View less') : (tSearch('showMore') || 'View more')}
+                  {showAllAccommodationTypes
+                    ? tSearch("showLess") || "View less"
+                    : tSearch("showMore") || "View more"}
                 </a>
               </div>
             )}
@@ -989,7 +1127,7 @@ import Pagination from "../common/Pagination/Pagination";
             <div className="search-bar">
               <div className="search-bar-container">
                 <div className="search-field" ref={locationPickerRef}>
-                  <label>{t('location')}</label>
+                  <label>{t("location")}</label>
                   <div className="search-input-wrapper">
                     <div className="search-input-inner">
                       <Image
@@ -1001,7 +1139,11 @@ import Pagination from "../common/Pagination/Pagination";
                       <input
                         type="text"
                         className="location-input-field"
-                        placeholder={filters.location ? filters.location.name : t('findLocation')}
+                        placeholder={
+                          filters.location
+                            ? filters.location.name
+                            : t("findLocation")
+                        }
                         value={locationSearchQuery}
                         onChange={handleLocationInputChange}
                         onFocus={handleLocationInputFocus}
@@ -1041,7 +1183,7 @@ import Pagination from "../common/Pagination/Pagination";
                           alt="down icon"
                           className="arrow-and-plus-icon"
                           onClick={toggleLocationPicker}
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                         />
                       )}
                     </div>
@@ -1061,7 +1203,7 @@ import Pagination from "../common/Pagination/Pagination";
                 </div>
 
                 <div className="search-field" ref={datePickerRef}>
-                  <label>{t('checkInDate')}</label>
+                  <label>{t("checkInDate")}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleDatePicker}
@@ -1084,7 +1226,9 @@ import Pagination from "../common/Pagination/Pagination";
                       alt="plus icon"
                     />
                   </div>
-                  {checkInError && <div className="location-error-message">{checkInError}</div>}
+                  {checkInError && (
+                    <div className="location-error-message">{checkInError}</div>
+                  )}
                   <DatePicker
                     isOpen={isDatePickerOpen}
                     onDateSelect={handleDateSelect}
@@ -1094,7 +1238,7 @@ import Pagination from "../common/Pagination/Pagination";
                 </div>
 
                 <div className="search-field">
-                  <label>{t('checkOutDate')}</label>
+                  <label>{t("checkOutDate")}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleDatePicker}
@@ -1111,11 +1255,15 @@ import Pagination from "../common/Pagination/Pagination";
                       </span>
                     </div>
                   </div>
-                  {checkOutError && <div className="location-error-message">{checkOutError}</div>}
+                  {checkOutError && (
+                    <div className="location-error-message">
+                      {checkOutError}
+                    </div>
+                  )}
                 </div>
 
                 <div className="search-field" ref={guestsPickerRef}>
-                  <label>{t('guestsAndRooms')}</label>
+                  <label>{t("guestsAndRooms")}</label>
                   <div
                     className="search-input-wrapper"
                     onClick={toggleGuestsPicker}
@@ -1186,12 +1334,22 @@ import Pagination from "../common/Pagination/Pagination";
                   <div className="search-header-left">
                     <div className="search-results-info">
                       {loading ? (
-                        <span>{tSearch('searchingHotels')}</span>
+                        <span>{tSearch("searchingHotels")}</span>
                       ) : (
                         <>
-                          {tSearch('showingHotels', { count: apiHotels.length, total: apiTotal ?? apiHotels.length, location: filters.location ? filters.location.name : 'Selected Location' })}
+                          {tSearch("showingHotels", {
+                            count: apiHotels.length,
+                            total: apiTotal ?? apiHotels.length,
+                            location: filters.location
+                              ? filters.location.name
+                              : "Selected Location",
+                          })}
                           {hotelFilters.checkIn && hotelFilters.checkOut && (
-                            <span> ({formatDate(hotelFilters.checkIn)} - {formatDate(hotelFilters.checkOut)})</span>
+                            <span>
+                              {" "}
+                              ({formatDate(hotelFilters.checkIn)} -{" "}
+                              {formatDate(hotelFilters.checkOut)})
+                            </span>
                           )}
                           {getGuestsDisplayText() && (
                             <span>, {getGuestsDisplayText()}</span>
@@ -1214,7 +1372,7 @@ import Pagination from "../common/Pagination/Pagination";
                             height={20}
                             className="sort-filter-icon"
                           />
-                          {tSearch('filter')}
+                          {tSearch("filter")}
                         </span>
                         <Image
                           src={downBlackArrowIcon}
@@ -1230,7 +1388,7 @@ import Pagination from "../common/Pagination/Pagination";
                         options={sortOptions}
                         value={sortBy}
                         onChange={setSortBy}
-                        label={tSearch('sortBy')}
+                        label={tSearch("sortBy")}
                         className="sort-dropdown"
                       />
                     </div>
@@ -1238,15 +1396,16 @@ import Pagination from "../common/Pagination/Pagination";
                 </div>
 
                 <>
-                      <div className="hotel-results">
-                        {loading ? (
-                          // Show loading skeletons
-                          [...Array(6)].map((_, index) => (
-                            <HotelCardSkeleton key={`skeleton-${index}`} />
-                          ))
-                        ) : apiHotels.length > 0 ? (
-                          // Show actual hotel results
-                          paginatedHotels.map((hotel: HotelItem | FavoriteHotel) => (
+                  <div className="hotel-results">
+                    {loading ? (
+                      // Show loading skeletons
+                      [...Array(6)].map((_, index) => (
+                        <HotelCardSkeleton key={`skeleton-${index}`} />
+                      ))
+                    ) : apiHotels.length > 0 ? (
+                      // Show actual hotel results
+                      paginatedHotels.map(
+                        (hotel: HotelItem | FavoriteHotel) => (
                           <div key={getHotelId(hotel)} className="hotel-card">
                             <div className="hotel-images">
                               {(() => {
@@ -1255,8 +1414,11 @@ import Pagination from "../common/Pagination/Pagination";
                                   <>
                                     <div className="main-image">
                                       <Image
-                                        src={images.main || (mainImage1 as unknown as string)}
-                                        alt={getHotelName(hotel) || 'Hotel'}
+                                        src={
+                                          images.main ||
+                                          (mainImage1 as unknown as string)
+                                        }
+                                        alt={getHotelName(hotel) || "Hotel"}
                                         width={276}
                                         height={146}
                                         className="property-main-img"
@@ -1265,18 +1427,32 @@ import Pagination from "../common/Pagination/Pagination";
                                     <div className="thumbnail-images">
                                       {(images.thumbs.length > 0
                                         ? images.thumbs
-                                        : [thumbnailImages1, thumbnailImages2, thumbnailImages3, thumbnailImages4] as unknown as string[]
-                                      ).slice(0, 4).map((imgSrc, index) => (
-                                        <div key={`${getHotelId(hotel)}-thumb-${index}`} className="thumbnail-image">
-                                          <Image
-                                            width={66}
-                                            height={52}
-                                            src={imgSrc}
-                                            alt={`${getHotelName(hotel)} ${index + 1}`}
-                                            className="property-thumb-img"
-                                          />
-                                        </div>
-                                      ))}
+                                        : ([
+                                            thumbnailImages1,
+                                            thumbnailImages2,
+                                            thumbnailImages3,
+                                            thumbnailImages4,
+                                          ] as unknown as string[])
+                                      )
+                                        .slice(0, 4)
+                                        .map((imgSrc, index) => (
+                                          <div
+                                            key={`${getHotelId(
+                                              hotel
+                                            )}-thumb-${index}`}
+                                            className="thumbnail-image"
+                                          >
+                                            <Image
+                                              width={66}
+                                              height={52}
+                                              src={imgSrc}
+                                              alt={`${getHotelName(hotel)} ${
+                                                index + 1
+                                              }`}
+                                              className="property-thumb-img"
+                                            />
+                                          </div>
+                                        ))}
                                     </div>
                                   </>
                                 );
@@ -1289,15 +1465,20 @@ import Pagination from "../common/Pagination/Pagination";
                                 </p>
                                 <div className="hotel-rating">
                                   <div className="rating-stars d-flex align-items-center">
-                                    {Array.from({ length: getStarRating(hotel) }, (_, index) => (
-                                      <Image
-                                        key={`${getHotelId(hotel)}-star-${index}`}
-                                        src={ReviewStarFill}
-                                        alt="star icon"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    ))}
+                                    {Array.from(
+                                      { length: getStarRating(hotel) },
+                                      (_, index) => (
+                                        <Image
+                                          key={`${getHotelId(
+                                            hotel
+                                          )}-star-${index}`}
+                                          src={ReviewStarFill}
+                                          alt="star icon"
+                                          width="16"
+                                          height="16"
+                                        />
+                                      )
+                                    )}
                                   </div>
                                   <span className="rating-reviews d-flex align-items-center">
                                     <span className="rating-score">
@@ -1365,52 +1546,73 @@ import Pagination from "../common/Pagination/Pagination";
                                 <div className="hotel-footer">
                                   <div className="hotel-price">
                                     <span className="price-amount">
-                                      <span >
-                                        {/* {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""} */}
-                                        <Image src={currencyImage} width={16} height={16} alt="currency icon" />
-                                      </span>{" "}
-                                      {('maxRate' in hotel && (hotel as HotelItem).minRate) || 179}
+                                      {/* <span>
+                                        {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""} 
+                                        <Image
+                                          src={currencyImage}
+                                          width={16}
+                                          height={16}
+                                          alt="currency icon"
+                                        />
+                                      </span>*/}
+                                      <span
+                                        className="currency-icon"
+                                        aria-hidden="true"
+                                        dangerouslySetInnerHTML={{
+                                          __html:
+                                            buildCurrencySvgMarkup("#27272a"),
+                                        }}
+                                        style={{ display: "inline-flex" }}
+                                      />{" "}
+                                      {("maxRate" in hotel &&
+                                        (hotel as HotelItem).minRate) ||
+                                        179}
                                     </span>
                                     {/* <span className="price-period">{tSearch('perNight')}</span> */}
                                   </div>
-                                  <button 
-                                    className="view-details-button button-primary w-100" 
+                                  <button
+                                    className="view-details-button button-primary w-100"
                                     onClick={() =>
                                       handleViewDetailsClick(
                                         getHotelCode(hotel),
                                         getHotelName(hotel)
                                       )
                                     }
-                                    disabled={loadingHotelId === getHotelCode(hotel)?.toString()}
+                                    disabled={
+                                      loadingHotelId ===
+                                      getHotelCode(hotel)?.toString()
+                                    }
                                   >
-                                    {loadingHotelId === getHotelCode(hotel)?.toString() ? (
+                                    {loadingHotelId ===
+                                    getHotelCode(hotel)?.toString() ? (
                                       <>
                                         <div className="view-details-spinner"></div>
-                                        {tSearch('loading')}
+                                        {tSearch("loading")}
                                       </>
                                     ) : (
-                                      tSearch('viewDetails')
+                                      tSearch("viewDetails")
                                     )}
                                   </button>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        ))
-                        ) : (
-                          <div className="no-hotels-found">
-                            <h2>{tSearch('noHotelsFound')}</h2>
-                            <p>{tSearch('noHotelsFoundDesc')}</p>
-                          </div>
-                        )}
+                        )
+                      )
+                    ) : (
+                      <div className="no-hotels-found">
+                        <h2>{tSearch("noHotelsFound")}</h2>
+                        <p>{tSearch("noHotelsFoundDesc")}</p>
                       </div>
-                      {totalPages > 1 && (
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onChange={(page) => setCurrentPage(page)}
-                        />
-                      )}
+                    )}
+                  </div>
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onChange={(page) => setCurrentPage(page)}
+                    />
+                  )}
                 </>
               </div>
             </div>
@@ -1426,7 +1628,7 @@ import Pagination from "../common/Pagination/Pagination";
             ></div>
             <div className="mobile-filter-panel">
               <div className="mobile-filter-header">
-                <h3>{tSearch('filter')}</h3>
+                <h3>{tSearch("filter")}</h3>
                 <button
                   className="close-btn"
                   aria-label="Close filters"
@@ -1442,12 +1644,17 @@ import Pagination from "../common/Pagination/Pagination";
               </div>
               <div className="mobile-filter-body">{renderFilters(true)}</div>
               <div className="mobile-filter-footer">
-                <button className="reset-btn button-primary" onClick={handleClearFilters}>{tSearch('reset')}</button>
+                <button
+                  className="reset-btn button-primary"
+                  onClick={handleClearFilters}
+                >
+                  {tSearch("reset")}
+                </button>
                 <button
                   className="apply-btn button-primary"
                   onClick={() => setIsMobileFilterOpen(false)}
                 >
-                  {tSearch('showHotels')}
+                  {tSearch("showHotels")}
                 </button>
               </div>
             </div>

@@ -506,7 +506,13 @@
             font-size: 20px;
             font-weight: $font-weight600;
             color: $color-black-zinc-950;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 48px;
           }
 
           .hotel-details-rating {
@@ -532,7 +538,8 @@
 
           .room-card-amenities-list {
             text-align: left;
-            margin: 24px 0;
+            margin: 16px 0;
+            display: flex;
 
             .amenities-item {
               row-gap: 6px;
@@ -555,7 +562,7 @@
           }
 
           .room-card-specs {
-            margin: 24px 0;
+            margin: 16px 0;
 
             .card-specs-item {
               row-gap: 8px;
@@ -610,6 +617,14 @@
               gap: 4px;
               font-size: 16px;
               color: $color-black-zinc-950;
+
+              .currency-icon {
+                svg {
+                  margin: 0 2px;
+                  width: 13px;
+                  height: 13px;
+                }
+              }
             }
 
             .refund-valid-date {
@@ -620,7 +635,7 @@
 
           .hotel-room-more-details {
             text-align: left;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
 
             .hotel-more-details-link {
               gap: 10px;
@@ -1014,6 +1029,14 @@
             gap: 4px;
             font-size: 16px;
             color: $color-black-zinc-950;
+
+            .currency-icon {
+              svg {
+                margin: 0 2px;
+                width: 13px;
+                height: 13px;
+              }
+            }
           }
 
           .refund-valid-date {
@@ -1369,7 +1392,7 @@
             font-size: 14px;
 
             a {
-              font-size: 16px;
+              font-size: 14px;
             }
           }
         }
@@ -1466,8 +1489,9 @@
 
           .room-card-details {
             .hotel-room-name {
-              margin-bottom: 6px;
+              margin-bottom: 12px;
               font-size: 18px;
+              min-height: auto;
             }
 
             .hotel-details-rating {
@@ -1475,14 +1499,18 @@
               font-size: 12px;
             }
 
+            .hotel-room-more-details {
+              margin-bottom: 12px;
+            }
+
             .room-card-amenities-list {
-              margin: 16px 0;
+              margin: 12px 0;
 
               li {
-                font-size: 14px;
-                gap: 4px;
+                font-size: 14px !important;
+                gap: 4px !important;
 
-                img {
+                svg {
                   width: 16px;
                   height: 16px;
                 }
@@ -1490,7 +1518,7 @@
             }
 
             .room-card-specs {
-              margin: 16px 0;
+              margin: 12px 0;
 
               .card-specs-item {
                 gap: 8px;
@@ -1509,7 +1537,7 @@
             }
 
             .room-card-policies-list {
-              margin: 16px 0;
+              margin: 12px 0;
 
               .policies-item {
                 gap: 8px;
@@ -1529,6 +1557,13 @@
             .rooms-card-refund {
               .refund-item {
                 font-size: 14px;
+
+                .currency-icon {
+                  svg {
+                    width: 11px;
+                    height: 11px;
+                  }
+                }
 
                 svg {
                   width: 16px;
@@ -1556,6 +1591,7 @@
                 line-height: normal;
               }
 
+
               .nightly-price {
                 font-size: 14px;
               }
@@ -1563,6 +1599,13 @@
               .total-price {
                 font-size: 16px;
                 line-height: normal;
+
+                .currency-icon {
+                  svg {
+                    width: 14px;
+                    height: 14px;
+                  }
+                }
               }
 
               .hotel-room-number {
@@ -1728,6 +1771,13 @@
           .modal-room-refund {
             .refund-item {
               font-size: 14px;
+
+              .currency-icon {
+                svg {
+                  width: 11px;
+                  height: 11px;
+                }
+              }
             }
           }
         }

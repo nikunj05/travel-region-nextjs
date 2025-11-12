@@ -663,6 +663,7 @@ img {
                 background: transparent;
                 outline: none;
                 font-size: inherit;
+                padding: 0px;
                 color: $color-black-zinc-800;
                 // flex: 1;
                 // min-width: 0;
@@ -1024,6 +1025,15 @@ img {
         align-items: baseline;
         display: flex;
         gap: 4px;
+
+        .currency-icon {
+          margin-right: 3px;
+
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
 
         .destination-hotel-pricing-night {
           font-size: 18px;

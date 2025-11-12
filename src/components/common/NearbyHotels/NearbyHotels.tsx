@@ -13,6 +13,7 @@ import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useLocale, useTranslations } from "next-intl";
+import { buildCurrencySvgMarkup } from "@/constants";
 import "./NearbyHotels.scss";
 
 interface NearByHotelsProps {
@@ -33,7 +34,8 @@ const getHotelName = (hotel: HotelItem | FavoriteHotel) => {
 };
 
 const getStarRating = (hotel: HotelItem | FavoriteHotel) => {
-  const categoryCode = (hotel as HotelItem).categoryCode || (hotel as FavoriteHotel).categoryCode;
+  const categoryCode =
+    (hotel as HotelItem).categoryCode || (hotel as FavoriteHotel).categoryCode;
   if (categoryCode) {
     const match = categoryCode.match(/^(\d+)/);
     if (match) {
@@ -100,7 +102,9 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
       return hotels;
     }
     const currentCodeString = currentHotelCode?.toString();
-    return hotels.filter((hotel) => getHotelCode(hotel)?.toString() !== currentCodeString);
+    return hotels.filter(
+      (hotel) => getHotelCode(hotel)?.toString() !== currentCodeString
+    );
   }, [hotels, currentHotelCode]);
 
   const hotelsToDisplay = useMemo<(HotelItem | FavoriteHotel)[]>(
@@ -119,7 +123,11 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
     const currentStoreLanguage = storeFilters.language;
     const newLanguageCode = getLanguageCode(locale);
 
-    if (hasValidSearchCriteria && currentStoreLanguage !== newLanguageCode && !loading) {
+    if (
+      hasValidSearchCriteria &&
+      currentStoreLanguage !== newLanguageCode &&
+      !loading
+    ) {
       setLanguage(newLanguageCode);
       searchHotels().catch((error) => {
         console.error("Failed to reload hotels on locale change:", error);
@@ -139,7 +147,10 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
     }, 0);
   };
 
-  const slidesToShowCount = Math.min(3, hotelsToDisplay.length === 0 ? 3 : hotelsToDisplay.length);
+  const slidesToShowCount = Math.min(
+    3,
+    hotelsToDisplay.length === 0 ? 3 : hotelsToDisplay.length
+  );
 
   const settings = {
     slidesToShow: slidesToShowCount,
@@ -154,7 +165,10 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
       {
         breakpoint: 992,
         settings: {
-          slidesToShow: Math.min(2, hotelsToDisplay.length === 0 ? 2 : hotelsToDisplay.length),
+          slidesToShow: Math.min(
+            2,
+            hotelsToDisplay.length === 0 ? 2 : hotelsToDisplay.length
+          ),
         },
       },
       {
@@ -199,16 +213,23 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                       ))}
                     </div>
                     <span className="rating-value-wrapper d-flex align-items-center">
-                      <span className="rating-value">{t("placeholderRating")}</span>
+                      <span className="rating-value">
+                        {t("placeholderRating")}
+                      </span>
                     </span>
                   </div>
                   <div className="nearby-hotels-price-info">
                     <span className="total-price">{t("placeholderPrice")}</span>
-                    <div className="hotel-room-number">{t("includesTaxesFees")}</div>
+                    <div className="hotel-room-number">
+                      {t("includesTaxesFees")}
+                    </div>
                   </div>
 
                   <div className="nearby-hotels-room-action">
-                    <button className="button-primary room-booking-btn w-100" disabled>
+                    <button
+                      className="button-primary room-booking-btn w-100"
+                      disabled
+                    >
                       {t("bookNow")}
                     </button>
                   </div>
@@ -255,11 +276,13 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                       <span className="total-price">
                         {minRate !== null ? (
                           <span className="d-inline-flex align-items-center gap-1">
-                            <Image
-                              src={currencyImage}
-                              width={12}
-                              height={12}
-                              alt="currency icon"
+                            <span
+                              className="currency-icon"
+                              aria-hidden="true"
+                              dangerouslySetInnerHTML={{
+                                __html: buildCurrencySvgMarkup("#09090b"),
+                              }}
+                              style={{ display: "inline-flex" }}
                             />
                             {minRate.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
@@ -271,13 +294,18 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                         )}
                         {/* <span>/per night</span> */}
                       </span>
-                      <div className="hotel-room-number">{t("includesTaxesFees")}</div>
+                      <div className="hotel-room-number">
+                        {t("includesTaxesFees")}
+                      </div>
                     </div>
 
                     <div className="nearby-hotels-room-action">
                       <button
                         className="button-primary room-booking-btn w-100"
-                        onClick={() => hotelSlug && router.push(`/hotel-details/${hotelSlug}`)}
+                        onClick={() =>
+                          hotelSlug &&
+                          router.push(`/hotel-details/${hotelSlug}`)
+                        }
                         disabled={!hotelCode}
                       >
                         {t("bookNow")}

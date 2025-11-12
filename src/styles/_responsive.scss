@@ -374,6 +374,13 @@
           font-size: 21px;
           line-height: 24px;
 
+          .currency-icon {
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+
           .destination-hotel-pricing-night {
             font-size: 14px;
           }
@@ -799,6 +806,10 @@
               }
 
               .clear-location-btn {
+                height: 16px;
+                display: flex;
+                align-items: center;
+
                 svg {
                   width: 12px;
                   height: 12px;
@@ -965,6 +976,15 @@
           .destination-hotel-pricing {
             font-size: 20px;
             line-height: normal;
+
+            .currency-icon {
+              margin-right: 2px;
+
+              svg {
+                width: 14px;
+                height: 14px;
+              }
+            }
           }
         }
 
