@@ -69,6 +69,14 @@
     "nearBeach": "Near Beach",
     "cityCenter": "City Center"
   },
+  "NearbyHotels": {
+    "placeholderTitle": "Nearby Hotel",
+    "placeholderRating": "5.0",
+    "placeholderPrice": "$0/per night",
+    "includesTaxesFees": "includes taxes & fees",
+    "bookNow": "Book Now",
+    "priceUnavailable": "Price unavailable"
+  },
   "Blogs": {
     "pageTitle": "Discover Travel Tips, Destinations & More",
     "pageDescription": "Helpful articles to plan your perfect trip — from hidden gems to hotel hacks.",

@@ -69,6 +69,14 @@
     "nearBeach": "بالقرب من الشاطئ",
     "cityCenter": "مركز المدينة"
   },
+  "NearbyHotels": {
+    "placeholderTitle": "فندق قريب",
+    "placeholderRating": "5.0",
+    "placeholderPrice": "$0/لكل ليلة",
+    "includesTaxesFees": "يشمل الضرائب والرسوم",
+    "bookNow": "احجز الآن",
+    "priceUnavailable": "السعر غير متوفر"
+  },
   "Blogs": {
     "pageTitle": "اكتشف نصائح السفر والوجهات والمزيد",
     "pageDescription": "مقالات مفيدة لتخطيط رحلتك المثالية - من الجواهر المخفية إلى حيل الفنادق.",

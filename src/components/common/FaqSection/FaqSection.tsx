@@ -1,31 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { faqService } from "@/services/faqService";
+import { FaqItem, FaqCategory } from "@/types/faq";
 import "./FaqSection.scss";
-
-const faqs = [
-  {
-    question: "Does Novotel Bangkok On Siam Square have a pool?",
-    answer: "Yes, the hotel offers an outdoor swimming pool for guests.",
-  },
-  {
-    question: "What time is check-in at Novotel Bangkok On Siam Square?",
-    answer:
-      "Check-in is from 2:00 PM. Early check-in may be available (subject to availability).",
-  },
-  {
-    question: "Is Novotel Bangkok On Siam Square pet-friendly?",
-    answer: "No, pets are not allowed at this property.",
-  },
-  {
-    question: "How much is parking at Novotel Bangkok On Siam Square?",
-    answer: "Parking is available free of charge for hotel guests.",
-  },
-  {
-    question: "What time is check-out at Novotel Bangkok On Siam Square?",
-    answer:
-      "Check-out is at noon. Late check-out is available for a fee (subject to availability).",
-  },
-];
 
 const PlusIcon = () => (
   <svg
@@ -64,70 +47,125 @@ const CloseIcon = () => (
 );
 
 const FaqSection = () => {
+  const t = useTranslations("FAQ");
+  const locale = useLocale();
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
-  const toggleFaq = (index: number) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+  const fetchFaqs = useCallback(async () => {
+    try {
+      const response = await faqService.getFaqs();
+      const fetchedFaqs =
+        (response?.data?.faqs || []).reduce<FaqItem[]>(
+          (accumulator, category: FaqCategory) => {
+            if (Array.isArray(category.faqs)) {
+              return accumulator.concat(category.faqs);
+            }
+            return accumulator;
+          },
+          []
+        );
+      setFaqItems(fetchedFaqs);
+      setActiveIndex(fetchedFaqs.length > 0 ? 0 : null);
+    } catch (error) {
+      console.error("Error fetching FAQs:", error);
+      setFaqItems([]);
+      setActiveIndex(null);
+    }
+  }, [locale]);
 
-  const mid = Math.ceil(faqs.length / 2);
-  const leftColumn = faqs.slice(0, mid);
-  const rightColumn = faqs.slice(mid);
+  useEffect(() => {
+    fetchFaqs();
+  }, [fetchFaqs]);
+
+  const { leftColumn, rightColumn, mid } = useMemo(() => {
+    if (faqItems.length === 0) {
+      return { leftColumn: [], rightColumn: [], mid: 0 };
+    }
+
+    const midpoint = Math.ceil(faqItems.length / 2);
+    return {
+      leftColumn: faqItems.slice(0, midpoint),
+      rightColumn: faqItems.slice(midpoint),
+      mid: midpoint,
+    };
+  }, [faqItems]);
+
+  const toggleFaq = (index: number) => {
+    setActiveIndex((previous) => (previous === index ? null : index));
+  };
 
   return (
     <section className="faq-section">
       <div className="faq-section-heading">
-        <h2 className="faq-title">Frequently Asked Questions</h2>
-        <p className="faq-description">
-          Clear answers to help you book with confidence.
-        </p>
+        <h2 className="faq-title">{t("title")}</h2>
+        <p className="faq-description">{t("description")}</p>
       </div>
 
       <div className="faq-container">
-        {/* Left Column */}
-        <div style={{ flex: 1 }} className="faq-column">
-          {leftColumn.map((faq, index) => (
-            <div
-              className={`faq-item ${activeIndex === index ? "active" : ""}`}
-              key={index}
-            >
-              <button className="faq-question" onClick={() => toggleFaq(index)}>
-                {faq.question}
-                <span className="icon">
-                  {activeIndex === index ? <CloseIcon /> : <PlusIcon />}
-                </span>
-              </button>
-              {activeIndex === index && (
-                <div className="faq-answer">{faq.answer}</div>
-              )}
+        {faqItems.length > 0 ? (
+          <>
+            {/* Left Column */}
+            <div style={{ flex: 1 }} className="faq-column">
+              {leftColumn.map((faq, index) => {
+                const currentIndex = index;
+                const isActive = activeIndex === currentIndex;
+                return (
+                  <div
+                    className={`faq-item ${isActive ? "active" : ""}`}
+                    key={`${faq.id}-${currentIndex}`}
+                  >
+                    <button
+                      className="faq-question"
+                      onClick={() => toggleFaq(currentIndex)}
+                    >
+                      {faq.question}
+                      <span className="icon">
+                        {isActive ? <CloseIcon /> : <PlusIcon />}
+                      </span>
+                    </button>
+                    {isActive && (
+                      <div className="faq-answer">{faq.answer}</div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
 
-        {/* Right Column */}
-        <div style={{ flex: 1 }} className="faq-column">
-          {rightColumn.map((faq, index) => (
-            <div
-              className={`faq-item ${
-                activeIndex === index + mid ? "active" : ""
-              }`}
-              key={index + mid}
-            >
-              <button
-                className="faq-question"
-                onClick={() => toggleFaq(index + mid)}
-              >
-                {faq.question}
-                <span className="icon">
-                  {activeIndex === index + mid ? <CloseIcon /> : <PlusIcon />}
-                </span>
-              </button>
-              {activeIndex === index + mid && (
-                <div className="faq-answer">{faq.answer}</div>
-              )}
+            {/* Right Column */}
+            <div style={{ flex: 1 }} className="faq-column">
+              {rightColumn.map((faq, index) => {
+                const currentIndex = index + mid;
+                const isActive = activeIndex === currentIndex;
+                return (
+                  <div
+                    className={`faq-item ${isActive ? "active" : ""}`}
+                    key={`${faq.id}-${currentIndex}`}
+                  >
+                    <button
+                      className="faq-question"
+                      onClick={() => toggleFaq(currentIndex)}
+                    >
+                      {faq.question}
+                      <span className="icon">
+                        {isActive ? <CloseIcon /> : <PlusIcon />}
+                      </span>
+                    </button>
+                    {isActive && (
+                      <div className="faq-answer">{faq.answer}</div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
+          </>
+        ) : (
+          <div style={{ flex: 1 }} className="faq-column">
+            <div className="faq-item active">
+              <div className="faq-answer">{t("noFaqsAvailable")}</div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -33,6 +33,7 @@ import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import {  buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
+import { buildHotelSlug } from "@/lib/hotelSlug";
 import Pagination from "../common/Pagination/Pagination";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
@@ -304,6 +305,7 @@ import Pagination from "../common/Pagination/Pagination";
   const getHotelLocation = (hotel: HotelItem | FavoriteHotel) => (
     (hotel as FavoriteHotel).address?.content || (hotel as FavoriteHotel).city?.content || 'Location'
   );
+  
   const getHotelCode = (hotel: HotelItem | FavoriteHotel) => ('code' in hotel ? hotel.code : undefined);
 
   // Helper function to extract star rating from categoryCode
@@ -537,15 +539,15 @@ import Pagination from "../common/Pagination/Pagination";
   //   });
   // };
 
-  const handleViewDetailsClick = async (hotelCode: string | number | undefined) => {
+  const handleViewDetailsClick = async (hotelCode: string | number | undefined, hotelName: string | undefined) => {
     if (!hotelCode) return;
     
     const hotelId = hotelCode.toString();
     setLoadingHotelId(hotelId);
-    
+    const hotelSlug = buildHotelSlug(hotelName, hotelId);
     try {
       // Navigate to hotel details page
-      await router.push(`/hotel-details/${hotelCode}`);
+      await router.push(`/hotel-details/${hotelSlug}`);
     } catch (error) {
       console.error('Navigation error:', error);
     } finally {
@@ -1373,7 +1375,12 @@ import Pagination from "../common/Pagination/Pagination";
                                   </div>
                                   <button 
                                     className="view-details-button button-primary w-100" 
-                                    onClick={() => handleViewDetailsClick(getHotelCode(hotel))}
+                                    onClick={() =>
+                                      handleViewDetailsClick(
+                                        getHotelCode(hotel),
+                                        getHotelName(hotel)
+                                      )
+                                    }
                                     disabled={loadingHotelId === getHotelCode(hotel)?.toString()}
                                   >
                                     {loadingHotelId === getHotelCode(hotel)?.toString() ? (

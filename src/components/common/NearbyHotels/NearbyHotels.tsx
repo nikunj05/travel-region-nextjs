@@ -1,16 +1,18 @@
 "use client";
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
 import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
+import { buildHotelSlug } from "@/lib/hotelSlug";
 import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
+import { useLocale, useTranslations } from "next-intl";
 import "./NearbyHotels.scss";
 
 interface NearByHotelsProps {
@@ -75,13 +77,22 @@ const getHotelMinRate = (hotel: HotelItem | FavoriteHotel) => {
   return null;
 };
 
+const getLanguageCode = (currentLocale: string): string => {
+  return currentLocale === "ar" ? "ara" : "eng";
+};
+
 const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
   const sliderRef = useRef<Slider>(null);
   const dotsRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("NearbyHotels");
 
   const hotels = useHotelSearchStore((state) => state.hotels);
+  const loading = useHotelSearchStore((state) => state.loading);
+  const setLanguage = useHotelSearchStore((state) => state.setLanguage);
+  const searchHotels = useHotelSearchStore((state) => state.search);
 
   const filteredHotels = useMemo<(HotelItem | FavoriteHotel)[]>(() => {
     if (!hotels || hotels.length === 0) return [];
@@ -96,6 +107,25 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
     () => filteredHotels.slice(0, 6),
     [filteredHotels]
   );
+
+  useEffect(() => {
+    const storeFilters = useHotelSearchStore.getState().filters;
+    const hasValidSearchCriteria =
+      storeFilters.checkIn &&
+      storeFilters.checkOut &&
+      storeFilters.latitude !== null &&
+      storeFilters.longitude !== null;
+
+    const currentStoreLanguage = storeFilters.language;
+    const newLanguageCode = getLanguageCode(locale);
+
+    if (hasValidSearchCriteria && currentStoreLanguage !== newLanguageCode && !loading) {
+      setLanguage(newLanguageCode);
+      searchHotels().catch((error) => {
+        console.error("Failed to reload hotels on locale change:", error);
+      });
+    }
+  }, [locale, loading, setLanguage, searchHotels]);
 
   const handleSliderUpdate = () => {
     setTimeout(() => {
@@ -154,7 +184,7 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                   />
                 </div>
                 <div className="nearby-hotels-card-details">
-                  <h3 className="hotel-room-name">Nearby Hotel</h3>
+                  <h3 className="hotel-room-name">{t("placeholderTitle")}</h3>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
                       {Array.from({ length: 5 }).map((_, starIndex) => (
@@ -169,19 +199,17 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                       ))}
                     </div>
                     <span className="rating-value-wrapper d-flex align-items-center">
-                      <span className="rating-value">5.0</span>
+                      <span className="rating-value">{t("placeholderRating")}</span>
                     </span>
                   </div>
                   <div className="nearby-hotels-price-info">
-                    <span className="total-price">
-                      $0<span>/per night</span>
-                    </span>
-                    <div className="hotel-room-number">includes taxes & fees</div>
+                    <span className="total-price">{t("placeholderPrice")}</span>
+                    <div className="hotel-room-number">{t("includesTaxesFees")}</div>
                   </div>
 
                   <div className="nearby-hotels-room-action">
                     <button className="button-primary room-booking-btn w-100" disabled>
-                      Book Now
+                      {t("bookNow")}
                     </button>
                   </div>
                 </div>
@@ -192,6 +220,7 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
               const mainImage = getMainImage(hotel) || NearHotelImage;
               const rating = getStarRating(hotel);
               const minRate = getHotelMinRate(hotel);
+              const hotelSlug = buildHotelSlug(getHotelName(hotel), hotelCode);
 
               return (
                 <div key={getHotelId(hotel)} className="nearby-hotels-card">
@@ -238,20 +267,20 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                             })}
                           </span>
                         ) : (
-                          "Price unavailable"
+                          t("priceUnavailable")
                         )}
                         {/* <span>/per night</span> */}
                       </span>
-                      <div className="hotel-room-number">includes taxes & fees</div>
+                      <div className="hotel-room-number">{t("includesTaxesFees")}</div>
                     </div>
 
                     <div className="nearby-hotels-room-action">
                       <button
                         className="button-primary room-booking-btn w-100"
-                        onClick={() => hotelCode && router.push(`/hotel-details/${hotelCode}`)}
+                        onClick={() => hotelSlug && router.push(`/hotel-details/${hotelSlug}`)}
                         disabled={!hotelCode}
                       >
-                        Book Now
+                        {t("bookNow")}
                       </button>
                     </div>
                   </div>

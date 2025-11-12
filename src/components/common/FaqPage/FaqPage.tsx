@@ -105,7 +105,7 @@ const FaqPage = () => {
 
     return "linear-gradient(360deg, #CEDEFF 0.52%, #6C9CFF 100%)";
   }, [setting?.faq_background_color]);
-console.log("faqBackground", faqBackground);
+// console.log("faqBackground", faqBackground);
   useEffect(() => {
     const fetchFaqs = async () => {
       try {

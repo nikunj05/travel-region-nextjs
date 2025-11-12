@@ -8,6 +8,6 @@ export const routing = defineRouting({
   defaultLocale: 'en',
   
   // The locale prefix is omitted for the default locale and for 
-  // all locales (URLs like /about instead of /en/about)
-  localePrefix: 'never'
+  // all locales (URLs like /about instead of /en/about) never
+  localePrefix: 'always'
 });

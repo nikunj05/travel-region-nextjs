@@ -6,8 +6,13 @@ export default function HotelDetailsPage({
   }: {
     params: Promise<{ id: string }>;
   }) {
-    const resolvedParams = use(params);
+  const resolvedParams = use(params);
+  const hotelParam = resolvedParams.id;
+  const slugParts = hotelParam?.split('-').filter(Boolean) ?? [];
+  const derivedHotelId =
+    slugParts.length > 1 ? slugParts[slugParts.length - 1] : hotelParam;
+
   return (
-    <HotelDetails hotelId={resolvedParams.id} />
+    <HotelDetails hotelId={derivedHotelId} />
   )
 }
