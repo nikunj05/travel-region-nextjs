@@ -19,6 +19,26 @@ export interface HotelRateCancellationPolicy {
   from: string; // ISO string with timezone
 }
 
+export interface HotelRateOffer {
+  code: string;
+  name: string;
+  amount: string;
+}
+
+export interface HotelRateTaxDetail {
+  included: boolean;
+  amount: string;
+  currency: string;
+  type: string;
+  clientAmount: string;
+  clientCurrency: string;
+}
+
+export interface HotelRateTaxes {
+  allIncluded: boolean;
+  taxes: HotelRateTaxDetail[];
+}
+
 export interface HotelRate {
   rateKey: string;
   rateClass: string; // e.g., "NRF"
@@ -33,6 +53,18 @@ export interface HotelRate {
   rooms: number;
   adults: number;
   children: number;
+  // Optional fields returned by availability API
+  sellingRate?: number;
+  hotelSellingRate?: number;
+  commissionAmount?: string;
+  commission_percentage?: string;
+  convertedRate?: string;
+  currency?: string;
+  originalNet?: string;
+  offers?: HotelRateOffer[];
+  rateCommentsId?: string;
+  taxes?: HotelRateTaxes;
+  taxesRate?: string;
 }
 
 export interface HotelAvailabilityRoom {

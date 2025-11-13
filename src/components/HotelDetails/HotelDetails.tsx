@@ -43,6 +43,8 @@ import {
   HotelRateCancellationPolicy,
   HotelRoom,
   HotelAvailabilityRoom,
+  HotelRateOffer,
+  HotelRateTaxes,
 } from "@/types/hotel";
 import HotelLocationMap from "../common/HotelLocationMap/HotelLocationMap";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
@@ -121,12 +123,28 @@ interface ProcessedRoom {
 interface ProcessedRate {
   rateKey: string;
   rateClass: string;
+  rateType: string;
   net: number;
   sellingRate: number;
   hotelSellingRate: number;
   boardCode: string;
   boardName: string;
   cancellationPolicies: HotelRateCancellationPolicy[];
+  adults: number;
+  children: number;
+  rooms: number;
+  allotment: number;
+  commissionAmount: string;
+  commission_percentage: string;
+  convertedRate: string;
+  currency: string;
+  originalNet: string;
+  offers: HotelRateOffer[];
+  packaging: boolean;
+  paymentType: string;
+  rateCommentsId: string;
+  taxes: HotelRateTaxes;
+  taxesRate: string;
 }
 
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
@@ -139,6 +157,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
+  const [selectedRoomCounts, setSelectedRoomCounts] = useState<{
+    [key: string]: number;
+  }>({});
+  const [selectedRoomRates, setSelectedRoomRates] = useState<{
+    [key: string]: string;
+  }>({});
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
@@ -168,6 +192,109 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const nearbyHotelsLoading = useHotelSearchStore((state) => state.loading);
 
   const searchFilters = useSearchFiltersStore((state) => state.filters);
+
+  // Get total room count from search filters
+  const totalRoomCount = searchFilters.rooms?.length || 1;
+
+  // Calculate total selected rooms across all cards
+  const totalSelectedRooms = useMemo(() => {
+    return Object.values(selectedRoomCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+  }, [selectedRoomCounts]);
+
+  // Check if a room card dropdown should be disabled
+  const isRoomSelectionDisabled = useCallback(
+    (roomCode: string) => {
+      const currentSelection = selectedRoomCounts[roomCode] || 0;
+      // If this card already has a selection, don't disable it
+      if (currentSelection > 0) {
+        return false;
+      }
+      // If total selected rooms equals or exceeds the limit, disable this card
+      return totalSelectedRooms >= totalRoomCount;
+    },
+    [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
+  );
+
+  // Get available options for a specific room card
+  const getAvailableRoomOptions = useCallback(
+    (roomCode: string) => {
+      const currentSelection = selectedRoomCounts[roomCode] || 0;
+      const remainingSlots = totalRoomCount - totalSelectedRooms + currentSelection;
+      return Math.min(remainingSlots, totalRoomCount);
+    },
+    [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
+  );
+
+  // Handler for room count selection
+  const handleRoomCountChange = (
+    roomCode: string,
+    count: number
+  ) => {
+    setSelectedRoomCounts((prev) => ({
+      ...prev,
+      [roomCode]: count,
+    }));
+  };
+
+  // Handler for room rate selection
+  const handleRoomRateChange = (
+    roomCode: string,
+    rateKey: string
+  ) => {
+    setSelectedRoomRates((prev) => ({
+      ...prev,
+      [roomCode]: rateKey,
+    }));
+  };
+
+  // Calculate booking summary
+  const bookingSummary = useMemo(() => {
+    let totalRooms = 0;
+    let totalPrice = 0;
+    let currency = "SAR";
+
+    processedRooms.forEach((room) => {
+      const roomCount = selectedRoomCounts[room.roomCode] || 0;
+      if (roomCount === 0) return;
+
+      // Get the selected or default rate for this room
+      const selectedRateKey = selectedRoomRates[room.roomCode];
+      let rateToUse = null;
+
+      if (selectedRateKey) {
+        rateToUse = room.rates.find((rate) => rate.rateKey === selectedRateKey);
+      }
+
+      // If no rate selected, use the primary rate (RO or first)
+      if (!rateToUse && room.rates.length > 0) {
+        rateToUse =
+          room.rates.find(
+            (rate) =>
+              rate.boardCode?.toUpperCase() === "RO" &&
+              rate.boardName?.toUpperCase() === "ROOM ONLY"
+          ) || room.rates[0];
+      }
+
+      if (rateToUse) {
+        totalRooms += roomCount;
+        const rateNet = Number(rateToUse.net) || 0;
+        totalPrice += rateNet * roomCount;
+        currency = rateToUse.currency || "SAR";
+      }
+    });
+
+    const subtotal = totalPrice;
+
+    return {
+      totalRooms,
+      totalPrice,
+      subtotal,
+      currency,
+    };
+  }, [processedRooms, selectedRoomCounts, selectedRoomRates]);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
@@ -343,19 +470,41 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
         const ratesSource: HotelRate[] =
           (room as RoomWithOptionalRates).rates || [];
-        const rates: ProcessedRate[] = ratesSource.map((rate) => ({
-          rateKey: rate.rateKey || "",
-          rateClass: rate.rateClass || "",
-          net: Number(rate.net) || 0,
-          sellingRate:
-            (rate as unknown as { sellingRate?: number }).sellingRate ?? 0,
-          hotelSellingRate:
-            (rate as unknown as { hotelSellingRate?: number })
-              .hotelSellingRate ?? 0,
-          boardCode: rate.boardCode || "",
-          boardName: rate.boardName || "",
-          cancellationPolicies: rate.cancellationPolicies || [],
-        }));
+        const rates: ProcessedRate[] = ratesSource.map((rate) => {
+          const taxes: HotelRateTaxes = rate.taxes
+            ? {
+                allIncluded: rate.taxes.allIncluded ?? false,
+                taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
+              }
+            : { allIncluded: false, taxes: [] };
+
+          return {
+            rateKey: rate.rateKey || "",
+            rateClass: rate.rateClass || "",
+            rateType: rate.rateType || "",
+            net: Number(rate.net) || 0,
+            sellingRate: rate.sellingRate ?? 0,
+            hotelSellingRate: rate.hotelSellingRate ?? 0,
+            boardCode: rate.boardCode || "",
+            boardName: rate.boardName || "",
+            cancellationPolicies: rate.cancellationPolicies || [],
+            adults: rate.adults || 0,
+            children: rate.children || 0,
+            rooms: rate.rooms || 1,
+            allotment: rate.allotment || 0,
+            commissionAmount: rate.commissionAmount || "0",
+            commission_percentage: rate.commission_percentage || "0",
+            convertedRate: rate.convertedRate || "0",
+            currency: rate.currency || "SAR",
+            originalNet: rate.originalNet || "0",
+            offers: rate.offers || [],
+            packaging: rate.packaging ?? false,
+            paymentType: rate.paymentType || "",
+            rateCommentsId: rate.rateCommentsId || "",
+            taxes,
+            taxesRate: rate.taxesRate || "0",
+          };
+        });
 
         return {
           // Basic room information
@@ -567,6 +716,56 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       };
     },
     [priceFormatter, formatCancellationDate]
+  );
+
+  // Helper function to get the selected or default rate for a room
+  const getDisplayRate = useCallback(
+    (room: ProcessedRoom | null | undefined) => {
+      if (!room || !room.rates || room.rates.length === 0) {
+        return null;
+      }
+
+      const selectedRateKey = room.roomCode ? selectedRoomRates[room.roomCode] : null;
+      
+      // If a rate is selected, find it
+      if (selectedRateKey) {
+        const selectedRate = room.rates.find((rate) => rate.rateKey === selectedRateKey);
+        if (selectedRate) {
+          const net = Number(selectedRate.net ?? 0);
+          const cancellationPolicy = selectedRate.cancellationPolicies?.[0];
+          const policyAmountRaw = cancellationPolicy?.amount;
+          const parsedPolicyAmount =
+            policyAmountRaw !== undefined && policyAmountRaw !== null
+              ? Number(policyAmountRaw)
+              : null;
+          const policyAmount =
+            parsedPolicyAmount !== null && Number.isFinite(parsedPolicyAmount)
+              ? parsedPolicyAmount
+              : null;
+          const refundDate = cancellationPolicy?.from
+            ? formatCancellationDate(cancellationPolicy.from)
+            : null;
+          const isFullyRefundable =
+            policyAmount !== null && Math.abs(policyAmount - net) < 0.01;
+
+          return {
+            rate: selectedRate,
+            net,
+            formattedPrice: priceFormatter.format(net),
+            cancellationPolicy,
+            refundDate,
+            policyAmount,
+            policyAmountFormatted:
+              policyAmount !== null ? priceFormatter.format(policyAmount) : null,
+            isFullyRefundable,
+          };
+        }
+      }
+
+      // Otherwise, return the primary rate (existing logic)
+      return findPrimaryRate(room);
+    },
+    [selectedRoomRates, priceFormatter, formatCancellationDate, findPrimaryRate]
   );
 
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
@@ -1209,15 +1408,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       .find((description) => description) ||
                     room.characteristicDescription ||
                     null;
-                  const primaryRateDetails = findPrimaryRate(room);
-                  const refundStatusLabel = primaryRateDetails
-                    ? primaryRateDetails.isFullyRefundable
+                  const displayRateDetails = getDisplayRate(room);
+                  const refundStatusLabel = displayRateDetails
+                    ? displayRateDetails.isFullyRefundable
                       ? t("refund.fullyRefundable")
                       : t("refund.notFullyRefundable")
                     : t("placeholders.refundPolicyUnavailable");
-                  const refundDateLabel = primaryRateDetails?.refundDate
+                  const refundDateLabel = displayRateDetails?.refundDate
                     ? t("refund.beforeDate", {
-                        date: primaryRateDetails.refundDate,
+                        date: displayRateDetails.refundDate,
                       })
                     : t("placeholders.refundDateUnavailable");
 
@@ -1297,9 +1496,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           />
                         )}
 
-                        <div className="hotel-best-value d-flex align-items-center">
+                        {/* <div className="hotel-best-value d-flex align-items-center">
                           <span>{t("labels.bestValue")}</span>
-                        </div>
+                        </div> */}
                         <div className="hotel-card-total-image d-flex align-items-center">
                           <svg
                             width="20"
@@ -1582,15 +1781,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               />
                             </svg>
                             {refundStatusLabel}
-                            {primaryRateDetails?.policyAmountFormatted && (
+                            {displayRateDetails?.policyAmountFormatted && (
                               <span className="refund-amount d-inline-flex align-items-center">
                                 {" ( "}
-                                {/* <Image
-                                  src={currencyImage}
-                                  width={16}
-                                  height={16}
-                                  alt="currency icon"
-                                /> */}
                                 <span
                                   className="currency-icon"
                                   aria-hidden="true"
@@ -1599,11 +1792,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   }}
                                   style={{ display: "inline-flex" }}
                                 />{" "}
-                                {` ${primaryRateDetails.policyAmountFormatted})`}
+                                {` ${displayRateDetails.policyAmountFormatted})`}
                               </span>
                             )}
                           </div>
-                          {primaryRateDetails ? (
+                          {displayRateDetails ? (
                             <span className="refund-valid-date">
                               {refundDateLabel}
                             </span>
@@ -1642,14 +1835,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </div> */}
                           {/* <span className="nightly-price">$40 nightly</span> */}
                           <span className="total-price d-inline-flex align-items-center gap-1">
-                            {primaryRateDetails ? (
+                            {displayRateDetails ? (
                               <>
-                                {/* <Image
-                                  src={currencyImage}
-                                  width={16}
-                                  height={16}
-                                  alt="currency icon"
-                                /> */}
+                               
                                 <span
                                   className="currency-icon"
                                   aria-hidden="true"
@@ -1658,15 +1846,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                   }}
                                   style={{ display: "inline-flex" }}
                                 />{" "}
-                                {primaryRateDetails.formattedPrice}
+                                {displayRateDetails.formattedPrice}
                               </>
                             ) : (
                               t("placeholders.priceUnavailable")
                             )}
                           </span>
-                          {primaryRateDetails?.rate.boardName && (
+                          {displayRateDetails?.rate.boardName && (
                             <div className="hotel-room-number">
-                              {primaryRateDetails.rate.boardName}
+                              {displayRateDetails.rate.boardName}
                             </div>
                           )}
                         </div>
@@ -1694,17 +1882,32 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <div className="select-room">
                             <label
                               className="select-rooms"
-                              htmlFor="selectRoom"
+                              htmlFor={`selectRoom-${room.roomCode}`}
                             >
                               <span className="select-room-label">
                                 Select Number of Rooms
                               </span>
-                              <select id="selectRoom" name="selectRoom">
-                                <option value="standard">01</option>
-                                <option value="deluxe">02</option>
-                                <option value="suite">03</option>
-                                <option value="deluxe">04</option>
-                                <option value="suite">05</option>
+                              <select
+                                id={`selectRoom-${room.roomCode}`}
+                                name="selectRoom"
+                                value={selectedRoomCounts[room.roomCode] || 0}
+                                onChange={(e) =>
+                                  handleRoomCountChange(
+                                    room.roomCode,
+                                    Number(e.target.value)
+                                  )
+                                }
+                                disabled={isRoomSelectionDisabled(room.roomCode)}
+                              >
+                                <option value="0">0</option>
+                                {Array.from(
+                                  { length: getAvailableRoomOptions(room.roomCode) },
+                                  (_, i) => (
+                                    <option key={i + 1} value={i + 1}>
+                                      {String(i + 1).padStart(2, "0")}
+                                    </option>
+                                  )
+                                )}
                               </select>
                             </label>
                           </div>
@@ -1712,22 +1915,41 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <div className="select-room">
                             <label
                               className="select-rooms"
-                              htmlFor="selectRoomType"
+                              htmlFor={`selectRoomType-${room.roomCode}`}
                             >
                               <span className="select-room-label">
                                 Select Room Type
                               </span>
-                              <select id="selectRoomType" name="selectRoomType">
-                                <option value="standard">
-                                  Room Only - $100.00
-                                </option>
-                                <option value="deluxe">
-                                  Room With Breakfast - $200.00
-                                </option>
-                                <option value="suite">
-                                  {" "}
-                                  Room With Lunch - $300.00
-                                </option>
+                              <select
+                                id={`selectRoomType-${room.roomCode}`}
+                                name="selectRoomType"
+                                value={
+                                  selectedRoomRates[room.roomCode] ||
+                                  displayRateDetails?.rate.rateKey ||
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  handleRoomRateChange(
+                                    room.roomCode,
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                {room.rates && room.rates.length > 0 ? (
+                                  room.rates.map((rate, rateIndex) => (
+                                    <option
+                                      key={`${room.roomCode}-rate-${rateIndex}`}
+                                      value={rate.rateKey}
+                                    >
+                                      {rate.boardName || "N/A"} - SAR{" "}
+                                      {priceFormatter.format(Number(rate.net ?? 0))}
+                                    </option>
+                                  ))
+                                ) : (
+                                  <option value="">
+                                    {t("placeholders.noRatesAvailable")}
+                                  </option>
+                                )}
                               </select>
                             </label>
                           </div>
@@ -1742,7 +1964,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 <div className="hotel-subtotal">
                   <ul>
                     <li>
-                      <span className="label">6 Rooms for</span>
+                      <span className="label">
+                        {bookingSummary.totalRooms}{" "}
+                        {bookingSummary.totalRooms === 1 ? "Room" : "Rooms"} for
+                      </span>
                       <span className="value">
                         <span
                           className="currency-icon"
@@ -1752,10 +1977,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           }}
                           style={{ display: "inline-flex" }}
                         />
-                        114,500
+                        {priceFormatter.format(bookingSummary.totalPrice)}
                       </span>
                     </li>
-                    <li>
+                    {/* <li>
                       <span className="label">Discount</span>
                       <span className="value text-green">
                         -{" "}
@@ -1783,7 +2008,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         />
                         30,610
                       </span>
-                    </li>
+                    </li> */}
                     <li className="total">
                       <span className="label">Subtotal</span>
                       <span className="value">
@@ -1795,7 +2020,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           }}
                           style={{ display: "inline-flex" }}
                         />
-                        124,500
+                        {priceFormatter.format(bookingSummary.subtotal)}
                       </span>
                     </li>
                   </ul>

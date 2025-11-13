@@ -162,7 +162,8 @@
       "bedInfoUnavailable": "معلومات السرير غير متوفرة",
       "priceUnavailable": "السعر غير متوفر",
       "refundPolicyUnavailable": "سياسة الاسترداد غير متوفرة",
-      "refundDateUnavailable": "تاريخ الاسترداد غير متوفر"
+      "refundDateUnavailable": "تاريخ الاسترداد غير متوفر",
+      "noRatesAvailable": "لا توجد أسعار متاحة"
     },
     "labels": {
       "freeCancellation": "إلغاء مجاني",

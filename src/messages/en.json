@@ -162,7 +162,8 @@
       "bedInfoUnavailable": "Bed information unavailable",
       "priceUnavailable": "Price unavailable",
       "refundPolicyUnavailable": "Refund policy unavailable",
-      "refundDateUnavailable": "Refund date unavailable"
+      "refundDateUnavailable": "Refund date unavailable",
+      "noRatesAvailable": "No rates available"
     },
     "labels": {
       "freeCancellation": "Free Cancellation",
