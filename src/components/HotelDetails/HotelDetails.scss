@@ -700,7 +700,7 @@
 
             .taxes-fees {
               gap: 4px;
-              color: #00A63E;
+              color: #00a63e;
             }
 
             .hotel-room-left {
@@ -710,13 +710,170 @@
 
           .hotel-room-booking-action {
             margin-top: auto;
-            padding-top: 40px;
+            // padding-top: 40px;
+            padding-top: 16px;
+            display: flex;
+            gap: 15px;
+            align-items: end;
 
-            .room-booking-btn {
-              font-size: 16px;
-              padding: 13.2px 15px;
+            /* Select-room styling */
+            .select-room {
+              display: inline-block;
+              position: relative;
+              width: 100%;
+
+              &:first-child {
+                width: 55%;
+              }
+
+              .select-room-label {
+                font-size: 14px;
+                margin-bottom: 5px;
+                display: block;
+                // color: $color-black-zinc-950;
+                color: $brand-color;
+                font-weight: $font-weight500;
+                line-height: 1.3;
+                min-height: 36px;
+              }
+
+              select {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                width: 100%;
+                padding: 10px 36px 10px 12px;
+                border: 1px solid #d1d5dc;
+                border-radius: 4px;
+                background: #fff url("../../assets/images/arrow-down-icon.svg") calc(100% - 10px) center no-repeat;
+                font-size: 14px;
+                cursor: pointer;
+              }
+
+              select:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+                border-color: $brand-color;
+              }
             }
           }
+        }
+      }
+    }
+
+    .hotel-detail-room-booking {
+      display: flex;
+      align-items: start;
+      gap: 15px;
+      justify-content: space-between;
+
+      .hotel-subtotal {
+        width: 100%;
+        background: #fff;
+        border: 1px solid #d1d5dc;
+        border-radius: 12px;
+        padding: 24px 20px;
+        border-radius: 6px;
+        max-width: 65%;
+        margin: 0 auto;
+
+
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+
+          li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+
+
+            &:last-child {
+              padding-bottom: 0px;
+            }
+
+            .currency-icon {
+              svg {
+                width: 13px;
+                height: 13px;
+                margin: 0 2px;
+
+                path {
+                  fill: inherit;
+                }
+              }
+            }
+
+            .label {
+              font-weight: 500;
+              color: $color-black-zinc-700;
+            }
+
+            .value {
+              font-weight: 600;
+              color: #000;
+            }
+
+            .text-green {
+              color: #FB2C36;
+
+              svg {
+                width: 14px;
+                height: 14px;
+
+                path {
+                  fill: #FB2C36;
+                }
+              }
+            }
+
+            &.total {
+              margin-top: 8px;
+              padding-top: 10px;
+              border-top: 1px solid #d1d5dc;
+
+              .label {
+                font-size: 16px;
+                font-weight: 700;
+                color: $color-black-zinc-950;
+              }
+
+              .value {
+                font-size: 16px;
+                font-weight: 700;
+                color: $brand-color;
+                display: flex;
+                align-items: center;
+
+                svg {
+                  width: 14px;
+                  height: 14px;
+
+                  path {
+                    fill: $brand-color;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .room-book-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 24px;
+
+        .room-booking-btn {
+          font-size: 16px;
+          min-width: 215px;
+
+          padding: 13.2px 15px;
         }
       }
     }

@@ -1691,14 +1691,121 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           {/* <div className="hotel-room-left">We have 5 left</div> */}
                         </div>
                         <div className="hotel-room-booking-action">
-                          <button className="button-primary room-booking-btn w-100">
-                            {t("actions.bookNow")}
-                          </button>
+                          <div className="select-room">
+                            <label
+                              className="select-rooms"
+                              htmlFor="selectRoom"
+                            >
+                              <span className="select-room-label">
+                                Select Number of Rooms
+                              </span>
+                              <select id="selectRoom" name="selectRoom">
+                                <option value="standard">01</option>
+                                <option value="deluxe">02</option>
+                                <option value="suite">03</option>
+                                <option value="deluxe">04</option>
+                                <option value="suite">05</option>
+                              </select>
+                            </label>
+                          </div>
+
+                          <div className="select-room">
+                            <label
+                              className="select-rooms"
+                              htmlFor="selectRoomType"
+                            >
+                              <span className="select-room-label">
+                                Select Room Type
+                              </span>
+                              <select id="selectRoomType" name="selectRoomType">
+                                <option value="standard">
+                                  Room Only - $100.00
+                                </option>
+                                <option value="deluxe">
+                                  Room With Breakfast - $200.00
+                                </option>
+                                <option value="suite">
+                                  {" "}
+                                  Room With Lunch - $300.00
+                                </option>
+                              </select>
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
                   );
                 })}
+              </div>
+
+              <div className="hotel-detail-room-booking">
+                <div className="hotel-subtotal">
+                  <ul>
+                    <li>
+                      <span className="label">6 Rooms for</span>
+                      <span className="value">
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />
+                        114,500
+                      </span>
+                    </li>
+                    <li>
+                      <span className="label">Discount</span>
+                      <span className="value text-green">
+                        -{" "}
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />
+                        20,610
+                      </span>
+                    </li>
+                    <li>
+                      <span className="label">Taxes & Fees</span>
+                      <span className="value">
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />
+                        30,610
+                      </span>
+                    </li>
+                    <li className="total">
+                      <span className="label">Subtotal</span>
+                      <span className="value">
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#09090b"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />
+                        124,500
+                      </span>
+                    </li>
+                  </ul>
+
+                  <div className="room-book-button">
+                    <button className="button-primary room-booking-btn">
+                      {t("actions.bookNow")}
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
 
