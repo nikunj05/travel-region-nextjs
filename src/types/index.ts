@@ -9,6 +9,7 @@ export * from './notification';
 export * from './favorite';
 export * from './testimonial';
 export * from './destination';
+export * from './booking';
 
 
 

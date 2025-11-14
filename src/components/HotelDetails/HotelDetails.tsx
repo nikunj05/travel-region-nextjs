@@ -52,6 +52,7 @@ import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { toast } from "react-toastify";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { buildCurrencySvgMarkup } from "@/constants";
+import { useBookingStore } from "@/store/bookingStore";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -166,6 +167,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
+  const { setBookingData } = useBookingStore();
 
   console.log("hotelData", hotelData);
   console.log("processedRooms", processedRooms);
@@ -222,17 +224,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const getAvailableRoomOptions = useCallback(
     (roomCode: string) => {
       const currentSelection = selectedRoomCounts[roomCode] || 0;
-      const remainingSlots = totalRoomCount - totalSelectedRooms + currentSelection;
+      const remainingSlots =
+        totalRoomCount - totalSelectedRooms + currentSelection;
       return Math.min(remainingSlots, totalRoomCount);
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
 
   // Handler for room count selection
-  const handleRoomCountChange = (
-    roomCode: string,
-    count: number
-  ) => {
+  const handleRoomCountChange = (roomCode: string, count: number) => {
     setSelectedRoomCounts((prev) => ({
       ...prev,
       [roomCode]: count,
@@ -240,10 +240,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   };
 
   // Handler for room rate selection
-  const handleRoomRateChange = (
-    roomCode: string,
-    rateKey: string
-  ) => {
+  const handleRoomRateChange = (roomCode: string, rateKey: string) => {
     setSelectedRoomRates((prev) => ({
       ...prev,
       [roomCode]: rateKey,
@@ -725,11 +722,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         return null;
       }
 
-      const selectedRateKey = room.roomCode ? selectedRoomRates[room.roomCode] : null;
-      
+      const selectedRateKey = room.roomCode
+        ? selectedRoomRates[room.roomCode]
+        : null;
+
       // If a rate is selected, find it
       if (selectedRateKey) {
-        const selectedRate = room.rates.find((rate) => rate.rateKey === selectedRateKey);
+        const selectedRate = room.rates.find(
+          (rate) => rate.rateKey === selectedRateKey
+        );
         if (selectedRate) {
           const net = Number(selectedRate.net ?? 0);
           const cancellationPolicy = selectedRate.cancellationPolicies?.[0];
@@ -756,7 +757,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             refundDate,
             policyAmount,
             policyAmountFormatted:
-              policyAmount !== null ? priceFormatter.format(policyAmount) : null,
+              policyAmount !== null
+                ? priceFormatter.format(policyAmount)
+                : null,
             isFullyRefundable,
           };
         }
@@ -827,6 +830,74 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       setIsLoginModalOpen(true);
     }
   };
+
+  const handleBookNowClick = () => {
+    console.log("handleBookNowClick");
+    
+    // Validate that at least one room is selected
+    const hasSelectedRooms = Object.values(selectedRoomCounts).some(count => count > 0);
+    
+    if (!hasSelectedRooms) {
+      toast.error(t("toast.pleaseSelectRoom"));
+      return;
+    }
+
+    // Prepare booking data from selected rooms
+    const selectedRoomsData = processedRooms
+      .filter(room => (selectedRoomCounts[room.roomCode] || 0) > 0)
+      .map(room => {
+        const roomCount = selectedRoomCounts[room.roomCode] || 0;
+        const selectedRateKey = selectedRoomRates[room.roomCode];
+        
+        // Find the selected rate or use the primary rate
+        let rateToUse = null;
+        if (selectedRateKey) {
+          rateToUse = room.rates.find(rate => rate.rateKey === selectedRateKey);
+        }
+        if (!rateToUse && room.rates.length > 0) {
+          rateToUse = room.rates.find(
+            rate => rate.boardCode?.toUpperCase() === "RO" && 
+                    rate.boardName?.toUpperCase() === "ROOM ONLY"
+          ) || room.rates[0];
+        }
+
+        const pricePerRoom = Number(rateToUse?.net || 0);
+        const totalPrice = pricePerRoom * roomCount;
+
+        return {
+          roomCode: room.roomCode,
+          roomName: room.name || room.description || "",
+          rateKey: rateToUse?.rateKey || "",
+          boardCode: rateToUse?.boardCode || "",
+          boardName: rateToUse?.boardName || "",
+          count: roomCount,
+          pricePerRoom: pricePerRoom,
+          totalPrice: totalPrice,
+          currency: rateToUse?.currency || "SAR",
+          cancellationPolicies: rateToUse?.cancellationPolicies || [],
+          adults: rateToUse?.adults || 0,
+          children: rateToUse?.children || 0,
+        };
+      });
+
+    // Calculate total amount
+    const totalAmount = selectedRoomsData.reduce((sum, room) => sum + room.totalPrice, 0);
+    const currency = selectedRoomsData[0]?.currency || "SAR";
+
+    // Save booking data to store
+    setBookingData({
+      hotelId: hotelId,
+      hotelName: hotelData?.name?.content || "",
+      selectedRooms: selectedRoomsData,
+      totalAmount: totalAmount,
+      currency: currency,
+      timestamp: Date.now(),
+    });
+
+    // Navigate to booking review page with hotel ID
+    router.push(`/${locale}/booking-review/${hotelId}`);
+  };
+
   return (
     <main className="hotel-details-page padding-top-100 section-space-b">
       <div className="container">
@@ -1837,7 +1908,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <span className="total-price d-inline-flex align-items-center gap-1">
                             {displayRateDetails ? (
                               <>
-                               
                                 <span
                                   className="currency-icon"
                                   aria-hidden="true"
@@ -1897,11 +1967,17 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     Number(e.target.value)
                                   )
                                 }
-                                disabled={isRoomSelectionDisabled(room.roomCode)}
+                                disabled={isRoomSelectionDisabled(
+                                  room.roomCode
+                                )}
                               >
                                 <option value="0">0</option>
                                 {Array.from(
-                                  { length: getAvailableRoomOptions(room.roomCode) },
+                                  {
+                                    length: getAvailableRoomOptions(
+                                      room.roomCode
+                                    ),
+                                  },
                                   (_, i) => (
                                     <option key={i + 1} value={i + 1}>
                                       {String(i + 1).padStart(2, "0")}
@@ -1942,7 +2018,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                       value={rate.rateKey}
                                     >
                                       {rate.boardName || "N/A"} - SAR{" "}
-                                      {priceFormatter.format(Number(rate.net ?? 0))}
+                                      {priceFormatter.format(
+                                        Number(rate.net ?? 0)
+                                      )}
                                     </option>
                                   ))
                                 ) : (
@@ -2026,7 +2104,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </ul>
 
                   <div className="room-book-button">
-                    <button className="button-primary room-booking-btn">
+                    <button className="button-primary room-booking-btn" onClick={handleBookNowClick}>
                       {t("actions.bookNow")}
                     </button>
                   </div>
@@ -2483,7 +2561,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   {/* <div className="hotel-room-left">We have 5 left</div> */}
                 </div>
                 <div className="modal-room-booking-action">
-                  <button className="button-primary room-booking-btn w-100">
+                  <button
+                    className="button-primary room-booking-btn w-100"
+                    
+                  >
                     {t("actions.bookNow")}
                   </button>
                 </div>

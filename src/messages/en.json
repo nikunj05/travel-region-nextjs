@@ -180,7 +180,8 @@
     },
     "toast": {
       "addedToFavorites": "Added to favorites!",
-      "removedFromFavorites": "Removed from favorites!"
+      "removedFromFavorites": "Removed from favorites!",
+      "pleaseSelectRoom": "Please select at least one room"
     },
     "refund": {
       "fullyRefundable": "Fully refundable",

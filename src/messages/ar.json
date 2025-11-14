@@ -180,7 +180,8 @@
     },
     "toast": {
       "addedToFavorites": "تمت الإضافة إلى المفضلة!",
-      "removedFromFavorites": "تمت الإزالة من المفضلة!"
+      "removedFromFavorites": "تمت الإزالة من المفضلة!",
+      "pleaseSelectRoom": "يرجى اختيار غرفة واحدة على الأقل"
     },
     "refund": {
       "fullyRefundable": "قابل للاسترداد بالكامل",

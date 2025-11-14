@@ -1,17 +1,274 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import "./BookingReview.scss";
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
 import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
 import SelfParking from "@/assets/images/parking-icon.svg";
 import PoolIcon from "@/assets/images/pool-icon.svg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
-import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
+// import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
+import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
+import { useSearchFiltersStore } from "@/store/searchFiltersStore";
+import { useBookingStore } from "@/store/bookingStore";
+import { buildHotelbedsImageUrl } from "@/constants";
+import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
+import { HotelImage } from "@/types/favorite";
 
-const BookingReviewPage = () => {
+interface BookingReviewPageProps {
+  hotelId: string;
+}
+
+// Helper function to map locale to API language code
+const getLanguageCode = (currentLocale: string): string => {
+  return currentLocale === "ar" ? "ARA" : "ENG";
+};
+
+const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
+  const locale = useLocale();
+
+  // Access stores
+  const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
+  const { filters: searchFilters } = useSearchFiltersStore();
+  const { bookingData } = useBookingStore();
+
+  // Fetch hotel details if not available (on page refresh)
+  useEffect(() => {
+    if (!hotelData && hotelId) {
+      const languageCode = getLanguageCode(locale);
+      // console.log("📍 Hotel data not found, fetching for hotelId:", hotelId);
+      fetchHotel({ hotelId, language: languageCode });
+    }
+  }, [hotelId, hotelData, locale, fetchHotel]);
+
+  useEffect(() => {
+    // Console log all data when component mounts
+    console.log("=== BOOKING REVIEW PAGE DATA ===");
+    console.log("");
+    
+    console.log("📍 Hotel ID from params:", hotelId);
+    console.log("");
+
+    console.log("🏨 HOTEL DATA:", {
+      hotelCode: hotelData?.code,
+      hotelName: hotelData?.name?.content,
+      hotelAddress: hotelData?.address?.content,
+      coordinates: {
+        latitude: hotelData?.coordinates?.latitude,
+        longitude: hotelData?.coordinates?.longitude,
+      },
+      description: hotelData?.description?.content,
+      facilities: hotelData?.facilities?.length,
+      images: hotelData?.images?.length,
+      rooms: hotelData?.rooms?.length,
+      fullHotelData: hotelData,
+    });
+    console.log("");
+
+    console.log("🔍 SEARCH FILTERS:", {
+      location: searchFilters.location,
+      checkInDate: searchFilters.checkInDate,
+      checkOutDate: searchFilters.checkOutDate,
+      rooms: searchFilters.rooms,
+      freeCancellation: searchFilters.freeCancellation,
+      totalRooms: searchFilters.rooms?.length || 0,
+      totalAdults: searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0,
+      totalChildren: searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0,
+    });
+    console.log("");
+
+    console.log("🛏️ SELECTED ROOMS & RATES:", {
+      selectedRoomsCount: bookingData?.selectedRooms?.length || 0,
+      selectedRooms: bookingData?.selectedRooms,
+      totalAmount: bookingData?.totalAmount,
+      currency: bookingData?.currency,
+      hotelIdInBooking: bookingData?.hotelId,
+      hotelNameInBooking: bookingData?.hotelName,
+      bookingTimestamp: bookingData?.timestamp,
+      fullBookingData: bookingData,
+    });
+    console.log("");
+
+    console.log("📊 BOOKING SUMMARY:");
+    if (bookingData?.selectedRooms) {
+      bookingData.selectedRooms.forEach((room, index) => {
+        console.log(`  Room ${index + 1}:`, {
+          roomCode: room.roomCode,
+          roomName: room.roomName,
+          rateKey: room.rateKey,
+          boardCode: room.boardCode,
+          boardName: room.boardName,
+          count: room.count,
+          pricePerRoom: room.pricePerRoom,
+          totalPrice: room.totalPrice,
+          currency: room.currency,
+          adults: room.adults,
+          children: room.children,
+        });
+      });
+    }
+    console.log("");
+
+    console.log("=== END OF BOOKING REVIEW DATA ===");
+  }, [hotelId, hotelData, searchFilters, bookingData]);
+
+  // Helper functions to get hotel images (similar to HotelDetails)
+  const getOrderedHotelImages = () => {
+    if (!hotelData?.images) return [];
+    const images = hotelData.images.filter((img) => !!img?.path);
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+    const genImages = images
+      .filter((img) => img.type?.code === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    const otherImages = images
+      .filter((img) => img.type?.code !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    return [...genImages, ...otherImages];
+  };
+
+  const getMainImage = () => {
+    const sorted = getOrderedHotelImages();
+    if (sorted.length === 0) {
+      return mainImage;
+    }
+    const mainPath = sorted[0]?.path;
+    return mainPath ? buildHotelbedsImageUrl(mainPath) : mainImage;
+  };
+
+  // Get hotel amenities (similar to HotelDetails)
+  const hotelAmenities = useMemo(() => {
+    return (
+      hotelData?.facilities?.filter(
+        (f) =>
+          [70, 71, 72, 73, 85, 90].includes(f.facilityGroupCode) &&
+          f.indLogic !== false &&
+          f.indYesOrNo !== false
+      ) || []
+    );
+  }, [hotelData]);
+
+  // Get dynamic hotel data
+  const hotelName = hotelData?.name?.content || "Hotel Name";
+  const hotelAddress = hotelData?.address?.content || "Hotel Address";
+  const displayedAmenities = hotelAmenities.slice(0, 3);
+
+  // Format dates and calculate stay duration
+  const formatDate = (date: string | Date | null | undefined): string => {
+    if (!date) return "Not selected";
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(dateObj);
+    } catch {
+      return "Not selected";
+    }
+  };
+
+  const calculateNights = (
+    checkIn: string | Date | null | undefined,
+    checkOut: string | Date | null | undefined
+  ): number => {
+    if (!checkIn || !checkOut) return 0;
+    try {
+      const start = checkIn instanceof Date ? checkIn : new Date(checkIn);
+      const end = checkOut instanceof Date ? checkOut : new Date(checkOut);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    } catch {
+      return 0;
+    }
+  };
+
+  const checkInDate = searchFilters.checkInDate;
+  const checkOutDate = searchFilters.checkOutDate;
+  const totalNights = calculateNights(checkInDate, checkOutDate);
+
+  // Get selected rooms info from booking data
+  const selectedRoomsInfo = bookingData?.selectedRooms || [];
+  const firstSelectedRoom = selectedRoomsInfo[0];
+
+  // Get amenities for selected rooms
+  const selectedRoomAmenities = useMemo(() => {
+    if (!selectedRoomsInfo || selectedRoomsInfo.length === 0) return [];
+    // Get unique amenities from all selected rooms
+    const amenitySet = new Set<string>();
+    selectedRoomsInfo.forEach((room) => {
+      // You can add room-specific amenities here if available in your data structure
+    });
+    // For now, we'll use hotel amenities filtered to the first 2
+    return hotelAmenities.slice(0, 2);
+  }, [selectedRoomsInfo, hotelAmenities]);
+
+  // Calculate price breakdown
+  const priceBreakdown = useMemo(() => {
+    let totalRooms = 0;
+    let totalPrice = 0;
+    let currency = "SAR";
+    const roomDetails: string[] = [];
+
+    selectedRoomsInfo.forEach((room) => {
+      totalRooms += room.count;
+      totalPrice += room.totalPrice;
+      currency = room.currency;
+      
+      // Create breakdown text for each room
+      const pricePerNight = room.pricePerRoom;
+      roomDetails.push(
+        `${totalNights} night${totalNights !== 1 ? 's' : ''} x ${room.count} room${room.count !== 1 ? 's' : ''} x ${currency} ${pricePerNight.toFixed(2)}`
+      );
+    });
+
+    return {
+      totalRooms,
+      totalPrice,
+      currency,
+      roomDetails,
+      subtotal: totalPrice, // Same as total for now (no taxes/discounts)
+    };
+  }, [selectedRoomsInfo, totalNights]);
+
+  // Price formatter
+  const priceFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [locale]
+  );
+
+  // Calculate total guests
+  const totalGuests = useMemo(() => {
+    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+    return adults + children;
+  }, [searchFilters.rooms]);
+
+  // Show loading state while fetching hotel data
+  if (loading && !hotelData) {
+    return (
+      <main className="booking-review-page padding-top-100 section-space-b">
+        <div className="container">
+          <div className="review-booking-heading">
+            <h1 className="review-booking-title">Review Your Booking</h1>
+            <p className="review-booking-desc">Loading hotel details...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="booking-review-page padding-top-100 section-space-b">
       <div className="container">
@@ -29,9 +286,9 @@ const BookingReviewPage = () => {
                 <path
                   d="M10.166 16.834L13.4993 20.1673L21.8327 11.834"
                   stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
@@ -55,7 +312,7 @@ const BookingReviewPage = () => {
                   cy="16"
                   r="15"
                   stroke="#3E5B96"
-                  stroke-width="2"
+                  strokeWidth="2"
                 />
                 <circle cx="16.5" cy="16" r="5" fill="#3E5B96" />
               </svg>
@@ -80,7 +337,7 @@ const BookingReviewPage = () => {
                   cy="16"
                   r="15"
                   stroke="#A2B4D7"
-                  stroke-width="2"
+                  strokeWidth="2"
                 />
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
@@ -101,15 +358,15 @@ const BookingReviewPage = () => {
             <div className="image-gallery-section">
               <div className="main-image">
                 <Image
-                  src={mainImage}
+                  src={getMainImage()}
                   width={894}
                   height={242}
-                  alt="Novotel Bangkok"
+                  alt={hotelName}
                   className="hotel-details-main-image"
                 />
               </div>
               <div className="booking-hotel-details">
-                <h2 className="booking-hotel-name">Novotel</h2>
+                <h2 className="booking-hotel-name">{hotelName}</h2>
                 <div className="booking-hotel-rating">
                   <div className="rating-stars d-flex align-items-center">
                     <Image
@@ -143,9 +400,9 @@ const BookingReviewPage = () => {
                       height="16"
                     />
                   </div>
-                  <span className="rating-reviews d-flex align-items-center">
+                  {/* <span className="rating-reviews d-flex align-items-center">
                     <span className="rating-score">4.5</span>(120 Reviews)
-                  </span>
+                  </span> */}
                 </div>
                 <div className="booking-hotel-location">
                   <svg
@@ -161,38 +418,52 @@ const BookingReviewPage = () => {
                     />
                   </svg>
 
-                  <span>
-                    Soi 6 Rama I Road Pathumwan, Siam, Bangkok, Thailand 10330
-                  </span>
+                  <span>{hotelAddress}</span>
                 </div>
                 <div className="booking-hotel-amenities">
-                  <div className="amenity-tag d-flex align-items-center">
-                    <Image
-                      src={FreeBreackfast}
-                      width={24}
-                      height={24}
-                      alt="Free continental breakfast"
-                    />
-                    <span className="amenity-tag-name">Breakfast</span>
-                  </div>
-                  <div className="amenity-tag d-flex align-items-center">
-                    <Image
-                      src={SelfParking}
-                      width={24}
-                      height={24}
-                      alt="Free continental breakfast"
-                    />
-                    <span className="amenity-tag-name">Parking</span>
-                  </div>
-                  <div className="amenity-tag d-flex align-items-center">
-                    <Image
-                      src={PoolIcon}
-                      width={24}
-                      height={24}
-                      alt="Free continental breakfast"
-                    />
-                    <span className="amenity-tag-name">Pool</span>
-                  </div>
+                  {displayedAmenities.length > 0 ? (
+                    displayedAmenities.map((facility) => (
+                      <div
+                        key={`${facility.facilityGroupCode}-${facility.facilityCode}`}
+                        className="amenity-tag d-flex align-items-center"
+                      >
+                        <AmenityIcon facilityCode={facility.facilityCode} />
+                        <span className="amenity-tag-name">
+                          {facility.description?.content || "Amenity"}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <div className="amenity-tag d-flex align-items-center">
+                        <Image
+                          src={FreeBreackfast}
+                          width={24}
+                          height={24}
+                          alt="Amenity"
+                        />
+                        <span className="amenity-tag-name">Breakfast</span>
+                      </div>
+                      <div className="amenity-tag d-flex align-items-center">
+                        <Image
+                          src={SelfParking}
+                          width={24}
+                          height={24}
+                          alt="Amenity"
+                        />
+                        <span className="amenity-tag-name">Parking</span>
+                      </div>
+                      <div className="amenity-tag d-flex align-items-center">
+                        <Image
+                          src={PoolIcon}
+                          width={24}
+                          height={24}
+                          alt="Amenity"
+                        />
+                        <span className="amenity-tag-name">Pool</span>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="booking-box-action">
                   <a href="#" className="booking-edit-btn">
@@ -218,20 +489,21 @@ const BookingReviewPage = () => {
                         cy="12"
                         r="10"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M16 12L8 12M16 12C16 12.7002 14.0057 14.0085 13.5 14.5M16 12C16 11.2998 14.0057 9.99153 13.5 9.5"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Check-in
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    8 Aug 2025(from 2:00 PM)
+                    {formatDate(checkInDate)} 
+                    {/* (from 2:00 PM) */}
                   </div>
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
@@ -248,20 +520,21 @@ const BookingReviewPage = () => {
                         cy="12"
                         r="10"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M8 12L16 12M8 12C8 11.2998 9.9943 9.99153 10.5 9.5M8 12C8 12.7002 9.9943 14.0085 10.5 14.5"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Check-out
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    18 Aug 2025(until 12:00 PM)
+                    {formatDate(checkOutDate)} 
+                    {/* (until 12:00 PM) */}
                   </div>
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
@@ -281,68 +554,70 @@ const BookingReviewPage = () => {
                     Total Length of Stay
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    10 Nights
+                    {totalNights} {totalNights === 1 ? "Night" : "Nights"}
                   </div>
                 </li>
-                <li className="booking-listing-item d-flex align-items-center justify-content-between">
-                  <div className="booking-list-left d-flex align-items-center">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M18 20C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4"
-                        stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M4 6.84771V17.1523C4 18.7454 4 19.542 4.4645 20.0976C4.92899 20.6531 5.71415 20.7956 7.28446 21.0806L10.2845 21.6251C12.4701 22.0217 13.563 22.2201 14.2815 21.6215C15 21.023 15 19.9142 15 17.6968V6.30325C15 4.08578 15 2.97704 14.2815 2.37849C13.563 1.77994 12.4701 1.97827 10.2845 2.37495L7.28446 2.91941C5.71415 3.2044 4.92899 3.34689 4.4645 3.90244C4 4.45799 4 5.25457 4 6.84771Z"
-                        stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M11.5 11.9983V11.9883"
-                        stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                    Room Type
-                  </div>
-                  <div className="booking-list-right d-flex align-items-center">
-                    Deluxe King Room
-                  </div>
-                </li>
+                {selectedRoomsInfo.length > 0 && (
+                  <>
+                    {selectedRoomsInfo.map((room, index) => (
+                      <li
+                        key={`room-${index}`}
+                        className="booking-listing-item d-flex align-items-center justify-content-between"
+                      >
+                        <div className="booking-list-left d-flex align-items-center">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M18 20C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4"
+                              stroke="#09090B"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M4 6.84771V17.1523C4 18.7454 4 19.542 4.4645 20.0976C4.92899 20.6531 5.71415 20.7956 7.28446 21.0806L10.2845 21.6251C12.4701 22.0217 13.563 22.2201 14.2815 21.6215C15 21.023 15 19.9142 15 17.6968V6.30325C15 4.08578 15 2.97704 14.2815 2.37849C13.563 1.77994 12.4701 1.97827 10.2845 2.37495L7.28446 2.91941C5.71415 3.2044 4.92899 3.34689 4.4645 3.90244C4 4.45799 4 5.25457 4 6.84771Z"
+                              stroke="#09090B"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M11.5 11.9983V11.9883"
+                              stroke="#09090B"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          Room Type {selectedRoomsInfo.length > 1 ? `${index + 1}` : ""}
+                        </div>
+                        <div className="booking-list-right d-flex align-items-center">
+                          {room.roomName || "Room"} ({room.boardName || "Room Only"})
+                        </div>
+                      </li>
+                    ))}
+                  </>
+                )}
               </ul>
-              <div className="booking-inner-box">
-                <h4 className="booking-inner-title">Free Amenities</h4>
-                <div className="booking-inner-list d-flex align-items-center">
-                  <Image
-                    src={FreeBreackfast}
-                    width={24}
-                    height={24}
-                    alt="Free continental breakfast"
-                  />
-                  Free continental breakfast
+              {selectedRoomAmenities.length > 0 && (
+                <div className="booking-inner-box">
+                  <h4 className="booking-inner-title">Free Amenities</h4>
+                  {selectedRoomAmenities.map((facility, index) => (
+                    <div
+                      key={`amenity-${facility.facilityCode}-${index}`}
+                      className="booking-inner-list d-flex align-items-center"
+                    >
+                      <AmenityIcon facilityCode={facility.facilityCode} />
+                      {facility.description?.content || "Amenity"}
+                    </div>
+                  ))}
                 </div>
-                <div className="booking-inner-list d-flex align-items-center">
-                  <Image
-                    src={SelfParking}
-                    width={24}
-                    height={24}
-                    alt="Free self parking"
-                  />
-                  Free self parking
-                </div>
-              </div>
+              )}
               <div className="booking-box-action">
                 <a href="#" className="booking-edit-btn">
                   Edit Dates
@@ -353,50 +628,55 @@ const BookingReviewPage = () => {
             <div className="booking-detail-box booking-price-details ">
               <h3 className="booking-details-sub-title">Price Details</h3>
               <ul className="booking-listing-info">
-                <li className="booking-listing-item d-flex align-items-center justify-content-between">
-                  <div className="booking-list-left d-flex align-items-center">
-                    10 night x 1 room x $40
-                  </div>
-                  <div className="booking-list-right d-flex align-items-center">
-                    $400.00
-                  </div>
-                </li>
-                <li className="booking-listing-item tax-fees d-flex align-items-center justify-content-between">
+                {priceBreakdown.roomDetails.map((detail, index) => (
+                  <li
+                    key={`price-detail-${index}`}
+                    className="booking-listing-item d-flex align-items-center justify-content-between"
+                  >
+                    <div className="booking-list-left d-flex align-items-center">
+                      {detail}
+                    </div>
+                    <div className="booking-list-right d-flex align-items-center">
+                      {priceBreakdown.currency} {priceFormatter.format(selectedRoomsInfo[index]?.totalPrice || 0)}
+                    </div>
+                  </li>
+                ))}
+                {/* <li className="booking-listing-item tax-fees d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     Taxes & Fees
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     $140.00
                   </div>
-                </li>
+                </li> */}
                 <div className="booking-review-separetor"></div>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     Total
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    $540.00
+                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
                   </div>
                 </li>
-                <li className="booking-listing-item discount d-flex align-items-center justify-content-between">
+                {/* <li className="booking-listing-item discount d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     Discount
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     -$51
                   </div>
-                </li>
+                </li> */}
                 <div className="booking-review-separetor spacing-30"></div>
                 <li className="booking-listing-item booking-sub-total d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     Sub Total
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    $489.00
+                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.subtotal)}
                   </div>
                 </li>
               </ul>
-              <div className="booking-rates">Rates are quoted in USD($)</div>
+              <div className="booking-rates">Rates are quoted in {priceBreakdown.currency}</div>
               <div className="booking-price-increase d-flex align-items-center">
                 <svg
                   width="20"
@@ -412,9 +692,9 @@ const BookingReviewPage = () => {
                   <path
                     d="M16.666 12.4993C16.666 12.4993 18.3327 11.2719 18.3327 10.8327C18.3327 10.3935 16.666 9.16602 16.666 9.16602"
                     stroke="#27272A"
-                    stroke-width="1.25"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
                 This Price may increase if you book later
@@ -431,14 +711,19 @@ const BookingReviewPage = () => {
                 How much will it cost to cancel?
               </h3>
               <ul className="booking-listing-info">
-                <li className="booking-listing-item d-flex align-items-center justify-content-between">
-                  <div className="booking-list-left d-flex align-items-center">
-                    10 night x 1 room x $40
-                  </div>
-                  <div className="booking-list-right d-flex align-items-center">
-                    $400.00
-                  </div>
-                </li>
+                {priceBreakdown.roomDetails.map((detail, index) => (
+                  <li
+                    key={`cancel-cost-${index}`}
+                    className="booking-listing-item d-flex align-items-center justify-content-between"
+                  >
+                    <div className="booking-list-left d-flex align-items-center">
+                      {detail}
+                    </div>
+                    <div className="booking-list-right d-flex align-items-center">
+                      {priceBreakdown.currency} {priceFormatter.format(selectedRoomsInfo[index]?.totalPrice || 0)}
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -694,7 +979,7 @@ const BookingReviewPage = () => {
               <div className="booking-hotel-info d-flex align-items-start">
                 <div className="booking-hotel-image">
                   <Image
-                    src={BookingHotelInfoImage}
+                    src={getMainImage()}
                     width={44}
                     height={44}
                     alt="hotel image"
@@ -702,9 +987,9 @@ const BookingReviewPage = () => {
                   />
                 </div>
                 <div className="booking-hotel-content">
-                  <h3 className="hotel-name">Novotel Bangkok</h3>
+                  <h3 className="hotel-name">{hotelName}</h3>
                   <span className="booking-guest-info">
-                    2 Guests • 10 Nights
+                    {totalGuests} {totalGuests === 1 ? 'Guest' : 'Guests'} • {totalNights} {totalNights === 1 ? 'Night' : 'Nights'}
                   </span>
                 </div>
               </div>
@@ -722,33 +1007,35 @@ const BookingReviewPage = () => {
                       <path
                         d="M2 12C2 8.46252 2 6.69377 3.0528 5.5129C3.22119 5.32403 3.40678 5.14935 3.60746 4.99087C4.86213 4 6.74142 4 10.5 4H13.5C17.2586 4 19.1379 4 20.3925 4.99087C20.5932 5.14935 20.7788 5.32403 20.9472 5.5129C22 6.69377 22 8.46252 22 12C22 15.5375 22 17.3062 20.9472 18.4871C20.7788 18.676 20.5932 18.8506 20.3925 19.0091C19.1379 20 17.2586 20 13.5 20H10.5C6.74142 20 4.86213 20 3.60746 19.0091C3.40678 18.8506 3.22119 18.676 3.0528 18.4871C2 17.3062 2 15.5375 2 12Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M14.551 12C14.551 13.3807 13.4317 14.5 12.051 14.5C10.6703 14.5 9.55099 13.3807 9.55099 12C9.55099 10.6193 10.6703 9.5 12.051 9.5C13.4317 9.5 14.551 10.6193 14.551 12Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M5 12L6 12"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                       />
                       <path
                         d="M18 12L19 12"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                       />
                     </svg>
                     Hotel Fare
                   </div>
-                  <div className="booking-pricing">$540</div>
+                  <div className="booking-pricing">
+                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
+                  </div>
                 </div>
-                <div className="booking-price-item d-flex align-items-center">
+                {/* <div className="booking-price-item d-flex align-items-center">
                   <div className="booking-iocn-with-text d-flex align-items-center">
                     <svg
                       width="24"
@@ -763,31 +1050,31 @@ const BookingReviewPage = () => {
                         r="1.5"
                         transform="matrix(1 0 0 -1 16 8)"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M7 14L10 17"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Discount
                   </div>
                   <div className="booking-pricing discount">-$51</div>
-                </div>
+                </div> */}
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>$51</span>
+                  <span>{priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}</span>
                 </div>
                 <div className="booking-price-tax">
                   Included all taxes & fees
