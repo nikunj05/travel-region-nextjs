@@ -222,17 +222,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const getAvailableRoomOptions = useCallback(
     (roomCode: string) => {
       const currentSelection = selectedRoomCounts[roomCode] || 0;
-      const remainingSlots = totalRoomCount - totalSelectedRooms + currentSelection;
+      const remainingSlots =
+        totalRoomCount - totalSelectedRooms + currentSelection;
       return Math.min(remainingSlots, totalRoomCount);
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
 
   // Handler for room count selection
-  const handleRoomCountChange = (
-    roomCode: string,
-    count: number
-  ) => {
+  const handleRoomCountChange = (roomCode: string, count: number) => {
     setSelectedRoomCounts((prev) => ({
       ...prev,
       [roomCode]: count,
@@ -240,10 +238,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   };
 
   // Handler for room rate selection
-  const handleRoomRateChange = (
-    roomCode: string,
-    rateKey: string
-  ) => {
+  const handleRoomRateChange = (roomCode: string, rateKey: string) => {
     setSelectedRoomRates((prev) => ({
       ...prev,
       [roomCode]: rateKey,
@@ -725,11 +720,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         return null;
       }
 
-      const selectedRateKey = room.roomCode ? selectedRoomRates[room.roomCode] : null;
-      
+      const selectedRateKey = room.roomCode
+        ? selectedRoomRates[room.roomCode]
+        : null;
+
       // If a rate is selected, find it
       if (selectedRateKey) {
-        const selectedRate = room.rates.find((rate) => rate.rateKey === selectedRateKey);
+        const selectedRate = room.rates.find(
+          (rate) => rate.rateKey === selectedRateKey
+        );
         if (selectedRate) {
           const net = Number(selectedRate.net ?? 0);
           const cancellationPolicy = selectedRate.cancellationPolicies?.[0];
@@ -756,7 +755,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             refundDate,
             policyAmount,
             policyAmountFormatted:
-              policyAmount !== null ? priceFormatter.format(policyAmount) : null,
+              policyAmount !== null
+                ? priceFormatter.format(policyAmount)
+                : null,
             isFullyRefundable,
           };
         }
@@ -1837,7 +1838,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <span className="total-price d-inline-flex align-items-center gap-1">
                             {displayRateDetails ? (
                               <>
-                               
                                 <span
                                   className="currency-icon"
                                   aria-hidden="true"
@@ -1897,11 +1897,17 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     Number(e.target.value)
                                   )
                                 }
-                                disabled={isRoomSelectionDisabled(room.roomCode)}
+                                disabled={isRoomSelectionDisabled(
+                                  room.roomCode
+                                )}
                               >
                                 <option value="0">0</option>
                                 {Array.from(
-                                  { length: getAvailableRoomOptions(room.roomCode) },
+                                  {
+                                    length: getAvailableRoomOptions(
+                                      room.roomCode
+                                    ),
+                                  },
                                   (_, i) => (
                                     <option key={i + 1} value={i + 1}>
                                       {String(i + 1).padStart(2, "0")}
@@ -1942,7 +1948,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                       value={rate.rateKey}
                                     >
                                       {rate.boardName || "N/A"} - SAR{" "}
-                                      {priceFormatter.format(Number(rate.net ?? 0))}
+                                      {priceFormatter.format(
+                                        Number(rate.net ?? 0)
+                                      )}
                                     </option>
                                   ))
                                 ) : (
@@ -2482,11 +2490,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                   {/* <div className="hotel-room-left">We have 5 left</div> */}
                 </div>
-                <div className="modal-room-booking-action">
+                {/* <div className="modal-room-booking-action">
                   <button className="button-primary room-booking-btn w-100">
                     {t("actions.bookNow")}
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
