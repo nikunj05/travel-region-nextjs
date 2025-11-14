@@ -397,6 +397,23 @@
       margin-bottom: 32px;
     }
 
+    .search-bar-common {
+      .search-bar-container {
+        display: flex;
+        gap: 15px;
+
+        .search-field {
+          flex: 1;
+
+          .datepicker-dropdown {
+            left: 0;
+            right: auto;
+            transform: translate(0%);
+          }
+        }
+      }
+    }
+
     .room-filter-bar {
       display: flex;
       align-items: center;
@@ -1412,6 +1429,30 @@
     }
 
     .rooms-filter-section {
+      .search-bar-common {
+        .search-bar-container {
+
+          .search-field {
+            flex: auto;
+
+            &:nth-child(1),
+            &:nth-child(2) {
+              width: calc(50% - 7.5px);
+            }
+
+            &:nth-child(3) {
+              width: 100%;
+            }
+
+            .datepicker-dropdown {
+              left: 100%;
+              right: 0;
+              transform: translate(-50%);
+            }
+          }
+        }
+      }
+
       .room-list {
         display: flex;
         flex-wrap: wrap;
@@ -1773,11 +1814,68 @@
             .hotel-room-booking-action {
               padding-top: 24px;
 
-              .room-booking-btn {
-                padding: 10.7px 15px;
-                font-size: 14px;
+              .select-room {
+                .select-room-label {
+                  min-height: auto;
+                }
+              }
+
+
+            }
+          }
+        }
+      }
+
+      .hotel-detail-room-booking {
+        .hotel-subtotal {
+          max-width: 100%;
+          padding: 15px;
+
+          ul {
+            li {
+              padding-bottom: 8px;
+              font-size: 14px;
+
+              .currency-icon {
+                svg {
+                  width: 12px;
+                  height: 12px;
+                }
+              }
+
+              .text-green {
+                svg {
+                  width: 12px;
+                  height: 12px;
+                }
+              }
+
+              &.total {
+                margin-top: 8px;
+                padding-top: 8px;
+
+                .label {
+                  font-size: 15px;
+                }
+
+                .value {
+                  font-size: 15px;
+
+                  svg {
+                    width: 13px;
+                    height: 13px;
+                  }
+                }
               }
             }
+          }
+        }
+
+        .room-book-button {
+          .room-booking-btn {
+            padding: 8.7px 15px;
+            font-size: 14px;
+            min-width: 145px;
           }
         }
       }
@@ -1954,6 +2052,37 @@
   }
 }
 
+@media (max-width: 575.55px) {
+  .hotel-details-page {
+    .rooms-filter-section {
+      .room-list {
+        .room-card {
+          .room-card-details {
+            .hotel-room-booking-action {
+              padding-top: 16px;
+              flex-direction: column;
+              gap: 15px;
+
+              .select-room {
+                width: 100% !important;
+
+                .select-rooms {
+                  width: 100%;
+                }
+
+                select {
+                  padding-top: 8px;
+                  padding-bottom: 8px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 
 // RTL Layout
 [dir='rtl'] {
@@ -1988,6 +2117,17 @@
     }
 
     .rooms-filter-section {
+      .search-bar-common {
+        .search-bar-container {
+          .search-field {
+            .datepicker-dropdown {
+              right: 0;
+              left: auto;
+            }
+          }
+        }
+      }
+
       .room-list {
         .room-card {
           .room-card-image {
@@ -2007,8 +2147,16 @@
           }
 
           .room-card-details {
+            .hotel-room-booking-action {
+              .select-room select {
+                background-position: 10px center;
+                padding: 10px 12px 10px 36px;
+              }
+            }
+
             .hotel-room-more-details {
               text-align: right;
+
 
               .hotel-more-details-link {
                 svg {
@@ -2045,6 +2193,24 @@
   }
 }
 
+@media (max-width: 991.55px) {
+  [dir="rtl"] {
+    .hotel-details-page {
+      .rooms-filter-section {
+        .search-bar-common {
+          .search-bar-container {
+            .search-field {
+              .datepicker-dropdown {
+                transform: translate(0%);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 767.55px) {
   [dir='rtl'] {
     .hotel-details-page {
@@ -2055,6 +2221,29 @@
               .thambnail-image-item {
                 .show-all-photos {
                   left: 4px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 575.55px) {
+  [dir='rtl'] {
+    .hotel-details-page {
+      .rooms-filter-section {
+        .room-list {
+          .room-card {
+            .room-card-details {
+              .hotel-room-booking-action {
+                .select-room {
+                  select {
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                  }
                 }
               }
             }

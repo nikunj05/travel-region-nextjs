@@ -2560,14 +2560,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                   {/* <div className="hotel-room-left">We have 5 left</div> */}
                 </div>
-                <div className="modal-room-booking-action">
-                  <button
-                    className="button-primary room-booking-btn w-100"
-                    
-                  >
+                {/* <div className="modal-room-booking-action">
+                  <button className="button-primary room-booking-btn w-100">
                     {t("actions.bookNow")}
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
