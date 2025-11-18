@@ -1453,9 +1453,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             </div>
             <div className="room-filter-right">Showing 3 of 3 rooms</div>
           </div> */}
+    {/* Room Cards */}
 
-              <div className="room-list">
-                {/* Room Cards */}
+
+              {/* <div className="room-list">
+            
                 {processedRooms.map((room, roomIndex) => {
                   const sliderSettings = {
                     dots: false,
@@ -1567,9 +1569,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           />
                         )}
 
-                        {/* <div className="hotel-best-value d-flex align-items-center">
-                          <span>{t("labels.bestValue")}</span>
-                        </div> */}
+                       
                         <div className="hotel-card-total-image d-flex align-items-center">
                           <svg
                             width="20"
@@ -1607,48 +1607,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </div>
                       <div className="room-card-details">
                         <h3 className="hotel-room-name">{roomDisplayName}</h3>
-                        {/* <div className="hotel-details-rating d-flex align-items-center">
-                           <div className="hotel-details-rating-star d-flex align-items-center">
-                            <Image
-                              src={starFillIcon}
-                              width={12}
-                              height={12}
-                              alt="star"
-                              className="hotel-rating-icon"
-                            />
-                            <Image
-                              src={starFillIcon}
-                              width={12}
-                              height={12}
-                              alt="star"
-                              className="hotel-rating-icon"
-                            />
-                            <Image
-                              src={starFillIcon}
-                              width={12}
-                              height={12}
-                              alt="star"
-                              className="hotel-rating-icon"
-                            />
-                            <Image
-                              src={starFillIcon}
-                              width={12}
-                              height={12}
-                              alt="star"
-                              className="hotel-rating-icon"
-                            />
-                            <Image
-                              src={starFillIcon}
-                              width={12}
-                              height={12}
-                              alt="star"
-                              className="hotel-rating-icon"
-                            />
-                          </div> */}
-                        {/* <span className="rating-value-wrapper d-flex align-items-center">
-                      <span className="rating-value">4.5</span> (120 Reviews)
-                    </span> 
-                        </div>*/}
+                      
 
                         <div className="room-card-amenities-list mt-0">
                           {displayedFacilities.length > 0 ? (
@@ -1691,53 +1650,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 t("placeholders.bedInfoUnavailable")}
                             </li>
 
-                            {/* <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M10 17.4987C9.41667 17.4987 8.92361 17.2973 8.52083 16.8945C8.11806 16.4918 7.91667 15.9987 7.91667 15.4154C7.91667 14.832 8.11806 14.339 8.52083 13.9362C8.92361 13.5334 9.41667 13.332 10 13.332C10.5833 13.332 11.0764 13.5334 11.4792 13.9362C11.8819 14.339 12.0833 14.832 12.0833 15.4154C12.0833 15.9987 11.8819 16.4918 11.4792 16.8945C11.0764 17.2973 10.5833 17.4987 10 17.4987ZM5.29167 12.7904L3.54167 10.9987C4.36111 10.1793 5.32306 9.53009 6.4275 9.0512C7.53194 8.57231 8.72278 8.33259 10 8.33203C11.2772 8.33148 12.4683 8.57453 13.5733 9.0612C14.6783 9.54787 15.64 10.2076 16.4583 11.0404L14.7083 12.7904C14.0972 12.1793 13.3889 11.7001 12.5833 11.3529C11.7778 11.0056 10.9167 10.832 10 10.832C9.08333 10.832 8.22222 11.0056 7.41667 11.3529C6.61111 11.7001 5.90278 12.1793 5.29167 12.7904ZM1.75 9.2487L0 7.4987C1.27778 6.19314 2.77083 5.17231 4.47917 4.4362C6.1875 3.70009 8.02778 3.33203 10 3.33203C11.9722 3.33203 13.8125 3.70009 15.5208 4.4362C17.2292 5.17231 18.7222 6.19314 20 7.4987L18.25 9.2487C17.1806 8.17925 15.9411 7.34259 14.5317 6.7387C13.1222 6.13481 11.6117 5.83259 10 5.83203C8.38833 5.83148 6.87806 6.1337 5.46917 6.7387C4.06028 7.3437 2.82056 8.18037 1.75 9.2487Z"
-                                  fill="#27272A"
-                                />
-                              </svg>
-                              Free Wi-Fi
-                            </li>
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M15 16.6673C15.9205 16.6673 16.6667 15.9212 16.6667 15.0007V5.00065C16.6667 4.08018 15.9205 3.33398 15 3.33398"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M3.33398 5.70577V14.2929C3.33398 15.6205 3.33398 16.2843 3.72107 16.7473C4.10814 17.2103 4.76244 17.329 6.07103 17.5665L8.57107 18.0203C10.3924 18.3508 11.3032 18.5161 11.9019 18.0173C12.5007 17.5185 12.5007 16.5945 12.5007 14.7467V5.25206C12.5007 3.40416 12.5007 2.48021 11.9019 1.98142C11.3032 1.48263 10.3924 1.64791 8.57107 1.97847L6.07103 2.43219C4.76244 2.66968 4.10814 2.78842 3.72107 3.25138C3.33398 3.71434 3.33398 4.37816 3.33398 5.70577Z"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M9.58398 9.99857V9.99023"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              1 bedroom
-                            </li> */}
+                          
                             <li>
                               <svg
                                 width="20"
@@ -1781,46 +1694,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </ul>
                         </div>
 
-                        {/* <div className="room-card-policies-list">
-                          <ul className="policies-item d-flex">
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              Reserve now, pay later
-                            </li>
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M4.16602 11.666L7.08268 14.5827L15.8327 5.41602"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              Free welcome drink
-                            </li>
-                          </ul>
-                        </div> */}
+                        
 
                         <div className="rooms-card-refund">
                           <div className="refund-item d-flex align-items-center">
@@ -1901,10 +1775,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </a>
                         </div>
                         <div className="price-info">
-                          {/* <div className="discount-price">
-                            <span className="discount">$51 off</span>
-                          </div> */}
-                          {/* <span className="nightly-price">$40 nightly</span> */}
+                        
                           <span className="total-price d-inline-flex align-items-center gap-1">
                             {displayRateDetails ? (
                               <>
@@ -1946,7 +1817,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             </svg>
                             {t("labels.totalWithTaxesAndFees")}
                           </div>
-                          {/* <div className="hotel-room-left">We have 5 left</div> */}
                         </div>
                         <div className="hotel-room-booking-action">
                           <div className="select-room">
@@ -2058,35 +1928,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         {priceFormatter.format(bookingSummary.totalPrice)}
                       </span>
                     </li>
-                    {/* <li>
-                      <span className="label">Discount</span>
-                      <span className="value text-green">
-                        -{" "}
-                        <span
-                          className="currency-icon"
-                          aria-hidden="true"
-                          dangerouslySetInnerHTML={{
-                            __html: buildCurrencySvgMarkup("#09090b"),
-                          }}
-                          style={{ display: "inline-flex" }}
-                        />
-                        20,610
-                      </span>
-                    </li>
-                    <li>
-                      <span className="label">Taxes & Fees</span>
-                      <span className="value">
-                        <span
-                          className="currency-icon"
-                          aria-hidden="true"
-                          dangerouslySetInnerHTML={{
-                            __html: buildCurrencySvgMarkup("#09090b"),
-                          }}
-                          style={{ display: "inline-flex" }}
-                        />
-                        30,610
-                      </span>
-                    </li> */}
+                    
                     <li className="total">
                       <span className="label">Subtotal</span>
                       <span className="value">
@@ -2109,7 +1951,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </section>
 
             {/* Reviews */}
