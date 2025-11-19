@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
 import "./BookingReview.scss";
@@ -8,7 +8,6 @@ import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
 import SelfParking from "@/assets/images/parking-icon.svg";
 import PoolIcon from "@/assets/images/pool-icon.svg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
-// import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
@@ -16,6 +15,11 @@ import { useBookingStore } from "@/store/bookingStore";
 import { buildHotelbedsImageUrl } from "@/constants";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
+import { Form } from "@/components/core/Form/Form";
+import { Input } from "@/components/core/Input/Input";
+import { Textarea } from "@/components/core/Textarea/Textarea";
+import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
+import { CreateBookingRequest } from "@/types/booking";
 
 interface BookingReviewPageProps {
   hotelId: string;
@@ -29,6 +33,7 @@ const getLanguageCode = (currentLocale: string): string => {
 const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
   const locale = useLocale();
+  const formRef = useRef<HTMLFormElement>(null);
 
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
@@ -44,76 +49,116 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     }
   }, [hotelId, hotelData, locale, fetchHotel]);
 
-  useEffect(() => {
-    // Console log all data when component mounts
-    console.log("=== BOOKING REVIEW PAGE DATA ===");
-    console.log("");
-    
-    console.log("📍 Hotel ID from params:", hotelId);
-    console.log("");
+  // Calculate total guests for dynamic form generation
+  const totalGuests = useMemo(() => {
+    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+    return adults + children;
+  }, [searchFilters.rooms]);
 
-    console.log("🏨 HOTEL DATA:", {
-      hotelCode: hotelData?.code,
-      hotelName: hotelData?.name?.content,
-      hotelAddress: hotelData?.address?.content,
-      coordinates: {
-        latitude: hotelData?.coordinates?.latitude,
-        longitude: hotelData?.coordinates?.longitude,
+  // Generate default values for the form
+  const defaultValues = useMemo(() => {
+    const additionalGuestsArray = Array.from({ length: totalGuests - 1 }, () => ({
+      firstName: "",
+      lastName: "",
+      email: "",
+      country: "",
+      countryCode: "",
+      phone: "",
+    }));
+
+    return {
+      primaryGuest: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        country: "",
+        countryCode: "+966",
+        phone: "",
       },
-      description: hotelData?.description?.content,
-      facilities: hotelData?.facilities?.length,
-      images: hotelData?.images?.length,
-      rooms: hotelData?.rooms?.length,
-      fullHotelData: hotelData,
-    });
-    console.log("");
+      additionalGuests: additionalGuestsArray,
+      specialRequests: "",
+    };
+  }, [totalGuests]);
 
-    console.log("🔍 SEARCH FILTERS:", {
-      location: searchFilters.location,
-      checkInDate: searchFilters.checkInDate,
-      checkOutDate: searchFilters.checkOutDate,
-      rooms: searchFilters.rooms,
-      freeCancellation: searchFilters.freeCancellation,
-      totalRooms: searchFilters.rooms?.length || 0,
-      totalAdults: searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0,
-      totalChildren: searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0,
-    });
-    console.log("");
+  // Create validation schema based on guest count
+  const bookingSchema = useMemo(() => {
+    return createBookingSchema(totalGuests);
+  }, [totalGuests]);
 
-    console.log("🛏️ SELECTED ROOMS & RATES:", {
-      selectedRoomsCount: bookingData?.selectedRooms?.length || 0,
-      selectedRooms: bookingData?.selectedRooms,
-      totalAmount: bookingData?.totalAmount,
-      currency: bookingData?.currency,
-      hotelIdInBooking: bookingData?.hotelId,
-      hotelNameInBooking: bookingData?.hotelName,
-      bookingTimestamp: bookingData?.timestamp,
-      fullBookingData: bookingData,
-    });
-    console.log("");
-
-    console.log("📊 BOOKING SUMMARY:");
-    if (bookingData?.selectedRooms) {
-      bookingData.selectedRooms.forEach((room, index) => {
-        console.log(`  Room ${index + 1}:`, {
-          roomCode: room.roomCode,
-          roomName: room.roomName,
-          rateKey: room.rateKey,
-          boardCode: room.boardCode,
-          boardName: room.boardName,
-          count: room.count,
-          pricePerRoom: room.pricePerRoom,
-          totalPrice: room.totalPrice,
-          currency: room.currency,
-          adults: room.adults,
-          children: room.children,
-        });
-      });
+  // Format date to YYYY-MM-DD
+  const formatDateForAPI = (date: string | Date | null | undefined): string => {
+    if (!date) return "";
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return dateObj.toISOString().split('T')[0];
+    } catch {
+      return "";
     }
-    console.log("");
+  };
 
-    console.log("=== END OF BOOKING REVIEW DATA ===");
-  }, [hotelId, hotelData, searchFilters, bookingData]);
+  // Handle form submission
+  const handleSubmit = (data: BookingFormData) => {
+    console.log("=== BOOKING FORM SUBMISSION ===");
+    
+    // Prepare room details
+    const roomDetails = selectedRoomsInfo.map(room => ({
+      rate_key: room.rateKey,
+      room_code: room.roomCode,
+    }));
+
+    // Prepare booking details (guest information)
+    const bookingDetails = [
+      {
+        price_per_night: selectedRoomsInfo[0]?.pricePerRoom || 0,
+        first_name: data.primaryGuest.firstName,
+        last_name: data.primaryGuest.lastName,
+        email: data.primaryGuest.email,
+        country: data.primaryGuest.country,
+        country_code: data.primaryGuest.countryCode,
+        phone: data.primaryGuest.phone,
+        is_primary: true,
+      },
+      ...data.additionalGuests.map(guest => ({
+        price_per_night: 0,
+        first_name: guest.firstName,
+        last_name: guest.lastName,
+        email: guest.email,
+        country: guest.country || "",
+        country_code: guest.countryCode || "",
+        phone: guest.phone || "",
+        is_primary: false,
+      })),
+    ];
+
+    // Calculate totals
+    const totalRooms = searchFilters.rooms?.length || 0;
+    const totalAdults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const totalChildren = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+    
+    // Prepare the complete booking request
+    const bookingRequest: CreateBookingRequest = {
+      hotel_code: parseInt(hotelId),
+      check_in: formatDateForAPI(searchFilters.checkInDate),
+      check_out: formatDateForAPI(searchFilters.checkOutDate),
+      rooms: totalRooms,
+      adults: totalAdults,
+      children: totalChildren,
+      nights: totalNights,
+      total_price: priceBreakdown.totalPrice,
+      currency: priceBreakdown.currency,
+      special_requests: data.specialRequests || "",
+      room_details: roomDetails,
+      details: bookingDetails,
+    };
+
+    console.log("Booking Request Payload:");
+    console.log(JSON.stringify(bookingRequest, null, 2));
+    console.log("=== END OF SUBMISSION ===");
+    
+    // TODO: Call API to create booking
+    // router.push(`/checkout`);
+  };
 
   // Helper functions to get hotel images (similar to HotelDetails)
   const getOrderedHotelImages = () => {
@@ -248,12 +293,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     [locale]
   );
 
-  // Calculate total guests
-  const totalGuests = useMemo(() => {
-    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
-    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
-    return adults + children;
-  }, [searchFilters.rooms]);
 
   // Show loading state while fetching hotel data
   if (loading && !hotelData) {
@@ -727,252 +766,168 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               </ul>
             </div>
 
-            <div className="booking-detail-box booking-traveler-details">
-              <h3 className="booking-details-sub-title">Traveler Details</h3>
-              <div className="booking-details-form mandatory-field">
-                <h3 className="booking-form-title">
-                  Primary Guest <span className="text-red">(Mandatory)</span>
-                </h3>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        First Name <span className="required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        placeholder="Your first name"
-                        className="form-input"
-                      />
-                    </div>
+            <Form<BookingFormData>
+              ref={formRef}
+              defaultValues={defaultValues}
+              onSubmit={handleSubmit}
+              schema={bookingSchema}
+              className="booking-detail-box booking-traveler-details"
+            >
+              {(methods) => (
+                <>
+                  <h3 className="booking-details-sub-title">Traveler Details</h3>
+                  
+                  {/* Primary Guest - Mandatory */}
+                  <div className="booking-details-form mandatory-field">
+                    <h3 className="booking-form-title">
+                      Primary Guest <span className="text-red">(Mandatory)</span>
+                    </h3>
+                    <div className="booking-form-content form-field">
+                      <div className="form-row">
+                        <Input
+                          name="primaryGuest.firstName"
+                          label="First Name"
+                          labelWithContent={<span className="required">*</span>}
+                          type="text"
+                          placeholder="Your first name"
+                          className="form-input"
+                        />
+                        <Input
+                          name="primaryGuest.lastName"
+                          label="Last Name"
+                          labelWithContent={<span className="required">*</span>}
+                          type="text"
+                          placeholder="Your last name"
+                          className="form-input"
+                        />
+                      </div>
 
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Last Name <span className="required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        placeholder="Your Last name"
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
+                      <div className="form-row">
+                        <Input
+                          name="primaryGuest.email"
+                          label="Email address"
+                          labelWithContent={<span className="required">*</span>}
+                          type="email"
+                          placeholder="Your email"
+                          className="form-input"
+                        />
+                        <Input
+                          name="primaryGuest.country"
+                          label="Country/ Region"
+                          labelWithContent={<span className="required">*</span>}
+                          type="text"
+                          placeholder="Your country"
+                          className="form-input"
+                        />
+                      </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Email address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        placeholder="Your first email"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Country/ Region <span className="required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="Your country"
-                        placeholder="Your country"
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Phone Number <span className="required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        id="PhoneNumberl"
-                        placeholder="Your number"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group"></div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="booking-details-form">
-                <h3 className="booking-form-title">
-                  Guest 2 <span> (Optional)</span>
-                </h3>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        placeholder="Your first name"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        placeholder="Your Last name"
-                        className="form-input"
-                      />
+                      <div className="form-row">
+                        <Input
+                          name="primaryGuest.phone"
+                          label="Phone Number"
+                          labelWithContent={<span className="required">*</span>}
+                          type="tel"
+                          placeholder="Your phone number"
+                          className="form-input"
+                        />
+                        <Input
+                          name="primaryGuest.countryCode"
+                          label="Country Code"
+                          labelWithContent={<span className="required">*</span>}
+                          type="text"
+                          placeholder="+966"
+                          className="form-input"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Email address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        placeholder="Your first email"
-                        className="form-input"
-                      />
+                  {/* Additional Guests - Dynamic based on total guests */}
+                  {totalGuests > 1 && Array.from({ length: totalGuests - 1 }).map((_, index) => (
+                    <div key={`guest-${index}`} className="booking-details-form">
+                      <h3 className="booking-form-title">
+                        Guest {index + 2} <span> (Name & Email Required)</span>
+                      </h3>
+                      <div className="booking-form-content form-field">
+                        <div className="form-row">
+                          <Input
+                            name={`additionalGuests.${index}.firstName`}
+                            label="First Name"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="First name"
+                            className="form-input"
+                          />
+                          <Input
+                            name={`additionalGuests.${index}.lastName`}
+                            label="Last Name"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Last name"
+                            className="form-input"
+                          />
+                        </div>
+
+                        <div className="form-row">
+                          <Input
+                            name={`additionalGuests.${index}.email`}
+                            label="Email address"
+                            labelWithContent={<span className="required">*</span>}
+                            type="email"
+                            placeholder="Email"
+                            className="form-input"
+                          />
+                          <Input
+                            name={`additionalGuests.${index}.country`}
+                            label="Country/ Region"
+                            type="text"
+                            placeholder="Country (Optional)"
+                            className="form-input"
+                          />
+                        </div>
+
+                        <div className="form-row">
+                          <Input
+                            name={`additionalGuests.${index}.phone`}
+                            label="Phone Number"
+                            type="tel"
+                            placeholder="Phone number (Optional)"
+                            className="form-input"
+                          />
+                          <Input
+                            name={`additionalGuests.${index}.countryCode`}
+                            label="Country Code"
+                            type="text"
+                            placeholder="+966 (Optional)"
+                            className="form-input"
+                          />
+                        </div>
+                      </div>
                     </div>
+                  ))}
 
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Country/ Region
-                      </label>
-                      <input
-                        type="text"
-                        id="Your country"
-                        placeholder="Your country"
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Phone Number
-                      </label>
-                      <input
-                        type="text"
-                        id="PhoneNumberl"
-                        placeholder="Your number"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group"></div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="booking-details-form">
-                <h3 className="booking-form-title">
-                  Guest 3 <span> (Optional)</span>
-                </h3>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        placeholder="Your first name"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        placeholder="Your Last name"
-                        className="form-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Email address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        placeholder="Your first email"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Country/ Region
-                      </label>
-                      <input
-                        type="text"
-                        id="Your country"
-                        placeholder="Your country"
-                        className="form-input"
-                      />
+                  {/* Special Requests */}
+                  <div className="booking-details-form special-request-field">
+                    <h3 className="booking-form-title">Special Request</h3>
+                    <p className="booking-form-desc">
+                      Please write your request in English or Arabic.
+                    </p>
+                    <div className="booking-form-content form-field">
+                      <div className="form-row">
+                        <div className="form-group d-flex w-100">
+                          <Textarea
+                            name="specialRequests"
+                            rows={5}
+                            placeholder="Enter any requests..."
+                            className="w-100 text-field"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Phone Number
-                      </label>
-                      <input
-                        type="text"
-                        id="PhoneNumberl"
-                        placeholder="Your number"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-group"></div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="booking-details-form special-request-field">
-                <h3 className="booking-form-title">Special Request</h3>
-                <p className="booking-form-desc">
-                  Please write your request in English or Arabic.
-                </p>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group d-flex">
-                      <textarea
-                        id="specialRequests"
-                        rows={5}
-                        placeholder="Enter any requests..."
-                        className="form-input w-100 text-field"
-                      ></textarea>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
+                </>
+              )}
+            </Form>
           </div>
           <div className="review-booking-details-right">
             <div className="hotel-info-header">
@@ -1081,7 +1036,16 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn" onClick={() => router.push(`/checkout `)}>
+                <button 
+                  type="button"
+                  className="button-primary check-availability-btn" 
+                  onClick={() => {
+                    // Trigger form submission
+                    if (formRef.current) {
+                      formRef.current.requestSubmit();
+                    }
+                  }}
+                >
                   Proceed to Payment
                 </button>
               </div>

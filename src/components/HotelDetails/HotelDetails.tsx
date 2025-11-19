@@ -164,6 +164,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRoomRates, setSelectedRoomRates] = useState<{
     [key: string]: string;
   }>({});
+  const [openRoomTypeAccordion, setOpenRoomTypeAccordion] = useState<string | null>(null);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
@@ -206,27 +207,28 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     );
   }, [selectedRoomCounts]);
 
-  // Check if a room card dropdown should be disabled
-  const isRoomSelectionDisabled = useCallback(
-    (roomCode: string) => {
-      const currentSelection = selectedRoomCounts[roomCode] || 0;
-      // If this card already has a selection, don't disable it
-      if (currentSelection > 0) {
-        return false;
-      }
-      // If total selected rooms equals or exceeds the limit, disable this card
-      return totalSelectedRooms >= totalRoomCount;
+  // Get available options for a specific room rate (based on search filters)
+  const getAvailableRoomOptionsForRate = useCallback(
+    (roomCode: string, rateKey: string) => {
+      const key = `${roomCode}_${rateKey}`;
+      const currentSelection = selectedRoomCounts[key] || 0;
+      const remainingSlots = totalRoomCount - totalSelectedRooms + currentSelection;
+      return Math.min(remainingSlots, totalRoomCount);
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
 
-  // Get available options for a specific room card
-  const getAvailableRoomOptions = useCallback(
-    (roomCode: string) => {
-      const currentSelection = selectedRoomCounts[roomCode] || 0;
-      const remainingSlots =
-        totalRoomCount - totalSelectedRooms + currentSelection;
-      return Math.min(remainingSlots, totalRoomCount);
+  // Check if a room rate dropdown should be disabled
+  const isRoomRateDisabled = useCallback(
+    (roomCode: string, rateKey: string) => {
+      const key = `${roomCode}_${rateKey}`;
+      const currentSelection = selectedRoomCounts[key] || 0;
+      // If this rate already has a selection, don't disable it
+      if (currentSelection > 0) {
+        return false;
+      }
+      // If total selected rooms equals or exceeds the limit, disable this dropdown
+      return totalSelectedRooms >= totalRoomCount;
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
@@ -239,12 +241,29 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }));
   };
 
-  // Handler for room rate selection
-  const handleRoomRateChange = (roomCode: string, rateKey: string) => {
-    setSelectedRoomRates((prev) => ({
-      ...prev,
-      [roomCode]: rateKey,
-    }));
+  // Handler for room rate selection with count (auto-select on dropdown change)
+  const handleRoomRateCountChange = (roomCode: string, rateKey: string, count: number) => {
+    const key = `${roomCode}_${rateKey}`;
+    
+    if (count === 0) {
+      // Remove the selection if count is 0
+      const newRates = { ...selectedRoomRates };
+      const newCounts = { ...selectedRoomCounts };
+      delete newRates[key];
+      delete newCounts[key];
+      setSelectedRoomRates(newRates);
+      setSelectedRoomCounts(newCounts);
+    } else {
+      // Auto-select when count > 0
+      setSelectedRoomRates((prev) => ({
+        ...prev,
+        [key]: rateKey,
+      }));
+      setSelectedRoomCounts((prev) => ({
+        ...prev,
+        [key]: count,
+      }));
+    }
   };
 
   // Calculate booking summary
@@ -254,33 +273,17 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     let currency = "SAR";
 
     processedRooms.forEach((room) => {
-      const roomCount = selectedRoomCounts[room.roomCode] || 0;
-      if (roomCount === 0) return;
-
-      // Get the selected or default rate for this room
-      const selectedRateKey = selectedRoomRates[room.roomCode];
-      let rateToUse = null;
-
-      if (selectedRateKey) {
-        rateToUse = room.rates.find((rate) => rate.rateKey === selectedRateKey);
-      }
-
-      // If no rate selected, use the primary rate (RO or first)
-      if (!rateToUse && room.rates.length > 0) {
-        rateToUse =
-          room.rates.find(
-            (rate) =>
-              rate.boardCode?.toUpperCase() === "RO" &&
-              rate.boardName?.toUpperCase() === "ROOM ONLY"
-          ) || room.rates[0];
-      }
-
-      if (rateToUse) {
-        totalRooms += roomCount;
-        const rateNet = Number(rateToUse.net) || 0;
-        totalPrice += rateNet * roomCount;
-        currency = rateToUse.currency || "SAR";
-      }
+      room.rates.forEach((rate) => {
+        const key = `${room.roomCode}_${rate.rateKey}`;
+        const roomCount = selectedRoomCounts[key] || 0;
+        
+        if (roomCount > 0) {
+          totalRooms += roomCount;
+          const rateNet = Number(rate.net) || 0;
+          totalPrice += rateNet * roomCount;
+          currency = rate.currency || "SAR";
+        }
+      });
     });
 
     const subtotal = totalPrice;
@@ -291,7 +294,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       subtotal,
       currency,
     };
-  }, [processedRooms, selectedRoomCounts, selectedRoomRates]);
+  }, [processedRooms, selectedRoomCounts]);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
@@ -715,60 +718,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     [priceFormatter, formatCancellationDate]
   );
 
-  // Helper function to get the selected or default rate for a room
+  // Helper function to get the display rate for a room (always shows primary rate)
   const getDisplayRate = useCallback(
     (room: ProcessedRoom | null | undefined) => {
-      if (!room || !room.rates || room.rates.length === 0) {
-        return null;
-      }
-
-      const selectedRateKey = room.roomCode
-        ? selectedRoomRates[room.roomCode]
-        : null;
-
-      // If a rate is selected, find it
-      if (selectedRateKey) {
-        const selectedRate = room.rates.find(
-          (rate) => rate.rateKey === selectedRateKey
-        );
-        if (selectedRate) {
-          const net = Number(selectedRate.net ?? 0);
-          const cancellationPolicy = selectedRate.cancellationPolicies?.[0];
-          const policyAmountRaw = cancellationPolicy?.amount;
-          const parsedPolicyAmount =
-            policyAmountRaw !== undefined && policyAmountRaw !== null
-              ? Number(policyAmountRaw)
-              : null;
-          const policyAmount =
-            parsedPolicyAmount !== null && Number.isFinite(parsedPolicyAmount)
-              ? parsedPolicyAmount
-              : null;
-          const refundDate = cancellationPolicy?.from
-            ? formatCancellationDate(cancellationPolicy.from)
-            : null;
-          const isFullyRefundable =
-            policyAmount !== null && Math.abs(policyAmount - net) < 0.01;
-
-          return {
-            rate: selectedRate,
-            net,
-            formattedPrice: priceFormatter.format(net),
-            cancellationPolicy,
-            refundDate,
-            policyAmount,
-            policyAmountFormatted:
-              policyAmount !== null
-                ? priceFormatter.format(policyAmount)
-                : null,
-            isFullyRefundable,
-          };
-        }
-      }
-
-      // Otherwise, return the primary rate (existing logic)
+      // Just return the primary rate for display on the main card
       return findPrimaryRate(room);
     },
-    [selectedRoomRates, priceFormatter, formatCancellationDate, findPrimaryRate]
+    [findPrimaryRate]
   );
 
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
@@ -843,42 +799,34 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
 
     // Prepare booking data from selected rooms
-    const selectedRoomsData = processedRooms
-      .filter(room => (selectedRoomCounts[room.roomCode] || 0) > 0)
-      .map(room => {
-        const roomCount = selectedRoomCounts[room.roomCode] || 0;
-        const selectedRateKey = selectedRoomRates[room.roomCode];
+    const selectedRoomsData: any[] = [];
+    
+    processedRooms.forEach(room => {
+      room.rates.forEach(rate => {
+        const key = `${room.roomCode}_${rate.rateKey}`;
+        const roomCount = selectedRoomCounts[key] || 0;
         
-        // Find the selected rate or use the primary rate
-        let rateToUse = null;
-        if (selectedRateKey) {
-          rateToUse = room.rates.find(rate => rate.rateKey === selectedRateKey);
-        }
-        if (!rateToUse && room.rates.length > 0) {
-          rateToUse = room.rates.find(
-            rate => rate.boardCode?.toUpperCase() === "RO" && 
-                    rate.boardName?.toUpperCase() === "ROOM ONLY"
-          ) || room.rates[0];
-        }
+        if (roomCount > 0) {
+          const pricePerRoom = Number(rate.net || 0);
+          const totalPrice = pricePerRoom * roomCount;
 
-        const pricePerRoom = Number(rateToUse?.net || 0);
-        const totalPrice = pricePerRoom * roomCount;
-
-        return {
-          roomCode: room.roomCode,
-          roomName: room.name || room.description || "",
-          rateKey: rateToUse?.rateKey || "",
-          boardCode: rateToUse?.boardCode || "",
-          boardName: rateToUse?.boardName || "",
-          count: roomCount,
-          pricePerRoom: pricePerRoom,
-          totalPrice: totalPrice,
-          currency: rateToUse?.currency || "SAR",
-          cancellationPolicies: rateToUse?.cancellationPolicies || [],
-          adults: rateToUse?.adults || 0,
-          children: rateToUse?.children || 0,
-        };
+          selectedRoomsData.push({
+            roomCode: room.roomCode,
+            roomName: room.name || room.description || "",
+            rateKey: rate.rateKey || "",
+            boardCode: rate.boardCode || "",
+            boardName: rate.boardName || "",
+            count: roomCount,
+            pricePerRoom: pricePerRoom,
+            totalPrice: totalPrice,
+            currency: rate.currency || "SAR",
+            cancellationPolicies: rate.cancellationPolicies || [],
+            adults: rate.adults || 0,
+            children: rate.children || 0,
+          });
+        }
       });
+    });
 
     // Calculate total amount
     const totalAmount = selectedRoomsData.reduce((sum, room) => sum + room.totalPrice, 0);
@@ -1445,514 +1393,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   onCheckAvailability={handleCheckAvailability}
                 />
               </div>
-              {/* <div className="room-filter-bar">
-            <div className="room-filter-left">
-              <button className="filter-btn active">All rooms</button>
-              <button className="filter-btn">1 Bed</button>
-              <button className="filter-btn">2 Bed</button>
-            </div>
-            <div className="room-filter-right">Showing 3 of 3 rooms</div>
-          </div> */}
-    {/* Room Cards */}
-
-
-
-              {/* <div className="room-list">
             
-                {processedRooms.map((room, roomIndex) => {
-                  const sliderSettings = {
-                    dots: false,
-                    infinite: room.images.length > 1,
-                    speed: 500,
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    arrows: false,
-                  };
-                  const roomDisplayName =
-                    room.name || room.description || t("placeholders.roomName");
-                  const roomFacilitiesWithDescriptions = room.facilities.filter(
-                    (facility) => facility.description
-                  );
-                  const displayedFacilities =
-                    roomFacilitiesWithDescriptions.slice(0, 4);
-                  const bedDescription =
-                    room.roomStays
-                      .flatMap((stay) => stay.facilities)
-                      .map((facility) => facility.description)
-                      .find((description) => description) ||
-                    room.characteristicDescription ||
-                    null;
-                  const displayRateDetails = getDisplayRate(room);
-                  const refundStatusLabel = displayRateDetails
-                    ? displayRateDetails.isFullyRefundable
-                      ? t("refund.fullyRefundable")
-                      : t("refund.notFullyRefundable")
-                    : t("placeholders.refundPolicyUnavailable");
-                  const refundDateLabel = displayRateDetails?.refundDate
-                    ? t("refund.beforeDate", {
-                        date: displayRateDetails.refundDate,
-                      })
-                    : t("placeholders.refundDateUnavailable");
-
-                  return (
-                    <div
-                      className="room-card"
-                      key={`room-${room.roomCode || roomIndex}`}
-                    >
-                      <div className="room-card-image">
-                        {room.images.length > 0 ? (
-                          <>
-                            <Slider
-                              ref={(el) => {
-                                sliderRefs.current[roomIndex] = el;
-                              }}
-                              {...sliderSettings}
-                            >
-                              {room.images.map((image, imgIndex) => (
-                                <div
-                                  key={`room-${
-                                    room.roomCode || roomIndex
-                                  }-image-${image.path || imgIndex}`}
-                                >
-                                  <Image
-                                    src={image.fullUrl}
-                                    width={378}
-                                    height={203}
-                                    alt={roomDisplayName}
-                                    style={{
-                                      objectFit: "cover",
-                                      width: "100%",
-                                      height: "203px",
-                                    }}
-                                  />
-                                </div>
-                              ))}
-                            </Slider>
-                            {room.images.length > 1 && (
-                              <div className="hotel-image-action d-flex align-items-center justify-content-between">
-                                <button
-                                  className="hotel-img-btn border-0 p-0 bg-transparent"
-                                  onClick={() =>
-                                    sliderRefs.current[roomIndex]?.slickPrev()
-                                  }
-                                >
-                                  <Image
-                                    src={HotelImgPrevIcon}
-                                    width={48}
-                                    height={48}
-                                    alt="Previous"
-                                    className="arrow-icon"
-                                  />
-                                </button>
-                                <button
-                                  className="hotel-img-btn border-0 p-0 bg-transparent"
-                                  onClick={() =>
-                                    sliderRefs.current[roomIndex]?.slickNext()
-                                  }
-                                >
-                                  <Image
-                                    src={HotelImgNextIcon}
-                                    width={48}
-                                    height={48}
-                                    alt="Next"
-                                    className="arrow-icon"
-                                  />
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <Image
-                            src={HotelDetailsCardImage}
-                            width={378}
-                            height={203}
-                            alt={roomDisplayName}
-                          />
-                        )}
-
-                       
-                        <div className="hotel-card-total-image d-flex align-items-center">
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M5 14.9787C5.10725 16.0691 5.34963 16.803 5.89743 17.3508C6.87997 18.3333 8.46135 18.3333 11.6241 18.3333C14.7869 18.3333 16.3682 18.3333 17.3508 17.3508C18.3333 16.3682 18.3333 14.7869 18.3333 11.6241C18.3333 8.46135 18.3333 6.87997 17.3508 5.89743C16.803 5.34963 16.0691 5.10725 14.9787 5"
-                              stroke="white"
-                              strokeWidth="1.25"
-                            />
-                            <path
-                              d="M1.66602 8.33268C1.66602 5.18999 1.66602 3.61864 2.64233 2.64233C3.61864 1.66602 5.18999 1.66602 8.33268 1.66602C11.4754 1.66602 13.0467 1.66602 14.023 2.64233C14.9993 3.61864 14.9993 5.18999 14.9993 8.33268C14.9993 11.4754 14.9993 13.0467 14.023 14.023C13.0467 14.9993 11.4754 14.9993 8.33268 14.9993C5.18999 14.9993 3.61864 14.9993 2.64233 14.023C1.66602 13.0467 1.66602 11.4754 1.66602 8.33268Z"
-                              stroke="white"
-                              strokeWidth="1.25"
-                            />
-                            <path
-                              d="M1.66602 9.26477C2.18186 9.19922 2.70338 9.16682 3.22578 9.16797C5.43573 9.1271 7.59155 9.72962 9.30858 10.868C10.901 11.9238 12.02 13.3769 12.4993 14.9993"
-                              stroke="white"
-                              strokeWidth="1.25"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M10.8338 5.83398H10.8413"
-                              stroke="white"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          {room.imageCount}
-                        </div>
-                      </div>
-                      <div className="room-card-details">
-                        <h3 className="hotel-room-name">{roomDisplayName}</h3>
-                      
-
-                        <div className="room-card-amenities-list mt-0">
-                          {displayedFacilities.length > 0 ? (
-                            <ul className="amenities-item d-flex">
-                              {displayedFacilities.map((facility) => (
-                                <li
-                                  key={`${room.roomCode}-${facility.groupCode}-${facility.code}`}
-                                >
-                                  <AmenityIcon facilityCode={facility.code} />
-                                  {facility.description ||
-                                    t("placeholders.facilityFallback", {
-                                      code: facility.code,
-                                    })}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="amenities-item no-facilities">
-                              {t("placeholders.noFacilityInfo")}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="room-card-specs mt-0">
-                          <ul className="card-specs-item d-flex align-items-center">
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M1.66602 15.8327V10.8327C1.66602 10.4577 1.7424 10.1174 1.89518 9.81185C2.04796 9.50629 2.24935 9.23546 2.49935 8.99935V6.66602C2.49935 5.97157 2.7424 5.38129 3.22852 4.89518C3.71463 4.40907 4.3049 4.16602 4.99935 4.16602H8.33268C8.65213 4.16602 8.95074 4.22518 9.22852 4.34352C9.50629 4.46185 9.76324 4.6249 9.99935 4.83268C10.2355 4.62435 10.4924 4.46129 10.7702 4.34352C11.048 4.22574 11.3466 4.16657 11.666 4.16602H14.9993C15.6938 4.16602 16.2841 4.40907 16.7702 4.89518C17.2563 5.38129 17.4993 5.97157 17.4993 6.66602V8.99935C17.7493 9.23546 17.9507 9.50629 18.1035 9.81185C18.2563 10.1174 18.3327 10.4577 18.3327 10.8327V15.8327H16.666V14.166H3.33268V15.8327H1.66602ZM10.8327 8.33268H15.8327V6.66602C15.8327 6.4299 15.7527 6.23213 15.5927 6.07268C15.4327 5.91324 15.2349 5.83324 14.9993 5.83268H11.666C11.4299 5.83268 11.2321 5.91268 11.0727 6.07268C10.9132 6.23268 10.8332 6.43046 10.8327 6.66602V8.33268ZM4.16602 8.33268H9.16602V6.66602C9.16602 6.4299 9.08602 6.23213 8.92602 6.07268C8.76602 5.91324 8.56824 5.83324 8.33268 5.83268H4.99935C4.76324 5.83268 4.56546 5.91268 4.40602 6.07268C4.24657 6.23268 4.16657 6.43046 4.16602 6.66602V8.33268ZM3.33268 12.4993H16.666V10.8327C16.666 10.5966 16.586 10.3988 16.426 10.2393C16.266 10.0799 16.0682 9.9999 15.8327 9.99935H4.16602C3.9299 9.99935 3.73213 10.0793 3.57268 10.2393C3.41324 10.3993 3.33324 10.5971 3.33268 10.8327V12.4993Z"
-                                  fill="#27272A"
-                                />
-                              </svg>
-                              {bedDescription ??
-                                t("placeholders.bedInfoUnavailable")}
-                            </li>
-
-                          
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                />
-                              </svg>
-                              {t("labels.sleeps", {
-                                count:
-                                  room.capacity?.maxAdults ??
-                                  room.capacity?.maxPax ??
-                                  "-",
-                              })}
-                            </li>
-                          </ul>
-                        </div>
-
-                        
-
-                        <div className="rooms-card-refund">
-                          <div className="refund-item d-flex align-items-center">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
-                                stroke="#09090B"
-                                strokeWidth="1.25"
-                              />
-                              <path
-                                d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
-                                stroke="#09090B"
-                                strokeWidth="1.25"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M9.99203 6.66602H9.99951"
-                                stroke="#09090B"
-                                strokeWidth="1.66667"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            {refundStatusLabel}
-                            {displayRateDetails?.policyAmountFormatted && (
-                              <span className="refund-amount d-inline-flex align-items-center">
-                                {" ( "}
-                                <span
-                                  className="currency-icon"
-                                  aria-hidden="true"
-                                  dangerouslySetInnerHTML={{
-                                    __html: buildCurrencySvgMarkup("#09090b"),
-                                  }}
-                                  style={{ display: "inline-flex" }}
-                                />{" "}
-                                {` ${displayRateDetails.policyAmountFormatted})`}
-                              </span>
-                            )}
-                          </div>
-                          {displayRateDetails ? (
-                            <span className="refund-valid-date">
-                              {refundDateLabel}
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <div className="hotel-room-more-details">
-                          <a
-                            className="hotel-more-details-link d-inline-flex align-items-center"
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleOpenModal(room);
-                            }}
-                          >
-                            {t("actions.moreDetails")}
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M7.50004 5L12.5 10L7.5 15"
-                                stroke="#3E5B96"
-                                strokeWidth="1.25"
-                                strokeMiterlimit="16"
-                              />
-                            </svg>
-                          </a>
-                        </div>
-                        <div className="price-info">
-                        
-                          <span className="total-price d-inline-flex align-items-center gap-1">
-                            {displayRateDetails ? (
-                              <>
-                                <span
-                                  className="currency-icon"
-                                  aria-hidden="true"
-                                  dangerouslySetInnerHTML={{
-                                    __html: buildCurrencySvgMarkup("#09090b"),
-                                  }}
-                                  style={{ display: "inline-flex" }}
-                                />{" "}
-                                {displayRateDetails.formattedPrice}
-                              </>
-                            ) : (
-                              t("placeholders.priceUnavailable")
-                            )}
-                          </span>
-                          {displayRateDetails?.rate.boardName && (
-                            <div className="hotel-room-number">
-                              {displayRateDetails.rate.boardName}
-                            </div>
-                          )}
-                        </div>
-                        <div className="total-taxes-fees d-flex align-items-center justify-content-between">
-                          <div className="taxes-fees d-flex align-items-center">
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
-                                stroke="#00C950"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            {t("labels.totalWithTaxesAndFees")}
-                          </div>
-                        </div>
-                        <div className="hotel-room-booking-action">
-                          <div className="select-room">
-                            <label
-                              className="select-rooms"
-                              htmlFor={`selectRoom-${room.roomCode}`}
-                            >
-                              <span className="select-room-label">
-                                Select Number of Rooms
-                              </span>
-                              <select
-                                id={`selectRoom-${room.roomCode}`}
-                                name="selectRoom"
-                                value={selectedRoomCounts[room.roomCode] || 0}
-                                onChange={(e) =>
-                                  handleRoomCountChange(
-                                    room.roomCode,
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={isRoomSelectionDisabled(
-                                  room.roomCode
-                                )}
-                              >
-                                <option value="0">0</option>
-                                {Array.from(
-                                  {
-                                    length: getAvailableRoomOptions(
-                                      room.roomCode
-                                    ),
-                                  },
-                                  (_, i) => (
-                                    <option key={i + 1} value={i + 1}>
-                                      {String(i + 1).padStart(2, "0")}
-                                    </option>
-                                  )
-                                )}
-                              </select>
-                            </label>
-                          </div>
-
-                          <div className="select-room">
-                            <label
-                              className="select-rooms"
-                              htmlFor={`selectRoomType-${room.roomCode}`}
-                            >
-                              <span className="select-room-label">
-                                Select Room Type
-                              </span>
-                              <select
-                                id={`selectRoomType-${room.roomCode}`}
-                                name="selectRoomType"
-                                value={
-                                  selectedRoomRates[room.roomCode] ||
-                                  displayRateDetails?.rate.rateKey ||
-                                  ""
-                                }
-                                onChange={(e) =>
-                                  handleRoomRateChange(
-                                    room.roomCode,
-                                    e.target.value
-                                  )
-                                }
-                              >
-                                {room.rates && room.rates.length > 0 ? (
-                                  room.rates.map((rate, rateIndex) => (
-                                    <option
-                                      key={`${room.roomCode}-rate-${rateIndex}`}
-                                      value={rate.rateKey}
-                                    >
-                                      {rate.boardName || "N/A"} - SAR{" "}
-                                      {priceFormatter.format(
-                                        Number(rate.net ?? 0)
-                                      )}
-                                    </option>
-                                  ))
-                                ) : (
-                                  <option value="">
-                                    {t("placeholders.noRatesAvailable")}
-                                  </option>
-                                )}
-                              </select>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="hotel-detail-room-booking">
-                <div className="hotel-subtotal">
-                  <ul>
-                    <li>
-                      <span className="label">
-                        {bookingSummary.totalRooms}{" "}
-                        {bookingSummary.totalRooms === 1 ? "Room" : "Rooms"} for
-                      </span>
-                      <span className="value">
-                        <span
-                          className="currency-icon"
-                          aria-hidden="true"
-                          dangerouslySetInnerHTML={{
-                            __html: buildCurrencySvgMarkup("#09090b"),
-                          }}
-                          style={{ display: "inline-flex" }}
-                        />
-                        {priceFormatter.format(bookingSummary.totalPrice)}
-                      </span>
-                    </li>
-                    
-                    <li className="total">
-                      <span className="label">Subtotal</span>
-                      <span className="value">
-                        <span
-                          className="currency-icon"
-                          aria-hidden="true"
-                          dangerouslySetInnerHTML={{
-                            __html: buildCurrencySvgMarkup("#09090b"),
-                          }}
-                          style={{ display: "inline-flex" }}
-                        />
-                        {priceFormatter.format(bookingSummary.subtotal)}
-                      </span>
-                    </li>
-                  </ul>
-
-                  <div className="room-book-button">
-                    <button className="button-primary room-booking-btn" onClick={handleBookNowClick}>
-                      {t("actions.bookNow")}
-                    </button>
-                  </div>
-                </div>
-              </div> */}
+    {/* Room Cards */}
 
               {/* room-list calss remove and add */}
               <div className="room-list-vertical"> 
@@ -2319,86 +1761,35 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         </div>
                         <div className="hotel-room-booking-action">
                           <div className="select-room">
-                            <label
-                              className="select-rooms"
-                              htmlFor={`selectRoom-${room.roomCode}`}
+                            <button
+                              className="see-all-room-types-btn"
+                              onClick={() => 
+                                setOpenRoomTypeAccordion(
+                                  openRoomTypeAccordion === room.roomCode ? null : room.roomCode
+                                )
+                              }
                             >
-                              <span className="select-room-label">
-                                Select Number of Rooms
-                              </span>
-                              <select
-                                id={`selectRoom-${room.roomCode}`}
-                                name="selectRoom"
-                                value={selectedRoomCounts[room.roomCode] || 0}
-                                onChange={(e) =>
-                                  handleRoomCountChange(
-                                    room.roomCode,
-                                    Number(e.target.value)
-                                  )
-                                }
-                                disabled={isRoomSelectionDisabled(
-                                  room.roomCode
-                                )}
+                              See all room types
+                              <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                style={{
+                                  transform: openRoomTypeAccordion === room.roomCode ? 'rotate(180deg)' : 'rotate(0deg)',
+                                  transition: 'transform 0.3s ease'
+                                }}
                               >
-                                <option value="0">0</option>
-                                {Array.from(
-                                  {
-                                    length: getAvailableRoomOptions(
-                                      room.roomCode
-                                    ),
-                                  },
-                                  (_, i) => (
-                                    <option key={i + 1} value={i + 1}>
-                                      {String(i + 1).padStart(2, "0")}
-                                    </option>
-                                  )
-                                )}
-                              </select>
-                            </label>
-                          </div>
-
-                          <div className="select-room">
-                            <label
-                              className="select-rooms"
-                              htmlFor={`selectRoomType-${room.roomCode}`}
-                            >
-                              <span className="select-room-label">
-                                Select Room Type
-                              </span>
-                              <select
-                                id={`selectRoomType-${room.roomCode}`}
-                                name="selectRoomType"
-                                value={
-                                  selectedRoomRates[room.roomCode] ||
-                                  displayRateDetails?.rate.rateKey ||
-                                  ""
-                                }
-                                onChange={(e) =>
-                                  handleRoomRateChange(
-                                    room.roomCode,
-                                    e.target.value
-                                  )
-                                }
-                              >
-                                {room.rates && room.rates.length > 0 ? (
-                                  room.rates.map((rate, rateIndex) => (
-                                    <option
-                                      key={`${room.roomCode}-rate-${rateIndex}`}
-                                      value={rate.rateKey}
-                                    >
-                                      {rate.boardName || "N/A"} - SAR{" "}
-                                      {priceFormatter.format(
-                                        Number(rate.net ?? 0)
-                                      )}
-                                    </option>
-                                  ))
-                                ) : (
-                                  <option value="">
-                                    {t("placeholders.noRatesAvailable")}
-                                  </option>
-                                )}
-                              </select>
-                            </label>
+                                <path
+                                  d="M5 7.5L10 12.5L15 7.5"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </button>
                           </div>
                         </div>
                         </div>
@@ -2406,71 +1797,111 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         
                       </div>
 
+                      {/* Room Types Accordion */}
+                      {openRoomTypeAccordion === room.roomCode && (
+                        <div className="room-card-more-details">
+                          {room.rates && room.rates.length > 0 ? (
+                            (() => {
+                              // Get unique rates based on rateKey
+                              const uniqueRates = room.rates.reduce((acc: ProcessedRate[], rate) => {
+                                const isDuplicate = acc.some(r => r.rateKey === rate.rateKey);
+                                if (!isDuplicate) {
+                                  acc.push(rate);
+                                }
+                                return acc;
+                              }, []);
 
-                      <div className="room-card-more-details">
-                        <div className="room-card-more-hotel">
-                          <div className="room-left">
-                            <h3 className="room-title">Room Only (RO)</h3>
-                          </div>
-                          <div className="room-card-more-saperation"></div>
-                            <div className="room-right">
-                                <div className="more-room-refund">
-                                  <div className="room-info">
-                                  <ul  className="more-room-listing">
-                                    <li>
-                                      <span className="non-refundable-icon">&#10003;</span>
-                                  <span className="non-refundable-text">34% Cancellation fees</span>
-                                    </li>
-                                  </ul>
+                              return uniqueRates.map((rate, rateIndex) => {
+                                const rateKey = `${room.roomCode}_${rate.rateKey}`;
+                                const selectedCount = selectedRoomCounts[rateKey] || 0;
+                                const maxAvailable = getAvailableRoomOptionsForRate(room.roomCode, rate.rateKey);
+                                const isDisabled = isRoomRateDisabled(room.roomCode, rate.rateKey);
+                                
+                                return (
+                                <React.Fragment key={`${room.roomCode}-rate-${rateIndex}`}>
+                                <div className="room-card-more-hotel">
+                                  <div className="room-left">
+                                    <h3 className="room-title">
+                                      {rate.boardName || "N/A"}
+                                    </h3>
+                                    {selectedCount > 0 && (
+                                      <span className="selected-badge">
+                                        {selectedCount} {selectedCount === 1 ? 'room' : 'rooms'} selected
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="room-right">
+                                    <div className="more-room-pricing">
+                                      <div className="price">
+                                        <span
+                                          className="currency-icon"
+                                          aria-hidden="true"
+                                          dangerouslySetInnerHTML={{
+                                            __html: buildCurrencySvgMarkup("#09090b"),
+                                          }}
+                                          style={{ display: "inline-flex" }}
+                                        />
+                                        {priceFormatter.format(Number(rate.net ?? 0))}
+                                      </div>
+
+                                      <a 
+                                        href="#" 
+                                        className="price-details"
+                                        onClick={(e) => e.preventDefault()}
+                                      >
+                                        Price details
+                                      </a>
+
+                                      <div className="rate-selection-controls">
+                                        <label className="room-count-label">
+                                          Select Rooms:
+                                          <select
+                                            value={selectedCount}
+                                            onChange={(e) => {
+                                              handleRoomRateCountChange(
+                                                room.roomCode, 
+                                                rate.rateKey, 
+                                                Number(e.target.value)
+                                              );
+                                            }}
+                                            disabled={isDisabled}
+                                            className="room-count-select"
+                                          >
+                                            <option value="0">0</option>
+                                            {Array.from(
+                                              { length: maxAvailable },
+                                              (_, i) => i + 1
+                                            ).map((num) => (
+                                              <option key={num} value={num}>
+                                                {num}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </label>
+                                        
+                                        {isDisabled && selectedCount === 0 && (
+                                          <span className="max-rooms-message">
+                                            Max {totalRoomCount} {totalRoomCount === 1 ? 'room' : 'rooms'} reached
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-
-                                  <span className="places-left">3 places left!</span>
-                              </div>
-
-                              <div className="more-room-pricing">
-                                  <div className="price">$1,032.65</div>
-                                <a href="#" className="price-details">Price details</a>
-
-                                {/* <button className="add-btn">
-                                  <span className="cart-icon">🛒</span> Add
-                                </button> */}
-                              </div>
+                                {rateIndex < uniqueRates.length - 1 && (
+                                  <div className="more-room-card-deparetion"></div>
+                                )}
+                              </React.Fragment>
+                            );
+                              });
+                            })()
+                          ) : (
+                            <div className="no-rates-available">
+                              {t("placeholders.noRatesAvailable")}
                             </div>
-                          </div>
-
-                        <div className="more-room-card-deparetion"></div>
-
-                        <div className="room-card-more-hotel">
-                          <div className="room-left">
-                            <h3 className="room-title">bed and breakfast (BB)</h3>
-                          </div>
-                          <div className="room-card-more-saperation"></div>
-                            <div className="room-right">
-                                <div className="more-room-refund">
-                                  <div className="room-info">
-                                  <ul  className="more-room-listing">
-                                    <li>
-                                      <span className="non-refundable-icon">&#10003;</span>
-                                  <span className="non-refundable-text">34% Cancellation fees</span>
-                                    </li>
-                                  </ul>
-                                </div>
-
-                                  <span className="places-left">3 places left!</span>
-                              </div>
-
-                              <div className="more-room-pricing">
-                                  <div className="price">$1,032.65</div>
-                                <a href="#" className="price-details">Price details</a>
-
-                                {/* <button className="add-btn">
-                                  <span className="cart-icon">🛒</span> Add
-                                </button> */}
-                              </div>
-                            </div>
-                          </div>
-                                  
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

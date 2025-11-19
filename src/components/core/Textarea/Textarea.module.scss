@@ -1,0 +1,47 @@
+@use "../../../styles/variables" as *;
+
+.textareaContainer {
+  width: 100%;
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}
+
+.textareaLabel {
+  font-size: 16px;
+  width: 100%;
+  margin: 0 0 8px 0;
+  display: block;
+}
+
+.textareaField {
+  font-size: 16px;
+  color: $color-black-zinc-950;
+  width: 100%;
+  border: 1px solid #E5E7EB;
+  padding: 13.2px 14px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition: $transition;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+  
+  &:focus {
+    outline: none;
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.errorMessage {
+  margin-top: 8px;
+  margin-bottom: 0px;
+  font-size: 14px;
+  display: block;
+  color: #dc2626;
+}
