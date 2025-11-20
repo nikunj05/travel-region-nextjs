@@ -1338,7 +1338,7 @@
                       cursor: pointer;
 
                       &:hover:not(:disabled) {
-                        border-color: $brand-color;
+                        // border-color: $brand-color;
                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                       }
 
