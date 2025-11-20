@@ -485,9 +485,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         const rates: ProcessedRate[] = ratesSource.map((rate) => {
           const taxes: HotelRateTaxes = rate.taxes
             ? {
-                allIncluded: rate.taxes.allIncluded ?? false,
-                taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
-              }
+              allIncluded: rate.taxes.allIncluded ?? false,
+              taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
+            }
             : { allIncluded: false, taxes: [] };
 
           return {
@@ -696,11 +696,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     selectedRoom?.facilities.filter((facility) => facility.description) || [];
   const selectedRoomBedDescription = selectedRoom
     ? selectedRoom.roomStays
-        .flatMap((stay) => stay.facilities)
-        .map((facility) => facility.description)
-        .find((description) => description) ||
-      selectedRoom.characteristicDescription ||
-      null
+      .flatMap((stay) => stay.facilities)
+      .map((facility) => facility.description)
+      .find((description) => description) ||
+    selectedRoom.characteristicDescription ||
+    null
     : null;
 
   const priceFormatter = useMemo(
@@ -851,8 +851,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     : t("placeholders.refundPolicyUnavailable");
   const selectedRoomRefundDateLabel = selectedRoomRateDetails?.refundDate
     ? t("refund.beforeDate", {
-        date: selectedRoomRateDetails.refundDate,
-      })
+      date: selectedRoomRateDetails.refundDate,
+    })
     : t("placeholders.refundDateUnavailable");
   const hotelLatitude = hotelData?.coordinates?.latitude;
   const hotelLongitude = hotelData?.coordinates?.longitude;
@@ -1148,9 +1148,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                           handleOpenImageModal();
                                         }}
                                       >
-                                        {`${t("showAllPhotos")} (${
-                                          images.totalCount
-                                        })`}
+                                        {`${t("showAllPhotos")} (${images.totalCount
+                                          })`}
                                       </Link>
                                     )}
                                 </div>
@@ -1527,8 +1526,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     : t("placeholders.refundPolicyUnavailable");
                   const refundDateLabel = displayRateDetails?.refundDate
                     ? t("refund.beforeDate", {
-                        date: displayRateDetails.refundDate,
-                      })
+                      date: displayRateDetails.refundDate,
+                    })
                     : t("placeholders.refundDateUnavailable");
 
                   return (
@@ -1547,9 +1546,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                             >
                               {room.images.map((image, imgIndex) => (
                                 <div
-                                  key={`room-${
-                                    room.roomCode || roomIndex
-                                  }-image-${image.path || imgIndex}`}
+                                  key={`room-${room.roomCode || roomIndex
+                                    }-image-${image.path || imgIndex}`}
                                 >
                                   <Image
                                     src={image.fullUrl}
@@ -1729,7 +1727,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               </li>
                             </ul>
                           </div>
-{/* 
+                          {/* 
                           <div className="rooms-card-refund">
                             <div className="refund-item d-flex align-items-center">
                               <svg
@@ -1937,8 +1935,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 const rateRefundDateLabel =
                                   rateCancellationDetails.refundDate
                                     ? t("refund.beforeDate", {
-                                        date: rateCancellationDetails.refundDate,
-                                      })
+                                      date: rateCancellationDetails.refundDate,
+                                    })
                                     : t("placeholders.refundDateUnavailable");
 
                                 return (
@@ -2181,7 +2179,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                           </a>
 
                                           <div className="rate-selection-controls">
-                                          {isDisabled &&
+                                            {isDisabled &&
                                               selectedCount === 0 && (
                                                 <span className="max-rooms-message">
                                                   Max {totalRoomCount}{" "}
@@ -2191,7 +2189,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   reached
                                                 </span>
                                               )}
-                                           
+
                                             <label className="room-count-label">
                                               Select Rooms:
                                               <select
@@ -2218,7 +2216,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                               </select>
                                             </label>
 
-                                           
+
                                           </div>
                                         </div>
                                       </div>
@@ -2562,7 +2560,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         t("placeholders.bedInfoUnavailable")}
                     </li>
 
-                  
+
                     <li>
                       <svg
                         width="20"
@@ -2821,7 +2819,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
                     <div className="total-net-price-section">
                       <div className="total-price-row">
-                        <span className="total-label">Total net price</span>
+                        <span className="total-label">Total Price</span>
                         <span className="total-value d-inline-flex align-items-center">
                           <span
                             className="currency-icon"
