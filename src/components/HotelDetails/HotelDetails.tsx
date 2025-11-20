@@ -52,7 +52,7 @@ import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { toast } from "react-toastify";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { buildCurrencySvgMarkup } from "@/constants";
-import { useBookingStore } from "@/store/bookingStore";
+import { useBookingStore, SelectedRoom } from "@/store/bookingStore";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -894,7 +894,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
 
     // Prepare booking data from selected rooms
-    const selectedRoomsData: any[] = [];
+    const selectedRoomsData: SelectedRoom[] = [];
 
     processedRooms.forEach((room) => {
       room.rates.forEach((rate) => {
@@ -2248,7 +2248,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <li>
                       <span className="label">
                         {bookingSummary.totalRooms}{" "}
-                        {bookingSummary.totalRooms === 1 ? "Room" : "Rooms"} for
+                        {bookingSummary.totalRooms === 1 ? "Room" : "Rooms"} for{" "}
+                        {(() => {
+                          if (!searchFilters.checkInDate || !searchFilters.checkOutDate) {
+                            return "";
+                          }
+                          const checkIn = new Date(searchFilters.checkInDate);
+                          const checkOut = new Date(searchFilters.checkOutDate);
+                          const nights = Math.ceil(
+                            (checkOut.getTime() - checkIn.getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          );
+                          return `${nights} ${nights === 1 ? "night" : "nights"}`;
+                        })()}
                       </span>
                       <span className="value">
                         <span

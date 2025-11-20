@@ -49,7 +49,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     }
   }, [hotelId, hotelData, locale, fetchHotel]);
 
-  // Calculate total guests for dynamic form generation
+  // Calculate total guests for display purposes
   const totalGuests = useMemo(() => {
     const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
     const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
@@ -58,15 +58,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
   // Generate default values for the form
   const defaultValues = useMemo(() => {
-    const additionalGuestsArray = Array.from({ length: totalGuests - 1 }, () => ({
-      firstName: "",
-      lastName: "",
-      email: "",
-      country: "",
-      countryCode: "",
-      phone: "",
-    }));
-
     return {
       primaryGuest: {
         firstName: "",
@@ -76,15 +67,14 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         countryCode: "+966",
         phone: "",
       },
-      additionalGuests: additionalGuestsArray,
       specialRequests: "",
     };
-  }, [totalGuests]);
+  }, []);
 
-  // Create validation schema based on guest count
+  // Create validation schema
   const bookingSchema = useMemo(() => {
-    return createBookingSchema(totalGuests);
-  }, [totalGuests]);
+    return createBookingSchema();
+  }, []);
 
   // Format date to YYYY-MM-DD
   const formatDateForAPI = (date: string | Date | null | undefined): string => {
@@ -107,7 +97,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       room_code: room.roomCode,
     }));
 
-    // Prepare booking details (guest information)
+    // Prepare booking details (guest information) - only primary guest
     const bookingDetails = [
       {
         price_per_night: selectedRoomsInfo[0]?.pricePerRoom || 0,
@@ -119,16 +109,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         phone: data.primaryGuest.phone,
         is_primary: true,
       },
-      ...data.additionalGuests.map(guest => ({
-        price_per_night: 0,
-        first_name: guest.firstName,
-        last_name: guest.lastName,
-        email: guest.email,
-        country: guest.country || "",
-        country_code: guest.countryCode || "",
-        phone: guest.phone || "",
-        is_primary: false,
-      })),
     ];
 
     // Calculate totals
@@ -848,69 +828,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     </div>
                   </div>
 
-                  {/* Additional Guests - Dynamic based on total guests */}
-                  {totalGuests > 1 && Array.from({ length: totalGuests - 1 }).map((_, index) => (
-                    <div key={`guest-${index}`} className="booking-details-form">
-                      <h3 className="booking-form-title">
-                        Guest {index + 2} <span> (Name & Email Required)</span>
-                      </h3>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Input
-                            name={`additionalGuests.${index}.firstName`}
-                            label="First Name"
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="First name"
-                            className="form-input"
-                          />
-                          <Input
-                            name={`additionalGuests.${index}.lastName`}
-                            label="Last Name"
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Last name"
-                            className="form-input"
-                          />
-                        </div>
-
-                        <div className="form-row">
-                          <Input
-                            name={`additionalGuests.${index}.email`}
-                            label="Email address"
-                            labelWithContent={<span className="required">*</span>}
-                            type="email"
-                            placeholder="Email"
-                            className="form-input"
-                          />
-                          <Input
-                            name={`additionalGuests.${index}.country`}
-                            label="Country/ Region"
-                            type="text"
-                            placeholder="Country (Optional)"
-                            className="form-input"
-                          />
-                        </div>
-
-                        <div className="form-row">
-                          <Input
-                            name={`additionalGuests.${index}.phone`}
-                            label="Phone Number"
-                            type="tel"
-                            placeholder="Phone number (Optional)"
-                            className="form-input"
-                          />
-                          <Input
-                            name={`additionalGuests.${index}.countryCode`}
-                            label="Country Code"
-                            type="text"
-                            placeholder="+966 (Optional)"
-                            className="form-input"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
 
                   {/* Special Requests */}
                   <div className="booking-details-form special-request-field">

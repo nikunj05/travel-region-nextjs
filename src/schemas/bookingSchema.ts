@@ -11,7 +11,6 @@ export interface GuestFormData {
 
 export interface BookingFormData {
   primaryGuest: GuestFormData;
-  additionalGuests: GuestFormData[];
   specialRequests?: string;
 }
 
@@ -37,28 +36,9 @@ const primaryGuestSchema = yup.object().shape({
     .matches(phoneRegex, 'Please enter a valid phone number (7-15 digits)'),
 });
 
-// Additional guest schema - only name and email are required
-const additionalGuestSchema = yup.object().shape({
-  firstName: yup.string()
-    .required('First name is required')
-    .min(2, 'First name must be at least 2 characters'),
-  lastName: yup.string()
-    .required('Last name is required')
-    .min(2, 'Last name must be at least 2 characters'),
-  email: yup.string()
-    .required('Email is required')
-    .email('Please enter a valid email address'),
-  country: yup.string(),
-  countryCode: yup.string(),
-  phone: yup.string(),
-});
-
-export const createBookingSchema = (guestCount: number) => {
+export const createBookingSchema = () => {
   return yup.object().shape({
     primaryGuest: primaryGuestSchema,
-    additionalGuests: yup.array()
-      .of(additionalGuestSchema)
-      .length(guestCount - 1, `Please provide details for ${guestCount - 1} additional guest(s)`),
     specialRequests: yup.string().max(500, 'Special requests must not exceed 500 characters'),
   });
 };
