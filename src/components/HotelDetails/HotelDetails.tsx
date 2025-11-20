@@ -155,6 +155,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isPriceDetailsModalOpen, setIsPriceDetailsModalOpen] = useState(false);
+  const [selectedRateForPriceDetails, setSelectedRateForPriceDetails] = useState<{
+    rate: ProcessedRate;
+    roomName: string;
+  } | null>(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
@@ -164,7 +169,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRoomRates, setSelectedRoomRates] = useState<{
     [key: string]: string;
   }>({});
-  const [openRoomTypeAccordion, setOpenRoomTypeAccordion] = useState<string | null>(null);
+  const [openRoomTypeAccordion, setOpenRoomTypeAccordion] = useState<
+    string | null
+  >(null);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
@@ -212,7 +219,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     (roomCode: string, rateKey: string) => {
       const key = `${roomCode}_${rateKey}`;
       const currentSelection = selectedRoomCounts[key] || 0;
-      const remainingSlots = totalRoomCount - totalSelectedRooms + currentSelection;
+      const remainingSlots =
+        totalRoomCount - totalSelectedRooms + currentSelection;
       return Math.min(remainingSlots, totalRoomCount);
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
@@ -242,9 +250,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   };
 
   // Handler for room rate selection with count (auto-select on dropdown change)
-  const handleRoomRateCountChange = (roomCode: string, rateKey: string, count: number) => {
+  const handleRoomRateCountChange = (
+    roomCode: string,
+    rateKey: string,
+    count: number
+  ) => {
     const key = `${roomCode}_${rateKey}`;
-    
+
     if (count === 0) {
       // Remove the selection if count is 0
       const newRates = { ...selectedRoomRates };
@@ -276,7 +288,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       room.rates.forEach((rate) => {
         const key = `${room.roomCode}_${rate.rateKey}`;
         const roomCount = selectedRoomCounts[key] || 0;
-        
+
         if (roomCount > 0) {
           totalRooms += roomCount;
           const rateNet = Number(rate.net) || 0;
@@ -579,6 +591,47 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
+  // Price details modal handlers
+  const handleOpenPriceDetailsModal = (rate: ProcessedRate, roomName: string) => {
+    setSelectedRateForPriceDetails({ rate, roomName });
+    setIsPriceDetailsModalOpen(true);
+  };
+
+  const handleClosePriceDetailsModal = () => {
+    setIsPriceDetailsModalOpen(false);
+    setSelectedRateForPriceDetails(null);
+  };
+
+  // Calculate daily prices based on total and number of nights
+  const calculateDailyPrices = useCallback(() => {
+    if (!searchFilters.checkInDate || !searchFilters.checkOutDate || !selectedRateForPriceDetails) {
+      return { dates: [], nights: 0, averagePrice: 0 };
+    }
+
+    const checkIn = new Date(searchFilters.checkInDate);
+    const checkOut = new Date(searchFilters.checkOutDate);
+    const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+    const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0);
+    const pricePerNight = totalPrice / nights;
+
+    const dates = [];
+    for (let i = 0; i < nights; i++) {
+      const currentDate = new Date(checkIn);
+      currentDate.setDate(checkIn.getDate() + i);
+      dates.push({
+        date: currentDate,
+        price: pricePerNight,
+        formattedDate: currentDate.toLocaleDateString(locale, {
+          weekday: 'short',
+          day: '2-digit',
+          month: 'short'
+        })
+      });
+    }
+
+    return { dates, nights, averagePrice: pricePerNight };
+  }, [searchFilters.checkInDate, searchFilters.checkOutDate, selectedRateForPriceDetails, locale]);
+
   // Helper functions for hotel images
   const getOrderedHotelImages = () => {
     if (!hotelData?.images) return [];
@@ -727,6 +780,46 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     [findPrimaryRate]
   );
 
+  // Helper function to process cancellation policy for any specific rate
+  const getRateCancellationDetails = useCallback(
+    (rate: ProcessedRate) => {
+      const net = Number(rate.net ?? 0);
+      const cancellationPolicy = rate.cancellationPolicies?.[0];
+      const policyAmountRaw = cancellationPolicy?.amount;
+      const parsedPolicyAmount =
+        policyAmountRaw !== undefined && policyAmountRaw !== null
+          ? Number(policyAmountRaw)
+          : null;
+      const policyAmount =
+        parsedPolicyAmount !== null && Number.isFinite(parsedPolicyAmount)
+          ? parsedPolicyAmount
+          : null;
+      const refundDate = cancellationPolicy?.from
+        ? formatCancellationDate(cancellationPolicy.from)
+        : null;
+      const isFullyRefundable =
+        policyAmount !== null && Math.abs(policyAmount - net) < 0.01;
+
+      // Calculate cancellation fee percentage
+      const cancellationFeePercentage =
+        policyAmount !== null && net > 0
+          ? Math.round(((net - policyAmount) / net) * 100)
+          : null;
+
+      return {
+        net,
+        cancellationPolicy,
+        refundDate,
+        policyAmount,
+        policyAmountFormatted:
+          policyAmount !== null ? priceFormatter.format(policyAmount) : null,
+        isFullyRefundable,
+        cancellationFeePercentage,
+      };
+    },
+    [priceFormatter, formatCancellationDate]
+  );
+
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
   const descriptionContent =
     hotelData?.description?.content || t("description.fallback");
@@ -789,10 +882,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
   const handleBookNowClick = () => {
     console.log("handleBookNowClick");
-    
+
     // Validate that at least one room is selected
-    const hasSelectedRooms = Object.values(selectedRoomCounts).some(count => count > 0);
-    
+    const hasSelectedRooms = Object.values(selectedRoomCounts).some(
+      (count) => count > 0
+    );
+
     if (!hasSelectedRooms) {
       toast.error(t("toast.pleaseSelectRoom"));
       return;
@@ -800,12 +895,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
     // Prepare booking data from selected rooms
     const selectedRoomsData: any[] = [];
-    
-    processedRooms.forEach(room => {
-      room.rates.forEach(rate => {
+
+    processedRooms.forEach((room) => {
+      room.rates.forEach((rate) => {
         const key = `${room.roomCode}_${rate.rateKey}`;
         const roomCount = selectedRoomCounts[key] || 0;
-        
+
         if (roomCount > 0) {
           const pricePerRoom = Number(rate.net || 0);
           const totalPrice = pricePerRoom * roomCount;
@@ -829,7 +924,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     });
 
     // Calculate total amount
-    const totalAmount = selectedRoomsData.reduce((sum, room) => sum + room.totalPrice, 0);
+    const totalAmount = selectedRoomsData.reduce(
+      (sum, room) => sum + room.totalPrice,
+      0
+    );
     const currency = selectedRoomsData[0]?.currency || "SAR";
 
     // Save booking data to store
@@ -1393,12 +1491,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   onCheckAvailability={handleCheckAvailability}
                 />
               </div>
-            
-    {/* Room Cards */}
+
+              {/* Room Cards */}
 
               {/* room-list calss remove and add */}
-              <div className="room-list-vertical"> 
-            
+              <div className="room-list-vertical">
                 {processedRooms.map((room, roomIndex) => {
                   const sliderSettings = {
                     dots: false,
@@ -1510,7 +1607,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           />
                         )}
 
-                       
                         <div className="hotel-card-total-image d-flex align-items-center">
                           <svg
                             width="20"
@@ -1549,32 +1645,93 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       <div className="room-card-details">
                         <div className="room-card-details-left">
                           <h3 className="hotel-room-name">{roomDisplayName}</h3>
-                    
-                        <div className="room-card-amenities-list mt-0">
-                          {displayedFacilities.length > 0 ? (
-                            <ul className="amenities-item d-flex">
-                              {displayedFacilities.map((facility) => (
-                                <li
-                                  key={`${room.roomCode}-${facility.groupCode}-${facility.code}`}
+
+                          <div className="room-card-amenities-list mt-0">
+                            {displayedFacilities.length > 0 ? (
+                              <ul className="amenities-item d-flex">
+                                {displayedFacilities.map((facility) => (
+                                  <li
+                                    key={`${room.roomCode}-${facility.groupCode}-${facility.code}`}
+                                  >
+                                    <AmenityIcon facilityCode={facility.code} />
+                                    {facility.description ||
+                                      t("placeholders.facilityFallback", {
+                                        code: facility.code,
+                                      })}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="amenities-item no-facilities">
+                                {t("placeholders.noFacilityInfo")}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="room-card-specs mt-0">
+                            <ul className="card-specs-item d-flex align-items-center">
+                              <li>
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
                                 >
-                                  <AmenityIcon facilityCode={facility.code} />
-                                  {facility.description ||
-                                    t("placeholders.facilityFallback", {
-                                      code: facility.code,
-                                    })}
-                                </li>
-                              ))}
+                                  <path
+                                    d="M1.66602 15.8327V10.8327C1.66602 10.4577 1.7424 10.1174 1.89518 9.81185C2.04796 9.50629 2.24935 9.23546 2.49935 8.99935V6.66602C2.49935 5.97157 2.7424 5.38129 3.22852 4.89518C3.71463 4.40907 4.3049 4.16602 4.99935 4.16602H8.33268C8.65213 4.16602 8.95074 4.22518 9.22852 4.34352C9.50629 4.46185 9.76324 4.6249 9.99935 4.83268C10.2355 4.62435 10.4924 4.46129 10.7702 4.34352C11.048 4.22574 11.3466 4.16657 11.666 4.16602H14.9993C15.6938 4.16602 16.2841 4.40907 16.7702 4.89518C17.2563 5.38129 17.4993 5.97157 17.4993 6.66602V8.99935C17.7493 9.23546 17.9507 9.50629 18.1035 9.81185C18.2563 10.1174 18.3327 10.4577 18.3327 10.8327V15.8327H16.666V14.166H3.33268V15.8327H1.66602ZM10.8327 8.33268H15.8327V6.66602C15.8327 6.4299 15.7527 6.23213 15.5927 6.07268C15.4327 5.91324 15.2349 5.83324 14.9993 5.83268H11.666C11.4299 5.83268 11.2321 5.91268 11.0727 6.07268C10.9132 6.23268 10.8332 6.43046 10.8327 6.66602V8.33268ZM4.16602 8.33268H9.16602V6.66602C9.16602 6.4299 9.08602 6.23213 8.92602 6.07268C8.76602 5.91324 8.56824 5.83324 8.33268 5.83268H4.99935C4.76324 5.83268 4.56546 5.91268 4.40602 6.07268C4.24657 6.23268 4.16657 6.43046 4.16602 6.66602V8.33268ZM3.33268 12.4993H16.666V10.8327C16.666 10.5966 16.586 10.3988 16.426 10.2393C16.266 10.0799 16.0682 9.9999 15.8327 9.99935H4.16602C3.9299 9.99935 3.73213 10.0793 3.57268 10.2393C3.41324 10.3993 3.33324 10.5971 3.33268 10.8327V12.4993Z"
+                                    fill="#27272A"
+                                  />
+                                </svg>
+                                {bedDescription ??
+                                  t("placeholders.bedInfoUnavailable")}
+                              </li>
+
+                              <li>
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
+                                    stroke="#27272A"
+                                    strokeWidth="1.25"
+                                    strokeLinecap="round"
+                                  />
+                                  <path
+                                    d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
+                                    stroke="#27272A"
+                                    strokeWidth="1.25"
+                                    strokeLinecap="round"
+                                  />
+                                  <path
+                                    d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
+                                    stroke="#27272A"
+                                    strokeWidth="1.25"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                  <path
+                                    d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
+                                    stroke="#27272A"
+                                    strokeWidth="1.25"
+                                  />
+                                </svg>
+                                {t("labels.sleeps", {
+                                  count:
+                                    room.capacity?.maxAdults ??
+                                    room.capacity?.maxPax ??
+                                    "-",
+                                })}
+                              </li>
                             </ul>
-                          ) : (
-                            <p className="amenities-item no-facilities">
-                              {t("placeholders.noFacilityInfo")}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="room-card-specs mt-0">
-                          <ul className="card-specs-item d-flex align-items-center">
-                            <li>
+                          </div>
+{/* 
+                          <div className="rooms-card-refund">
+                            <div className="refund-item d-flex align-items-center">
                               <svg
                                 width="20"
                                 height="20"
@@ -1583,218 +1740,158 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 xmlns="http://www.w3.org/2000/svg"
                               >
                                 <path
-                                  d="M1.66602 15.8327V10.8327C1.66602 10.4577 1.7424 10.1174 1.89518 9.81185C2.04796 9.50629 2.24935 9.23546 2.49935 8.99935V6.66602C2.49935 5.97157 2.7424 5.38129 3.22852 4.89518C3.71463 4.40907 4.3049 4.16602 4.99935 4.16602H8.33268C8.65213 4.16602 8.95074 4.22518 9.22852 4.34352C9.50629 4.46185 9.76324 4.6249 9.99935 4.83268C10.2355 4.62435 10.4924 4.46129 10.7702 4.34352C11.048 4.22574 11.3466 4.16657 11.666 4.16602H14.9993C15.6938 4.16602 16.2841 4.40907 16.7702 4.89518C17.2563 5.38129 17.4993 5.97157 17.4993 6.66602V8.99935C17.7493 9.23546 17.9507 9.50629 18.1035 9.81185C18.2563 10.1174 18.3327 10.4577 18.3327 10.8327V15.8327H16.666V14.166H3.33268V15.8327H1.66602ZM10.8327 8.33268H15.8327V6.66602C15.8327 6.4299 15.7527 6.23213 15.5927 6.07268C15.4327 5.91324 15.2349 5.83324 14.9993 5.83268H11.666C11.4299 5.83268 11.2321 5.91268 11.0727 6.07268C10.9132 6.23268 10.8332 6.43046 10.8327 6.66602V8.33268ZM4.16602 8.33268H9.16602V6.66602C9.16602 6.4299 9.08602 6.23213 8.92602 6.07268C8.76602 5.91324 8.56824 5.83324 8.33268 5.83268H4.99935C4.76324 5.83268 4.56546 5.91268 4.40602 6.07268C4.24657 6.23268 4.16657 6.43046 4.16602 6.66602V8.33268ZM3.33268 12.4993H16.666V10.8327C16.666 10.5966 16.586 10.3988 16.426 10.2393C16.266 10.0799 16.0682 9.9999 15.8327 9.99935H4.16602C3.9299 9.99935 3.73213 10.0793 3.57268 10.2393C3.41324 10.3993 3.33324 10.5971 3.33268 10.8327V12.4993Z"
-                                  fill="#27272A"
-                                />
-                              </svg>
-                              {bedDescription ??
-                                t("placeholders.bedInfoUnavailable")}
-                            </li>
-
-                          
-                            <li>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M17.3117 15C17.9361 15 18.4328 14.6071 18.8787 14.0576C19.7916 12.9329 18.2928 12.034 17.7211 11.5938C17.14 11.1463 16.4912 10.8928 15.8333 10.8333M15 9.16667C16.1506 9.16667 17.0833 8.23393 17.0833 7.08333C17.0833 5.93274 16.1506 5 15 5"
-                                  stroke="#27272A"
+                                  d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
+                                  stroke="#09090B"
                                   strokeWidth="1.25"
-                                  strokeLinecap="round"
                                 />
                                 <path
-                                  d="M2.68895 15C2.06453 15 1.56787 14.6071 1.12194 14.0576C0.209058 12.9329 1.70788 12.034 2.27952 11.5938C2.86063 11.1463 3.50947 10.8928 4.16732 10.8333M4.58398 9.16667C3.43339 9.16667 2.50065 8.23393 2.50065 7.08333C2.50065 5.93274 3.43339 5 4.58398 5"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
-                                  strokeLinecap="round"
-                                />
-                                <path
-                                  d="M6.73715 12.594C5.88567 13.1205 3.65314 14.1955 5.0129 15.5408C5.67713 16.198 6.41692 16.668 7.34701 16.668H12.6543C13.5844 16.668 14.3242 16.198 14.9884 15.5408C16.3482 14.1955 14.1156 13.1205 13.2641 12.594C11.2674 11.3593 8.73387 11.3593 6.73715 12.594Z"
-                                  stroke="#27272A"
+                                  d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
+                                  stroke="#09090B"
                                   strokeWidth="1.25"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                 />
                                 <path
-                                  d="M12.9173 6.25065C12.9173 7.86148 11.6115 9.16732 10.0007 9.16732C8.38982 9.16732 7.08398 7.86148 7.08398 6.25065C7.08398 4.63982 8.38982 3.33398 10.0007 3.33398C11.6115 3.33398 12.9173 4.63982 12.9173 6.25065Z"
-                                  stroke="#27272A"
-                                  strokeWidth="1.25"
+                                  d="M9.99203 6.66602H9.99951"
+                                  stroke="#09090B"
+                                  strokeWidth="1.66667"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
                                 />
                               </svg>
-                              {t("labels.sleeps", {
-                                count:
-                                  room.capacity?.maxAdults ??
-                                  room.capacity?.maxPax ??
-                                  "-",
-                              })}
-                            </li>
-                          </ul>
-                        </div>
-
-                        <div className="rooms-card-refund">
-                          <div className="refund-item d-flex align-items-center">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
-                                stroke="#09090B"
-                                strokeWidth="1.25"
-                              />
-                              <path
-                                d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
-                                stroke="#09090B"
-                                strokeWidth="1.25"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M9.99203 6.66602H9.99951"
-                                stroke="#09090B"
-                                strokeWidth="1.66667"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            {refundStatusLabel}
-                            {displayRateDetails?.policyAmountFormatted && (
-                              <span className="refund-amount d-inline-flex align-items-center">
-                                {" ( "}
-                                <span
-                                  className="currency-icon"
-                                  aria-hidden="true"
-                                  dangerouslySetInnerHTML={{
-                                    __html: buildCurrencySvgMarkup("#09090b"),
-                                  }}
-                                  style={{ display: "inline-flex" }}
-                                />{" "}
-                                {` ${displayRateDetails.policyAmountFormatted})`}
+                              {refundStatusLabel}
+                              {displayRateDetails?.policyAmountFormatted && (
+                                <span className="refund-amount d-inline-flex align-items-center">
+                                  {" ( "}
+                                  <span
+                                    className="currency-icon"
+                                    aria-hidden="true"
+                                    dangerouslySetInnerHTML={{
+                                      __html: buildCurrencySvgMarkup("#09090b"),
+                                    }}
+                                    style={{ display: "inline-flex" }}
+                                  />{" "}
+                                  {` ${displayRateDetails.policyAmountFormatted})`}
+                                </span>
+                              )}
+                            </div>
+                            {displayRateDetails ? (
+                              <span className="refund-valid-date">
+                                {refundDateLabel}
                               </span>
-                            )}
-                          </div>
-                          {displayRateDetails ? (
-                            <span className="refund-valid-date">
-                              {refundDateLabel}
-                            </span>
-                          ) : null}
-                        </div>
+                            ) : null}
+                          </div> */}
                         </div>
                         <div className="room-vertical-separetion"></div>
                         <div className="room-card-details-right">
                           <div className="hotel-room-more-details">
-                          <a
-                            className="hotel-more-details-link d-inline-flex align-items-center"
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleOpenModal(room);
-                            }}
-                          >
-                            {t("actions.moreDetails")}
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
+                            <a
+                              className="hotel-more-details-link d-inline-flex align-items-center"
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOpenModal(room);
+                              }}
                             >
-                              <path
-                                d="M7.50004 5L12.5 10L7.5 15"
-                                stroke="#3E5B96"
-                                strokeWidth="1.25"
-                                strokeMiterlimit="16"
-                              />
-                            </svg>
-                          </a>
-                        </div>
-                        <div className="price-info">
-                        
-                          <span className="total-price d-inline-flex align-items-center gap-1">
-                            {displayRateDetails ? (
-                              <>
-                                <span
-                                  className="currency-icon"
-                                  aria-hidden="true"
-                                  dangerouslySetInnerHTML={{
-                                    __html: buildCurrencySvgMarkup("#09090b"),
-                                  }}
-                                  style={{ display: "inline-flex" }}
-                                />{" "}
-                                {displayRateDetails.formattedPrice}
-                              </>
-                            ) : (
-                              t("placeholders.priceUnavailable")
-                            )}
-                          </span>
-                          {displayRateDetails?.rate.boardName && (
-                            <div className="hotel-room-number">
-                              {displayRateDetails.rate.boardName}
-                            </div>
-                          )}
-                        </div>
-                        <div className="total-taxes-fees d-flex align-items-center justify-content-between">
-                          <div className="taxes-fees d-flex align-items-center">
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
-                                stroke="#00C950"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                            {t("labels.totalWithTaxesAndFees")}
-                          </div>
-                        </div>
-                        <div className="hotel-room-booking-action">
-                          <div className="select-room">
-                            <button
-                              className="see-all-room-types-btn"
-                              onClick={() => 
-                                setOpenRoomTypeAccordion(
-                                  openRoomTypeAccordion === room.roomCode ? null : room.roomCode
-                                )
-                              }
-                            >
-                              See all room types
+                              {t("actions.moreDetails")}
                               <svg
                                 width="20"
                                 height="20"
                                 viewBox="0 0 20 20"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
-                                style={{
-                                  transform: openRoomTypeAccordion === room.roomCode ? 'rotate(180deg)' : 'rotate(0deg)',
-                                  transition: 'transform 0.3s ease'
-                                }}
                               >
                                 <path
-                                  d="M5 7.5L10 12.5L15 7.5"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
+                                  d="M7.50004 5L12.5 10L7.5 15"
+                                  stroke="#3E5B96"
+                                  strokeWidth="1.25"
+                                  strokeMiterlimit="16"
+                                />
+                              </svg>
+                            </a>
+                          </div>
+                          <div className="price-info">
+                            <span className="total-price d-inline-flex align-items-center gap-1">
+                              {displayRateDetails ? (
+                                <>
+                                  <span
+                                    className="currency-icon"
+                                    aria-hidden="true"
+                                    dangerouslySetInnerHTML={{
+                                      __html: buildCurrencySvgMarkup("#09090b"),
+                                    }}
+                                    style={{ display: "inline-flex" }}
+                                  />{" "}
+                                  {displayRateDetails.formattedPrice}
+                                </>
+                              ) : (
+                                t("placeholders.priceUnavailable")
+                              )}
+                            </span>
+                            {displayRateDetails?.rate.boardName && (
+                              <div className="hotel-room-number">
+                                {displayRateDetails.rate.boardName}
+                              </div>
+                            )}
+                          </div>
+                          <div className="total-taxes-fees d-flex align-items-center justify-content-between">
+                            <div className="taxes-fees d-flex align-items-center">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M3.33398 9.33398L5.66732 11.6673L12.6673 4.33398"
+                                  stroke="#00C950"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                 />
                               </svg>
-                            </button>
+                              {t("labels.totalWithTaxesAndFees")}
+                            </div>
+                          </div>
+                          <div className="hotel-room-booking-action">
+                            <div className="select-room">
+                              <button
+                                className="see-all-room-types-btn"
+                                onClick={() =>
+                                  setOpenRoomTypeAccordion(
+                                    openRoomTypeAccordion === room.roomCode
+                                      ? null
+                                      : room.roomCode
+                                  )
+                                }
+                              >
+                                See All Rooms
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  style={{
+                                    transform:
+                                      openRoomTypeAccordion === room.roomCode
+                                        ? "rotate(180deg)"
+                                        : "rotate(0deg)",
+                                    transition: "transform 0.3s ease",
+                                  }}
+                                >
+                                  <path
+                                    d="M5 7.5L10 12.5L15 7.5"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        </div>
-                      
-                        
                       </div>
 
                       {/* Room Types Accordion */}
@@ -1803,96 +1900,334 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           {room.rates && room.rates.length > 0 ? (
                             (() => {
                               // Get unique rates based on rateKey
-                              const uniqueRates = room.rates.reduce((acc: ProcessedRate[], rate) => {
-                                const isDuplicate = acc.some(r => r.rateKey === rate.rateKey);
-                                if (!isDuplicate) {
-                                  acc.push(rate);
-                                }
-                                return acc;
-                              }, []);
+                              const uniqueRates = room.rates.reduce(
+                                (acc: ProcessedRate[], rate) => {
+                                  const isDuplicate = acc.some(
+                                    (r) => r.rateKey === rate.rateKey
+                                  );
+                                  if (!isDuplicate) {
+                                    acc.push(rate);
+                                  }
+                                  return acc;
+                                },
+                                []
+                              );
 
                               return uniqueRates.map((rate, rateIndex) => {
                                 const rateKey = `${room.roomCode}_${rate.rateKey}`;
-                                const selectedCount = selectedRoomCounts[rateKey] || 0;
-                                const maxAvailable = getAvailableRoomOptionsForRate(room.roomCode, rate.rateKey);
-                                const isDisabled = isRoomRateDisabled(room.roomCode, rate.rateKey);
-                                
+                                const selectedCount =
+                                  selectedRoomCounts[rateKey] || 0;
+                                const maxAvailable =
+                                  getAvailableRoomOptionsForRate(
+                                    room.roomCode,
+                                    rate.rateKey
+                                  );
+                                const isDisabled = isRoomRateDisabled(
+                                  room.roomCode,
+                                  rate.rateKey
+                                );
+
+                                // Get cancellation details for this specific rate
+                                const rateCancellationDetails =
+                                  getRateCancellationDetails(rate);
+                                const rateRefundStatusLabel =
+                                  rateCancellationDetails.isFullyRefundable
+                                    ? t("refund.fullyRefundable")
+                                    : t("refund.notFullyRefundable");
+                                const rateRefundDateLabel =
+                                  rateCancellationDetails.refundDate
+                                    ? t("refund.beforeDate", {
+                                        date: rateCancellationDetails.refundDate,
+                                      })
+                                    : t("placeholders.refundDateUnavailable");
+
                                 return (
-                                <React.Fragment key={`${room.roomCode}-rate-${rateIndex}`}>
-                                <div className="room-card-more-hotel">
-                                  <div className="room-left">
-                                    <h3 className="room-title">
-                                      {rate.boardName || "N/A"}
-                                    </h3>
-                                    {selectedCount > 0 && (
-                                      <span className="selected-badge">
-                                        {selectedCount} {selectedCount === 1 ? 'room' : 'rooms'} selected
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="room-right">
-                                    <div className="more-room-pricing">
-                                      <div className="price">
-                                        <span
-                                          className="currency-icon"
-                                          aria-hidden="true"
-                                          dangerouslySetInnerHTML={{
-                                            __html: buildCurrencySvgMarkup("#09090b"),
-                                          }}
-                                          style={{ display: "inline-flex" }}
-                                        />
-                                        {priceFormatter.format(Number(rate.net ?? 0))}
-                                      </div>
-
-                                      <a 
-                                        href="#" 
-                                        className="price-details"
-                                        onClick={(e) => e.preventDefault()}
-                                      >
-                                        Price details
-                                      </a>
-
-                                      <div className="rate-selection-controls">
-                                        <label className="room-count-label">
-                                          Select Rooms:
-                                          <select
-                                            value={selectedCount}
-                                            onChange={(e) => {
-                                              handleRoomRateCountChange(
-                                                room.roomCode, 
-                                                rate.rateKey, 
-                                                Number(e.target.value)
-                                              );
-                                            }}
-                                            disabled={isDisabled}
-                                            className="room-count-select"
-                                          >
-                                            <option value="0">0</option>
-                                            {Array.from(
-                                              { length: maxAvailable },
-                                              (_, i) => i + 1
-                                            ).map((num) => (
-                                              <option key={num} value={num}>
-                                                {num}
-                                              </option>
-                                            ))}
-                                          </select>
-                                        </label>
-                                        
-                                        {isDisabled && selectedCount === 0 && (
-                                          <span className="max-rooms-message">
-                                            Max {totalRoomCount} {totalRoomCount === 1 ? 'room' : 'rooms'} reached
+                                  <React.Fragment
+                                    key={`${room.roomCode}-rate-${rateIndex}`}
+                                  >
+                                    <div className="room-card-more-hotel">
+                                      <div className="room-left">
+                                        <h3 className="room-title">
+                                          {rate.boardName || "N/A"}
+                                        </h3>
+                                        {selectedCount > 0 && (
+                                          <span className="selected-badge">
+                                            {selectedCount}{" "}
+                                            {selectedCount === 1
+                                              ? "room"
+                                              : "rooms"}{" "}
+                                            selected
                                           </span>
                                         )}
                                       </div>
+                                      <div className="room-card-more-saperation"></div>
+                                      <div className="room-right">
+                                        <div className="more-room-refund">
+                                          <div className="rooms-card-refund">
+                                            <div className="refund-item d-flex align-items-center">
+                                              <div className="info-icon-wrapper">
+                                                <svg
+                                                  width="20"
+                                                  height="20"
+                                                  viewBox="0 0 20 20"
+                                                  fill="none"
+                                                  xmlns="http://www.w3.org/2000/svg"
+                                                  className="info-icon"
+                                                >
+                                                  <path
+                                                    d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
+                                                    stroke="#09090B"
+                                                    strokeWidth="1.25"
+                                                  />
+                                                  <path
+                                                    d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
+                                                    stroke="#09090B"
+                                                    strokeWidth="1.25"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                  />
+                                                  <path
+                                                    d="M9.99203 6.66602H9.99951"
+                                                    stroke="#09090B"
+                                                    strokeWidth="1.66667"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                  />
+                                                </svg>
+                                                <div className="cancellation-popover">
+                                                  <div className="popover-header">
+                                                    Cancellation Charges
+                                                  </div>
+                                                  <div className="popover-content">
+                                                    {rateCancellationDetails.refundDate ? (
+                                                      <>
+                                                        <div className="popover-message">
+                                                          {rateCancellationDetails.isFullyRefundable ? (
+                                                            <>
+                                                              {rateRefundDateLabel}, get full refund of{" "}
+                                                              <span className="d-inline-flex align-items-center">
+                                                                <span
+                                                                  className="currency-icon"
+                                                                  aria-hidden="true"
+                                                                  dangerouslySetInnerHTML={{
+                                                                    __html:
+                                                                      buildCurrencySvgMarkup(
+                                                                        "#09090b"
+                                                                      ),
+                                                                  }}
+                                                                  style={{
+                                                                    display: "inline-flex",
+                                                                  }}
+                                                                />
+                                                                {rateCancellationDetails.policyAmountFormatted}
+                                                              </span>
+                                                            </>
+                                                          ) : (
+                                                            <>
+                                                              {rateRefundDateLabel}, refundable amount{" "}
+                                                              <span className="d-inline-flex align-items-center">
+                                                                <span
+                                                                  className="currency-icon"
+                                                                  aria-hidden="true"
+                                                                  dangerouslySetInnerHTML={{
+                                                                    __html:
+                                                                      buildCurrencySvgMarkup(
+                                                                        "#09090b"
+                                                                      ),
+                                                                  }}
+                                                                  style={{
+                                                                    display: "inline-flex",
+                                                                  }}
+                                                                />
+                                                                {rateCancellationDetails.policyAmountFormatted}
+                                                              </span>
+                                                            </>
+                                                          )}
+                                                        </div>
+                                                        <div className="popover-note">
+                                                          Date and time is calculated based on local time of destination.
+                                                        </div>
+                                                      </>
+                                                    ) : (
+                                                      <div className="popover-message">
+                                                        No cancellation policy available.
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="refund-status-wrapper">
+                                                <span className="refund-status-text">
+                                                  {rateRefundStatusLabel}
+                                                </span>
+                                                <div className="cancellation-popover">
+                                                  <div className="popover-header">
+                                                    Cancellation Charges
+                                                  </div>
+                                                  <div className="popover-content">
+                                                    {rateCancellationDetails.refundDate ? (
+                                                      <>
+                                                        <div className="popover-message">
+                                                          {rateCancellationDetails.isFullyRefundable ? (
+                                                            <>
+                                                              {rateRefundDateLabel}, get full refund of{" "}
+                                                              <span className="d-inline-flex align-items-center">
+                                                                <span
+                                                                  className="currency-icon"
+                                                                  aria-hidden="true"
+                                                                  dangerouslySetInnerHTML={{
+                                                                    __html:
+                                                                      buildCurrencySvgMarkup(
+                                                                        "#09090b"
+                                                                      ),
+                                                                  }}
+                                                                  style={{
+                                                                    display: "inline-flex",
+                                                                  }}
+                                                                />
+                                                                {rateCancellationDetails.policyAmountFormatted}
+                                                              </span>
+                                                            </>
+                                                          ) : (
+                                                            <>
+                                                              {rateRefundDateLabel}, refundable amount{" "}
+                                                              <span className="d-inline-flex align-items-center">
+                                                                <span
+                                                                  className="currency-icon"
+                                                                  aria-hidden="true"
+                                                                  dangerouslySetInnerHTML={{
+                                                                    __html:
+                                                                      buildCurrencySvgMarkup(
+                                                                        "#09090b"
+                                                                      ),
+                                                                  }}
+                                                                  style={{
+                                                                    display: "inline-flex",
+                                                                  }}
+                                                                />
+                                                                {rateCancellationDetails.policyAmountFormatted}
+                                                              </span>
+                                                            </>
+                                                          )}
+                                                        </div>
+                                                        <div className="popover-note">
+                                                          Date and time is calculated based on local time of destination.
+                                                        </div>
+                                                      </>
+                                                    ) : (
+                                                      <div className="popover-message">
+                                                        No cancellation policy available.
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              {rateCancellationDetails.policyAmountFormatted && (
+                                                <span className="refund-amount d-inline-flex align-items-center">
+                                                  {" ( "}
+                                                  <span
+                                                    className="currency-icon"
+                                                    aria-hidden="true"
+                                                    dangerouslySetInnerHTML={{
+                                                      __html:
+                                                        buildCurrencySvgMarkup(
+                                                          "#09090b"
+                                                        ),
+                                                    }}
+                                                    style={{
+                                                      display: "inline-flex",
+                                                    }}
+                                                  />{" "}
+                                                  {` ${rateCancellationDetails.policyAmountFormatted})`}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="room-card-more-saperation"></div>
+
+                                      <div className="room-right">
+                                        <div className="more-room-pricing">
+                                          <div className="price">
+                                            <span
+                                              className="currency-icon"
+                                              aria-hidden="true"
+                                              dangerouslySetInnerHTML={{
+                                                __html:
+                                                  buildCurrencySvgMarkup(
+                                                    "#09090b"
+                                                  ),
+                                              }}
+                                              style={{ display: "inline-flex" }}
+                                            />
+                                            {priceFormatter.format(
+                                              Number(rate.net ?? 0)
+                                            )}
+                                          </div>
+
+                                          <a
+                                            href="#"
+                                            className="price-details"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              handleOpenPriceDetailsModal(
+                                                rate,
+                                                room.name || room.description || "Room"
+                                              );
+                                            }}
+                                          >
+                                            Price details
+                                          </a>
+
+                                          <div className="rate-selection-controls">
+                                          {isDisabled &&
+                                              selectedCount === 0 && (
+                                                <span className="max-rooms-message">
+                                                  Max {totalRoomCount}{" "}
+                                                  {totalRoomCount === 1
+                                                    ? "room"
+                                                    : "rooms"}{" "}
+                                                  reached
+                                                </span>
+                                              )}
+                                           
+                                            <label className="room-count-label">
+                                              Select Rooms:
+                                              <select
+                                                value={selectedCount}
+                                                onChange={(e) => {
+                                                  handleRoomRateCountChange(
+                                                    room.roomCode,
+                                                    rate.rateKey,
+                                                    Number(e.target.value)
+                                                  );
+                                                }}
+                                                disabled={isDisabled}
+                                                className="room-count-select"
+                                              >
+                                                <option value="0">0</option>
+                                                {Array.from(
+                                                  { length: maxAvailable },
+                                                  (_, i) => i + 1
+                                                ).map((num) => (
+                                                  <option key={num} value={num}>
+                                                    {num}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </label>
+
+                                           
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-                                {rateIndex < uniqueRates.length - 1 && (
-                                  <div className="more-room-card-deparetion"></div>
-                                )}
-                              </React.Fragment>
-                            );
+                                    {rateIndex < uniqueRates.length - 1 && (
+                                      <div className="more-room-card-deparetion"></div>
+                                    )}
+                                  </React.Fragment>
+                                );
                               });
                             })()
                           ) : (
@@ -1927,7 +2262,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         {priceFormatter.format(bookingSummary.totalPrice)}
                       </span>
                     </li>
-                    
+
                     <li className="total">
                       <span className="label">Subtotal</span>
                       <span className="value">
@@ -1945,12 +2280,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </ul>
 
                   <div className="room-book-button">
-                    <button className="button-primary room-booking-btn" onClick={handleBookNowClick}>
+                    <button
+                      className="button-primary room-booking-btn"
+                      onClick={handleBookNowClick}
+                    >
                       {t("actions.bookNow")}
                     </button>
                   </div>
                 </div>
-              </div> 
+              </div>
             </section>
 
             {/* Reviews */}
@@ -2212,53 +2550,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         t("placeholders.bedInfoUnavailable")}
                     </li>
 
-                    {/* <li>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 17.4987C9.41667 17.4987 8.92361 17.2973 8.52083 16.8945C8.11806 16.4918 7.91667 15.9987 7.91667 15.4154C7.91667 14.832 8.11806 14.339 8.52083 13.9362C8.92361 13.5334 9.41667 13.332 10 13.332C10.5833 13.332 11.0764 13.5334 11.4792 13.9362C11.8819 14.339 12.0833 14.832 12.0833 15.4154C12.0833 15.9987 11.8819 16.4918 11.4792 16.8945C11.0764 17.2973 10.5833 17.4987 10 17.4987ZM5.29167 12.7904L3.54167 10.9987C4.36111 10.1793 5.32306 9.53009 6.4275 9.0512C7.53194 8.57231 8.72278 8.33259 10 8.33203C11.2772 8.33148 12.4683 8.57453 13.5733 9.0612C14.6783 9.54787 15.64 10.2076 16.4583 11.0404L14.7083 12.7904C14.0972 12.1793 13.3889 11.7001 12.5833 11.3529C11.7778 11.0056 10.9167 10.832 10 10.832C9.08333 10.832 8.22222 11.0056 7.41667 11.3529C6.61111 11.7001 5.90278 12.1793 5.29167 12.7904ZM1.75 9.2487L0 7.4987C1.27778 6.19314 2.77083 5.17231 4.47917 4.4362C6.1875 3.70009 8.02778 3.33203 10 3.33203C11.9722 3.33203 13.8125 3.70009 15.5208 4.4362C17.2292 5.17231 18.7222 6.19314 20 7.4987L18.25 9.2487C17.1806 8.17925 15.9411 7.34259 14.5317 6.7387C13.1222 6.13481 11.6117 5.83259 10 5.83203C8.38833 5.83148 6.87806 6.1337 5.46917 6.7387C4.06028 7.3437 2.82056 8.18037 1.75 9.2487Z"
-                          fill="#27272A"
-                        />
-                      </svg>
-                      Free Wi-Fi
-                    </li>
-                    <li>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M15 16.6673C15.9205 16.6673 16.6667 15.9212 16.6667 15.0007V5.00065C16.6667 4.08018 15.9205 3.33398 15 3.33398"
-                          stroke="#27272A"
-                          strokeWidth="1.25"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3.33398 5.70577V14.2929C3.33398 15.6205 3.33398 16.2843 3.72107 16.7473C4.10814 17.2103 4.76244 17.329 6.07103 17.5665L8.57107 18.0203C10.3924 18.3508 11.3032 18.5161 11.9019 18.0173C12.5007 17.5185 12.5007 16.5945 12.5007 14.7467V5.25206C12.5007 3.40416 12.5007 2.48021 11.9019 1.98142C11.3032 1.48263 10.3924 1.64791 8.57107 1.97847L6.07103 2.43219C4.76244 2.66968 4.10814 2.78842 3.72107 3.25138C3.33398 3.71434 3.33398 4.37816 3.33398 5.70577Z"
-                          stroke="#27272A"
-                          strokeWidth="1.25"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M9.58398 9.99857V9.99023"
-                          stroke="#27272A"
-                          strokeWidth="1.25"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      1 bedroom
-                    </li> */}
+                  
                     <li>
                       <svg
                         width="20"
@@ -2427,6 +2719,117 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           console.log("Logged in, now can favorite");
         }}
       />
+
+      {/* Price Details Modal */}
+      {isPriceDetailsModalOpen && selectedRateForPriceDetails && (
+        <div className="room-modal-overlay" onClick={handleClosePriceDetailsModal}>
+          <div className="price-details-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="room-modal-header d-flex align-items-center">
+              <button
+                className="room-modal-close p-0"
+                onClick={handleClosePriceDetailsModal}
+              >
+                <Image
+                  src={ClosePopupIcon}
+                  width={24}
+                  height={24}
+                  alt="close icon"
+                />
+              </button>
+              <h2 className="room-modal-title">
+                {hotelName}
+              </h2>
+            </div>
+
+            <div className="price-details-modal-body">
+              {(() => {
+                const { dates, nights, averagePrice } = calculateDailyPrices();
+                const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0);
+
+                return (
+                  <>
+                    <div className="price-per-night-section">
+                      <h3 className="price-section-title">
+                        Price per night ({nights} {nights === 1 ? 'night' : 'nights'})
+                      </h3>
+                      <p className="average-price">
+                        Average: {" "}
+                        <span className="d-inline-flex align-items-center">
+                          <span
+                            className="currency-icon"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{
+                              __html: buildCurrencySvgMarkup("#09090b"),
+                            }}
+                            style={{ display: "inline-flex" }}
+                          />
+                          {priceFormatter.format(averagePrice)}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="daily-prices-grid">
+                      {dates.map((dayInfo, index) => (
+                        <div key={index} className="daily-price-card">
+                          <div className="date-label">{dayInfo.formattedDate}</div>
+                          <div className="price-value d-inline-flex align-items-center">
+                            <span
+                              className="currency-icon"
+                              aria-hidden="true"
+                              dangerouslySetInnerHTML={{
+                                __html: buildCurrencySvgMarkup("#09090b"),
+                              }}
+                              style={{ display: "inline-flex" }}
+                            />
+                            {priceFormatter.format(dayInfo.price)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="price-details-section">
+                      <h3 className="price-section-title">Price details</h3>
+                      <div className="price-breakdown-item">
+                        <span className="breakdown-label">
+                          {nights} x {selectedRateForPriceDetails.roomName}, {selectedRateForPriceDetails.rate.boardName || "Room Only"}
+                        </span>
+                        <span className="breakdown-value d-inline-flex align-items-center">
+                          <span
+                            className="currency-icon"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{
+                              __html: buildCurrencySvgMarkup("#09090b"),
+                            }}
+                            style={{ display: "inline-flex" }}
+                          />
+                          {priceFormatter.format(totalPrice)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="total-net-price-section">
+                      <div className="total-price-row">
+                        <span className="total-label">Total net price</span>
+                        <span className="total-value d-inline-flex align-items-center">
+                          <span
+                            className="currency-icon"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{
+                              __html: buildCurrencySvgMarkup("#09090b"),
+                            }}
+                            style={{ display: "inline-flex" }}
+                          />
+                          {priceFormatter.format(totalPrice)}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

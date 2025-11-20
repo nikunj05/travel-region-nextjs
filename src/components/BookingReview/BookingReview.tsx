@@ -38,7 +38,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { filters: searchFilters } = useSearchFiltersStore();
-  const { bookingData } = useBookingStore();
+  const { bookingData, createBooking, loading: bookingLoading } = useBookingStore();
 
   // Fetch hotel details if not available (on page refresh)
   useEffect(() => {
@@ -98,7 +98,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   };
 
   // Handle form submission
-  const handleSubmit = (data: BookingFormData) => {
+  const handleSubmit = async (data: BookingFormData) => {
     console.log("=== BOOKING FORM SUBMISSION ===");
     
     // Prepare room details
@@ -154,10 +154,16 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     console.log("Booking Request Payload:");
     console.log(JSON.stringify(bookingRequest, null, 2));
+    
+    // Call API to create booking via Zustand store
+    const response = await createBooking(bookingRequest);
+    
     console.log("=== END OF SUBMISSION ===");
     
-    // TODO: Call API to create booking
-    // router.push(`/checkout`);
+    // TODO: Redirect after successful booking
+    // if (response && response.status) {
+    //   router.push(`/checkout`);
+    // }
   };
 
   // Helper functions to get hotel images (similar to HotelDetails)

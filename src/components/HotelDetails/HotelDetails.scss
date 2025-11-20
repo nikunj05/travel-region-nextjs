@@ -1946,6 +1946,377 @@
       }
     }
   }
+
+  // Price Details Modal
+  .price-details-modal {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+
+    .price-details-modal-body {
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      padding: 24px 0;
+
+      .price-per-night-section {
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #E5E7EB;
+
+        .price-section-title {
+          font-size: 18px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-950;
+          margin-bottom: 8px;
+        }
+
+        .average-price {
+          font-size: 14px;
+          color: $color-black-zinc-600;
+          margin: 0;
+          
+          span {
+            font-weight: $font-weight600;
+            color: $color-black-zinc-900;
+          }
+
+          .currency-icon {
+            margin: 0 2px;
+          }
+        }
+      }
+
+      .daily-prices-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+
+        .daily-price-card {
+          background: #F3F4F6;
+          border-radius: 12px;
+          padding: 16px;
+          text-align: center;
+
+          .date-label {
+            font-size: 14px;
+            font-weight: $font-weight500;
+            color: $color-black-zinc-700;
+            margin-bottom: 8px;
+          }
+
+          .price-value {
+            font-size: 16px;
+            font-weight: $font-weight600;
+            color: $color-black-zinc-950;
+            justify-content: center;
+
+            .currency-icon {
+              margin-right: 2px;
+            }
+          }
+        }
+      }
+
+      .price-details-section {
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #E5E7EB;
+
+        .price-section-title {
+          font-size: 18px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-950;
+          margin-bottom: 16px;
+        }
+
+        .price-breakdown-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+
+          .breakdown-label {
+            font-size: 14px;
+            color: $color-black-zinc-700;
+            flex: 1;
+          }
+
+          .breakdown-value {
+            font-size: 16px;
+            font-weight: $font-weight600;
+            color: $color-black-zinc-950;
+
+            .currency-icon {
+              margin-right: 2px;
+            }
+          }
+        }
+      }
+
+      .total-net-price-section {
+        .total-price-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px 0;
+
+          .total-label {
+            font-size: 18px;
+            font-weight: $font-weight600;
+            color: $color-black-zinc-950;
+          }
+
+          .total-value {
+            font-size: 24px;
+            font-weight: $font-weight700;
+            color: $color-black-zinc-950;
+
+            .currency-icon {
+              margin-right: 4px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Cancellation Info Icon Popover
+  .info-icon-wrapper {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    margin-right: 8px;
+
+    .info-icon {
+      transition: all 0.2s ease;
+    }
+
+    &:hover {
+      .info-icon {
+        path {
+          stroke: #2563eb;
+        }
+      }
+
+      .cancellation-popover {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cancellation-popover {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0;
+      min-width: 280px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: #fff;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 7px solid transparent;
+        border-top-color: #e5e7eb;
+        margin-top: 1px;
+      }
+
+      .popover-header {
+        background: #f9fafb;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 12px 12px 0 0;
+        font-size: 14px;
+        font-weight: $font-weight600;
+        color: $color-black-zinc-900;
+      }
+
+      .popover-content {
+        padding: 12px 16px;
+
+        .popover-message {
+          font-size: 13px;
+          font-weight: $font-weight500;
+          color: $color-black-zinc-900;
+          margin-bottom: 8px;
+          line-height: 1.6;
+
+          .currency-icon {
+            margin: 0 2px;
+          }
+
+          span {
+            font-weight: $font-weight600;
+          }
+        }
+
+        .popover-date {
+          font-size: 13px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-900;
+          margin-bottom: 8px;
+        }
+
+        .popover-note {
+          font-size: 12px;
+          color: $color-black-zinc-600;
+          line-height: 1.5;
+        }
+      }
+    }
+  }
+
+  // Refund Status Text Wrapper (for hover popover)
+  .refund-status-wrapper {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+
+    .refund-status-text {
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      text-underline-offset: 3px;
+      transition: color 0.2s ease;
+    }
+
+    &:hover {
+      .refund-status-text {
+        color: #2563eb;
+      }
+
+      .cancellation-popover {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cancellation-popover {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 0;
+      min-width: 280px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: #fff;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 7px solid transparent;
+        border-top-color: #e5e7eb;
+        margin-top: 1px;
+      }
+
+      .popover-header {
+        background: #f9fafb;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 12px 12px 0 0;
+        font-size: 14px;
+        font-weight: $font-weight600;
+        color: $color-black-zinc-900;
+      }
+
+      .popover-content {
+        padding: 12px 16px;
+
+        .popover-message {
+          font-size: 13px;
+          font-weight: $font-weight500;
+          color: $color-black-zinc-900;
+          margin-bottom: 8px;
+          line-height: 1.6;
+
+          .currency-icon {
+            margin: 0 2px;
+          }
+
+          span {
+            font-weight: $font-weight600;
+          }
+        }
+
+        .popover-date {
+          font-size: 13px;
+          font-weight: $font-weight600;
+          color: $color-black-zinc-900;
+          margin-bottom: 8px;
+        }
+
+        .popover-note {
+          font-size: 12px;
+          color: $color-black-zinc-600;
+          line-height: 1.5;
+        }
+      }
+    }
+  }
+
+  // Refund item styles
+  .refund-item {
+    gap: 8px;
+    font-size: 14px;
+    color: $color-black-zinc-900;
+    font-weight: $font-weight500;
+
+    .refund-amount {
+      color: $color-black-zinc-700;
+      font-weight: $font-weight400;
+    }
+  }
 }
 
 
