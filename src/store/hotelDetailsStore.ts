@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { hotelService } from '@/services/hotelService'
 import { HotelDetails as HotelDetailsType } from '@/types/hotel'
 import { useSearchFiltersStore } from './searchFiltersStore'
+import { formatDateForAPI } from '@/lib/dateUtils'
 
 interface FetchParams {
   hotelId: string
@@ -36,8 +37,8 @@ export const useHotelDetailsStore = create<HotelDetailsState>((set) => ({
       const payload = {
         hotelId,
         language,
-        check_in: filters.checkInDate.toISOString().split('T')[0],
-        check_out: filters.checkOutDate.toISOString().split('T')[0],
+        check_in: formatDateForAPI(filters.checkInDate),
+        check_out: formatDateForAPI(filters.checkOutDate),
         rooms: filters.rooms
       }
       

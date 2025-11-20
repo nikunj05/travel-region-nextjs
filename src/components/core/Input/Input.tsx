@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useFormContext, FieldError } from "react-hook-form";
+import { useFormContext, FieldError, FieldErrors } from "react-hook-form";
 import Image from "next/image";
 import EyeIconHide from "@/assets/images/eye-hide-icon.svg";
 import EyeIconShow from "@/assets/images/eye-show-icon.svg";
@@ -15,6 +15,30 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   showPasswordToggle?: boolean;
   labelWithContent?: React.ReactNode;
 }
+
+// Type for nested field errors that can contain FieldError or nested objects
+type NestedFieldErrors = FieldErrors<Record<string, unknown>>;
+
+// Helper function to get nested error from errors object
+const getNestedError = (errors: NestedFieldErrors, path: string): FieldError | undefined => {
+  const keys = path.split('.');
+  let current: unknown = errors;
+  
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = (current as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
+  }
+  
+  // Type guard to check if current is a FieldError
+  if (current && typeof current === 'object' && 'message' in current) {
+    return current as FieldError;
+  }
+  
+  return undefined;
+};
 
 export const Input = ({
   name,
@@ -33,7 +57,7 @@ export const Input = ({
   } = useFormContext();
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const error = errors[name] as FieldError | undefined;
+  const error = name.includes('.') ? getNestedError(errors, name) : (errors[name] as FieldError | undefined);
 
   const inputType = showPasswordToggle && type === "password" 
     ? (isPasswordVisible ? "text" : "password") 

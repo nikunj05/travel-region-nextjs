@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useRouter } from "@/i18/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
@@ -44,7 +43,6 @@ import { buildCurrencySvgMarkup } from "@/constants";
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
 const SearchResult = () => {
-  const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Banner");
   const tSearch = useTranslations("SearchResult");
@@ -599,7 +597,7 @@ const SearchResult = () => {
   //   });
   // };
 
-  const handleViewDetailsClick = async (
+  const handleViewDetailsClick = (
     hotelCode: string | number | undefined,
     hotelName: string | undefined
   ) => {
@@ -609,8 +607,9 @@ const SearchResult = () => {
     setLoadingHotelId(hotelId);
     const hotelSlug = buildHotelSlug(hotelName, hotelId);
     try {
-      // Navigate to hotel details page
-      await router.push(`/hotel-details/${hotelSlug}`);
+      // Open hotel details page in a new tab
+      const url = `/${locale}/hotel-details/${hotelSlug}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error("Navigation error:", error);
     } finally {
