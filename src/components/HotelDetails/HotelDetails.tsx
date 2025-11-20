@@ -280,7 +280,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
   // Calculate booking summary
   const bookingSummary = useMemo(() => {
-    let totalRooms = 0;
     let totalPrice = 0;
     let currency = "SAR";
 
@@ -290,7 +289,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         const roomCount = selectedRoomCounts[key] || 0;
 
         if (roomCount > 0) {
-          totalRooms += roomCount;
           const rateNet = Number(rate.net) || 0;
           totalPrice += rateNet * roomCount;
           currency = rate.currency || "SAR";
@@ -300,13 +298,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
     const subtotal = totalPrice;
 
+    // Use totalSelectedRooms instead of recalculating to ensure consistency
     return {
-      totalRooms,
+      totalRooms: totalSelectedRooms,
       totalPrice,
       subtotal,
       currency,
     };
-  }, [processedRooms, selectedRoomCounts]);
+  }, [processedRooms, selectedRoomCounts, totalSelectedRooms]);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
