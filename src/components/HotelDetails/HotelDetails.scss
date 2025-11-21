@@ -781,7 +781,7 @@
     .room-list-vertical {
       display: flex;
       flex-wrap: wrap;
-      gap: 32px;
+      gap: 24px;
       margin-bottom: 36px;
       flex-direction: column;
 
@@ -2167,7 +2167,6 @@
         border-bottom: 1px solid #d1d5dc;
         border-radius: 12px 12px 0 0;
         font-size: 14px;
-        text-align: left;
         font-weight: $font-weight600;
         color: $color-black-zinc-900;
       }
@@ -3433,14 +3432,18 @@
       .room-list-vertical {
         .room-card {
           .room-card-image {
+            img {
+              border-radius: 0px 8px 8px 0px;
+            }
+
             .hotel-image-action {
               .hotel-img-btn {
                 img {
                   transform: rotate(180deg);
                 }
-
               }
             }
+
 
             .hotel-card-total-image {
               right: auto;
@@ -3471,6 +3474,23 @@
               text-align: right;
             }
           }
+
+          .room-card-more-details {
+            .room-card-more-hotel {
+              .room-right {
+                .more-room-pricing {
+                  .rate-selection-controls {
+                    .room-count-label {
+                      .room-count-select {
+                        padding: 8px 12px 8px 36px;
+                        background-position-x: calc(0% + 10px);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -3490,6 +3510,23 @@
             text-align: right;
           }
         }
+      }
+    }
+
+
+    .refund-status-wrapper {
+      .cancellation-popover {
+        text-align: right;
+        left: auto;
+        right: 0;
+      }
+    }
+
+    .info-icon-wrapper {
+      .cancellation-popover {
+        text-align: right;
+        left: auto;
+        right: 0;
       }
     }
   }
