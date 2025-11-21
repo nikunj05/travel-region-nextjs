@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { Controller, UseFormReturn } from "react-hook-form";
 import "./BookingReview.scss";
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
 import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
@@ -12,12 +13,13 @@ import { useRouter } from "next/navigation";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useBookingStore } from "@/store/bookingStore";
-import { buildHotelbedsImageUrl } from "@/constants";
+import { buildHotelbedsImageUrl, COUNTRY_CODES } from "@/constants";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
 import { Textarea } from "@/components/core/Textarea/Textarea";
+import { Select } from "@/components/core/Select/Select";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 import { CreateBookingRequest } from "@/types/booking";
 
@@ -34,11 +36,33 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
   const locale = useLocale();
   const formRef = useRef<HTMLFormElement>(null);
+  const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
+  const watchSetupRef = useRef(false);
 
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { filters: searchFilters } = useSearchFiltersStore();
-  const { bookingData, createBooking, loading: bookingLoading } = useBookingStore();
+  const { bookingData, createBooking, loading: bookingLoading, travelerDetails, setTravelerDetails } = useBookingStore();
+
+  // Watch form values and save to store when they change
+  useEffect(() => {
+    if (!formMethodsRef.current || watchSetupRef.current) return;
+
+    const subscription = formMethodsRef.current.watch((value) => {
+      if (value?.primaryGuest && (value.primaryGuest.firstName || value.primaryGuest.lastName || value.primaryGuest.email)) {
+        setTravelerDetails(value as BookingFormData);
+      }
+    });
+
+    watchSetupRef.current = true;
+
+    return () => {
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe();
+        watchSetupRef.current = false;
+      }
+    };
+  }, [setTravelerDetails]);
 
   // Fetch hotel details if not available (on page refresh)
   useEffect(() => {
@@ -56,20 +80,23 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     return adults + children;
   }, [searchFilters.rooms]);
 
-  // Generate default values for the form
+  // Generate default values for the form - load from store if available
   const defaultValues = useMemo(() => {
+    if (travelerDetails) {
+      return travelerDetails;
+    }
     return {
       primaryGuest: {
         firstName: "",
         lastName: "",
         email: "",
         country: "",
-        countryCode: "+966",
+        countryCode: "966",
         phone: "",
       },
       specialRequests: "",
     };
-  }, []);
+  }, [travelerDetails]);
 
   // Create validation schema
   const bookingSchema = useMemo(() => {
@@ -98,6 +125,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     }));
 
     // Prepare booking details (guest information) - only primary guest
+    // Add "+" prefix to country code if not already present
+    const countryCode = data.primaryGuest.countryCode.startsWith('+') 
+      ? data.primaryGuest.countryCode 
+      : `+${data.primaryGuest.countryCode}`;
+    
     const bookingDetails = [
       {
         price_per_night: selectedRoomsInfo[0]?.pricePerRoom || 0,
@@ -105,7 +137,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         last_name: data.primaryGuest.lastName,
         email: data.primaryGuest.email,
         country: data.primaryGuest.country,
-        country_code: data.primaryGuest.countryCode,
+        country_code: countryCode,
         phone: data.primaryGuest.phone,
         is_primary: true,
       },
@@ -140,10 +172,10 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     
     console.log("=== END OF SUBMISSION ===");
     
-    // TODO: Redirect after successful booking
-    // if (response && response.status) {
-    //   router.push(`/checkout`);
-    // }
+    // Redirect to checkout page after successful booking
+    if (response && response.status) {
+      router.push(`/${locale}/checkout`);
+    }
   };
 
   // Helper functions to get hotel images (similar to HotelDetails)
@@ -759,9 +791,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               schema={bookingSchema}
               className="booking-detail-box booking-traveler-details"
             >
-              {(methods) => (
-                <>
-                  <h3 className="booking-details-sub-title">Traveler Details</h3>
+              {(methods) => {
+                // Store form methods in ref for useEffect access
+                formMethodsRef.current = methods;
+
+                return (
+                  <>
+                    <h3 className="booking-details-sub-title">Traveler Details</h3>
                   
                   {/* Primary Guest - Mandatory */}
                   <div className="booking-details-form mandatory-field">
@@ -808,22 +844,39 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       </div>
 
                       <div className="form-row">
-                        <Input
-                          name="primaryGuest.phone"
-                          label="Phone Number"
-                          labelWithContent={<span className="required">*</span>}
-                          type="tel"
-                          placeholder="Your phone number"
-                          className="form-input"
-                        />
-                        <Input
-                          name="primaryGuest.countryCode"
-                          label="Country Code"
-                          labelWithContent={<span className="required">*</span>}
-                          type="text"
-                          placeholder="+966"
-                          className="form-input"
-                        />
+                        <div className="form-group select-with-input-field">
+                          <label className="form-label">
+                            Phone Number <span className="required">*</span>
+                          </label>
+                          <div className="select-with-input">
+                            <div className="country-code-input">
+                              <Controller
+                                name="primaryGuest.countryCode"
+                                control={methods.control}
+                                render={({ field }) => (
+                                  <Select
+                                    options={COUNTRY_CODES.map((c) => ({
+                                      value: c.value,
+                                      label: `+${c.label}`,
+                                    }))}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder="+966"
+                                  />
+                                )}
+                              />
+                            </div>
+                            <div className="phone-number-input">
+                              <Input
+                                name="primaryGuest.phone"
+                                type="tel"
+                                placeholder="Your phone number"
+                                className="form-input form-control"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="form-group"></div>
                       </div>
                     </div>
                   </div>
@@ -848,8 +901,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       </div>
                     </div>
                   </div>
-                </>
-              )}
+                  </>
+                );
+              }}
             </Form>
           </div>
           <div className="review-booking-details-right">

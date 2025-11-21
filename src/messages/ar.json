@@ -163,7 +163,9 @@
       "priceUnavailable": "السعر غير متوفر",
       "refundPolicyUnavailable": "سياسة الاسترداد غير متوفرة",
       "refundDateUnavailable": "تاريخ الاسترداد غير متوفر",
-      "noRatesAvailable": "لا توجد أسعار متاحة"
+      "noRatesAvailable": "لا توجد أسعار متاحة",
+      "noRoomsAvailable": "لا توجد غرف متاحة",
+      "changeFilters": "يرجى محاولة تغيير المرشحات الخاصة بك"
     },
     "labels": {
       "freeCancellation": "إلغاء مجاني",

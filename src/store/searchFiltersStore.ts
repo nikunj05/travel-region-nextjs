@@ -18,6 +18,7 @@ export interface Location {
 export interface Room {
   adults: number;
   children: number;
+  childrenAges?: number[]; // Array of ages for each child
 }
 
 // Search filters interface
@@ -53,7 +54,7 @@ const defaultFilters: SearchFilters = {
   location: null,
   checkInDate: null,
   checkOutDate: null,
-  rooms: [{ adults: 2, children: 1 }],
+  rooms: [{ adults: 2, children: 0, childrenAges: [] }],
   freeCancellation: false,
 }
 
@@ -120,12 +121,22 @@ export const useSearchFiltersStore = create<SearchFiltersState>()(
           if (!rooms && state.filters?.guestCounts) {
             // Migrate old guestCounts to rooms array
             const guestCounts = state.filters.guestCounts
-            rooms = [{ adults: guestCounts.adults || 2, children: guestCounts.children || 1 }]
+            const childrenCount = guestCounts.children || 0
+            rooms = [{ 
+              adults: guestCounts.adults || 2, 
+              children: childrenCount,
+              childrenAges: Array(childrenCount).fill(0)
+            }]
           }
           // Ensure rooms is an array, fallback to default
           if (!Array.isArray(rooms) || rooms.length === 0) {
-            rooms = [{ adults: 2, children: 1 }]
+            rooms = [{ adults: 2, children: 0, childrenAges: [] }]
           }
+          // Ensure all rooms have childrenAges array
+          rooms = rooms.map((room: Room) => ({
+            ...room,
+            childrenAges: room.childrenAges || Array(room.children || 0).fill(0)
+          }))
           
           return {
             state: {

@@ -155,6 +155,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"favorite" | "booking" | null>(null);
   const [isPriceDetailsModalOpen, setIsPriceDetailsModalOpen] = useState(false);
   const [selectedRateForPriceDetails, setSelectedRateForPriceDetails] = useState<{
     rate: ProcessedRate;
@@ -172,6 +173,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [openRoomTypeAccordion, setOpenRoomTypeAccordion] = useState<
     string | null
   >(null);
+  // Active room count - only updated when Check Availability is clicked
+  const [activeRoomCount, setActiveRoomCount] = useState<number>(1);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
@@ -203,8 +206,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
   const searchFilters = useSearchFiltersStore((state) => state.filters);
 
-  // Get total room count from search filters
-  const totalRoomCount = searchFilters.rooms?.length || 1;
+  // Initialize active room count from search filters on mount
+  useEffect(() => {
+    const initialRoomCount = searchFilters.rooms?.length || 1;
+    setActiveRoomCount(initialRoomCount);
+  }, []); // Only run on mount
+
+  // Use activeRoomCount instead of directly reading from searchFilters
+  const totalRoomCount = activeRoomCount;
 
   // Calculate total selected rooms across all cards
   const totalSelectedRooms = useMemo(() => {
@@ -318,6 +327,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
   const handleCheckAvailability = () => {
     if (hotelId) {
+      // Update active room count from current search filters
+      const currentRoomCount = searchFilters.rooms?.length || 1;
+      setActiveRoomCount(currentRoomCount);
+      
+      // Reset selected room counts when availability is checked with new filters
+      setSelectedRoomCounts({});
+      setSelectedRoomRates({});
+      
       const languageCode = getLanguageCode(locale);
       fetchHotel({ hotelId, language: languageCode });
     }
@@ -563,14 +580,17 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         };
       });
 
+      // Filter out rooms that don't have any rates
+      const roomsWithRates = roomsWithDetails.filter((room) => room.rates.length > 0);
+
       // Store processed rooms in state
-      setProcessedRooms(roomsWithDetails);
+      setProcessedRooms(roomsWithRates);
     }
   }, [hotelData]);
   const handleOpenModal = (room: ProcessedRoom) => {
     setSelectedRoom(room);
     setIsModalOpen(true);
-  };
+  };  
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -875,12 +895,20 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         toast.success(t("toast.addedToFavorites"));
       }
     } else {
+      setPendingAction("favorite");
       setIsLoginModalOpen(true);
     }
   };
 
   const handleBookNowClick = () => {
     console.log("handleBookNowClick");
+
+    // Check authentication first
+    if (!authContext?.isAuthenticated) {
+      setPendingAction("booking");
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     // Validate that at least one room is selected
     const hasSelectedRooms = Object.values(selectedRoomCounts).some(
@@ -1494,7 +1522,22 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
               {/* room-list calss remove and add */}
               <div className="room-list-vertical">
-                {processedRooms.map((room, roomIndex) => {
+                {processedRooms.length === 0 ? (
+                  <div className="no-rooms-available-message" style={{
+                    textAlign: "center",
+                    padding: "40px 20px",
+                    color: "#666",
+                    fontSize: "16px"
+                  }}>
+                    <p style={{ marginBottom: "8px", fontWeight: "500" }}>
+                      {t("placeholders.noRoomsAvailable") || "No rooms available"}
+                    </p>
+                    <p style={{ fontSize: "14px", color: "#999" }}>
+                      {t("placeholders.changeFilters") || "Please try changing your filters"}
+                    </p>
+                  </div>
+                ) : (
+                  processedRooms.map((room, roomIndex) => {
                   const sliderSettings = {
                     dots: false,
                     infinite: room.images.length > 1,
@@ -2236,9 +2279,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       )}
                     </div>
                   );
-                })}
+                  })
+                )}
               </div>
 
+              {processedRooms.length > 0 && (
               <div className="hotel-detail-room-booking">
                 <div className="hotel-subtotal">
                   <ul>
@@ -2297,6 +2342,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                 </div>
               </div>
+              )}
             </section>
 
             {/* Reviews */}
@@ -2720,11 +2766,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       />
       <LoginModal
         isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+        onClose={() => {
+          setIsLoginModalOpen(false);
+          setPendingAction(null);
+        }}
         onLoginSuccess={() => {
-          // You might want to trigger the favorite action again here
-          handleFavoriteClick();
-          console.log("Logged in, now can favorite");
+          // Handle the pending action after successful login
+          if (pendingAction === "favorite") {
+            handleFavoriteClick();
+            console.log("Logged in, now can favorite");
+          } else if (pendingAction === "booking") {
+            // Proceed with booking after login
+            handleBookNowClick();
+            console.log("Logged in, now can book");
+          }
+          setPendingAction(null);
         }}
       />
 

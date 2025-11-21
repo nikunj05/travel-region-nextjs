@@ -183,7 +183,7 @@ const Banner = () => {
       useHotelSearchStore
         .getState()
         .setDates(filters.checkInDate, filters.checkOutDate);
-      useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
+      useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 0, childrenAges: [] }]);
       useHotelSearchStore.getState().setLanguage("eng"); // Default to English initially
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 
@@ -479,7 +479,7 @@ const Banner = () => {
                   <GuestsPicker
                     isOpen={isGuestsDropdownOpen}
                     onRoomsChange={setRooms}
-                    rooms={filters.rooms || [{ adults: 2, children: 1 }]}
+                    rooms={filters.rooms || [{ adults: 2, children: 0, childrenAges: [] }]}
                   />
                 </div>
               </div>

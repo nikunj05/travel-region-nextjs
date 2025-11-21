@@ -9,9 +9,32 @@ import visaCardIcon from "@/assets/images/visa-card-icon.svg";
 import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
+import { useBookingStore } from "@/store/bookingStore";
+import { useEffect, useState } from "react";
 
 function CheckoutComponent() {
   const router = useRouter();
+  const { travelerDetails } = useBookingStore();
+  const [primaryGuest, setPrimaryGuest] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    country: "",
+    countryCode: "",
+    phone: "",
+  });
+  const [specialRequests, setSpecialRequests] = useState("");
+
+  // Load traveler details from store when component mounts
+  useEffect(() => {
+    if (travelerDetails?.primaryGuest) {
+      setPrimaryGuest(travelerDetails.primaryGuest);
+    }
+    if (travelerDetails?.specialRequests) {
+      setSpecialRequests(travelerDetails.specialRequests);
+    }
+  }, [travelerDetails]);
+
   return (
     <main className="checkout-page padding-top-100 section-space-b">
       <div className="container">
@@ -115,6 +138,8 @@ function CheckoutComponent() {
                         id="firstName"
                         placeholder="Zahid"
                         className="form-input"
+                        value={primaryGuest.firstName}
+                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, firstName: e.target.value })}
                       />
                     </div>
 
@@ -127,6 +152,8 @@ function CheckoutComponent() {
                         id="lastName"
                         placeholder="Hossain"
                         className="form-input"
+                        value={primaryGuest.lastName}
+                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, lastName: e.target.value })}
                       />
                     </div>
                   </div>
@@ -141,6 +168,8 @@ function CheckoutComponent() {
                         id="email"
                         placeholder="zahidhossain@gmail.com"
                         className="form-input"
+                        value={primaryGuest.email}
+                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, email: e.target.value })}
                       />
                     </div>
 
@@ -153,6 +182,8 @@ function CheckoutComponent() {
                         id="Your country"
                         placeholder="Your country"
                         className="form-input"
+                        value={primaryGuest.country}
+                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, country: e.target.value })}
                       />
                     </div>
                   </div>
@@ -162,12 +193,31 @@ function CheckoutComponent() {
                       <label htmlFor="firstName " className="form-label">
                         Phone Number
                       </label>
-                      <input
-                        type="text"
-                        id="PhoneNumberl"
-                        placeholder="19511-123456"
-                        className="form-input"
-                      />
+                      <div className="select-with-input">
+                        <div className="country-code-input">
+                          <input
+                            type="text"
+                            placeholder="+966"
+                            className="form-input"
+                            value={primaryGuest.countryCode ? `+${primaryGuest.countryCode}` : ""}
+                            onChange={(e) => {
+                              const code = e.target.value.replace(/\+/g, "");
+                              setPrimaryGuest({ ...primaryGuest, countryCode: code });
+                            }}
+                            style={{ width: "100px", marginRight: "10px" }}
+                          />
+                        </div>
+                        <div className="phone-number-input" style={{ flex: 1 }}>
+                          <input
+                            type="tel"
+                            id="PhoneNumberl"
+                            placeholder="19511-123456"
+                            className="form-input"
+                            value={primaryGuest.phone}
+                            onChange={(e) => setPrimaryGuest({ ...primaryGuest, phone: e.target.value })}
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <div className="form-group"></div>
@@ -188,6 +238,8 @@ function CheckoutComponent() {
                         rows={5}
                         placeholder="Enter any requests..."
                         className="form-input w-100 text-field"
+                        value={specialRequests}
+                        onChange={(e) => setSpecialRequests(e.target.value)}
                       ></textarea>
                     </div>
                   </div>

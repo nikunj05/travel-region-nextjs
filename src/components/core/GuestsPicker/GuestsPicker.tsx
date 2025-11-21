@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import minusRoundIcon from "@/assets/images/minus-round-icon.svg";
 import plusRoundIcon from "@/assets/images/plus-round-icon.svg";
@@ -17,29 +17,81 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
   onRoomsChange,
   rooms,
 }) => {
+  // Ensure all rooms have childrenAges array initialized
+  useEffect(() => {
+    const needsUpdate = rooms.some(room => {
+      const childrenCount = room.children || 0;
+      const agesCount = room.childrenAges?.length || 0;
+      return childrenCount !== agesCount;
+    });
+
+    if (needsUpdate) {
+      const updatedRooms = rooms.map(room => {
+        const childrenCount = room.children || 0;
+        const currentAges = room.childrenAges || [];
+        
+        // If children count doesn't match ages array length, fix it
+        if (childrenCount !== currentAges.length) {
+          if (childrenCount > currentAges.length) {
+            // Add missing age entries (default to 0)
+            const newAges = [...currentAges, ...Array(childrenCount - currentAges.length).fill(0)];
+            return { ...room, childrenAges: newAges };
+          } else {
+            // Remove extra age entries
+            return { ...room, childrenAges: currentAges.slice(0, childrenCount) };
+          }
+        }
+        return room;
+      });
+      onRoomsChange(updatedRooms);
+    }
+  }, [rooms, onRoomsChange]);
   const updateRoomCount = (
     roomIndex: number,
-    type: keyof Room,
+    type: "adults" | "children",
     increment: boolean
   ) => {
     const newRooms = [...rooms];
-    const currentCount = newRooms[roomIndex][type];
+    const currentCount = newRooms[roomIndex][type] ?? 0;
 
     if (increment) {
       newRooms[roomIndex][type] = currentCount + 1;
+      // If adding a child, add a new age entry (default to 0)
+      if (type === "children") {
+        const currentAges = newRooms[roomIndex].childrenAges || [];
+        newRooms[roomIndex].childrenAges = [...currentAges, 0];
+      }
     } else {
       if (type === "adults") {
         newRooms[roomIndex][type] = Math.max(1, currentCount - 1);
       } else {
         newRooms[roomIndex][type] = Math.max(0, currentCount - 1);
+        // If removing a child, remove the last age entry
+        if (type === "children" && currentCount > 0) {
+          const currentAges = newRooms[roomIndex].childrenAges || [];
+          newRooms[roomIndex].childrenAges = currentAges.slice(0, -1);
+        }
       }
     }
 
     onRoomsChange(newRooms);
   };
 
+  const updateChildAge = (
+    roomIndex: number,
+    childIndex: number,
+    age: number
+  ) => {
+    const newRooms = [...rooms];
+    const currentAges = newRooms[roomIndex].childrenAges || [];
+    const updatedAges = [...currentAges];
+    updatedAges[childIndex] = Math.max(0, Math.min(17, age)); // Age between 0-17
+    newRooms[roomIndex].childrenAges = updatedAges;
+    onRoomsChange(newRooms);
+  };
+
   const addRoom = () => {
-    onRoomsChange([...rooms, { adults: 1, children: 0 }]);
+    onRoomsChange([...rooms, { adults: 1, children: 0, childrenAges: [] }]);
   };
 
   const removeRoom = (roomIndex: number) => {
@@ -179,6 +231,40 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Children age inputs - show when children count > 0 */}
+            {room.children > 0 && (
+              <div className="guestspicker-children-ages">
+                <div className="guestspicker-children-ages-label">
+                  Children Ages
+                </div>
+                <div className="guestspicker-children-ages-inputs">
+                  {Array.from({ length: room.children }).map((_, childIndex) => {
+                    const currentAges = room.childrenAges || [];
+                    const age = currentAges[childIndex] ?? 0;
+                    return (
+                      <div key={childIndex} className="guestspicker-age-input-wrapper">
+                        <label className="guestspicker-age-label">
+                          Child {childIndex + 1} Age
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="17"
+                          value={age}
+                          onChange={(e) => {
+                            const newAge = parseInt(e.target.value) || 0;
+                            updateChildAge(index, childIndex, newAge);
+                          }}
+                          className="guestspicker-age-input"
+                          placeholder="Age"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ))}
         <button 

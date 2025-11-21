@@ -163,7 +163,9 @@
       "priceUnavailable": "Price unavailable",
       "refundPolicyUnavailable": "Refund policy unavailable",
       "refundDateUnavailable": "Refund date unavailable",
-      "noRatesAvailable": "No rates available"
+      "noRatesAvailable": "No rates available",
+      "noRoomsAvailable": "No rooms available",
+      "changeFilters": "Please try changing your filters"
     },
     "labels": {
       "freeCancellation": "Free Cancellation",

@@ -21,6 +21,16 @@
 
   .guestspicker-content {
     .guestspicker-section {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F4F4F5;
+
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
       .guestspicker-room-title-wrapper {
         display: flex;
         justify-content: space-between;
@@ -134,6 +144,71 @@
         }
       }
     }
+
+    .guestspicker-children-ages {
+      margin-top: 12px;
+      margin-bottom: 8px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      border-top: 1px solid #F8FAFC;
+
+      .guestspicker-children-ages-label {
+        font-size: 13px;
+        font-weight: $font-weight500;
+        color: $color-black-zinc-950;
+        margin-bottom: 8px;
+      }
+
+      .guestspicker-children-ages-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .guestspicker-age-input-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .guestspicker-age-label {
+            font-size: 12px;
+            font-weight: $font-weight400;
+            color: #6B7280;
+          }
+
+          .guestspicker-age-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: $font-weight400;
+            color: $color-black-zinc-950;
+            background: $color-white;
+            transition: $transition;
+
+            &:focus {
+              outline: none;
+              border-color: #000000;
+              box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+            }
+
+            &:hover {
+              border-color: #9CA3AF;
+            }
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+            }
+
+            &[type="number"] {
+              -moz-appearance: textfield;
+            }
+          }
+        }
+      }
+    }
   }
 
   .guestspicker-add-room {
@@ -203,6 +278,14 @@
 
   .guestspicker-content {
     .guestspicker-section {
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
       .guestspicker-room-title-wrapper {
         margin-bottom: 12px;
       }
@@ -251,6 +334,34 @@
         }
       }
 
+      .guestspicker-children-ages {
+        margin-top: 10px;
+        margin-bottom: 6px;
+        padding-top: 6px;
+        padding-bottom: 8px;
+
+        .guestspicker-children-ages-label {
+          font-size: 12px;
+          margin-bottom: 6px;
+        }
+
+        .guestspicker-children-ages-inputs {
+          gap: 6px;
+
+          .guestspicker-age-input-wrapper {
+            gap: 3px;
+
+            .guestspicker-age-label {
+              font-size: 11px;
+            }
+
+            .guestspicker-age-input {
+              padding: 7px 10px;
+              font-size: 13px;
+            }
+          }
+        }
+      }
     }
 
     .guestspicker-add-room {
@@ -273,6 +384,14 @@
 
   .guestspicker-content {
     .guestspicker-section {
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
       .guestspicker-room-title-wrapper {
         margin-bottom: 10px;
       }
@@ -321,6 +440,34 @@
         }
       }
 
+      .guestspicker-children-ages {
+        margin-top: 8px;
+        margin-bottom: 6px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+
+        .guestspicker-children-ages-label {
+          font-size: 11px;
+          margin-bottom: 6px;
+        }
+
+        .guestspicker-children-ages-inputs {
+          gap: 5px;
+
+          .guestspicker-age-input-wrapper {
+            gap: 3px;
+
+            .guestspicker-age-label {
+              font-size: 10px;
+            }
+
+            .guestspicker-age-input {
+              padding: 6px 8px;
+              font-size: 12px;
+            }
+          }
+        }
+      }
     }
 
     .guestspicker-add-room {

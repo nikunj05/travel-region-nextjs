@@ -6,6 +6,7 @@ import { bookingService } from '@/services/bookingService'
 import { CreateBookingRequest, CreateBookingResponse } from '@/types/booking'
 import { toast } from 'react-toastify'
 import { formatApiErrorMessage } from '@/lib/formatApiError'
+import { BookingFormData } from '@/schemas/bookingSchema'
 
 // Selected room interface
 export interface SelectedRoom {
@@ -36,6 +37,9 @@ export interface BookingData {
 interface BookingState {
   bookingData: BookingData | null
   
+  // Traveler details
+  travelerDetails: BookingFormData | null
+  
   // API state
   loading: boolean
   error: string | null
@@ -48,6 +52,10 @@ interface BookingState {
   removeSelectedRoom: (roomCode: string) => void
   updateRoomCount: (roomCode: string, count: number) => void
   
+  // Traveler details actions
+  setTravelerDetails: (details: BookingFormData) => void
+  clearTravelerDetails: () => void
+  
   // API actions
   createBooking: (payload: CreateBookingRequest) => Promise<CreateBookingResponse | null>
   clearBookingResponse: () => void
@@ -57,6 +65,7 @@ export const useBookingStore = create<BookingState>()(
   persist(
     (set, get) => ({
       bookingData: null,
+      travelerDetails: null,
       loading: false,
       error: null,
       bookingResponse: null,
@@ -140,6 +149,14 @@ export const useBookingStore = create<BookingState>()(
             timestamp: Date.now()
           }
         })
+      },
+
+      setTravelerDetails: (details) => {
+        set({ travelerDetails: details })
+      },
+
+      clearTravelerDetails: () => {
+        set({ travelerDetails: null })
       },
 
       createBooking: async (payload: CreateBookingRequest) => {
