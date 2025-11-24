@@ -10,30 +10,200 @@ import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/bookingStore";
-import { useEffect, useState } from "react";
+import { useSearchFiltersStore } from "@/store/searchFiltersStore";
+import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
+import { bookingService } from "@/services/bookingService";
+import { useEffect, useMemo, useRef } from "react"; 
+import { Controller, UseFormReturn } from "react-hook-form";
+import { Select } from "@/components/core/Select/Select";
+import { COUNTRY_CODES, buildHotelbedsImageUrl } from "@/constants";
+import { useLocale } from "next-intl";
+import { HotelImage } from "@/types/favorite";
+import { Form } from "@/components/core/Form/Form";
+import { Input } from "@/components/core/Input/Input";
+import { Textarea } from "@/components/core/Textarea/Textarea";
+import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 
 function CheckoutComponent() {
   const router = useRouter();
-  const { travelerDetails } = useBookingStore();
-  const [primaryGuest, setPrimaryGuest] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    country: "",
-    countryCode: "",
-    phone: "",
-  });
-  const [specialRequests, setSpecialRequests] = useState("");
+  const locale = useLocale();
+  const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } = useBookingStore();
+  const { filters: searchFilters } = useSearchFiltersStore();
+  const { hotel: hotelData } = useHotelDetailsStore();
+  const formRef = useRef<HTMLFormElement>(null);
+  const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
+  const watchSetupRef = useRef(false);
 
-  // Load traveler details from store when component mounts
-  useEffect(() => {
-    if (travelerDetails?.primaryGuest) {
-      setPrimaryGuest(travelerDetails.primaryGuest);
+  // Generate default values for the form - load from store if available
+  const defaultValues = useMemo(() => {
+    if (travelerDetails) {
+      return travelerDetails;
     }
-    if (travelerDetails?.specialRequests) {
-      setSpecialRequests(travelerDetails.specialRequests);
-    }
+    return {
+      primaryGuest: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        country: "",
+        countryCode: "966",
+        phone: "",
+      },
+      specialRequests: "",
+    };
   }, [travelerDetails]);
+
+  // Create validation schema
+  const bookingSchema = useMemo(() => {
+    return createBookingSchema();
+  }, []);
+
+
+  // Watch form values and save to store when they change
+  useEffect(() => {
+    if (!formMethodsRef.current || watchSetupRef.current) return;
+
+    const subscription = formMethodsRef.current.watch((value) => {
+      if (value?.primaryGuest && (value.primaryGuest.firstName || value.primaryGuest.lastName || value.primaryGuest.email)) {
+        setTravelerDetails(value as BookingFormData);
+      }
+    });
+
+    watchSetupRef.current = true;
+
+    return () => {
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe();
+        watchSetupRef.current = false;
+      }
+    };
+  }, [setTravelerDetails]);
+
+  // Handle form submission (if needed for checkout)
+  const handleSubmit = async (data: BookingFormData) => {
+    console.log("Checkout form submitted:", data);
+    // Form values are already saved to store via watch
+    // Additional submission logic can be added here if needed
+  };
+
+  // Handle checkout payment
+  const handleCheckout = async () => {
+    try {
+      // Get booking_id from booking response
+      const bookingId = bookingResponse?.data?.booking_id || bookingData?.hotelId;
+      
+      if (!bookingId) {
+        console.error("Booking ID not found. Please complete booking first.");
+        return;
+      }
+
+      // Prepare checkout payload
+      const checkoutPayload = {
+        amount: priceBreakdown.totalPrice,
+        currency: priceBreakdown.currency,
+        booking_id: typeof bookingId === 'string' ? parseInt(bookingId) : bookingId,
+      };
+
+      console.log("🛒 Checkout Payload:", checkoutPayload);
+
+      // Call checkout service
+      const checkoutResponse = await bookingService.checkout(checkoutPayload);
+      
+      // console.log("✅ Checkout Response:", checkoutResponse);
+      // console.log("📋 Checkout Status:", checkoutResponse.status);
+      // console.log("📋 Checkout Message:", checkoutResponse.message);
+      if (checkoutResponse.data) {
+        console.log("📋 Checkout Data:", checkoutResponse.data);
+      }
+
+      // Navigate to confirmation page on success
+      if (checkoutResponse.status) {
+        router.push(`/${locale}/booking-confirmation`);
+      }
+    } catch (error) {
+      console.error("❌ Checkout Error:", error);
+    }
+  };
+
+  // Calculate total guests
+  const totalGuests = useMemo(() => {
+    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+    return adults + children;
+  }, [searchFilters.rooms]);
+
+  // Calculate nights
+  const calculateNights = (
+    checkIn: string | Date | null | undefined,
+    checkOut: string | Date | null | undefined
+  ): number => {
+    if (!checkIn || !checkOut) return 0;
+    try {
+      const start = checkIn instanceof Date ? checkIn : new Date(checkIn);
+      const end = checkOut instanceof Date ? checkOut : new Date(checkOut);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    } catch {
+      return 0;
+    }
+  };
+
+  const totalNights = calculateNights(searchFilters.checkInDate, searchFilters.checkOutDate);
+
+  // Get hotel image
+  const getOrderedHotelImages = () => {
+    if (!hotelData?.images) return [];
+    const images = hotelData.images.filter((img) => !!img?.path);
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+    const genImages = images
+      .filter((img) => img.type?.code === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    const otherImages = images
+      .filter((img) => img.type?.code !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    return [...genImages, ...otherImages];
+  };
+
+  const getMainImage = () => {
+    const sorted = getOrderedHotelImages();
+    if (sorted.length === 0) {
+      return BookingHotelInfoImage;
+    }
+    const mainPath = sorted[0]?.path;
+    return mainPath ? buildHotelbedsImageUrl(mainPath) : BookingHotelInfoImage;
+  };
+
+  const hotelName = hotelData?.name?.content || bookingData?.hotelName || "Hotel Name";
+  
+  // Calculate price breakdown
+  const priceBreakdown = useMemo(() => {
+    if (!bookingData?.selectedRooms || bookingData.selectedRooms.length === 0) {
+      return {
+        totalPrice: 0,
+        currency: "SAR",
+      };
+    }
+    const totalPrice = bookingData.selectedRooms.reduce((sum, room) => sum + room.totalPrice, 0);
+    const currency = bookingData.selectedRooms[0]?.currency || "SAR";
+    return {
+      totalPrice,
+      currency,
+    };
+  }, [bookingData]);
+
+  // Price formatter
+  const priceFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [locale]
+  );
 
   return (
     <main className="checkout-page padding-top-100 section-space-b">
@@ -52,9 +222,9 @@ function CheckoutComponent() {
                 <path
                   d="M10.166 16.834L13.4993 20.1673L21.8327 11.834"
                   stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
@@ -78,9 +248,9 @@ function CheckoutComponent() {
                 <path
                   d="M10.166 16.834L13.4993 20.1673L21.8327 11.834"
                   stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
@@ -104,7 +274,7 @@ function CheckoutComponent() {
                   cy="16"
                   r="15"
                   stroke="#3E5B96"
-                  stroke-width="2"
+                  strokeWidth="2"
                 />
                 <circle cx="16.5" cy="16" r="5" fill="#3E5B96" />
               </svg>
@@ -123,129 +293,126 @@ function CheckoutComponent() {
 
         <div className="booking-review-details">
           <div className="review-booking-details-left">
-            <div className="booking-detail-box booking-traveler-details">
-              <h3 className="booking-details-sub-title">Traveler Details</h3>
-              <div className="booking-details-form mandatory-field">
-                <h3 className="booking-form-title">Primary Guest</h3>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        id="firstName"
-                        placeholder="Zahid"
-                        className="form-input"
-                        value={primaryGuest.firstName}
-                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, firstName: e.target.value })}
-                      />
-                    </div>
+            <Form<BookingFormData>
+              ref={formRef}
+              defaultValues={defaultValues}
+              onSubmit={handleSubmit}
+              schema={bookingSchema}
+              className="booking-detail-box booking-traveler-details"
+            >
+              {(methods) => {
+                // Store form methods in ref for useEffect access
+                formMethodsRef.current = methods;
 
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        placeholder="Hossain"
-                        className="form-input"
-                        value={primaryGuest.lastName}
-                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, lastName: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Email address
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        placeholder="zahidhossain@gmail.com"
-                        className="form-input"
-                        value={primaryGuest.email}
-                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, email: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="lastName" className="form-label">
-                        Country/ Region
-                      </label>
-                      <input
-                        type="text"
-                        id="Your country"
-                        placeholder="Your country"
-                        className="form-input"
-                        value={primaryGuest.country}
-                        onChange={(e) => setPrimaryGuest({ ...primaryGuest, country: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="firstName " className="form-label">
-                        Phone Number
-                      </label>
-                      <div className="select-with-input">
-                        <div className="country-code-input">
-                          <input
+                return (
+                  <>
+                    <h3 className="booking-details-sub-title">Traveler Details</h3>
+                  
+                    {/* Primary Guest - Mandatory */}
+                    <div className="booking-details-form mandatory-field">
+                      <h3 className="booking-form-title">
+                        Primary Guest <span className="text-red">(Mandatory)</span>
+                      </h3>
+                      <div className="booking-form-content form-field">
+                        <div className="form-row">
+                          <Input
+                            name="primaryGuest.firstName"
+                            label="First Name"
+                            labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder="+966"
+                            placeholder="Your first name"
                             className="form-input"
-                            value={primaryGuest.countryCode ? `+${primaryGuest.countryCode}` : ""}
-                            onChange={(e) => {
-                              const code = e.target.value.replace(/\+/g, "");
-                              setPrimaryGuest({ ...primaryGuest, countryCode: code });
-                            }}
-                            style={{ width: "100px", marginRight: "10px" }}
+                          />
+                          <Input
+                            name="primaryGuest.lastName"
+                            label="Last Name"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Your last name"
+                            className="form-input"
                           />
                         </div>
-                        <div className="phone-number-input" style={{ flex: 1 }}>
-                          <input
-                            type="tel"
-                            id="PhoneNumberl"
-                            placeholder="19511-123456"
+
+                        <div className="form-row">
+                          <Input
+                            name="primaryGuest.email"
+                            label="Email address"
+                            labelWithContent={<span className="required">*</span>}
+                            type="email"
+                            placeholder="Your email"
                             className="form-input"
-                            value={primaryGuest.phone}
-                            onChange={(e) => setPrimaryGuest({ ...primaryGuest, phone: e.target.value })}
                           />
+                          <Input
+                            name="primaryGuest.country"
+                            label="Country/ Region"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Your country"
+                            className="form-input"
+                          />
+                        </div>
+
+                        <div className="form-row">
+                          <div className="form-group select-with-input-field">
+                            <label className="form-label">
+                              Phone Number <span className="required">*</span>
+                            </label>
+                            <div className="select-with-input">
+                              <div className="country-code-input">
+                                <Controller
+                                  name="primaryGuest.countryCode"
+                                  control={methods.control}
+                                  render={({ field }) => (
+                                    <Select
+                                      options={COUNTRY_CODES.map((c) => ({
+                                        value: c.value,
+                                        label: `+${c.label}`,
+                                      }))}
+                                      value={field.value}
+                                      onChange={field.onChange}
+                                      placeholder="+966"
+                                    />
+                                  )}
+                                />
+                              </div>
+                              <div className="phone-number-input">
+                                <Input
+                                  name="primaryGuest.phone"
+                                  type="tel"
+                                  placeholder="Your phone number"
+                                  className="form-input form-control"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="form-group"></div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="form-group"></div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="booking-details-form special-request-field">
-                <h3 className="booking-form-title">Special Request</h3>
-                <p className="booking-form-desc">
-                  Please write your request in English or Arabic.
-                </p>
-                <form action="" className="booking-form-content form-field ">
-                  <div className="form-row">
-                    <div className="form-group d-flex">
-                      <textarea
-                        id="specialRequests"
-                        rows={5}
-                        placeholder="Enter any requests..."
-                        className="form-input w-100 text-field"
-                        value={specialRequests}
-                        onChange={(e) => setSpecialRequests(e.target.value)}
-                      ></textarea>
+                    {/* Special Requests */}
+                    <div className="booking-details-form special-request-field">
+                      <h3 className="booking-form-title">Special Request</h3>
+                      <p className="booking-form-desc">
+                        Please write your request in English or Arabic.
+                      </p>
+                      <div className="booking-form-content form-field">
+                        <div className="form-row">
+                          <div className="form-group d-flex w-100">
+                            <Textarea
+                              name="specialRequests"
+                              rows={5}
+                              placeholder="Enter any requests..."
+                              className="w-100 text-field"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </form>
-              </div>
-            </div>
+                  </>
+                );
+              }}
+            </Form>
             <div className="booking-detail-box booking-traveler-details choose-payment-option">
               <h3 className="booking-details-sub-title">
                 Choose Payment Option
@@ -406,7 +573,7 @@ function CheckoutComponent() {
               <div className="booking-hotel-info d-flex align-items-start">
                 <div className="booking-hotel-image">
                   <Image
-                    src={BookingHotelInfoImage}
+                    src={getMainImage()}
                     width={44}
                     height={44}
                     alt="hotel image"
@@ -414,9 +581,9 @@ function CheckoutComponent() {
                   />
                 </div>
                 <div className="booking-hotel-content">
-                  <h3 className="hotel-name">Novotel Bangkok</h3>
+                  <h3 className="hotel-name">{hotelName}</h3>
                   <span className="booking-guest-info">
-                    2 Guests • 10 Nights
+                    {totalGuests} {totalGuests === 1 ? 'Guest' : 'Guests'} • {totalNights} {totalNights === 1 ? 'Night' : 'Nights'}
                   </span>
                 </div>
               </div>
@@ -434,33 +601,35 @@ function CheckoutComponent() {
                       <path
                         d="M2 12C2 8.46252 2 6.69377 3.0528 5.5129C3.22119 5.32403 3.40678 5.14935 3.60746 4.99087C4.86213 4 6.74142 4 10.5 4H13.5C17.2586 4 19.1379 4 20.3925 4.99087C20.5932 5.14935 20.7788 5.32403 20.9472 5.5129C22 6.69377 22 8.46252 22 12C22 15.5375 22 17.3062 20.9472 18.4871C20.7788 18.676 20.5932 18.8506 20.3925 19.0091C19.1379 20 17.2586 20 13.5 20H10.5C6.74142 20 4.86213 20 3.60746 19.0091C3.40678 18.8506 3.22119 18.676 3.0528 18.4871C2 17.3062 2 15.5375 2 12Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M14.551 12C14.551 13.3807 13.4317 14.5 12.051 14.5C10.6703 14.5 9.55099 13.3807 9.55099 12C9.55099 10.6193 10.6703 9.5 12.051 9.5C13.4317 9.5 14.551 10.6193 14.551 12Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M5 12L6 12"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                       />
                       <path
                         d="M18 12L19 12"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
                       />
                     </svg>
                     Hotel Fare
                   </div>
-                  <div className="booking-pricing">$540</div>
+                  <div className="booking-pricing">
+                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
+                  </div>
                 </div>
-                <div className="booking-price-item d-flex align-items-center">
+                {/* <div className="booking-price-item d-flex align-items-center">
                   <div className="booking-iocn-with-text d-flex align-items-center">
                     <svg
                       width="24"
@@ -475,31 +644,31 @@ function CheckoutComponent() {
                         r="1.5"
                         transform="matrix(1 0 0 -1 16 8)"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z"
                         stroke="#09090B"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                       />
                       <path
                         d="M7 14L10 17"
                         stroke="#09090B"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                     Discount
                   </div>
                   <div className="booking-pricing discount">-$51</div>
-                </div>
+                </div> */}
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>$51</span>
+                  <span>{priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}</span>
                 </div>
                 <div className="booking-price-tax">
                   Included all taxes & fees
@@ -519,7 +688,7 @@ function CheckoutComponent() {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn" onClick={() => router.push(`/booking-confirmation`)}>
+                <button className="button-primary check-availability-btn" onClick={handleCheckout}>
                   Pay
                 </button>
               </div>

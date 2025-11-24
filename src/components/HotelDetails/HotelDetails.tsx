@@ -35,7 +35,7 @@ import ImageModal from "../common/ImageModal/ImageModal";
 import LoginModal from "../common/LoginModal/LoginModal";
 import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
 import {
@@ -178,11 +178,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
-  const { setBookingData } = useBookingStore();
+  const { setBookingData, clearTravelerDetails } = useBookingStore();
 
   console.log("hotelData", hotelData);
   console.log("processedRooms", processedRooms);
   const router = useRouter();
+  const pathname = usePathname();
   const sliderRefs = useRef<(Slider | null)[]>([]);
   const modalSliderRef = useRef<Slider>(null);
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
@@ -956,6 +957,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       0
     );
     const currency = selectedRoomsData[0]?.currency || "SAR";
+
+    // Clear previous traveler details from local storage
+    clearTravelerDetails();
 
     // Save booking data to store
     setBookingData({
@@ -2782,6 +2786,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           }
           setPendingAction(null);
         }}
+        returnUrl={pathname || undefined}
       />
 
       {/* Price Details Modal */}

@@ -221,7 +221,8 @@
     "loginButton": "Login",
     "loading": "Loading...",
     "noAccount": "Don't have an account?",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "google": "Sign in with Google"
   },
   "AboutUs": {
     "bannerTitle": "Who We Are",

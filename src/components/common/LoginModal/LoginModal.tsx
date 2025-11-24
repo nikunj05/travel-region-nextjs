@@ -6,15 +6,18 @@ import { AuthContext } from "@/context/AuthContext";
 import "./LoginModal.scss";
 import Image from "next/image";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
+import GoogleLoginIcon from "@/assets/images/google_icon.svg";
 import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: () => void;
+  returnUrl?: string;
 }
 
-const LoginModal = ({ isOpen, onClose, onLoginSuccess }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalProps) => {
   const t = useTranslations("LoginModal");
   const authContext = useContext(AuthContext);
 
@@ -86,6 +89,28 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }: LoginModalProps) => {
               {loading ? t("loading") : t("loginButton")}
             </button>
           </form>
+          <button
+            type="button"
+            className="login-modal-google-btn w-100"
+            onClick={() => {
+              // Store return URL in sessionStorage before redirecting
+              if (returnUrl) {
+                sessionStorage.setItem("authReturnUrl", returnUrl);
+              }
+              signIn("google", {
+                callbackUrl: `/google-auth-success`,
+              });
+            }}
+          >
+            <Image
+              src={GoogleLoginIcon}
+              alt="google icon"
+              width="44"
+              height="44"
+              className="login-modal-google-icon"
+            />
+            <span>{t("google")}</span>
+          </button>
           <div className="signup-link">
             <p>
               {t("noAccount")}{" "}

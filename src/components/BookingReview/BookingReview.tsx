@@ -523,9 +523,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   )}
                 </div>
                 <div className="booking-box-action">
-                  <a href="#" className="booking-edit-btn">
+                  <button 
+                    type="button"
+                    className="booking-edit-btn"
+                    onClick={() => router.push(`/${locale}/search-result`)}
+                  >
                     Change Hotel
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -676,9 +680,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </div>
               )}
               <div className="booking-box-action">
-                <a href="#" className="booking-edit-btn">
+                <button 
+                  type="button"
+                  className="booking-edit-btn"
+                  onClick={() => router.back()}
+                >
                   Edit Dates
-                </a>
+                </button>
               </div>
             </div>
 
@@ -756,11 +764,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </svg>
                 This Price may increase if you book later
               </div>
-              <div className="booking-box-action">
+              {/* <div className="booking-box-action">
                 <a href="#" className="booking-edit-btn">
                   Use a coupon
                 </a>
-              </div>
+              </div> */}
             </div>
 
             <div className="booking-detail-box booking-cancel-cost">

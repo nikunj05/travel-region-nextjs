@@ -38,3 +38,17 @@ export interface CreateBookingResponse {
   };
 }
 
+export interface CheckoutRequest {
+  amount: number;
+  currency: string;
+  booking_id: number;
+}
+
+export interface CheckoutResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    [key: string]: unknown;
+  };
+}
+
