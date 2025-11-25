@@ -46,7 +46,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="login-modal-overlay" onClick={onClose}>
+    <div className="login-modal-overlay " onClick={onClose}>
       <div className="login-modal" onClick={(e) => e.stopPropagation()}>
         <div className="login-modal-header d-flex align-items-center">
           <button className="login-modal-close p-0" onClick={onClose}>
@@ -59,26 +59,28 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalPr
           </button>
           <h2 className="login-modal-title">{t("title")}</h2>
         </div>
-        <div className="login-modal-body">
+        <div className="login-modal-body form-field">
           <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label htmlFor="email">{t("email")}</label>
+            <div className="form-group form-group">
+              <label className="form-label" htmlFor="email">{t("email")}</label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="form-input"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">{t("password")}</label>
+              <label className="form-label" htmlFor="password">{t("password")}</label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="form-input"
               />
             </div>
             <button
