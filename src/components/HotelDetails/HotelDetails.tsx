@@ -188,6 +188,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const modalSliderRef = useRef<Slider>(null);
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
   const hasRequestedNearbySearch = useRef(false);
+  const hasInitializedRoomCount = useRef(false);
 
   const authContext = useContext(AuthContext);
 
@@ -206,12 +207,34 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const nearbyHotelsLoading = useHotelSearchStore((state) => state.loading);
 
   const searchFilters = useSearchFiltersStore((state) => state.filters);
+  
+  // Get the room count from filters
+  const roomCountFromFilters = searchFilters.rooms?.length || 1;
 
-  // Initialize active room count from search filters on mount
+  // Initialize active room count from search filters only once on mount/hydration
+  // This ensures it updates when store hydrates from localStorage (e.g., in new tabs)
+  // After initialization, it only updates when "Check Availability" is clicked
   useEffect(() => {
-    const initialRoomCount = searchFilters.rooms?.length || 1;
-    setActiveRoomCount(initialRoomCount);
-  }, []); // Only run on mount
+    // Initialize if we haven't initialized yet OR if we're still at default (1) but filters have a different value
+    // This handles cases where initialization might have been missed due to timing
+    if (roomCountFromFilters > 0) {
+      setActiveRoomCount((prev) => {
+        // If we haven't initialized yet, always initialize
+        if (!hasInitializedRoomCount.current) {
+          hasInitializedRoomCount.current = true;
+          return roomCountFromFilters;
+        }
+        // If we're still at default (1) but filters have a different value, update
+        // This handles the case where initialization was missed
+        if (prev === 1 && roomCountFromFilters !== 1) {
+          hasInitializedRoomCount.current = true;
+          return roomCountFromFilters;
+        }
+        // Otherwise, keep the current value (don't update when filters change after initialization)
+        return prev;
+      });
+    }
+  }, [roomCountFromFilters]); // Watch for hydration, but only initialize once
 
   // Use activeRoomCount instead of directly reading from searchFilters
   const totalRoomCount = activeRoomCount;
@@ -252,12 +275,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   );
 
   // Handler for room count selection
-  const handleRoomCountChange = (roomCode: string, count: number) => {
-    setSelectedRoomCounts((prev) => ({
-      ...prev,
-      [roomCode]: count,
-    }));
-  };
+  // const handleRoomCountChange = (roomCode: string, count: number) => {
+  //   setSelectedRoomCounts((prev) => ({
+  //     ...prev,
+  //     [roomCode]: count,
+  //   }));
+  // };
 
   // Handler for room rate selection with count (auto-select on dropdown change)
   const handleRoomRateCountChange = (

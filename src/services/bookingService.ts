@@ -1,5 +1,5 @@
 import { api } from './api';
-import { CreateBookingRequest, CreateBookingResponse, CheckoutRequest, CheckoutResponse } from '@/types';
+import { CreateBookingRequest, CreateBookingResponse, CheckoutRequest, CheckoutResponse, BookingDetailsResponse, GetBookingsRequest, GetBookingsResponse } from '@/types';
 
 export const bookingService = {
   createBooking: async (payload: CreateBookingRequest): Promise<CreateBookingResponse> => {
@@ -18,6 +18,27 @@ export const bookingService = {
       const response = await api.post<CheckoutResponse, CheckoutRequest>(
         '/checkout',
         payload
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getBookingDetails: async (order: string): Promise<BookingDetailsResponse> => {
+    try {
+      const response = await api.get<BookingDetailsResponse>(
+        `/bookings/${order}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getBookings: async (params: GetBookingsRequest): Promise<GetBookingsResponse> => {
+    try {
+      const response = await api.get<GetBookingsResponse>(
+        '/bookings',
+        { params }
       );
       return response.data;
     } catch (error) {

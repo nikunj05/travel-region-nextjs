@@ -13,7 +13,8 @@ import { useBookingStore } from "@/store/bookingStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { bookingService } from "@/services/bookingService";
-import { useEffect, useMemo, useRef } from "react"; 
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify"; 
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Select } from "@/components/core/Select/Select";
 import { COUNTRY_CODES, buildHotelbedsImageUrl } from "@/constants";
@@ -33,6 +34,7 @@ function CheckoutComponent() {
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
 
   // Generate default values for the form - load from store if available
   const defaultValues = useMemo(() => {
@@ -88,19 +90,26 @@ function CheckoutComponent() {
   // Handle checkout payment
   const handleCheckout = async () => {
     try {
-      // Get booking_id from booking response
-      const bookingId = bookingResponse?.data?.booking_id || bookingData?.hotelId;
-      
-      if (!bookingId) {
-        console.error("Booking ID not found. Please complete booking first.");
+      // Check if terms and conditions are accepted
+      if (!agreeToTerms) {
+        toast.error("Please accept Terms and Privacy Policy below I agree...");
         return;
       }
 
-      // Prepare checkout payload
+      // Get order from booking response
+      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking 
+        ? bookingResponse.data.booking.order 
+        : undefined;
+      
+      if (!order || typeof order !== 'string') {
+        console.error("Order not found. Please complete booking first.");
+        toast.error("Order not found. Please complete booking first.");
+        return;
+      }
+
+      // Prepare checkout payload - only send order
       const checkoutPayload = {
-        amount: priceBreakdown.totalPrice,
-        currency: priceBreakdown.currency,
-        booking_id: typeof bookingId === 'string' ? parseInt(bookingId) : bookingId,
+        order: order,
       };
 
       console.log("🛒 Checkout Payload:", checkoutPayload);
@@ -108,19 +117,30 @@ function CheckoutComponent() {
       // Call checkout service
       const checkoutResponse = await bookingService.checkout(checkoutPayload);
       
-      // console.log("✅ Checkout Response:", checkoutResponse);
-      // console.log("📋 Checkout Status:", checkoutResponse.status);
-      // console.log("📋 Checkout Message:", checkoutResponse.message);
+      // Console log the full response
+      console.log("✅ Checkout Response:", checkoutResponse);
+      console.log("📋 Checkout Status:", checkoutResponse.status);
+      console.log("📋 Checkout Message:", checkoutResponse.message);
       if (checkoutResponse.data) {
         console.log("📋 Checkout Data:", checkoutResponse.data);
       }
 
-      // Navigate to confirmation page on success
+      // Redirect to payment URL on success
       if (checkoutResponse.status) {
-        router.push(`/${locale}/booking-confirmation`);
+        const redirectUrl = checkoutResponse.data?.checkout?.transaction?.url;
+        if (redirectUrl) {
+          // Redirect to the payment gateway URL
+          window.location.href = redirectUrl;
+        } else {
+          // Fallback to confirmation page if no redirect URL
+          router.push(`/${locale}/booking-confirmation`);
+        }
+      } else {
+        toast.error(checkoutResponse.message || "Checkout failed. Please try again.");
       }
     } catch (error) {
       console.error("❌ Checkout Error:", error);
+      toast.error("An error occurred during checkout. Please try again.");
     }
   };
 
@@ -679,9 +699,11 @@ function CheckoutComponent() {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    id="freeCancel"
+                    id="agreeToTerms"
+                    checked={agreeToTerms}
+                    onChange={(e) => setAgreeToTerms(e.target.checked)}
                   />
-                  <label className="form-check-label" htmlFor="freeCancel">
+                  <label className="form-check-label" htmlFor="agreeToTerms">
                     I agree to <a href="#">Terms</a> and{" "}
                     <a href="#">Privacy Policy.</a>
                   </label>

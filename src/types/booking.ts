@@ -34,20 +34,79 @@ export interface CreateBookingResponse {
   message: string;
   data?: {
     booking_id?: string | number;
+    booking?: {
+      id: number;
+      order: string;
+      [key: string]: unknown;
+    };
     [key: string]: unknown;
   };
 }
 
 export interface CheckoutRequest {
-  amount: number;
-  currency: string;
-  booking_id: number;
+  order: string;
 }
 
 export interface CheckoutResponse {
   status: boolean;
   message: string;
   data?: {
+    checkout?: {
+      id?: string;
+      transaction?: {
+        url?: string;
+        timezone?: string;
+        created?: string;
+        amount?: number;
+        currency?: string;
+        [key: string]: unknown;
+      };
+      redirect?: {
+        status?: string;
+        url?: string;
+      };
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+}
+
+export interface BookingDetailsData {
+  booking?: {
+    id?: number;
+    order: string;
+    details?: BookingDetail[];
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+export interface BookingDetailsResponse {
+  status: boolean;
+  message: string;
+  data?: BookingDetailsData;
+}
+
+export interface GetBookingsRequest {
+  status?: string;
+  hotel_code?: string | number;
+}
+
+export interface GetBookingsResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    bookings?: Array<{
+      id: number;
+      order: string;
+      hotel_code?: string | number;
+      status?: string;
+      check_in?: string;
+      check_out?: string;
+      total_price?: number;
+      currency?: string;
+      [key: string]: unknown;
+    }>;
     [key: string]: unknown;
   };
 }

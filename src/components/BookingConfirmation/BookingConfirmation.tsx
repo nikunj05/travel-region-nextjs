@@ -1,12 +1,61 @@
 'use client'
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./BookingConfirmation.scss";
 import Image from "next/image";
 import BookingConfirmIcon from "@/assets/images/booking-confirmed-icon.svg";
 import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
+import { bookingService } from "@/services/bookingService";
+import { BookingDetailsData } from "@/types/booking";
 
-function BookingConfirmationComp() {
+interface BookingConfirmationCompProps {
+  bookingId?: string;
+}
+
+interface BookingData {
+  order: string;
+  email: string;
+}
+
+function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (bookingId) {
+      const fetchBookingDetails = async () => {
+        try {
+          setLoading(true);
+          const response = await bookingService.getBookingDetails(bookingId);
+          console.log("📋 Booking Details Response:", response);
+          
+          if (response.status && response.data) {
+            const bookingData = response.data as BookingDetailsData;
+            const booking = bookingData.booking;
+            if (booking) {
+              const email = booking.details && booking.details.length > 0 
+                ? booking.details[0].email 
+                : '';
+              
+              setBookingData({
+                order: booking.order || bookingId,
+                email: email,
+              });
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error fetching booking details:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBookingDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [bookingId]);
   return (
     <>
       <main className="booking-confirmation-page padding-top-100">
@@ -27,16 +76,26 @@ function BookingConfirmationComp() {
                 <h1 className="card-title">
                   🎉 Thank You! Your Booking is Confirmed.
                 </h1>
-                <p className="card-booking-num">
-                  Your booking number is{" "}
-                  <span className="card-booking-id">#MBR6521</span>
-                </p>
-                <p className="confirmation-email">
-                  A confirmation email has been sent to{" "}
-                  <span className="confirmation-email-address">
-                    zahidhossain@email.com
-                  </span>
-                </p>
+                {loading ? (
+                  <p className="card-booking-num">Loading booking details...</p>
+                ) : (
+                  <>
+                    <p className="card-booking-num">
+                      Your booking number is{" "}
+                      <span className="card-booking-id">
+                        #{bookingData?.order || bookingId || 'N/A'}
+                      </span>
+                    </p>
+                    {bookingData?.email && (
+                      <p className="confirmation-email">
+                        A confirmation email has been sent to{" "}
+                        <span className="confirmation-email-address">
+                          {bookingData.email}
+                        </span>
+                      </p>
+                    )}
+                  </>
+                )}
 
                 <div className="booking-action d-flex align-items-center">
                   <button className="button-primary print-button">
@@ -74,7 +133,7 @@ function BookingConfirmationComp() {
                     </svg>
                     Print Confirmation
                   </button>
-                  <button className="button-primary view-button" onClick={() => router.push(`/`)}>
+                  <button className="button-primary view-button" onClick={() => router.push(`/${locale}/bookings`)}>
                     View my Booking
                     <svg
                       width="25"
