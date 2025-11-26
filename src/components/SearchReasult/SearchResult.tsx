@@ -260,7 +260,7 @@ const SearchResult = () => {
     ) {
       hasTriggeredInitialSearch.current = true;
       handleSearchClick({
-        preventDefault: () => {},
+        preventDefault: () => { },
       } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
@@ -574,12 +574,10 @@ const SearchResult = () => {
 
     if (totalGuests === 0) return t("addGuests");
 
-    const guestsText = `${totalGuests} ${
-      totalGuests > 1 ? t("guests") : t("guest")
-    }`;
-    const roomsText = `${rooms.length} ${
-      rooms.length > 1 ? t("rooms") : t("room")
-    }`;
+    const guestsText = `${totalGuests} ${totalGuests > 1 ? t("guests") : t("guest")
+      }`;
+    const roomsText = `${rooms.length} ${rooms.length > 1 ? t("rooms") : t("room")
+      }`;
 
     return `${guestsText} • ${roomsText}`;
   };
@@ -1427,11 +1425,11 @@ const SearchResult = () => {
                                       {(images.thumbs.length > 0
                                         ? images.thumbs
                                         : ([
-                                            thumbnailImages1,
-                                            thumbnailImages2,
-                                            thumbnailImages3,
-                                            thumbnailImages4,
-                                          ] as unknown as string[])
+                                          thumbnailImages1,
+                                          thumbnailImages2,
+                                          thumbnailImages3,
+                                          thumbnailImages4,
+                                        ] as unknown as string[])
                                       )
                                         .slice(0, 4)
                                         .map((imgSrc, index) => (
@@ -1445,9 +1443,8 @@ const SearchResult = () => {
                                               width={66}
                                               height={52}
                                               src={imgSrc}
-                                              alt={`${getHotelName(hotel)} ${
-                                                index + 1
-                                              }`}
+                                              alt={`${getHotelName(hotel)} ${index + 1
+                                                }`}
                                               className="property-thumb-img"
                                             />
                                           </div>
@@ -1559,7 +1556,7 @@ const SearchResult = () => {
                                         aria-hidden="true"
                                         dangerouslySetInnerHTML={{
                                           __html:
-                                            buildCurrencySvgMarkup("#27272a"),
+                                            buildCurrencySvgMarkup("#09090b"),
                                         }}
                                         style={{ display: "inline-flex" }}
                                       />{" "}
@@ -1583,7 +1580,7 @@ const SearchResult = () => {
                                     }
                                   >
                                     {loadingHotelId ===
-                                    getHotelCode(hotel)?.toString() ? (
+                                      getHotelCode(hotel)?.toString() ? (
                                       <>
                                         <div className="view-details-spinner"></div>
                                         {tSearch("loading")}
