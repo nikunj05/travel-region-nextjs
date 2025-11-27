@@ -135,16 +135,22 @@
               flex: 1;
             }
 
+            .form-label {
+              display: block;
+              margin-bottom: 8px;
+              font-size: 16px;
+              font-weight: $font-weight500;
+              color: $color-black-zinc-950;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              justify-content: unset;
+            }
+
             .select-with-input-field {
               flex: 1;
 
-              .form-label {
-                display: block;
-                margin-bottom: 8px;
-                font-size: 16px;
-                font-weight: $font-weight500;
-                color: $color-black-zinc-950;
-              }
+
 
               .select-with-input {
                 display: flex;
@@ -315,6 +321,13 @@
           .booking-hotel-image {
             width: 44px;
             height: 44px;
+            min-width: 44px;
+
+            .booking-hotel-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
           }
 
           .hotel-name {
@@ -739,6 +752,7 @@
             .booking-hotel-image {
               width: 64px;
               height: 64px;
+              min-width: 64px;
               border-radius: 2px;
 
               img {
@@ -791,6 +805,29 @@
               .form-check-label {
                 padding-left: 0px;
                 padding-right: 10px;
+              }
+
+            }
+          }
+        }
+
+        .booking-traveler-details {
+          .booking-details-form {
+            .booking-form-content {
+              .select-with-input-field {
+
+                .select-with-input {
+                  .country-code-input {
+                    right: 3px;
+                    left: auto;
+                  }
+
+                  .phone-number-input {
+                    .form-input {
+                      padding-left: 14px !important;
+                    }
+                  }
+                }
               }
             }
           }
