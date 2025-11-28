@@ -40,6 +40,34 @@ interface GoogleTextSearchRequest {
 // Service Status Constants (we'll use strings matching the SDK)
 type GooglePlacesServiceStatus = 'OK' | 'ZERO_RESULTS' | 'INVALID_REQUEST' | 'OVER_QUERY_LIMIT' | 'REQUEST_DENIED' | 'UNKNOWN_ERROR'
 
+// Google Places Service Interface
+interface GooglePlacesService {
+  textSearch: (
+    request: GoogleTextSearchRequest,
+    callback: (results: GooglePlaceResult[] | null, status: GooglePlacesServiceStatus) => void
+  ) => void
+}
+
+// Google Maps API Interfaces
+interface GoogleMapsPlaces {
+  PlacesService: new (element: HTMLElement) => GooglePlacesService
+}
+
+interface GoogleMaps {
+  places: GoogleMapsPlaces
+}
+
+interface GoogleAPI {
+  maps: GoogleMaps
+}
+
+// Extend Window interface to include google
+declare global {
+  interface Window {
+    google?: GoogleAPI
+  }
+}
+
 interface LocationPickerProps {
   isOpen: boolean
   onLocationSelect: (location: Location | null) => void
@@ -54,7 +82,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   isOpen,
   onLocationSelect,
   recentSearches = [],
-  suggestedDestinations = [],
   searchQuery: externalSearchQuery = '',
   onSearchQueryChange
 }) => {
@@ -63,7 +90,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   
-  const placesService = useRef<any>(null)
+  const placesService = useRef<GooglePlacesService | null>(null)
 
   // Use external search query if provided, otherwise use internal
   const searchQuery = externalSearchQuery || internalSearchQuery
@@ -71,7 +98,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   // Load Google Maps Script
   useEffect(() => {
     const loadGoogleMaps = () => {
-      if ((window as any).google && (window as any).google.maps) {
+      if (window.google && window.google.maps) {
         initializeServices()
         return
       }
@@ -90,11 +117,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   }, [])
 
   const initializeServices = () => {
-    if (!(window as any).google) return
+    if (!window.google) return
     
     if (!placesService.current) {
       // PlacesService requires a DOM element (even if not used for display)
-      placesService.current = new (window as any).google.maps.places.PlacesService(document.createElement('div'))
+      placesService.current = new window.google.maps.places.PlacesService(document.createElement('div'))
     }
   }
 
