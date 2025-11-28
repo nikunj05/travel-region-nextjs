@@ -12,7 +12,8 @@ export default function GoogleAuthErrorPage() {
   useEffect(() => {
     // no-op, could send to monitoring
   }, [error]);
-
+console.log("error", error);
+console.log("message", message);
   return (
     <main className="padding-top-100">
       <div
