@@ -778,11 +778,19 @@
     //   }
     // }
 
+    // new card with total price box
+    .hotel-room-with-total {
+      grid-template-columns: 1fr 276px;
+      gap: 32px;
+      display: grid;
+    }
+
     .room-list-vertical {
       display: flex;
       flex-wrap: wrap;
       gap: 24px;
-      margin-bottom: 36px;
+      // margin-bottom: 36px;
+      margin-bottom: 0px;
       flex-direction: column;
 
       .room-card {
@@ -795,10 +803,10 @@
         flex-wrap: wrap;
 
         .room-card-image {
-          // height: 203px;
           height: 246px;
           min-height: 203px;
-          width: 360px;
+          // width: 360px;
+          width: 294px;
           position: relative;
           border-radius: 8px 0px 0 8px;
           overflow: hidden;
@@ -847,10 +855,10 @@
         .room-card-details {
           padding: 12px;
           height: auto;
-          width: calc(100% - 360px);
+          width: calc(100% - 294px);
           display: flex;
           flex-direction: row;
-          gap: 20px;
+          gap: 15px;
 
           .room-vertical-separetion {
             height: auto;
@@ -859,11 +867,11 @@
           }
 
           .room-card-details-left {
-            width: calc(100% - 280px);
+            width: calc(100% - 240px);
           }
 
           .room-card-details-right {
-            width: 240px;
+            width: 210px;
             display: flex;
             flex-direction: column;
           }
@@ -874,7 +882,7 @@
             font-size: 20px;
             font-weight: $font-weight600;
             color: $color-black-zinc-950;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             // display: -webkit-box;
             // -webkit-line-clamp: 2;
             // -webkit-box-orient: vertical;
@@ -906,12 +914,12 @@
 
           .room-card-amenities-list {
             text-align: left;
-            margin: 20px 0;
+            margin: 16px 0;
             display: flex;
 
             .amenities-item {
               row-gap: 6px;
-              column-gap: 16px;
+              column-gap: 15px;
               margin: 0;
               flex-wrap: wrap;
               padding: 0;
@@ -930,7 +938,7 @@
           }
 
           .room-card-specs {
-            margin: 20px 0;
+            margin: 16px 0;
 
             .card-specs-item {
               row-gap: 8px;
@@ -1436,16 +1444,20 @@
       gap: 15px;
       justify-content: space-between;
 
+
+
       .hotel-subtotal {
         width: 100%;
         background: #fff;
         border: 1px solid #d1d5dc;
         border-radius: 12px;
-        padding: 24px 20px;
+        padding: 15px 15px;
         border-radius: 6px;
-        max-width: 65%;
+        max-width: 100%;
         margin: 0 auto;
-
+        position: -webkit-sticky;
+        position: sticky;
+        top: 126px;
 
         ul {
           list-style: none;
@@ -1541,8 +1553,9 @@
         .room-booking-btn {
           font-size: 16px;
           min-width: 215px;
-
-          padding: 13.2px 15px;
+          width: 100%;
+          // padding: 13.2px 15px;
+          padding: 10.2px 15px;
         }
       }
     }
