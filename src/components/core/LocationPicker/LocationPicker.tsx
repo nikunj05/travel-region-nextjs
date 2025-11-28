@@ -14,33 +14,31 @@ interface Location {
   }
 }
 
-interface MapboxContext {
-  id: string
-  mapbox_id: string
-  wikidata?: string
-  short_code?: string
-  text: string
+// Google Maps Interfaces
+interface GoogleLatLng {
+  lat: () => number
+  lng: () => number
 }
 
-interface MapboxFeature {
-  id: string
-  type: string
-  place_type: string[]
-  relevance: number
-  properties: {
-    mapbox_id: string
-    wikidata?: string
-  }
-  text: string
-  place_name: string
-  bbox: number[]
-  center: number[]
-  context?: MapboxContext[]
-  geometry: {
-    type: string
-    coordinates: number[]
-  }
+interface GoogleGeometry {
+  location: GoogleLatLng
 }
+
+interface GooglePlaceResult {
+  place_id: string
+  name: string
+  formatted_address?: string
+  geometry?: GoogleGeometry
+  types?: string[]
+}
+
+interface GoogleTextSearchRequest {
+  query: string
+  type?: string
+}
+
+// Service Status Constants (we'll use strings matching the SDK)
+type GooglePlacesServiceStatus = 'OK' | 'ZERO_RESULTS' | 'INVALID_REQUEST' | 'OVER_QUERY_LIMIT' | 'REQUEST_DENIED' | 'UNKNOWN_ERROR'
 
 interface LocationPickerProps {
   isOpen: boolean
@@ -61,26 +59,44 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   onSearchQueryChange
 }) => {
   const [internalSearchQuery, setInternalSearchQuery] = useState('')
-  const [mapboxSuggestions, setMapboxSuggestions] = useState<Location[]>([])
+  const [suggestions, setSuggestions] = useState<Location[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  
+  const placesService = useRef<any>(null)
+
   // Use external search query if provided, otherwise use internal
   const searchQuery = externalSearchQuery || internalSearchQuery
 
-  // Default locations if none provided
-  // const defaultRecentSearches: Location[] = [
-  //   { id: '1', name: 'Kuala Lumpur', country: 'Malaysia' }
-  // ]
+  // Load Google Maps Script
+  useEffect(() => {
+    const loadGoogleMaps = () => {
+      if ((window as any).google && (window as any).google.maps) {
+        initializeServices()
+        return
+      }
 
-  // const defaultSuggestedDestinations: Location[] = [
-  //   { id: '2', name: 'Kuala Lumpur', country: 'Malaysia' },
-  //   { id: '3', name: 'Toronto', country: 'Canada' },
-  //   { id: '4', name: 'Bangkok', country: 'Thailand' },
-  //   { id: '5', name: 'London', country: 'United Kingdom' },
-  //   { id: '6', name: 'NY City', country: 'New York' }
-  // ]
+      const script = document.createElement('script')
+      // We must use the Javascript API script loader, not the Places API REST endpoint directly
+      // The REST endpoint (textsearch/json) cannot be used as a script source and has CORS issues if fetched directly
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places`
+      script.async = true
+      script.defer = true
+      script.onload = () => initializeServices()
+      document.head.appendChild(script)
+    }
 
-  // const recentLocations = recentSearches.length > 0 ? recentSearches : defaultRecentSearches
+    loadGoogleMaps()
+  }, [])
+
+  const initializeServices = () => {
+    if (!(window as any).google) return
+    
+    if (!placesService.current) {
+      // PlacesService requires a DOM element (even if not used for display)
+      placesService.current = new (window as any).google.maps.places.PlacesService(document.createElement('div'))
+    }
+  }
 
   // Focus input when dropdown opens
   useEffect(() => {
@@ -89,80 +105,75 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, [isOpen])
 
-  // Mapbox search function
-  const searchMapboxPlaces = async (query: string) => {
+  // Google Places Text Search function
+  const searchGooglePlaces = (query: string) => {
     if (!query.trim()) {
-      setMapboxSuggestions([])
+      setSuggestions([])
       return
     }
 
-    setIsLoading(true)
-    try {
-      const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_KEY
-      if (!mapboxToken) {
-        console.error('Mapbox token not found')
-        return
-      }
-
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxToken}&limit=5&types=place,locality,neighborhood`
-      )
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch suggestions')
-      }
-
-      const data = await response.json()
-      const features: MapboxFeature[] = data.features || []
-
-      const suggestions: Location[] = features.map((feature, index) => {
-        // Extract country, region, and district from context array
-        const countryContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('country'))
-        const regionContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('region'))
-        const districtContext = feature.context?.find((ctx: MapboxContext) => ctx.id.startsWith('district'))
-        
-        return {
-          id: feature.id || `mapbox-${index}`,
-          name: feature.text || 'Unknown',
-          country: countryContext?.text || 'Unknown',
-          region: regionContext?.text || districtContext?.text || undefined,
-          coordinates: {
-            lat: feature.center[1],
-            lng: feature.center[0]
-          }
-        }
-      })
-
-      setMapboxSuggestions(suggestions)
-    } catch (error) {
-      console.error('Error fetching Mapbox suggestions:', error)
-      setMapboxSuggestions([])
-    } finally {
-      setIsLoading(false)
+    if (!placesService.current) {
+      initializeServices()
+      if (!placesService.current) return
     }
+
+    setIsLoading(true)
+    
+    const request: GoogleTextSearchRequest = {
+      query: query,
+      // type: 'lodging'
+      // 'type' parameter can be used to filter, e.g., 'lodging' for hotels, 
+      // but omitting it allows searching for both cities and hotels as requested.
+    }
+
+    placesService.current.textSearch(
+      request,
+      (results: GooglePlaceResult[] | null, status: GooglePlacesServiceStatus) => {
+        setIsLoading(false)
+        if (
+          status === 'OK' && // matches google.maps.places.PlacesServiceStatus.OK
+          results
+        ) {
+          const newSuggestions: Location[] = results.map((place) => ({
+            id: place.place_id,
+            name: place.name,
+            country: place.formatted_address || '', // Text Search returns formatted address
+            coordinates: place.geometry ? {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            } : undefined
+          }))
+          setSuggestions(newSuggestions)
+        } else {
+          setSuggestions([])
+        }
+      }
+    )
   }
 
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      searchMapboxPlaces(searchQuery)
+      searchGooglePlaces(searchQuery)
     }, 300)
 
     return () => clearTimeout(timeoutId)
   }, [searchQuery])
 
   const handleLocationClick = (location: Location) => {
+    // Text Search results already include coordinates, so we can select immediately
     onLocationSelect(location)
-    // Keep the location name in the input for editing
-    if (onSearchQueryChange) {
-      onSearchQueryChange(location.name)
-    } else {
-      setInternalSearchQuery(location.name)
-    }
-    setMapboxSuggestions([])
+    updateSearchQuery(location.name)
+    setSuggestions([])
   }
 
-  
+  const updateSearchQuery = (name: string) => {
+    if (onSearchQueryChange) {
+      onSearchQueryChange(name)
+    } else {
+      setInternalSearchQuery(name)
+    }
+  }
 
   const renderLocationIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +212,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   return (
     <div className="locationpicker-dropdown">
       <div className="locationpicker-content">
-        {/* Show Mapbox suggestions when user is typing */}
+        {/* Show suggestions when user is typing */}
         {searchQuery.trim() && (
           <div className="locationpicker-section">
             <span className="locationpicker-section-header">
@@ -211,9 +222,9 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               <div className="locationpicker-loading">
                 <p>Loading suggestions...</p>
               </div>
-            ) : mapboxSuggestions.length > 0 ? (
+            ) : suggestions.length > 0 ? (
               <ul className="locationpicker-list">
-                {mapboxSuggestions.map((location) => (
+                {suggestions.map((location) => (
                   <li key={location.id}>
                     <button
                       className="locationpicker-item"
@@ -240,34 +251,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             )}
           </div>
         )}
-
-        {/* Show recent searches when no search query */}
-        {/* {!searchQuery.trim() && recentLocations.length > 0 && (
-          <div className="locationpicker-section">
-            <span className="locationpicker-section-header">Recent Searches</span>
-            <ul className="locationpicker-list">
-              {recentLocations.map((location) => (
-                <li key={location.id}>
-                  <button
-                    className="locationpicker-item"
-                    onClick={() => handleLocationClick(location)}
-                    type="button"
-                  >
-                    {renderLocationIcon()}
-                    <span className="location-name">{location.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
-
-        {/* Show no content message when no search and no recent searches */}
-        {/* {!searchQuery.trim() && recentLocations.length === 0 && (
-          <div className="locationpicker-no-results">
-            <p>Start typing to search for locations</p>
-          </div>
-        )} */}
       </div>
     </div>
   )

@@ -12,7 +12,7 @@ import { COUNTRY_CODES } from "@/constants";
 import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import GoogleLoginIcon from "@/assets/images/google_icon.svg";
-import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
+// import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
 import style from "./RegisterForm.module.scss";
 import Link from "next/link";
 
@@ -188,7 +188,7 @@ const RegisterForm: React.FC = () => {
                 />
                 <span> {t("google")}</span>
               </button>
-              <button className={style.socialBtn}>
+              {/* <button className={style.socialBtn}>
                 <Image
                   src={FacebookLoginIcon}
                   alt="facebook icon"
@@ -197,7 +197,7 @@ const RegisterForm: React.FC = () => {
                   className={style.socialloginicon}
                 />
                 <span>{t("facebook")}</span>
-              </button>
+              </button> */}
             </div>
 
             <div className={style.logingotosignuplink}>

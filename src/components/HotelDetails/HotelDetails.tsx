@@ -160,6 +160,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRateForPriceDetails, setSelectedRateForPriceDetails] = useState<{
     rate: ProcessedRate;
     roomName: string;
+    count?: number;
   } | null>(null);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -316,6 +317,21 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     let totalPrice = 0;
     let currency = "SAR";
 
+    if (!searchFilters.checkInDate || !searchFilters.checkOutDate) {
+      return {
+        totalRooms: totalSelectedRooms,
+        totalPrice: 0,
+        subtotal: 0,
+        currency: "SAR",
+      };
+    }
+
+    const checkIn = new Date(searchFilters.checkInDate);
+    const checkOut = new Date(searchFilters.checkOutDate);
+    const nights = Math.ceil(
+      (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
     processedRooms.forEach((room) => {
       room.rates.forEach((rate) => {
         const key = `${room.roomCode}_${rate.rateKey}`;
@@ -323,7 +339,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
         if (roomCount > 0) {
           const rateNet = Number(rate.net) || 0;
-          totalPrice += rateNet * roomCount;
+          // Calculate total price based on rate * nights * roomCount
+          totalPrice += rateNet * nights * roomCount;
           currency = rate.currency || "SAR";
         }
       });
@@ -338,7 +355,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       subtotal,
       currency,
     };
-  }, [processedRooms, selectedRoomCounts, totalSelectedRooms]);
+  }, [processedRooms, selectedRoomCounts, totalSelectedRooms, searchFilters.checkInDate, searchFilters.checkOutDate]);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
@@ -635,8 +652,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   };
 
   // Price details modal handlers
-  const handleOpenPriceDetailsModal = (rate: ProcessedRate, roomName: string) => {
-    setSelectedRateForPriceDetails({ rate, roomName });
+  const handleOpenPriceDetailsModal = (rate: ProcessedRate, roomName: string, count: number = 1) => {
+    setSelectedRateForPriceDetails({ rate, roomName, count });
     setIsPriceDetailsModalOpen(true);
   };
 
@@ -648,13 +665,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   // Calculate daily prices based on total and number of nights
   const calculateDailyPrices = useCallback(() => {
     if (!searchFilters.checkInDate || !searchFilters.checkOutDate || !selectedRateForPriceDetails) {
-      return { dates: [], nights: 0, averagePrice: 0 };
+      return { dates: [], nights: 0, averagePrice: 0, totalPrice: 0 };
     }
 
     const checkIn = new Date(searchFilters.checkInDate);
     const checkOut = new Date(searchFilters.checkOutDate);
     const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
-    const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0);
+    const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0) * nights;
     const pricePerNight = totalPrice / nights;
 
     const dates = [];
@@ -672,7 +689,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       });
     }
 
-    return { dates, nights, averagePrice: pricePerNight };
+    return { dates, nights, averagePrice: pricePerNight, totalPrice };
   }, [searchFilters.checkInDate, searchFilters.checkOutDate, selectedRateForPriceDetails, locale]);
 
   // Helper functions for hotel images
@@ -2249,7 +2266,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                               </a>
 
                                               <div className="rate-selection-controls">
-                                                {isDisabled &&
+                                                {/* {isDisabled &&
                                                   selectedCount === 0 && (
                                                     <span className="max-rooms-message">
                                                       Max {totalRoomCount}{" "}
@@ -2258,7 +2275,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                         : "rooms"}{" "}
                                                       reached
                                                     </span>
-                                                  )}
+                                                  )} */}
 
                                                 <label className="room-count-label">
                                                   Select Rooms:
@@ -2837,8 +2854,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
             <div className="price-details-modal-body">
               {(() => {
-                const { dates, nights, averagePrice } = calculateDailyPrices();
-                const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0);
+                const { dates, nights, averagePrice, totalPrice } = calculateDailyPrices();
 
                 return (
                   <>

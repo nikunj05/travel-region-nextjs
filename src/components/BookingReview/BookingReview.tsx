@@ -282,7 +282,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     selectedRoomsInfo.forEach((room) => {
       totalRooms += room.count;
-      totalPrice += room.totalPrice;
+      const roomTotal = room.pricePerRoom * totalNights * room.count;
+      totalPrice += roomTotal;
       currency = room.currency;
       
       // Create breakdown text for each room

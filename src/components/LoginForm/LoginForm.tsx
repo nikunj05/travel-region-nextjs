@@ -9,7 +9,7 @@ import { Input } from "@/components/core/Input/Input";
 import Image from "next/image";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
 import GoogleLoginIcon from "@/assets/images/google_icon.svg";
-import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
+// import FacebookLoginIcon from "@/assets/images/facebook_icon.svg";
 import style from "./Login.module.scss";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -127,7 +127,7 @@ const LoginForm: React.FC = () => {
                 />
                 <span> {t("google")}</span>
               </button>
-              <button
+              {/* <button
                 className={style.socialBtn}
                 onClick={() =>
                   signIn("facebook", {
@@ -144,7 +144,7 @@ const LoginForm: React.FC = () => {
                   className={style.socialloginicon}
                 />
                 <span>{t("facebook")}</span>
-              </button>
+              </button> */}
             </div>
 
             <div className={style.logingotosignuplink}>
