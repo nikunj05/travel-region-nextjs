@@ -17,7 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify"; 
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Select } from "@/components/core/Select/Select";
-import { COUNTRY_CODES, buildHotelbedsImageUrl } from "@/constants";
+import { COUNTRY_CODES, buildHotelbedsImageUrl, buildCurrencySvgMarkup } from "@/constants";
 import { useLocale } from "next-intl";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
@@ -35,6 +35,7 @@ function CheckoutComponent() {
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [agreeToTermsError, setAgreeToTermsError] = useState(false);
 
   // Generate default values for the form - load from store if available
   const defaultValues = useMemo(() => {
@@ -92,9 +93,12 @@ function CheckoutComponent() {
     try {
       // Check if terms and conditions are accepted
       if (!agreeToTerms) {
-        toast.error("Please accept Terms and Privacy Policy below I agree...");
+        setAgreeToTermsError(true);
         return;
       }
+
+      // Clear any previous error when terms are accepted
+      setAgreeToTermsError(false);
 
       // Get order from booking response
       const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking 
@@ -151,6 +155,11 @@ function CheckoutComponent() {
     return adults + children;
   }, [searchFilters.rooms]);
 
+  const totalRooms = useMemo(
+    () => searchFilters.rooms?.length || 0,
+    [searchFilters.rooms]
+  );
+
   // Calculate nights
   const calculateNights = (
     checkIn: string | Date | null | undefined,
@@ -169,6 +178,22 @@ function CheckoutComponent() {
   };
 
   const totalNights = calculateNights(searchFilters.checkInDate, searchFilters.checkOutDate);
+
+  const formatDate = (
+    date: string | Date | null | undefined
+  ): string => {
+    if (!date) return "Not selected";
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(dateObj);
+    } catch {
+      return "Not selected";
+    }
+  };
 
   // Get hotel image
   const getOrderedHotelImages = () => {
@@ -313,6 +338,53 @@ function CheckoutComponent() {
 
         <div className="booking-review-details">
           <div className="review-booking-details-left">
+            <div className="booking-detail-box booking-stays-summary">
+              <h3 className="booking-details-sub-title">Stay Details</h3>
+              <ul className="booking-listing-info">
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                    Check-in
+                  </div>
+                  <div className="booking-list-right d-flex align-items-center">
+                    {formatDate(searchFilters.checkInDate)}
+                  </div>
+                </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                    Check-out
+                  </div>
+                  <div className="booking-list-right d-flex align-items-center">
+                    {formatDate(searchFilters.checkOutDate)}
+                  </div>
+                </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                    Guests & Rooms
+                  </div>
+                  <div className="booking-list-right d-flex align-items-center">
+                    {totalGuests} {totalGuests === 1 ? "Guest" : "Guests"} •{" "}
+                    {totalRooms} {totalRooms === 1 ? "Room" : "Rooms"}
+                  </div>
+                </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                    Total Price
+                  </div>
+                  <div className="booking-list-right d-flex align-items-center">
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
+                  </div>
+                </li>
+              </ul>
+            </div>
+
             <Form<BookingFormData>
               ref={formRef}
               defaultValues={defaultValues}
@@ -340,6 +412,7 @@ function CheckoutComponent() {
                             label="First Name"
                             labelWithContent={<span className="required">*</span>}
                             type="text"
+                            disabled
                             placeholder="Your first name"
                             className="form-input"
                           />
@@ -348,6 +421,7 @@ function CheckoutComponent() {
                             label="Last Name"
                             labelWithContent={<span className="required">*</span>}
                             type="text"
+                            disabled
                             placeholder="Your last name"
                             className="form-input"
                           />
@@ -359,6 +433,7 @@ function CheckoutComponent() {
                             label="Email address"
                             labelWithContent={<span className="required">*</span>}
                             type="email"
+                            disabled
                             placeholder="Your email"
                             className="form-input"
                           />
@@ -367,6 +442,7 @@ function CheckoutComponent() {
                             label="Country/ Region"
                             labelWithContent={<span className="required">*</span>}
                             type="text"
+                            disabled
                             placeholder="Your country"
                             className="form-input"
                           />
@@ -391,6 +467,7 @@ function CheckoutComponent() {
                                       value={field.value}
                                       onChange={field.onChange}
                                       placeholder="+966"
+                                      disabled
                                     />
                                   )}
                                 />
@@ -400,7 +477,8 @@ function CheckoutComponent() {
                                   name="primaryGuest.phone"
                                   type="tel"
                                   placeholder="Your phone number"
-                                  className="form-input form-control"
+                                className="form-input form-control"
+                                disabled
                                 />
                               </div>
                             </div>
@@ -424,6 +502,7 @@ function CheckoutComponent() {
                               rows={5}
                               placeholder="Enter any requests..."
                               className="w-100 text-field"
+                              disabled
                             />
                           </div>
                         </div>
@@ -646,7 +725,15 @@ function CheckoutComponent() {
                     Hotel Fare
                   </div>
                   <div className="booking-pricing">
-                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
                   </div>
                 </div>
                 {/* <div className="booking-price-item d-flex align-items-center">
@@ -688,7 +775,17 @@ function CheckoutComponent() {
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>{priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}</span>
+                  <span>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
+                  </span>
                 </div>
                 <div className="booking-price-tax">
                   Included all taxes & fees
@@ -701,13 +798,23 @@ function CheckoutComponent() {
                     type="checkbox"
                     id="agreeToTerms"
                     checked={agreeToTerms}
-                    onChange={(e) => setAgreeToTerms(e.target.checked)}
+                    onChange={(e) => {
+                      setAgreeToTerms(e.target.checked);
+                      if (e.target.checked) {
+                        setAgreeToTermsError(false);
+                      }
+                    }}
                   />
                   <label className="form-check-label" htmlFor="agreeToTerms">
                     I agree to <a href="#">Terms</a> and{" "}
                     <a href="#">Privacy Policy.</a>
                   </label>
                 </div>
+                {agreeToTermsError && (
+                  <div className="terms-error-message">
+                    Please accept Terms and Privacy Policy.
+                  </div>
+                )}
               </div>
               <div className="check-availability-action">
                 <button className="button-primary check-availability-btn" onClick={handleCheckout}>

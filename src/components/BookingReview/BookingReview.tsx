@@ -13,7 +13,11 @@ import { useRouter } from "next/navigation";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useBookingStore } from "@/store/bookingStore";
-import { buildHotelbedsImageUrl, COUNTRY_CODES } from "@/constants";
+import {
+  buildHotelbedsImageUrl,
+  COUNTRY_CODES,
+  buildCurrencySvgMarkup,
+} from "@/constants";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
@@ -890,8 +894,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                               <Input
                                 name="primaryGuest.phone"
                                 type="tel"
+                                inputMode="numeric"
+                                pattern="\d*"
                                 placeholder="Your phone number"
                                 className="form-input form-control"
+                                maxLength={15}
                               />
                             </div>
                           </div>
@@ -984,7 +991,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     Hotel Fare
                   </div>
                   <div className="booking-pricing">
-                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
                   </div>
                 </div>
                 {/* <div className="booking-price-item d-flex align-items-center">
@@ -1026,7 +1041,17 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>{priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}</span>
+                  <span>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
+                  </span>
                 </div>
                 <div className="booking-price-tax">
                   Included all taxes & fees
