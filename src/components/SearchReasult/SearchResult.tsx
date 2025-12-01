@@ -54,7 +54,7 @@ const SearchResult = () => {
 
   const { filters, setLocation, setCheckInDate, setCheckOutDate, setRooms } =
     useSearchFiltersStore();
-  // console.log("filters", filters);
+  console.log("filters", filters);
 
   // Dynamic hotels from API (hotel search store)
   const {
@@ -127,6 +127,30 @@ const SearchResult = () => {
     useState<boolean>(false);
 
   // Derived hotel lists
+  const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : (hotel as HotelItem).id;
+  const getHotelName = (hotel: HotelItem | FavoriteHotel) =>
+    ("name" in hotel && typeof hotel.name === "string"
+      ? hotel.name
+      : (hotel as FavoriteHotel).name?.content) || "Hotel";
+  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
+    (hotel as FavoriteHotel).address?.content ||
+    (hotel as FavoriteHotel).city?.content ||
+    "Location";
+
+  const getHotelCode = (hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : undefined;
+
+  // Helper function to extract star rating from categoryCode
+  const getStarRating = (hotel: HotelItem | FavoriteHotel): number => {
+    if ("categoryCode" in hotel && hotel.categoryCode) {
+      // Extract number from categoryCode (e.g., "4EST" -> 4)
+      const match = hotel.categoryCode.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
+    }
+    return 5; // Default fallback
+  };
+
   const getHotelRateValue = (
     hotel: HotelItem | FavoriteHotel,
     preference: "min" | "max"
@@ -144,7 +168,44 @@ const SearchResult = () => {
   };
 
   const sortedHotels = useMemo(() => {
-    const sortable = [...apiHotels];
+    let sortable = [...apiHotels];
+
+    // Filter logic for specific hotel (lodging)
+    if (filters.location?.types?.includes('lodging') && filters.location.name) {
+      const targetName = filters.location.name.toLowerCase();
+      // console.log("targetName", targetName);
+      const filtered = sortable.filter((hotel) => {
+        const hotelName = getHotelName(hotel).toLowerCase();
+        // console.log("hotelName", hotelName);
+        // 1. Direct inclusion (fastest)
+        if (hotelName.includes(targetName) || targetName.includes(hotelName)) return true;
+
+        // 2. Word token matching
+        const cleanString = (str: string) => str.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 0);
+        
+        const tWords = cleanString(targetName);
+        const hWords = cleanString(hotelName);
+        
+        if (tWords.length === 0 || hWords.length === 0) return false;
+
+        // Check if all significant target words appear in hotel name
+        const allTargetInHotel = tWords.every(tw => hotelName.includes(tw));
+        if (allTargetInHotel) return true;
+        
+        // Check if all significant hotel words appear in target name (handle "Sheraton" vs "Sheraton Hotel")
+        const allHotelInTarget = hWords.every(hw => targetName.includes(hw));
+        if (allHotelInTarget) return true;
+        
+        return false;
+      });
+
+      // If we found matches for the specific hotel, show only those.
+      // Otherwise, show all results (standard behavior if specific hotel not found in API list).
+      if (filtered.length > 0) {
+        sortable = filtered;
+      }
+    }
+
     switch (sortBy) {
       case "Price: Low to High":
         return sortable.sort((a, b) => {
@@ -163,7 +224,7 @@ const SearchResult = () => {
       default: // Recommended
         return sortable;
     }
-  }, [apiHotels, sortBy]);
+  }, [apiHotels, sortBy, filters.location]);
 
   const totalPages = useMemo(
     () => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE),
@@ -337,30 +398,6 @@ const SearchResult = () => {
       document.body.style.overflow = "";
     };
   }, [isMobileFilterOpen]);
-
-  const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
-    "code" in hotel ? hotel.code : (hotel as HotelItem).id;
-  const getHotelName = (hotel: HotelItem | FavoriteHotel) =>
-    ("name" in hotel && typeof hotel.name === "string"
-      ? hotel.name
-      : (hotel as FavoriteHotel).name?.content) || "Hotel";
-  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
-    (hotel as FavoriteHotel).address?.content ||
-    (hotel as FavoriteHotel).city?.content ||
-    "Location";
-
-  const getHotelCode = (hotel: HotelItem | FavoriteHotel) =>
-    "code" in hotel ? hotel.code : undefined;
-
-  // Helper function to extract star rating from categoryCode
-  const getStarRating = (hotel: HotelItem | FavoriteHotel): number => {
-    if ("categoryCode" in hotel && hotel.categoryCode) {
-      // Extract number from categoryCode (e.g., "4EST" -> 4)
-      const match = hotel.categoryCode.match(/^(\d+)/);
-      return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
-    }
-    return 5; // Default fallback
-  };
 
   const getOrderedHotelImages = (hotel: HotelItem | FavoriteHotel) => {
     const images = (hotel.images || []).filter((img) => !!img?.path);
@@ -1335,7 +1372,7 @@ const SearchResult = () => {
                       ) : (
                         <>
                           {tSearch("showingHotels", {
-                            count: apiHotels.length,
+                            count: sortedHotels.length,
                             total: apiTotal ?? apiHotels.length,
                             location: filters.location
                               ? filters.location.name

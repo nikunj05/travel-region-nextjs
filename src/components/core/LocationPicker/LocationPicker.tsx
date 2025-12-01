@@ -12,6 +12,7 @@ interface Location {
     lat: number
     lng: number
   }
+  types?: string[]
 }
 
 // Google Maps Interfaces
@@ -168,7 +169,8 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
             coordinates: place.geometry ? {
               lat: place.geometry.location.lat(),
               lng: place.geometry.location.lng()
-            } : undefined
+            } : undefined,
+            types: place.types
           }))
           setSuggestions(newSuggestions)
         } else {

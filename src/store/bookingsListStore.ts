@@ -16,6 +16,10 @@ interface BookingItem {
   children?: number
   total_price?: number
   currency?: string
+  // Enriched fields coming from API for display purposes
+  hotel_name?: string
+  hotel_location?: string
+  hotel_images?: string | string[]
   [key: string]: unknown
 }
 

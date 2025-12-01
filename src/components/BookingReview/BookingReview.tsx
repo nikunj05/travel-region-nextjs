@@ -159,6 +159,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       nights: totalNights,
       total_price: priceBreakdown.totalPrice,
       currency: priceBreakdown.currency,
+      hotel_name: hotelName,
+      hotel_location: hotelCountry,
+      hotel_images: hotelImageForBooking,
       special_requests: data.specialRequests || "",
       room_details: roomDetails,
       details: bookingDetails,
@@ -220,7 +223,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   // Get dynamic hotel data
   const hotelName = hotelData?.name?.content || "Hotel Name";
   const hotelAddress = hotelData?.address?.content || "Hotel Address";
+  const hotelCountry = hotelData?.country?.description?.content || hotelAddress;
   const displayedAmenities = hotelAmenities.slice(0, 3);
+
+  // Prepare single hotel image for booking payload (same one shown in UI)
+  const hotelImageForBooking = useMemo(() => {
+    const mainImg = getMainImage();
+    // If it's a URL string from Hotelbeds, use it; otherwise (static import) send empty string
+    return typeof mainImg === "string" ? mainImg : "";
+  }, [hotelData]);
 
   // Format dates and calculate stay duration
   const formatDate = (date: string | Date | null | undefined): string => {

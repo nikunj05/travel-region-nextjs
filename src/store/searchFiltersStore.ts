@@ -12,6 +12,7 @@ export interface Location {
     lat: number
     lng: number
   }
+  types?: string[]
 }
 
 // Room interface for guest counts

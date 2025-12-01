@@ -24,6 +24,9 @@ export interface CreateBookingRequest {
   nights: number;
   total_price: number;
   currency: string;
+  hotel_name?: string;
+  hotel_location?: string;
+  hotel_images?: string;
   special_requests?: string;
   room_details: RoomDetail[];
   details: BookingDetail[];
