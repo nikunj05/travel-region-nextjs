@@ -1675,8 +1675,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     >
                                       <Image
                                         src={HotelImgPrevIcon}
-                                        width={48}
-                                        height={48}
+                                        width={40}
+                                        height={40}
                                         alt="Previous"
                                         className="arrow-icon"
                                       />
@@ -1689,8 +1689,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     >
                                       <Image
                                         src={HotelImgNextIcon}
-                                        width={48}
-                                        height={48}
+                                        width={40}
+                                        height={40}
                                         alt="Next"
                                         className="arrow-icon"
                                       />

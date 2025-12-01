@@ -465,7 +465,7 @@
           }
 
           .hotel-name {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: $font-weight600;
             margin-bottom: 4px;
             color: $color-black-zinc-950;
@@ -511,12 +511,24 @@
             span {
               line-height: normal;
             }
+
+            .booking-review-total-price {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
           }
 
           .booking-price-tax {
             font-size: 12px;
             color: $color-black-zinc-500;
             margin: 0px;
+          }
+
+          .booking-pricing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
           }
         }
 
@@ -711,6 +723,10 @@
       }
     }
 
+    .booking-review-separetor {
+      margin: 15px 0;
+    }
+
     .review-booking-heading {
       margin-bottom: 26px;
 
@@ -753,6 +769,7 @@
 
             .booking-hotel-amenities {
               margin-bottom: 12px;
+              gap: 12px;
 
               .amenity-tag {
                 .amenity-tag-name {
@@ -780,6 +797,7 @@
 
             .booking-listing-item {
               gap: 12px;
+              margin-bottom: 15px;
 
               .booking-list-left {
                 gap: 8px;
@@ -789,6 +807,7 @@
                 svg {
                   width: 16px;
                   height: 16px;
+                  min-width: 16px;
                 }
               }
 
@@ -967,6 +986,13 @@
               padding: 9.2px 15px;
             }
           }
+        }
+      }
+
+      .booking-box-action {
+        .booking-edit-btn {
+          padding: 6px 10px;
+          font-size: 14px;
         }
       }
     }

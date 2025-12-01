@@ -121,8 +121,8 @@ const LoginModal = ({
             <Image
               src={GoogleLoginIcon}
               alt="google icon"
-              width="44"
-              height="44"
+              width="32"
+              height="32"
               className="login-modal-google-icon"
             />
             <span>{t("google")}</span>

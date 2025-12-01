@@ -369,4 +369,17 @@
       }
     }
   }
+
+  .nearby-hotel-section {
+    .testimonial-actions {
+      .testimonial-arrows {
+
+        .slick-prev,
+        .slick-next {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
 }

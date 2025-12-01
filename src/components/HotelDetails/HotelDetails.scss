@@ -1184,7 +1184,7 @@
             justify-content: space-between;
             align-items: flex-start;
             padding: 10px 0px;
-            gap: 24px;
+            gap: 16px;
             border-radius: 6px;
             transition: $transition;
 
@@ -1196,7 +1196,7 @@
               display: flex;
               flex-direction: column;
               gap: 8px;
-              width: 420px;
+              width: 195px;
 
               .room-title {
                 font-size: 16px;
@@ -1235,7 +1235,8 @@
 
             .room-right {
               text-align: right;
-              width: calc(100% - 340px);
+              width: calc(100% - 154px);
+              flex: 1;
               display: flex;
               gap: 24px;
               justify-content: flex-end;
@@ -1469,6 +1470,7 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 10px;
+            gap: 6px;
             font-size: 16px;
             color: #333;
 
@@ -1492,25 +1494,33 @@
             .label {
               font-weight: 500;
               color: $color-black-zinc-700;
+              font-size: 15px;
             }
 
             .value {
               font-weight: 600;
               color: #000;
+              gap: 2px;
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              justify-content: end;
+              font-size: 15px;
+              min-width: 115px;
             }
 
-            .text-green {
-              color: #FB2C36;
+            // .text-green {
+            //   color: #FB2C36;
 
-              svg {
-                width: 14px;
-                height: 14px;
+            //   svg {
+            //     width: 14px;
+            //     height: 14px;
 
-                path {
-                  fill: #FB2C36;
-                }
-              }
-            }
+            //     path {
+            //       fill: #FB2C36;
+            //     }
+            //   }
+            // }
 
             &.total {
               margin-top: 8px;
@@ -1527,6 +1537,7 @@
                 font-size: 16px;
                 font-weight: 700;
                 color: $brand-color;
+                gap: 2px;
                 display: flex;
                 align-items: center;
 
@@ -2368,6 +2379,17 @@
       .room-list-vertical {
         gap: 24px;
       }
+
+      .hotel-room-with-total {
+        grid-template-columns: 1fr 240px;
+        gap: 24px;
+      }
+
+      .hotel-detail-room-booking {
+        .hotel-subtotal {
+          padding: 10px;
+        }
+      }
     }
 
     .hotel-details-main-content {
@@ -2394,6 +2416,7 @@
         }
       }
     }
+
   }
 }
 
@@ -2420,17 +2443,71 @@
           }
         }
       }
+
+      .room-list-vertical {
+        .room-card {
+          .room-card-image {
+            width: 230px;
+            height: 226px;
+            min-height: 203px;
+          }
+
+          .room-card-details {
+            width: calc(100% - 230px);
+            gap: 10px;
+
+            .room-card-details-left {
+              width: calc(100% - 190px);
+            }
+
+            .room-card-details-right {
+              width: 170px;
+            }
+
+            .room-card-amenities-list,
+            .room-card-specs {
+
+              .amenities-item,
+              .card-specs-item {
+                li {
+                  gap: 6px;
+                  font-size: 14px;
+                }
+              }
+            }
+          }
+
+          .room-card-more-details {
+            .room-card-more-hotel {
+              gap: 10px;
+            }
+          }
+        }
+      }
     }
 
     .hotel-details-main-content {
       .hotel-details-left {
-        .image-gallery-section .thumbnail-images {
-          .thambnail-image-item {
-            .show-all-photos {
-              cursor: pointer;
-              color: #000;
-              padding: 7.7px 8px;
+        .tabbing-conetnt {
+          .amenities-tab-content {
+            .amenities-info {
+              .amenities-item {
+                gap: 15px;
+                padding: 12px;
+                word-break: break-all;
+              }
+            }
+          }
+        }
 
+        .image-gallery-section {
+          .thumbnail-images {
+            .thambnail-image-item {
+              .show-all-photos {
+                cursor: pointer;
+                color: #000;
+                padding: 7.7px 8px;
+              }
             }
           }
         }
@@ -2537,11 +2614,17 @@
       //     }
       //   }
       // }
+
+      .hotel-room-with-total {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
       .room-list-vertical {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
-        margin-bottom: 32px;
+        margin-bottom: 0px;
         padding-bottom: 0;
 
         .room-card {
@@ -2622,6 +2705,7 @@
   .hotel-details-page {
     .hotel-details-main-content {
       gap: 32px;
+
 
       .hotel-details-left {
         .image-gallery-section {
@@ -2771,6 +2855,15 @@
       //     max-width: calc((100% - 16px) / 2);
       //   }
       // }
+
+      .hotel-room-with-total {
+        display: block;
+      }
+
+      .hotel-detail-room-booking {
+        margin-top: 24px;
+      }
+
       .room-list-vertical {
         .room-card {
           flex: 0 0 calc((100% - 16px) / 2);
@@ -2984,8 +3077,8 @@
           }
 
           .hotel-img-btn {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
           }
 
           .room-card-details {
@@ -3122,8 +3215,6 @@
                   min-height: auto;
                 }
               }
-
-
             }
           }
         }
@@ -3132,7 +3223,7 @@
       .hotel-detail-room-booking {
         .hotel-subtotal {
           max-width: 100%;
-          padding: 15px;
+          padding: 12px;
 
           ul {
             li {

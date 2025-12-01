@@ -121,7 +121,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   // Handle form submission
   const handleSubmit = async (data: BookingFormData) => {
     console.log("=== BOOKING FORM SUBMISSION ===");
-    
+
     // Prepare room details
     const roomDetails = selectedRoomsInfo.map(room => ({
       rate_key: room.rateKey,
@@ -130,10 +130,10 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     // Prepare booking details (guest information) - only primary guest
     // Add "+" prefix to country code if not already present
-    const countryCode = data.primaryGuest.countryCode.startsWith('+') 
-      ? data.primaryGuest.countryCode 
+    const countryCode = data.primaryGuest.countryCode.startsWith('+')
+      ? data.primaryGuest.countryCode
       : `+${data.primaryGuest.countryCode}`;
-    
+
     const bookingDetails = [
       {
         price_per_night: selectedRoomsInfo[0]?.pricePerRoom || 0,
@@ -151,7 +151,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     const totalRooms = searchFilters.rooms?.length || 0;
     const totalAdults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
     const totalChildren = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
-    
+
     // Prepare the complete booking request
     const bookingRequest: CreateBookingRequest = {
       hotel_code: parseInt(hotelId),
@@ -173,12 +173,12 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     console.log("Booking Request Payload:");
     console.log(JSON.stringify(bookingRequest, null, 2));
-    
+
     // Call API to create booking via Zustand store
     const response = await createBooking(bookingRequest);
-    
+
     console.log("=== END OF SUBMISSION ===");
-    
+
     // Redirect to checkout page after successful booking
     if (response && response.status) {
       router.push(`/${locale}/checkout`);
@@ -300,7 +300,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       const roomTotal = room.pricePerRoom * totalNights * room.count;
       totalPrice += roomTotal;
       currency = room.currency;
-      
+
       // Create breakdown text for each room
       const pricePerNight = room.pricePerRoom;
       roomDetails.push(
@@ -539,7 +539,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   )}
                 </div>
                 <div className="booking-box-action">
-                  <button 
+                  <button
                     type="button"
                     className="booking-edit-btn"
                     onClick={() => router.push(`/${locale}/search-result`)}
@@ -579,7 +579,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     Check-in
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {formatDate(checkInDate)} 
+                    {formatDate(checkInDate)}
                     {/* (from 2:00 PM) */}
                   </div>
                 </li>
@@ -610,7 +610,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     Check-out
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {formatDate(checkOutDate)} 
+                    {formatDate(checkOutDate)}
                     {/* (until 12:00 PM) */}
                   </div>
                 </li>
@@ -696,7 +696,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </div>
               )}
               <div className="booking-box-action">
-                <button 
+                <button
                   type="button"
                   className="booking-edit-btn"
                   onClick={() => router.back()}
@@ -747,7 +747,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     -$51
                   </div>
                 </li> */}
-                <div className="booking-review-separetor spacing-30"></div>
+                <div className="booking-review-separetor"></div>
                 <li className="booking-listing-item booking-sub-total d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     Sub Total
@@ -822,112 +822,112 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 return (
                   <>
                     <h3 className="booking-details-sub-title">Traveler Details</h3>
-                  
-                  {/* Primary Guest - Mandatory */}
-                  <div className="booking-details-form mandatory-field">
-                    <h3 className="booking-form-title">
-                      Primary Guest <span className="text-red">(Mandatory)</span>
-                    </h3>
-                    <div className="booking-form-content form-field">
-                      <div className="form-row">
-                        <Input
-                          name="primaryGuest.firstName"
-                          label="First Name"
-                          labelWithContent={<span className="required">*</span>}
-                          type="text"
-                          placeholder="Your first name"
-                          className="form-input"
-                        />
-                        <Input
-                          name="primaryGuest.lastName"
-                          label="Last Name"
-                          labelWithContent={<span className="required">*</span>}
-                          type="text"
-                          placeholder="Your last name"
-                          className="form-input"
-                        />
-                      </div>
 
-                      <div className="form-row">
-                        <Input
-                          name="primaryGuest.email"
-                          label="Email address"
-                          labelWithContent={<span className="required">*</span>}
-                          type="email"
-                          placeholder="Your email"
-                          className="form-input"
-                        />
-                        <Input
-                          name="primaryGuest.country"
-                          label="Country/ Region"
-                          labelWithContent={<span className="required">*</span>}
-                          type="text"
-                          placeholder="Your country"
-                          className="form-input"
-                        />
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group select-with-input-field">
-                          <label className="form-label">
-                            Phone Number <span className="required">*</span>
-                          </label>
-                          <div className="select-with-input">
-                            <div className="country-code-input">
-                              <Controller
-                                name="primaryGuest.countryCode"
-                                control={methods.control}
-                                render={({ field }) => (
-                                  <Select
-                                    options={COUNTRY_CODES.map((c) => ({
-                                      value: c.value,
-                                      label: `+${c.label}`,
-                                    }))}
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    placeholder="+966"
-                                  />
-                                )}
-                              />
-                            </div>
-                            <div className="phone-number-input">
-                              <Input
-                                name="primaryGuest.phone"
-                                type="tel"
-                                inputMode="numeric"
-                                pattern="\d*"
-                                placeholder="Your phone number"
-                                className="form-input form-control"
-                                maxLength={15}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="form-group"></div>
-                      </div>
-                    </div>
-                  </div>
-
-
-                  {/* Special Requests */}
-                  <div className="booking-details-form special-request-field">
-                    <h3 className="booking-form-title">Special Request</h3>
-                    <p className="booking-form-desc">
-                      Please write your request in English or Arabic.
-                    </p>
-                    <div className="booking-form-content form-field">
-                      <div className="form-row">
-                        <div className="form-group d-flex w-100">
-                          <Textarea
-                            name="specialRequests"
-                            rows={5}
-                            placeholder="Enter any requests..."
-                            className="w-100 text-field"
+                    {/* Primary Guest - Mandatory */}
+                    <div className="booking-details-form mandatory-field">
+                      <h3 className="booking-form-title">
+                        Primary Guest <span className="text-red">(Mandatory)</span>
+                      </h3>
+                      <div className="booking-form-content form-field">
+                        <div className="form-row">
+                          <Input
+                            name="primaryGuest.firstName"
+                            label="First Name"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Your first name"
+                            className="form-input"
+                          />
+                          <Input
+                            name="primaryGuest.lastName"
+                            label="Last Name"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Your last name"
+                            className="form-input"
                           />
                         </div>
+
+                        <div className="form-row">
+                          <Input
+                            name="primaryGuest.email"
+                            label="Email address"
+                            labelWithContent={<span className="required">*</span>}
+                            type="email"
+                            placeholder="Your email"
+                            className="form-input"
+                          />
+                          <Input
+                            name="primaryGuest.country"
+                            label="Country/ Region"
+                            labelWithContent={<span className="required">*</span>}
+                            type="text"
+                            placeholder="Your country"
+                            className="form-input"
+                          />
+                        </div>
+
+                        <div className="form-row">
+                          <div className="form-group select-with-input-field">
+                            <label className="form-label">
+                              Phone Number <span className="required">*</span>
+                            </label>
+                            <div className="select-with-input">
+                              <div className="country-code-input">
+                                <Controller
+                                  name="primaryGuest.countryCode"
+                                  control={methods.control}
+                                  render={({ field }) => (
+                                    <Select
+                                      options={COUNTRY_CODES.map((c) => ({
+                                        value: c.value,
+                                        label: `+${c.label}`,
+                                      }))}
+                                      value={field.value}
+                                      onChange={field.onChange}
+                                      placeholder="+966"
+                                    />
+                                  )}
+                                />
+                              </div>
+                              <div className="phone-number-input">
+                                <Input
+                                  name="primaryGuest.phone"
+                                  type="tel"
+                                  inputMode="numeric"
+                                  pattern="\d*"
+                                  placeholder="Your phone number"
+                                  className="form-input form-control"
+                                  maxLength={15}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="form-group"></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+
+
+                    {/* Special Requests */}
+                    <div className="booking-details-form special-request-field">
+                      <h3 className="booking-form-title">Special Request</h3>
+                      <p className="booking-form-desc">
+                        Please write your request in English or Arabic.
+                      </p>
+                      <div className="booking-form-content form-field">
+                        <div className="form-row">
+                          <div className="form-group d-flex w-100">
+                            <Textarea
+                              name="specialRequests"
+                              rows={5}
+                              placeholder="Enter any requests..."
+                              className="w-100 text-field"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </>
                 );
               }}
@@ -1041,7 +1041,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>
+                  <span className="booking-review-total-price">
                     <span
                       className="currency-icon"
                       aria-hidden="true"
@@ -1058,9 +1058,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </div>
               </div>
               <div className="check-availability-action">
-                <button 
+                <button
                   type="button"
-                  className="button-primary check-availability-btn" 
+                  className="button-primary check-availability-btn"
                   onClick={() => {
                     // Trigger form submission
                     if (formRef.current) {
