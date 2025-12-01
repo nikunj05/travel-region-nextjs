@@ -941,27 +941,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
   };
 
-  const handleBookNowClick = () => {
-    console.log("handleBookNowClick");
-
-    // Check authentication first
-    if (!authContext?.isAuthenticated) {
-      setPendingAction("booking");
-      setIsLoginModalOpen(true);
-      return;
-    }
-
-    // Validate that at least one room is selected
-    const hasSelectedRooms = Object.values(selectedRoomCounts).some(
-      (count) => count > 0
-    );
-
-    if (!hasSelectedRooms) {
-      toast.error(t("toast.pleaseSelectRoom"));
-      return;
-    }
-
-    // Prepare booking data from selected rooms
+  // Helper to prepare and store booking data in the booking store
+  const prepareBookingData = () => {
     const selectedRoomsData: SelectedRoom[] = [];
 
     processedRooms.forEach((room) => {
@@ -991,7 +972,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       });
     });
 
-    // Calculate total amount
     const totalAmount = selectedRoomsData.reduce(
       (sum, room) => sum + room.totalPrice,
       0
@@ -1010,6 +990,41 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       currency: currency,
       timestamp: Date.now(),
     });
+  };
+
+  const handleBookNowClick = () => {
+    // Validate that at least one room is selected
+    const hasSelectedRooms = Object.values(selectedRoomCounts).some(
+      (count) => count > 0
+    );
+
+    console.log("handleBookNowClick");
+
+    // If user is not authenticated
+    if (!authContext?.isAuthenticated) {
+      // First ensure a room is selected
+      if (!hasSelectedRooms) {
+        toast.error(t("toast.pleaseSelectRoom"));
+        return;
+      }
+
+      // Prepare booking data so BookingReview has data after social login redirect
+      prepareBookingData();
+
+      // Rooms are selected, now show login modal
+      setPendingAction("booking");
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    // User is authenticated - validate that at least one room is selected
+    if (!hasSelectedRooms) {
+      toast.error(t("toast.pleaseSelectRoom"));
+      return;
+    }
+
+    // Prepare booking data from selected rooms
+    prepareBookingData();
 
     // Navigate to booking review page with hotel ID
     router.push(`/${locale}/booking-review/${hotelId}`);
@@ -2828,7 +2843,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           }
           setPendingAction(null);
         }}
-        returnUrl={pathname || undefined}
+        returnUrl={
+          pendingAction === "booking"
+            ? `/${locale}/booking-review/${hotelId}`
+            : pathname || undefined
+        }
       />
 
       {/* Price Details Modal */}

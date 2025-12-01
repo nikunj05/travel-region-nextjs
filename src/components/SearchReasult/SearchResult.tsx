@@ -789,7 +789,7 @@ const SearchResult = () => {
   // Reusable renderer for all filter sections (used in sidebar and mobile modal)
   const renderFilters = (isMobile = false) => (
     <>
-      <div className={`filter-mapview-btn ${isMobile ? "d-none" : ""}`}>
+      {/* <div className={`filter-mapview-btn ${isMobile ? "d-none" : ""}`}>
         <button className="map-view-button button-primary w-100">
           <svg
             width="25"
@@ -822,7 +822,7 @@ const SearchResult = () => {
           </svg>
           {tSearch("mapView")}
         </button>
-      </div>
+      </div> */}
       <div className={`filter-header ${isMobile ? "d-none" : ""}`}>
         <h3>{tSearch("filterBy")}</h3>
         <button className="clear-filters" onClick={handleClearFilters}>

@@ -433,7 +433,7 @@ function CheckoutComponent() {
                 );
               }}
             </Form>
-            <div className="booking-detail-box booking-traveler-details choose-payment-option">
+            {/* <div className="booking-detail-box booking-traveler-details choose-payment-option">
               <h3 className="booking-details-sub-title">
                 Choose Payment Option
               </h3>
@@ -586,7 +586,7 @@ function CheckoutComponent() {
                   </div>
                 </form>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="review-booking-details-right">
             <div className="hotel-info-header">

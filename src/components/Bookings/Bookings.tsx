@@ -120,11 +120,22 @@ export default function Bookings() {
           const hotelName = booking.hotel_name || "Hotel";
           const hotelLocation = booking.hotel_location || "";
 
+          // Safely determine hotel image source
           let hotelImageSrc: string | typeof HotelBookingImg = HotelBookingImg;
+
           if (Array.isArray(booking.hotel_images) && booking.hotel_images.length > 0) {
-            hotelImageSrc = booking.hotel_images[0] || HotelBookingImg;
-          } else if (typeof booking.hotel_images === "string" && booking.hotel_images.trim() !== "") {
-            hotelImageSrc = booking.hotel_images;
+            const firstImage = booking.hotel_images[0];
+            if (typeof firstImage === "string") {
+              const candidate = firstImage.trim();
+              if (candidate && /^https?:\/\//.test(candidate)) {
+                hotelImageSrc = candidate;
+              }
+            }
+          } else if (typeof booking.hotel_images === "string") {
+            const candidate = booking.hotel_images.trim();
+            if (candidate && /^https?:\/\//.test(candidate)) {
+              hotelImageSrc = candidate;
+            }
           }
 
           return (

@@ -2,6 +2,7 @@
 import React, { useState, useContext } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { AuthContext } from "@/context/AuthContext";
 import "./LoginModal.scss";
 import Image from "next/image";
@@ -17,9 +18,15 @@ interface LoginModalProps {
   returnUrl?: string;
 }
 
-const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalProps) => {
+const LoginModal = ({
+  isOpen,
+  onClose,
+  onLoginSuccess,
+  returnUrl,
+}: LoginModalProps) => {
   const t = useTranslations("LoginModal");
   const authContext = useContext(AuthContext);
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +39,15 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalPr
     setLoading(true);
     try {
       await authContext.login({ email, password });
+      // Let parent handle any extra side effects (e.g. booking flow)
       onLoginSuccess();
       toast.success("Logged in successfully!");
+
+      // If a return URL is provided (like booking-review), redirect there
+      if (returnUrl) {
+        router.replace(returnUrl);
+      }
+
       onClose();
     } catch (error) {
       console.error("Login failed", error);
@@ -116,7 +130,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess, returnUrl }: LoginModalPr
           <div className="signup-link">
             <p>
               {t("noAccount")}{" "}
-              <Link href="/signup">{t("signUp")}</Link>
+              <Link href="/register">{t("signUp")}</Link>
             </p>
           </div>
         </div>
