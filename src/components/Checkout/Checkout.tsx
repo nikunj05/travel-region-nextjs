@@ -232,13 +232,31 @@ function CheckoutComponent() {
         currency: "SAR",
       };
     }
-    const totalPrice = bookingData.selectedRooms.reduce((sum, room) => sum + room.totalPrice, 0);
-    const currency = bookingData.selectedRooms[0]?.currency || "SAR";
+
+    // Filter out duplicate rooms based on roomCode + rateKey combination
+    const processedKeys = new Set<string>();
+    const uniqueRooms = bookingData.selectedRooms.filter((room) => {
+      const key = `${room.roomCode}_${room.rateKey}`;
+      if (processedKeys.has(key)) {
+        return false;
+      }
+      processedKeys.add(key);
+      return true;
+    });
+
+    // pricePerRoom is per night, so multiply by total nights and room count
+    const totalPrice = uniqueRooms.reduce((sum, room) => {
+      const roomTotal = room.pricePerRoom * totalNights * room.count;
+      return sum + roomTotal;
+    }, 0);
+
+    const currency = uniqueRooms[0]?.currency || "SAR";
+
     return {
       totalPrice,
       currency,
     };
-  }, [bookingData]);
+  }, [bookingData, totalNights]);
 
   // Price formatter
   const priceFormatter = useMemo(

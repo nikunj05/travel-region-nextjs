@@ -123,7 +123,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     console.log("=== BOOKING FORM SUBMISSION ===");
 
     // Prepare room details
-    const roomDetails = selectedRoomsInfo.map(room => ({
+    const roomDetails = uniqueRooms.map(room => ({
       rate_key: room.rateKey,
       room_code: room.roomCode,
     }));
@@ -136,7 +136,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     const bookingDetails = [
       {
-        price_per_night: selectedRoomsInfo[0]?.pricePerRoom || 0,
+        price_per_night: uniqueRooms[0]?.pricePerRoom || 0,
         first_name: data.primaryGuest.firstName,
         last_name: data.primaryGuest.lastName,
         email: data.primaryGuest.email,
@@ -274,19 +274,33 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
   // Get selected rooms info from booking data
   const selectedRoomsInfo = bookingData?.selectedRooms || [];
-  const firstSelectedRoom = selectedRoomsInfo[0];
+
+  // Filter out duplicate rooms based on roomCode + rateKey combination
+  const uniqueRooms = useMemo(() => {
+    const processedKeys = new Set<string>();
+    return selectedRoomsInfo.filter((room) => {
+      const key = `${room.roomCode}_${room.rateKey}`;
+      if (processedKeys.has(key)) {
+        return false; // Skip duplicate
+      }
+      processedKeys.add(key);
+      return true; // Keep unique room
+    });
+  }, [selectedRoomsInfo]);
+
+  const firstSelectedRoom = uniqueRooms[0];
 
   // Get amenities for selected rooms
   const selectedRoomAmenities = useMemo(() => {
-    if (!selectedRoomsInfo || selectedRoomsInfo.length === 0) return [];
+    if (!uniqueRooms || uniqueRooms.length === 0) return [];
     // Get unique amenities from all selected rooms
     const amenitySet = new Set<string>();
-    selectedRoomsInfo.forEach((room) => {
+    uniqueRooms.forEach((room) => {
       // You can add room-specific amenities here if available in your data structure
     });
     // For now, we'll use hotel amenities filtered to the first 2
     return hotelAmenities.slice(0, 2);
-  }, [selectedRoomsInfo, hotelAmenities]);
+  }, [uniqueRooms, hotelAmenities]);
 
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
@@ -295,8 +309,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     let currency = "SAR";
     const roomDetails: string[] = [];
 
-    selectedRoomsInfo.forEach((room) => {
+    uniqueRooms.forEach((room) => {
       totalRooms += room.count;
+      // pricePerRoom is per night, so multiply by totalNights and room count
       const roomTotal = room.pricePerRoom * totalNights * room.count;
       totalPrice += roomTotal;
       currency = room.currency;
@@ -304,7 +319,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       // Create breakdown text for each room
       const pricePerNight = room.pricePerRoom;
       roomDetails.push(
-        `${totalNights} night${totalNights !== 1 ? 's' : ''} x ${room.count} room${room.count !== 1 ? 's' : ''} x ${currency} ${pricePerNight.toFixed(2)}`
+        `${totalNights} night${totalNights !== 1 ? 's' : ''} x ${room.count} room${room.count !== 1 ? 's' : ''} x ${pricePerNight.toFixed(2)}`
       );
     });
 
@@ -315,7 +330,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       roomDetails,
       subtotal: totalPrice, // Same as total for now (no taxes/discounts)
     };
-  }, [selectedRoomsInfo, totalNights]);
+  }, [uniqueRooms, totalNights]);
 
   // Price formatter
   const priceFormatter = useMemo(
@@ -634,9 +649,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     {totalNights} {totalNights === 1 ? "Night" : "Nights"}
                   </div>
                 </li>
-                {selectedRoomsInfo.length > 0 && (
+                {uniqueRooms.length > 0 && (
                   <>
-                    {selectedRoomsInfo.map((room, index) => (
+                    {uniqueRooms.map((room, index) => (
                       <li
                         key={`room-${index}`}
                         className="booking-listing-item d-flex align-items-center justify-content-between"
@@ -671,7 +686,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          Room Type {selectedRoomsInfo.length > 1 ? `${index + 1}` : ""}
+                          Room Type {uniqueRooms.length > 1 ? `${index + 1}` : ""}
                         </div>
                         <div className="booking-list-right d-flex align-items-center">
                           {room.roomName || "Room"} ({room.boardName || "Room Only"})
@@ -718,7 +733,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       {detail}
                     </div>
                     <div className="booking-list-right d-flex align-items-center">
-                      {priceBreakdown.currency} {priceFormatter.format(selectedRoomsInfo[index]?.totalPrice || 0)}
+                      <span
+                        className="currency-icon"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{
+                          __html: buildCurrencySvgMarkup("#09090b"),
+                        }}
+                        style={{ display: "inline-flex" }}
+                      />{" "}
+                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * totalNights * (uniqueRooms[index]?.count || 0))}
                     </div>
                   </li>
                 ))}
@@ -736,7 +759,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     Total
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.totalPrice)}
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.totalPrice)}
                   </div>
                 </li>
                 {/* <li className="booking-listing-item discount d-flex align-items-center justify-content-between">
@@ -753,7 +784,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     Sub Total
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {priceBreakdown.currency} {priceFormatter.format(priceBreakdown.subtotal)}
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#09090b"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    {priceFormatter.format(priceBreakdown.subtotal)}
                   </div>
                 </li>
               </ul>
@@ -801,7 +840,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       {detail}
                     </div>
                     <div className="booking-list-right d-flex align-items-center">
-                      {priceBreakdown.currency} {priceFormatter.format(selectedRoomsInfo[index]?.totalPrice || 0)}
+                      <span
+                        className="currency-icon"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{
+                          __html: buildCurrencySvgMarkup("#09090b"),
+                        }}
+                        style={{ display: "inline-flex" }}
+                      />{" "}
+                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * totalNights * (uniqueRooms[index]?.count || 0))}
                     </div>
                   </li>
                 ))}

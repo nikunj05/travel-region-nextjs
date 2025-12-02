@@ -93,6 +93,8 @@ export interface BookingDetailsResponse {
 export interface GetBookingsRequest {
   status?: string;
   hotel_code?: string | number;
+  page?: number;
+  per_page?: number;
 }
 
 export interface GetBookingsResponse {
@@ -110,6 +112,15 @@ export interface GetBookingsResponse {
       currency?: string;
       [key: string]: unknown;
     }>;
+    pagination?: {
+      has_more_pages: boolean;
+      current_page: number;
+      from: number;
+      to: number;
+      per_page: number;
+      total: number;
+      [key: string]: unknown;
+    };
     [key: string]: unknown;
   };
 }

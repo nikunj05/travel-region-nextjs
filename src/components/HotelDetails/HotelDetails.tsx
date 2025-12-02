@@ -332,16 +332,25 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
     );
 
+    // Track processed keys to avoid duplicate rates
+    // Use roomCode_rateKey combination to match selectedRoomCounts key format
+    const processedKeys = new Set<string>();
+    
     processedRooms.forEach((room) => {
       room.rates.forEach((rate) => {
         const key = `${room.roomCode}_${rate.rateKey}`;
-        const roomCount = selectedRoomCounts[key] || 0;
+        
+        // Only process if this key hasn't been processed yet (avoid duplicates)
+        if (!processedKeys.has(key)) {
+          processedKeys.add(key);
+          const roomCount = selectedRoomCounts[key] || 0;
 
-        if (roomCount > 0) {
-          const rateNet = Number(rate.net) || 0;
-          // Calculate total price based on rate * nights * roomCount
-          totalPrice += rateNet * nights * roomCount;
-          currency = rate.currency || "SAR";
+          if (roomCount > 0) {
+            const rateNet = Number(rate.net) || 0;
+            // Calculate total price based on rate * nights * roomCount
+            totalPrice += rateNet * nights * roomCount;
+            currency = rate.currency || "SAR";
+          }
         }
       });
     });

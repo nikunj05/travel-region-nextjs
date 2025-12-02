@@ -1,13 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./Bookings.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
-import StartIcon from "@/assets/images/star-fill-icon.svg";
+// import StartIcon from "@/assets/images/star-fill-icon.svg";
 import { Select } from "@/components/core/Select/Select";
 import { useBookingsListStore } from "@/store/bookingsListStore";
+import { bookingService } from "@/services/bookingService";
+import { toast } from "react-toastify";
+import { formatApiErrorMessage } from "@/lib/formatApiError";
+import Pagination from "@/components/common/Pagination/Pagination";
 
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
@@ -45,19 +49,51 @@ interface BookingFiltersState {
 
 export default function Bookings() {
   const t = useTranslations("Bookings");
-  const { bookings, loading, error, fetchBookings } = useBookingsListStore();
+  const { bookings, loading, error, fetchBookings, total, perPage, currentPage: storeCurrentPage, lastPage } = useBookingsListStore();
   const [filters, setFilters] = useState<BookingFiltersState>({
     status: "",
     hotel_code: "",
   });
+  const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   console.log("bookings", bookings);
 
+  // Sync local currentPage with store's currentPage from API
   useEffect(() => {
-    // Initial load without filters to fetch all bookings
-    fetchBookings();
+    if (storeCurrentPage > 0) {
+      setCurrentPage(storeCurrentPage);
+    }
+  }, [storeCurrentPage]);
+
+  useEffect(() => {
+    // Fetch bookings with current page and filters
+    const params: { status?: string; hotel_code?: string | number; page?: number; per_page?: number } = {};
+    if (filters.status) params.status = filters.status;
+    if (filters.hotel_code) params.hotel_code = filters.hotel_code;
+    params.page = currentPage;
+    // Use per_page from API response (15) or default to 15
+    params.per_page = perPage || 15;
+    
+    fetchBookings(params);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    } else {
+      // If already on page 1, fetch with current filters
+      const params: { status?: string; hotel_code?: string | number; page?: number; per_page?: number } = {};
+      if (filters.status) params.status = filters.status;
+      if (filters.hotel_code) params.hotel_code = filters.hotel_code;
+      params.page = 1;
+      params.per_page = perPage || 15;
+      fetchBookings(params);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.status, filters.hotel_code]);
 
   const handleStatusChange = (value: string) => {
     const nextStatus = value as BookingStatusFilter;
@@ -68,15 +104,58 @@ export default function Bookings() {
         status: nextStatus,
       };
 
-      // Build params for API – only send non-empty filters
-      const params: { status?: string; hotel_code?: string | number } = {};
-      if (next.status) params.status = next.status;
-      if (next.hotel_code) params.hotel_code = next.hotel_code;
-
-      fetchBookings(params);
+      // Reset to page 1 when filter changes
+      setCurrentPage(1);
 
       return next;
     });
+  };
+
+  // Calculate total pages - use lastPage from API directly
+  const totalPages = useMemo(() => {
+    if (lastPage > 0) return lastPage;
+    if (!total || !perPage) return 1;
+    return Math.max(1, Math.ceil(total / perPage));
+  }, [total, perPage, lastPage]);
+
+  // Debug pagination
+  console.log("Pagination debug:", { total, perPage, lastPage, totalPages, currentPage });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCancelBooking = async (order: string | undefined) => {
+    if (!order) {
+      toast.error("Invalid booking order. Please try again.");
+      return;
+    }
+
+    try {
+      setCancellingOrder(order);
+
+      const response = await bookingService.cancelBooking(order);
+
+      if (response.status) {
+        toast.success(response.message || "Booking cancelled successfully.");
+
+        // Refresh bookings with current filters and pagination
+        const params: { status?: string; hotel_code?: string | number; page?: number; per_page?: number } = {};
+        if (filters.status) params.status = filters.status;
+        if (filters.hotel_code) params.hotel_code = filters.hotel_code;
+        params.page = currentPage;
+        params.per_page = perPage || 15;
+        fetchBookings(params);
+      } else {
+        toast.error(response.message || "Failed to cancel booking. Please try again.");
+      }
+    } catch (err: unknown) {
+      const errorMessage = formatApiErrorMessage(err);
+      toast.error(errorMessage);
+    } finally {
+      setCancellingOrder(null);
+    }
   };
 
   return (
@@ -255,8 +334,12 @@ export default function Bookings() {
                 </div>
               </div>
               <div className="hotel-bookig-action d-flex align-items-center justify-content-between">
-                <button className="hotel-bookig-action-btn cancel-button">
-                  {t("cancel")}
+                <button
+                  className="hotel-bookig-action-btn cancel-button"
+                  onClick={() => handleCancelBooking(booking.order)}
+                  disabled={cancellingOrder === booking.order}
+                >
+                  {cancellingOrder === booking.order ? `${t("cancel")}...` : t("cancel")}
                 </button>
                 {/* <button className="hotel-bookig-action-btn button-primary">
                   {t("modify")}
@@ -266,6 +349,15 @@ export default function Bookings() {
           );
         })}
       </div>
+      
+      {/* Pagination - matching SearchResult style */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
