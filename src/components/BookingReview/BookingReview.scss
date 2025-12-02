@@ -58,6 +58,10 @@
     width: 100%;
   }
 
+  .loading-heading {
+    padding-top: 44px;
+  }
+
   .booking-review-details {
     gap: 32px;
     grid-template-columns: 1fr 276px;
@@ -215,6 +219,12 @@
               gap: 8px;
               font-size: 18px;
               color: $color-black-zinc-800;
+
+              svg {
+                width: 24px;
+                height: 24px;
+                min-width: 24px;
+              }
             }
 
             .booking-list-right {
@@ -293,7 +303,7 @@
             font-size: 16px;
             color: $color-black-zinc-800;
             gap: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
           }
         }
 
@@ -450,7 +460,7 @@
         }
 
         .booking-hotel-info {
-          gap: 6px;
+          gap: 10px;
 
           .booking-hotel-image {
             width: 44px;
@@ -574,6 +584,10 @@
 
 @media (max-width: 991.95px) {
   .booking-review-page {
+    .loading-heading {
+      padding-top: 32px;
+    }
+
     .progress-steps {
       gap: 16px;
       margin: 32px 0;
@@ -619,6 +633,10 @@
 
 @media (max-width: 767.55px) {
   .booking-review-page {
+    .loading-heading {
+      padding-top: 26px;
+    }
+
     .progress-steps {
       gap: 0px;
       margin: 32px 0 24px;

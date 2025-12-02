@@ -333,7 +333,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     return (
       <main className="booking-review-page padding-top-100 section-space-b">
         <div className="container">
-          <div className="review-booking-heading">
+          <div className="review-booking-heading loading-heading">
             <h1 className="review-booking-title">Review Your Booking</h1>
             <p className="review-booking-desc">Loading hotel details...</p>
           </div>

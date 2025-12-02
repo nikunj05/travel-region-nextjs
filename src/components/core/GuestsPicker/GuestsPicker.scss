@@ -19,58 +19,58 @@
   overflow-y: auto;
 }
 
-  .guestspicker-content {
-    .guestspicker-section {
+.guestspicker-content {
+  .guestspicker-section {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F4F4F5;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .guestspicker-room-title-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 16px;
-      padding-bottom: 12px;
+      padding-bottom: 8px;
       border-bottom: 1px solid #F4F4F5;
+    }
 
-      &:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
+    .guestspicker-room-title {
+      font-size: 16px;
+      font-weight: $font-weight600;
+      color: $color-black-zinc-950;
+    }
+
+    .guestspicker-remove-room {
+      padding: 6px 12px;
+      border: 1px solid #D1D5DB;
+      border-radius: 4px;
+      background: $color-white;
+      color: $color-black-zinc-950;
+      font-size: 14px;
+      font-weight: $font-weight500;
+      cursor: pointer;
+      transition: $transition;
+
+      &:hover {
+        background-color: #F9FAFB;
+        border-color: #9CA3AF;
       }
 
-      .guestspicker-room-title-wrapper {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #F4F4F5;
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
       }
 
-      .guestspicker-room-title {
-        font-size: 16px;
-        font-weight: $font-weight600;
-        color: $color-black-zinc-950;
+      &:active {
+        background-color: #F3F4F6;
       }
-
-      .guestspicker-remove-room {
-        padding: 6px 12px;
-        border: 1px solid #D1D5DB;
-        border-radius: 4px;
-        background: $color-white;
-        color: $color-black-zinc-950;
-        font-size: 14px;
-        font-weight: $font-weight500;
-        cursor: pointer;
-        transition: $transition;
-
-        &:hover {
-          background-color: #F9FAFB;
-          border-color: #9CA3AF;
-        }
-
-        &:focus {
-          outline: none;
-          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-        }
-
-        &:active {
-          background-color: #F3F4F6;
-        }
-      }
+    }
 
     .guestspicker-item {
       display: flex;
@@ -147,10 +147,10 @@
 
     .guestspicker-children-ages {
       margin-top: 12px;
-      margin-bottom: 8px;
-      padding-top: 8px;
-      padding-bottom: 8px;
-      border-top: 1px solid #F8FAFC;
+      margin-bottom: 0px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      border-top: none;
 
       .guestspicker-children-ages-label {
         font-size: 13px;
@@ -162,7 +162,7 @@
       .guestspicker-children-ages-inputs {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
 
         .guestspicker-age-input-wrapper {
           display: flex;
@@ -173,12 +173,13 @@
             font-size: 12px;
             font-weight: $font-weight400;
             color: #6B7280;
+            margin: 0px;
           }
 
           .guestspicker-age-input {
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid #D1D5DB;
+            border: 1px solid #e5e7eb;
             border-radius: 6px;
             font-size: 14px;
             font-weight: $font-weight400;
@@ -188,12 +189,7 @@
 
             &:focus {
               outline: none;
-              border-color: #000000;
-              box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
-            }
-
-            &:hover {
-              border-color: #9CA3AF;
+              border-color: $brand-color;
             }
 
             &::-webkit-inner-spin-button,
@@ -346,14 +342,9 @@
         }
 
         .guestspicker-children-ages-inputs {
-          gap: 6px;
 
           .guestspicker-age-input-wrapper {
             gap: 3px;
-
-            .guestspicker-age-label {
-              font-size: 11px;
-            }
 
             .guestspicker-age-input {
               padding: 7px 10px;
@@ -452,14 +443,8 @@
         }
 
         .guestspicker-children-ages-inputs {
-          gap: 5px;
 
           .guestspicker-age-input-wrapper {
-            gap: 3px;
-
-            .guestspicker-age-label {
-              font-size: 10px;
-            }
 
             .guestspicker-age-input {
               padding: 6px 8px;
@@ -483,12 +468,12 @@
 }
 
 // RTL Layout start
-[dir="rtl"] {
-  .guestspicker-content {
-    .guestspicker-section {
-      .guestspicker-room-title-wrapper {
-        flex-direction: row-reverse;
-      }
-    }
-  }
-}
+// [dir="rtl"] {
+//   .guestspicker-content {
+//     .guestspicker-section {
+//       .guestspicker-room-title-wrapper {
+//         flex-direction: row-reverse;
+//       }
+//     }
+//   }
+// }

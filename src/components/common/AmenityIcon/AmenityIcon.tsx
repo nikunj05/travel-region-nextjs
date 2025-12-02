@@ -59,7 +59,7 @@ interface AmenityIconProps {
 const AmenityIcon = ({ facilityCode }: AmenityIconProps) => {
   const iconProps = {
     color: "#2B7FFF",
-    size: 20,
+    size: 24,
     style: { marginRight: "0px" },
   };
 

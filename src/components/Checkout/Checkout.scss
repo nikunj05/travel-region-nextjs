@@ -82,11 +82,36 @@
     .review-booking-details-left {
       flex: 2;
 
+      .booking-stays-summary {
+        .booking-listing-info {
+          margin: 0px;
+          padding: 0px;
+
+          li {
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            gap: 15px;
+
+            &:last-child {
+              border: none;
+              margin: 0px;
+              padding: 0px;
+            }
+
+            .booking-list-right {
+              font-weight: 500;
+              gap: 4px;
+            }
+          }
+        }
+      }
+
       .booking-detail-box {
         border: 1px solid $border-color;
         border-radius: 8px;
         padding: 12px;
-        margin-bottom: 8px;
+        margin-bottom: 24px;
 
         &:last-child {
           margin-bottom: 0px;
@@ -125,6 +150,12 @@
             margin-bottom: 0px;
           }
 
+          &.mandatory-field {
+            .text-red {
+              color: #fb2c36;
+            }
+          }
+
           .booking-form-content {
             .form-row {
               display: flex;
@@ -133,6 +164,13 @@
 
             .form-group {
               flex: 1;
+
+              .form-control {
+                &:disabled {
+                  cursor: not-allowed;
+                  background: #f6f9ff;
+                }
+              }
             }
 
             .form-label {
@@ -149,8 +187,6 @@
 
             .select-with-input-field {
               flex: 1;
-
-
 
               .select-with-input {
                 display: flex;
@@ -316,7 +352,7 @@
         }
 
         .booking-hotel-info {
-          gap: 6px;
+          gap: 10px;
 
           .booking-hotel-image {
             width: 44px;
@@ -331,7 +367,7 @@
           }
 
           .hotel-name {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: $font-weight600;
             margin-bottom: 4px;
             color: $color-black-zinc-950;
@@ -377,12 +413,24 @@
             span {
               line-height: normal;
             }
+
+            .checkout-total-price {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            }
           }
 
           .booking-price-tax {
             font-size: 12px;
             color: $color-black-zinc-500;
             margin: 0px;
+          }
+
+          .booking-pricing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
           }
         }
 
@@ -661,12 +709,35 @@
 
           .booking-details-sub-title {
             font-size: 20px;
+            margin-bottom: 16px;
+          }
+        }
+
+        .booking-stays-summary {
+          .booking-listing-info {
+            li {
+              border-bottom: 1px solid #e5e7eb;
+              margin-bottom: 6px;
+              padding-bottom: 6px;
+              gap: 12px;
+
+              .booking-list-right,
+              .booking-list-left {
+                font-size: 14px;
+
+                svg {
+                  width: 14px;
+                  height: 14px;
+                }
+              }
+            }
           }
         }
 
         .booking-traveler-details {
           .booking-form-title {
             font-size: 16px;
+            margin-bottom: 16px;
 
             span {
               font-size: 14px;

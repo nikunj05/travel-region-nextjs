@@ -14,7 +14,7 @@ import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { bookingService } from "@/services/bookingService";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Select } from "@/components/core/Select/Select";
 import { COUNTRY_CODES, buildHotelbedsImageUrl, buildCurrencySvgMarkup } from "@/constants";
@@ -101,10 +101,10 @@ function CheckoutComponent() {
       setAgreeToTermsError(false);
 
       // Get order from booking response
-      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking 
-        ? bookingResponse.data.booking.order 
+      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
+        ? bookingResponse.data.booking.order
         : undefined;
-      
+
       if (!order || typeof order !== 'string') {
         console.error("Order not found. Please complete booking first.");
         toast.error("Order not found. Please complete booking first.");
@@ -120,7 +120,7 @@ function CheckoutComponent() {
 
       // Call checkout service
       const checkoutResponse = await bookingService.checkout(checkoutPayload);
-      
+
       // Console log the full response
       console.log("✅ Checkout Response:", checkoutResponse);
       console.log("📋 Checkout Status:", checkoutResponse.status);
@@ -223,7 +223,7 @@ function CheckoutComponent() {
   };
 
   const hotelName = hotelData?.name?.content || bookingData?.hotelName || "Hotel Name";
-  
+
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
     if (!bookingData?.selectedRooms || bookingData.selectedRooms.length === 0) {
@@ -399,7 +399,7 @@ function CheckoutComponent() {
                 return (
                   <>
                     <h3 className="booking-details-sub-title">Traveler Details</h3>
-                  
+
                     {/* Primary Guest - Mandatory */}
                     <div className="booking-details-form mandatory-field">
                       <h3 className="booking-form-title">
@@ -477,8 +477,8 @@ function CheckoutComponent() {
                                   name="primaryGuest.phone"
                                   type="tel"
                                   placeholder="Your phone number"
-                                className="form-input form-control"
-                                disabled
+                                  className="form-input form-control"
+                                  disabled
                                 />
                               </div>
                             </div>
@@ -775,7 +775,7 @@ function CheckoutComponent() {
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>Total Price</span>
-                  <span>
+                  <span className="checkout-total-price">
                     <span
                       className="currency-icon"
                       aria-hidden="true"

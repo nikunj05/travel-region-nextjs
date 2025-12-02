@@ -60,6 +60,12 @@
           font-weight: $font-weight600;
           color: $color-black-zinc-950;
           margin: 0px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-height: 58px;
         }
 
         .hotel-review-rating {
@@ -182,6 +188,8 @@
 
           .hotel-title {
             font-size: 16px;
+            display: block;
+            min-height: auto;
           }
 
           .hotel-review-rating {

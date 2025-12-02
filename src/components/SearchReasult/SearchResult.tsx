@@ -182,20 +182,20 @@ const SearchResult = () => {
 
         // 2. Word token matching
         const cleanString = (str: string) => str.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 0);
-        
+
         const tWords = cleanString(targetName);
         const hWords = cleanString(hotelName);
-        
+
         if (tWords.length === 0 || hWords.length === 0) return false;
 
         // Check if all significant target words appear in hotel name
         const allTargetInHotel = tWords.every(tw => hotelName.includes(tw));
         if (allTargetInHotel) return true;
-        
+
         // Check if all significant hotel words appear in target name (handle "Sheraton" vs "Sheraton Hotel")
         const allHotelInTarget = hWords.every(hw => targetName.includes(hw));
         if (allHotelInTarget) return true;
-        
+
         return false;
       });
 
@@ -928,7 +928,7 @@ const SearchResult = () => {
                   top: "50%",
                   transform: "translateY(-50%)",
                   pointerEvents: "all",
-                  zIndex: activePriceSlider === "min" ? 5 : 3,
+                  zIndex: activePriceSlider === "min" ? 5 : 1,
                 }}
                 className="price-range-input price-range-input-min"
               />
@@ -955,7 +955,7 @@ const SearchResult = () => {
                   top: "50%",
                   transform: "translateY(-50%)",
                   pointerEvents: "all",
-                  zIndex: activePriceSlider === "max" ? 5 : 3,
+                  zIndex: activePriceSlider === "max" ? 5 : 1,
                 }}
                 className="price-range-input price-range-input-max"
               />

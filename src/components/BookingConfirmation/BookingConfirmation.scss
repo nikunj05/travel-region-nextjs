@@ -32,6 +32,7 @@
       .card-booking-id {
         font-weight: $font-weight600;
         color: $brand-color;
+        word-break: break-word;
       }
     }
 
@@ -43,6 +44,7 @@
       .confirmation-email-address {
         font-weight: $font-weight500;
         color: $color-black-zinc-950;
+        word-break: break-word;
       }
     }
 
@@ -87,6 +89,12 @@
 @media (max-width: 767.55px) {
   .booking-confirmation-page {
     .confirm-card {
+      .ico-box {
+        img {
+          width: 90px;
+        }
+      }
+
       .card-title {
         font-size: 24px;
         margin: 32px 0 20px;
@@ -107,12 +115,12 @@
 
         .button-primary {
           padding: 9.7px 10px;
-          font-size: 14px;
+          font-size: 16px;
           gap: 8px;
 
           svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
           }
         }
       }
