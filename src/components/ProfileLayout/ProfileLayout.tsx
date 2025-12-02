@@ -1,8 +1,7 @@
 "use client";
 
 import React, { ReactNode, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { Link } from "@/i18/navigation";
+import { Link, usePathname } from "@/i18/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import styles from "./ProfileLayout.module.scss";
