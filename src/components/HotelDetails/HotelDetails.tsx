@@ -849,25 +849,49 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     [findPrimaryRate]
   );
 
-  // Helper function to process cancellation policy for any specific rate
+  // Helper function to process all cancellation policies for any specific rate
   const getRateCancellationDetails = useCallback(
     (rate: ProcessedRate) => {
       const net = Number(rate.net ?? 0);
-      const cancellationPolicy = rate.cancellationPolicies?.[0];
-      const policyAmountRaw = cancellationPolicy?.amount;
-      const parsedPolicyAmount =
-        policyAmountRaw !== undefined && policyAmountRaw !== null
-          ? Number(policyAmountRaw)
-          : null;
-      const policyAmount =
-        parsedPolicyAmount !== null && Number.isFinite(parsedPolicyAmount)
-          ? parsedPolicyAmount
-          : null;
-      const refundDate = cancellationPolicy?.from
-        ? formatCancellationDate(cancellationPolicy.from)
-        : null;
-      const isFullyRefundable =
-        policyAmount !== null && Math.abs(policyAmount - net) < 0.01;
+      const cancellationPolicies = rate.cancellationPolicies || [];
+      
+      // Process all policies and sort by date (earliest first)
+      const processedPolicies = cancellationPolicies
+        .map((policy) => {
+          const policyAmountRaw = policy?.amount;
+          const parsedPolicyAmount =
+            policyAmountRaw !== undefined && policyAmountRaw !== null
+              ? Number(policyAmountRaw)
+              : null;
+          const policyAmount =
+            parsedPolicyAmount !== null && Number.isFinite(parsedPolicyAmount)
+              ? parsedPolicyAmount
+              : null;
+          const refundDate = policy?.from
+            ? formatCancellationDate(policy.from)
+            : null;
+          const isFullyRefundable =
+            policyAmount !== null && Math.abs(policyAmount - net) < 0.01;
+          const dateValue = policy?.from ? new Date(policy.from).getTime() : 0;
+
+          return {
+            policy,
+            refundDate,
+            policyAmount,
+            policyAmountFormatted:
+              policyAmount !== null ? priceFormatter.format(policyAmount) : null,
+            isFullyRefundable,
+            dateValue,
+          };
+        })
+        .sort((a, b) => a.dateValue - b.dateValue); // Sort by date, earliest first
+
+      // Use the first policy for backward compatibility (most lenient/earliest)
+      const firstPolicy = processedPolicies[0] || null;
+      const cancellationPolicy = firstPolicy?.policy || null;
+      const policyAmount = firstPolicy?.policyAmount || null;
+      const refundDate = firstPolicy?.refundDate || null;
+      const isFullyRefundable = firstPolicy?.isFullyRefundable || false;
 
       // Calculate cancellation fee percentage
       const cancellationFeePercentage =
@@ -884,6 +908,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           policyAmount !== null ? priceFormatter.format(policyAmount) : null,
         isFullyRefundable,
         cancellationFeePercentage,
+        allPolicies: processedPolicies, // Include all processed policies
       };
     },
     [priceFormatter, formatCancellationDate]
@@ -2074,182 +2099,166 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                             <div className="more-room-refund">
                                               <div className="rooms-card-refund">
                                                 <div className="refund-item d-flex align-items-center">
-                                                  <div className="info-icon-wrapper">
-                                                    <svg
-                                                      width="20"
-                                                      height="20"
-                                                      viewBox="0 0 20 20"
-                                                      fill="none"
-                                                      xmlns="http://www.w3.org/2000/svg"
-                                                      className="info-icon"
-                                                    >
-                                                      <path
-                                                        d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
-                                                        stroke="#09090B"
-                                                        strokeWidth="1.25"
-                                                      />
-                                                      <path
-                                                        d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
-                                                        stroke="#09090B"
-                                                        strokeWidth="1.25"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                      />
-                                                      <path
-                                                        d="M9.99203 6.66602H9.99951"
-                                                        stroke="#09090B"
-                                                        strokeWidth="1.66667"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                      />
-                                                    </svg>
-                                                    <div className="cancellation-popover">
-                                                      <div className="popover-header">
-                                                        Cancellation Charges
-                                                      </div>
-                                                      <div className="popover-content">
-                                                        {rateCancellationDetails.refundDate ? (
-                                                          <>
-                                                            <div className="popover-message">
-                                                              {rateCancellationDetails.isFullyRefundable ? (
-                                                                <>
-                                                                  {rateRefundDateLabel}, get full refund of{" "}
-                                                                  <span className="d-inline-flex align-items-center">
-                                                                    <span
-                                                                      className="currency-icon"
-                                                                      aria-hidden="true"
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          buildCurrencySvgMarkup(
-                                                                            "#09090b"
-                                                                          ),
-                                                                      }}
-                                                                      style={{
-                                                                        display: "inline-flex",
-                                                                      }}
-                                                                    />
-                                                                    {rateCancellationDetails.policyAmountFormatted}
-                                                                  </span>
-                                                                </>
-                                                              ) : (
-                                                                <>
-                                                                  {rateRefundDateLabel}, refundable amount{" "}
-                                                                  <span className="d-inline-flex align-items-center">
-                                                                    <span
-                                                                      className="currency-icon"
-                                                                      aria-hidden="true"
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          buildCurrencySvgMarkup(
-                                                                            "#09090b"
-                                                                          ),
-                                                                      }}
-                                                                      style={{
-                                                                        display: "inline-flex",
-                                                                      }}
-                                                                    />
-                                                                    {rateCancellationDetails.policyAmountFormatted}
-                                                                  </span>
-                                                                </>
+                                                  <div className="refund-status-list">
+                                                    {rateCancellationDetails.allPolicies && rateCancellationDetails.allPolicies.length > 0 ? (
+                                                      rateCancellationDetails.allPolicies.map((policyItem, policyIndex) => {
+                                                        const isFullyRefundable = policyItem.isFullyRefundable;
+                                                        const policyRefundStatusLabel = isFullyRefundable
+                                                          ? t("refund.fullyRefundable")
+                                                          : t("refund.notFullyRefundable");
+                                                        const policyRefundDateLabel = policyItem.refundDate
+                                                          ? t("refund.beforeDate", {
+                                                              date: policyItem.refundDate,
+                                                            })
+                                                          : t("placeholders.refundDateUnavailable");
+                                                        
+                                                        return (
+                                                          <React.Fragment key={policyIndex}>
+                                                            <div className="refund-status-wrapper">
+                                                              <span className="refund-status-text">
+                                                                {policyRefundStatusLabel}
+                                                              </span>
+                                                              {policyItem.policyAmountFormatted && (
+                                                                <span className="refund-amount d-inline-flex align-items-center">
+                                                                  {" ( "}
+                                                                  <span
+                                                                    className="currency-icon"
+                                                                    aria-hidden="true"
+                                                                    dangerouslySetInnerHTML={{
+                                                                      __html:
+                                                                        buildCurrencySvgMarkup(
+                                                                          "#09090b"
+                                                                        ),
+                                                                    }}
+                                                                    style={{
+                                                                      display: "inline-flex",
+                                                                    }}
+                                                                  />{" "}
+                                                                  {` ${policyItem.policyAmountFormatted})`}
+                                                                </span>
                                                               )}
+                                                              <div className="info-icon-wrapper">
+                                                                <svg
+                                                                  width="20"
+                                                                  height="20"
+                                                                  viewBox="0 0 20 20"
+                                                                  fill="none"
+                                                                  xmlns="http://www.w3.org/2000/svg"
+                                                                  className="info-icon"
+                                                                >
+                                                                  <path
+                                                                    d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z"
+                                                                    stroke="#09090B"
+                                                                    strokeWidth="1.25"
+                                                                  />
+                                                                  <path
+                                                                    d="M10.2005 14.166V9.99935C10.2005 9.60651 10.2005 9.41009 10.0785 9.28805C9.95644 9.16602 9.76002 9.16602 9.36719 9.16602"
+                                                                    stroke="#09090B"
+                                                                    strokeWidth="1.25"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                  />
+                                                                  <path
+                                                                    d="M9.99203 6.66602H9.99951"
+                                                                    stroke="#09090B"
+                                                                    strokeWidth="1.66667"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                  />
+                                                                </svg>
+                                                                <div className="cancellation-popover">
+                                                                  <div className="popover-header">
+                                                                    Cancellation Charges
+                                                                  </div>
+                                                                  <div className="popover-content">
+                                                                    {policyItem.refundDate ? (
+                                                                      <>
+                                                                        <div className="popover-message">
+                                                                          {isFullyRefundable ? (
+                                                                            <>
+                                                                              {policyRefundDateLabel}, get full refund of{" "}
+                                                                              <span className="d-inline-flex align-items-center">
+                                                                                <span
+                                                                                  className="currency-icon"
+                                                                                  aria-hidden="true"
+                                                                                  dangerouslySetInnerHTML={{
+                                                                                    __html:
+                                                                                      buildCurrencySvgMarkup(
+                                                                                        "#09090b"
+                                                                                      ),
+                                                                                  }}
+                                                                                  style={{
+                                                                                    display: "inline-flex",
+                                                                                  }}
+                                                                                />
+                                                                                {policyItem.policyAmountFormatted}
+                                                                              </span>
+                                                                            </>
+                                                                          ) : (
+                                                                            <>
+                                                                              {policyRefundDateLabel}, refundable amount{" "}
+                                                                              <span className="d-inline-flex align-items-center">
+                                                                                <span
+                                                                                  className="currency-icon"
+                                                                                  aria-hidden="true"
+                                                                                  dangerouslySetInnerHTML={{
+                                                                                    __html:
+                                                                                      buildCurrencySvgMarkup(
+                                                                                        "#09090b"
+                                                                                      ),
+                                                                                  }}
+                                                                                  style={{
+                                                                                    display: "inline-flex",
+                                                                                  }}
+                                                                                />
+                                                                                {policyItem.policyAmountFormatted}
+                                                                              </span>
+                                                                            </>
+                                                                          )}
+                                                                        </div>
+                                                                        <div className="popover-note">
+                                                                          Date and time is calculated based on local time of destination.
+                                                                        </div>
+                                                                      </>
+                                                                    ) : (
+                                                                      <div className="popover-message">
+                                                                        No cancellation policy available.
+                                                                      </div>
+                                                                    )}
+                                                                  </div>
+                                                                </div>
+                                                              </div>
                                                             </div>
-                                                            <div className="popover-note">
-                                                              Date and time is calculated based on local time of destination.
-                                                            </div>
-                                                          </>
-                                                        ) : (
-                                                          <div className="popover-message">
-                                                            No cancellation policy available.
-                                                          </div>
+                                                          </React.Fragment>
+                                                        );
+                                                      })
+                                                    ) : (
+                                                      <div className="refund-status-wrapper">
+                                                        <span className="refund-status-text">
+                                                          {rateRefundStatusLabel}
+                                                        </span>
+                                                        {rateCancellationDetails.policyAmountFormatted && (
+                                                          <span className="refund-amount d-inline-flex align-items-center">
+                                                            {" ( "}
+                                                            <span
+                                                              className="currency-icon"
+                                                              aria-hidden="true"
+                                                              dangerouslySetInnerHTML={{
+                                                                __html:
+                                                                  buildCurrencySvgMarkup(
+                                                                    "#09090b"
+                                                                  ),
+                                                              }}
+                                                              style={{
+                                                                display: "inline-flex",
+                                                              }}
+                                                            />{" "}
+                                                            {` ${rateCancellationDetails.policyAmountFormatted})`}
+                                                          </span>
                                                         )}
                                                       </div>
-                                                    </div>
+                                                    )}
                                                   </div>
-                                                  <div className="refund-status-wrapper">
-                                                    <span className="refund-status-text">
-                                                      {rateRefundStatusLabel}
-                                                    </span>
-                                                    <div className="cancellation-popover">
-                                                      <div className="popover-header">
-                                                        Cancellation Charges
-                                                      </div>
-                                                      <div className="popover-content">
-                                                        {rateCancellationDetails.refundDate ? (
-                                                          <>
-                                                            <div className="popover-message">
-                                                              {rateCancellationDetails.isFullyRefundable ? (
-                                                                <>
-                                                                  {rateRefundDateLabel}, get full refund of{" "}
-                                                                  <span className="d-inline-flex align-items-center">
-                                                                    <span
-                                                                      className="currency-icon"
-                                                                      aria-hidden="true"
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          buildCurrencySvgMarkup(
-                                                                            "#09090b"
-                                                                          ),
-                                                                      }}
-                                                                      style={{
-                                                                        display: "inline-flex",
-                                                                      }}
-                                                                    />
-                                                                    {rateCancellationDetails.policyAmountFormatted}
-                                                                  </span>
-                                                                </>
-                                                              ) : (
-                                                                <>
-                                                                  {rateRefundDateLabel}, refundable amount{" "}
-                                                                  <span className="d-inline-flex align-items-center">
-                                                                    <span
-                                                                      className="currency-icon"
-                                                                      aria-hidden="true"
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          buildCurrencySvgMarkup(
-                                                                            "#09090b"
-                                                                          ),
-                                                                      }}
-                                                                      style={{
-                                                                        display: "inline-flex",
-                                                                      }}
-                                                                    />
-                                                                    {rateCancellationDetails.policyAmountFormatted}
-                                                                  </span>
-                                                                </>
-                                                              )}
-                                                            </div>
-                                                            <div className="popover-note">
-                                                              Date and time is calculated based on local time of destination.
-                                                            </div>
-                                                          </>
-                                                        ) : (
-                                                          <div className="popover-message">
-                                                            No cancellation policy available.
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  {rateCancellationDetails.policyAmountFormatted && (
-                                                    <span className="refund-amount d-inline-flex align-items-center">
-                                                      {" ( "}
-                                                      <span
-                                                        className="currency-icon"
-                                                        aria-hidden="true"
-                                                        dangerouslySetInnerHTML={{
-                                                          __html:
-                                                            buildCurrencySvgMarkup(
-                                                              "#09090b"
-                                                            ),
-                                                        }}
-                                                        style={{
-                                                          display: "inline-flex",
-                                                        }}
-                                                      />{" "}
-                                                      {` ${rateCancellationDetails.policyAmountFormatted})`}
-                                                    </span>
-                                                  )}
                                                 </div>
                                               </div>
                                             </div>

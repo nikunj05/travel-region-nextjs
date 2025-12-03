@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import "./Checkout.scss";
-import MsaterCardIcon from "@/assets/images/master-card-icon.svg";
-import PaypalCardIcon from "@/assets/images/paypal-card-icon.svg";
-import StripeCardIcon from "@/assets/images/stripe-card-icon.svg";
-import UnionCardIcon from "@/assets/images/union-card-icon.svg";
-import visaCardIcon from "@/assets/images/visa-card-icon.svg";
-import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
+// import MsaterCardIcon from "@/assets/images/master-card-icon.svg";
+// import PaypalCardIcon from "@/assets/images/paypal-card-icon.svg";
+// import StripeCardIcon from "@/assets/images/stripe-card-icon.svg";
+// import UnionCardIcon from "@/assets/images/union-card-icon.svg";
+// import visaCardIcon from "@/assets/images/visa-card-icon.svg";
+// import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/bookingStore";

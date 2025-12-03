@@ -645,10 +645,74 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     </svg>
                     Total Length of Stay
                   </div>
-                  <div className="booking-list-right d-flex align-items-center">
-                    {totalNights} {totalNights === 1 ? "Night" : "Nights"}
+                  <div className="booking-list-right d-flex flex-column align-items-end">
+                    <span>
+                      {totalNights} {totalNights === 1 ? "Night" : "Nights"}
+                    </span>
+                    
                   </div>
                 </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                  <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                          stroke="#09090B"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
+                          stroke="#09090B"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    Total number of Guests
+                  </div>
+                  <div className="booking-list-right d-flex flex-column align-items-end">
+                    <span>
+                        {totalGuests} {totalGuests === 1 ? "Guest" : "Guests"}
+                      </span>
+                    
+                  </div>
+                </li>
+
+                {/* <span className="d-flex align-items-center gap-1">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                          stroke="#09090B"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
+                          stroke="#09090B"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>
+                        {totalGuests} {totalGuests === 1 ? "Guest" : "Guests"}
+                      </span>
+                    </span> */}
                 {uniqueRooms.length > 0 && (
                   <>
                     {uniqueRooms.map((room, index) => (

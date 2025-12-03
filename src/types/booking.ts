@@ -78,6 +78,7 @@ export interface BookingDetailsData {
   booking?: {
     id?: number;
     order: string;
+    status?: string;
     details?: BookingDetail[];
     [key: string]: unknown;
   };

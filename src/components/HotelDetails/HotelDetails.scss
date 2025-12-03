@@ -2215,6 +2215,39 @@
           }
         }
 
+        .popover-policies-list {
+          margin-bottom: 8px;
+
+          .policy-item {
+            margin-bottom: 8px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .policy-message {
+              font-size: 13px;
+              font-weight: $font-weight500;
+              color: $color-black-zinc-900;
+              line-height: 1.6;
+
+              .currency-icon {
+                margin: 0 2px;
+              }
+
+              span {
+                font-weight: $font-weight600;
+              }
+            }
+
+            .policy-separator {
+              height: 1px;
+              background-color: #e5e7eb;
+              margin: 8px 0;
+            }
+          }
+        }
+
         .popover-date {
           font-size: 13px;
           font-weight: $font-weight600;
@@ -2232,11 +2265,75 @@
   }
 
   // Refund Status Text Wrapper (for hover popover)
+  .refund-status-list {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+
+    .refund-status-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+
+      .refund-status-text {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .refund-amount {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+
+        .currency-icon {
+          margin: 0;
+        }
+      }
+
+      .info-icon-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+
+        .info-icon {
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+        }
+
+        &:hover {
+          .cancellation-popover {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+
+      &:hover {
+        .info-icon-wrapper {
+          .cancellation-popover {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+
+    .refund-policy-separator {
+      color: $color-black-zinc-600;
+      font-weight: $font-weight500;
+    }
+  }
+
   .refund-status-wrapper {
     position: relative;
     display: inline-flex;
     cursor: pointer;
-
 
     &:hover {
 
@@ -2322,6 +2419,48 @@
 
           span {
             font-weight: $font-weight600;
+          }
+        }
+
+        .popover-policies-list {
+          margin-bottom: 8px;
+
+          .policy-item {
+            margin-bottom: 8px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .policy-message {
+              font-size: 13px;
+              font-weight: $font-weight500;
+              color: $color-black-zinc-900;
+              line-height: 1.6;
+
+              .currency-icon {
+                margin: 0 2px;
+
+                svg {
+                  width: 12px;
+                  height: 12px;
+
+                  path {
+                    fill: inherit;
+                  }
+                }
+              }
+
+              span {
+                font-weight: $font-weight600;
+              }
+            }
+
+            .policy-separator {
+              height: 1px;
+              background-color: #e5e7eb;
+              margin: 8px 0;
+            }
           }
         }
 

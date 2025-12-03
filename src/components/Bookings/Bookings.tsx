@@ -12,6 +12,8 @@ import { bookingService } from "@/services/bookingService";
 import { toast } from "react-toastify";
 import { formatApiErrorMessage } from "@/lib/formatApiError";
 import Pagination from "@/components/common/Pagination/Pagination";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
@@ -179,22 +181,35 @@ export default function Bookings() {
           </div>
         </div>
       </div>
-      {loading && (
-        <div className="text-center py-5">
-          <p>Loading bookings...</p>
+      {loading ? (
+        <div className="hotel-booking-card d-grid">
+          {[...Array(perPage || 15)].map((_, index) => (
+            <div key={index} className="hotel-booking-card-item">
+              <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
+                <Skeleton height={222} borderRadius={18} />
+                <div style={{ paddingTop: "12px" }}>
+                  <Skeleton height={24} width="60%" style={{ marginBottom: "12px" }} />
+                  <Skeleton height={20} width="50%" style={{ marginBottom: "18px" }} />
+                  <div className="d-flex align-items-center justify-content-between" style={{ marginBottom: "12px" }}>
+                    <Skeleton height={20} width="45%" />
+                    <Skeleton height={20} width="40%" />
+                  </div>
+                  <Skeleton height={44} />
+                </div>
+              </SkeletonTheme>
+            </div>
+          ))}
         </div>
-      )}
-      {error && (
+      ) : error ? (
         <div className="text-center py-5 text-danger">
           <p>{error}</p>
         </div>
-      )}
-      {!loading && !error && bookings.length === 0 && (
+      ) : bookings.length === 0 ? (
         <div className="text-center py-5">
           <p>No bookings found</p>
         </div>
-      )}
-      <div className="hotel-booking-card d-grid">
+      ) : (
+        <div className="hotel-booking-card d-grid">
         {bookings.map((booking) => {
           const hotelName = booking.hotel_name || "Hotel";
           const hotelLocation = booking.hotel_location || "";
@@ -348,10 +363,11 @@ export default function Bookings() {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
       
       {/* Pagination - matching SearchResult style */}
-      {totalPages > 1 && (
+      {!loading && totalPages > 1 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

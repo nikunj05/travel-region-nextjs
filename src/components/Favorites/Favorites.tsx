@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import "./Favorites.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
-import StartIcon from "@/assets/images/star-fill-icon.svg";
+// import StartIcon from "@/assets/images/star-fill-icon.svg";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Pagination from "@/components/common/Pagination/Pagination";
+import { buildHotelSlug } from "@/lib/hotelSlug";
 
 export default function Favorites() {
   const t = useTranslations("Favorites");
+  const locale = useLocale();
   const { 
     favorites, 
     loading, 
@@ -44,6 +46,22 @@ export default function Favorites() {
 
   const handleRemove = async (hotelCode: number) => {
     await removeFromFavorites(hotelCode);
+  };
+
+  const handleBookNowClick = (
+    hotelCode: number,
+    hotelName: string | undefined
+  ) => {
+    if (!hotelCode) return;
+
+    const hotelSlug = buildHotelSlug(hotelName, hotelCode);
+    try {
+      // Open hotel details page in a new tab
+      const url = `/${locale}/hotel-details/${hotelSlug}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
   };
 
   // Get the first image from hotel images array
@@ -102,7 +120,7 @@ export default function Favorites() {
                 <div className="hotel-booking-info">
                   <div className="hotel-title-with-rating d-flex align-items-start justify-content-between">
                     <h2 className="hotel-title">{hotel.name.content}</h2>
-                    <div className="hotel-review-rating d-flex align-items-center">
+                    {/* <div className="hotel-review-rating d-flex align-items-center">
                       <Image
                         src={StartIcon}
                         alt="star icon"
@@ -111,7 +129,7 @@ export default function Favorites() {
                         className="ration-star-icon"
                       />
                       4.9 {t("rating")}
-                    </div>
+                    </div> */}
                   </div>
                   <div className="hotel-pricing d-flex">
                     $200 <span className="hotel-pricing-per">{t("perNight")}</span>
@@ -126,7 +144,10 @@ export default function Favorites() {
                   >
                     {removing ? t("removing") : t("remove")}
                   </button>
-                  <button className="hotel-bookig-action-btn button-primary">
+                  <button 
+                    className="hotel-bookig-action-btn button-primary"
+                    onClick={() => handleBookNowClick(hotel.code, hotel.name?.content)}
+                  >
                     {t("bookNow")}
                   </button>
                 </div>
