@@ -348,7 +348,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           if (roomCount > 0) {
             const rateNet = Number(rate.net) || 0;
             // Calculate total price based on rate * nights * roomCount
-            totalPrice += rateNet * nights * roomCount;
+            //totalPrice += rateNet * nights * roomCount;
+            totalPrice += rateNet * roomCount;
             currency = rate.currency || "SAR";
           }
         }
