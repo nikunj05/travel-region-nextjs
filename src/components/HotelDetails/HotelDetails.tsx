@@ -672,7 +672,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     setSelectedRateForPriceDetails(null);
   };
 
-  // Calculate daily prices based on total and number of nights
+  // Calculate daily prices based on total (backend already includes total stay price)
   const calculateDailyPrices = useCallback(() => {
     if (!searchFilters.checkInDate || !searchFilters.checkOutDate || !selectedRateForPriceDetails) {
       return { dates: [], nights: 0, averagePrice: 0, totalPrice: 0 };
@@ -681,7 +681,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     const checkIn = new Date(searchFilters.checkInDate);
     const checkOut = new Date(searchFilters.checkOutDate);
     const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
-    const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0) * nights;
+    // rate.net already includes total price for entire stay, multiply by room count only
+    const roomCount = selectedRateForPriceDetails.count || 1;
+    const totalPrice = Number(selectedRateForPriceDetails.rate.net ?? 0) * roomCount;
     const pricePerNight = totalPrice / nights;
 
     const dates = [];
@@ -2290,9 +2292,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                 className="price-details"
                                                 onClick={(e) => {
                                                   e.preventDefault();
+                                                  const rateKey = `${room.roomCode}_${rate.rateKey}`;
+                                                  const selectedCount = selectedRoomCounts[rateKey] || 1;
                                                   handleOpenPriceDetailsModal(
                                                     rate,
-                                                    room.name || room.description || "Room"
+                                                    room.name || room.description || "Room",
+                                                    selectedCount
                                                   );
                                                 }}
                                               >
@@ -2939,7 +2944,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       <h3 className="price-section-title">Price details</h3>
                       <div className="price-breakdown-item">
                         <span className="breakdown-label">
-                          {nights} x {selectedRateForPriceDetails.roomName}, {selectedRateForPriceDetails.rate.boardName || "Room Only"}
+                          {selectedRateForPriceDetails.count || 1} room{selectedRateForPriceDetails.count !== 1 ? 's' : ''} x {selectedRateForPriceDetails.roomName}, {selectedRateForPriceDetails.rate.boardName || "Room Only"}
                         </span>
                         <span className="breakdown-value d-inline-flex align-items-center">
                           <span

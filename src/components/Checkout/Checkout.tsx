@@ -244,9 +244,9 @@ function CheckoutComponent() {
       return true;
     });
 
-    // pricePerRoom is per night, so multiply by total nights and room count
+    // pricePerRoom already includes total stay price from backend, so multiply by room count only
     const totalPrice = uniqueRooms.reduce((sum, room) => {
-      const roomTotal = room.pricePerRoom * totalNights * room.count;
+      const roomTotal = room.pricePerRoom * room.count;
       return sum + roomTotal;
     }, 0);
 
@@ -256,7 +256,7 @@ function CheckoutComponent() {
       totalPrice,
       currency,
     };
-  }, [bookingData, totalNights]);
+  }, [bookingData]);
 
   // Price formatter
   const priceFormatter = useMemo(

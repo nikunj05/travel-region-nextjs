@@ -311,15 +311,14 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     uniqueRooms.forEach((room) => {
       totalRooms += room.count;
-      // pricePerRoom is per night, so multiply by totalNights and room count
-      const roomTotal = room.pricePerRoom * totalNights * room.count;
+      // pricePerRoom already includes total stay price from backend, so multiply by room count only
+      const roomTotal = room.pricePerRoom * room.count;
       totalPrice += roomTotal;
       currency = room.currency;
 
       // Create breakdown text for each room
-      const pricePerNight = room.pricePerRoom;
       roomDetails.push(
-        `${totalNights} night${totalNights !== 1 ? 's' : ''} x ${room.count} room${room.count !== 1 ? 's' : ''} x ${pricePerNight.toFixed(2)}`
+        `${room.count} room${room.count !== 1 ? 's' : ''} x ${room.pricePerRoom.toFixed(2)}`
       );
     });
 
@@ -330,7 +329,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       roomDetails,
       subtotal: totalPrice, // Same as total for now (no taxes/discounts)
     };
-  }, [uniqueRooms, totalNights]);
+  }, [uniqueRooms]);
 
   // Price formatter
   const priceFormatter = useMemo(
@@ -805,7 +804,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         }}
                         style={{ display: "inline-flex" }}
                       />{" "}
-                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * totalNights * (uniqueRooms[index]?.count || 0))}
+                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * (uniqueRooms[index]?.count || 0))}
                     </div>
                   </li>
                 ))}
@@ -912,7 +911,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         }}
                         style={{ display: "inline-flex" }}
                       />{" "}
-                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * totalNights * (uniqueRooms[index]?.count || 0))}
+                      {priceFormatter.format((uniqueRooms[index]?.pricePerRoom || 0) * (uniqueRooms[index]?.count || 0))}
                     </div>
                   </li>
                 ))}
