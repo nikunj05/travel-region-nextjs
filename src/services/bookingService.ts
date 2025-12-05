@@ -74,9 +74,19 @@ export const bookingService = {
     }
   },
 
-  getBookingPdf: async (order: string): Promise<any> => {
+  getBookingPdf: async (
+    order: string
+  ): Promise<{
+    status: boolean;
+    message: string;
+    data: { pdf_url: string };
+  }> => {
     try {
-      const response = await api.get<any>(`/bookings/${order}/pdf`);
+      const response = await api.get<{
+        status: boolean;
+        message: string;
+        data: { pdf_url: string };
+      }>(`/bookings/${order}/pdf`);
       return response.data;
     } catch (error) {
       throw error;
