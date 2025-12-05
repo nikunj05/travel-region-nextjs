@@ -11,7 +11,6 @@ export const createProfileSchema = (t: (key: string, params?: Record<string, str
     last_name: yup
       .string()
       .required(t('lastNameRequired'))
-      .min(2, t('lastNameMinLength', { min: 2 }))
       .max(50, t('lastNameMaxLength', { max: 50 })),
     
     gender: yup

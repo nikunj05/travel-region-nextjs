@@ -73,5 +73,14 @@ export const bookingService = {
       throw error;
     }
   },
+
+  getBookingPdf: async (order: string): Promise<any> => {
+    try {
+      const response = await api.get<any>(`/bookings/${order}/pdf`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 

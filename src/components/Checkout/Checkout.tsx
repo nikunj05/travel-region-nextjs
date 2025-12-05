@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Select } from "@/components/core/Select/Select";
 import { COUNTRY_CODES, buildHotelbedsImageUrl, buildCurrencySvgMarkup } from "@/constants";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
@@ -28,6 +28,8 @@ import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 function CheckoutComponent() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("Checkout");
+  const tv = useTranslations("Auth.validation");
   const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } = useBookingStore();
   const { filters: searchFilters } = useSearchFiltersStore();
   const { hotel: hotelData } = useHotelDetailsStore();
@@ -55,10 +57,21 @@ function CheckoutComponent() {
     };
   }, [travelerDetails]);
 
-  // Create validation schema
+  // Create validation schema with translations
   const bookingSchema = useMemo(() => {
-    return createBookingSchema();
-  }, []);
+    return createBookingSchema((key, params) => {
+      if (key === 'firstNameMinLength' && params?.min) {
+        return tv('firstNameMinLength', { min: params.min });
+      }
+      if (key === 'lastNameMinLength' && params?.min) {
+        return tv('lastNameMinLength', { min: params.min });
+      }
+      if (key === 'specialRequestsMaxLength' && params?.max) {
+        return tv('specialRequestsMaxLength', { max: params.max });
+      }
+      return tv(key);
+    });
+  }, [tv]);
 
 
   // Watch form values and save to store when they change
@@ -182,7 +195,7 @@ function CheckoutComponent() {
   const formatDate = (
     date: string | Date | null | undefined
   ): string => {
-    if (!date) return "Not selected";
+    if (!date) return t("notSelected");
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
       return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
@@ -191,7 +204,7 @@ function CheckoutComponent() {
         year: "numeric",
       }).format(dateObj);
     } catch {
-      return "Not selected";
+      return t("notSelected");
     }
   };
 
@@ -222,7 +235,7 @@ function CheckoutComponent() {
     return mainPath ? buildHotelbedsImageUrl(mainPath) : BookingHotelInfoImage;
   };
 
-  const hotelName = hotelData?.name?.content || bookingData?.hotelName || "Hotel Name";
+  const hotelName = hotelData?.name?.content || bookingData?.hotelName || t("placeholders.hotelName");
 
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
@@ -292,7 +305,7 @@ function CheckoutComponent() {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Hotel Selection</span>
+            <span className="step-label">{t("progressSteps.hotelSelection")}</span>
           </div>
 
           <div className="step-line"></div>
@@ -318,7 +331,7 @@ function CheckoutComponent() {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Your Details</span>
+            <span className="step-label">{t("progressSteps.yourDetails")}</span>
           </div>
 
           <div className="step-line"></div>
@@ -343,25 +356,25 @@ function CheckoutComponent() {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Pending</span>
+            <span className="step-label">{t("progressSteps.pending")}</span>
           </div>
         </div>
 
         <div className="review-booking-heading">
-          <h1 className="review-booking-title">Complete Your Booking</h1>
+          <h1 className="review-booking-title">{t("title")}</h1>
           <p className="review-booking-desc">
-            Please provide traveler details and complete your secure payment.
+            {t("description")}
           </p>
         </div>
 
         <div className="booking-review-details">
           <div className="review-booking-details-left">
             <div className="booking-detail-box booking-stays-summary">
-              <h3 className="booking-details-sub-title">Stay Details</h3>
+              <h3 className="booking-details-sub-title">{t("stayDetails.title")}</h3>
               <ul className="booking-listing-info">
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Check-in
+                    {t("stayDetails.checkIn")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     {formatDate(searchFilters.checkInDate)}
@@ -369,7 +382,7 @@ function CheckoutComponent() {
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Check-out
+                    {t("stayDetails.checkOut")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     {formatDate(searchFilters.checkOutDate)}
@@ -377,16 +390,16 @@ function CheckoutComponent() {
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Guests & Rooms
+                    {t("stayDetails.guestsAndRooms")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {totalGuests} {totalGuests === 1 ? "Guest" : "Guests"} •{" "}
-                    {totalRooms} {totalRooms === 1 ? "Room" : "Rooms"}
+                    {totalGuests} {totalGuests === 1 ? t("stayDetails.guest") : t("stayDetails.guests")} •{" "}
+                    {totalRooms} {totalRooms === 1 ? t("stayDetails.room") : t("stayDetails.rooms")}
                   </div>
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Total Price
+                    {t("stayDetails.totalPrice")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     <span
@@ -416,31 +429,31 @@ function CheckoutComponent() {
 
                 return (
                   <>
-                    <h3 className="booking-details-sub-title">Traveler Details</h3>
+                    <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
 
                     {/* Primary Guest - Mandatory */}
                     <div className="booking-details-form mandatory-field">
                       <h3 className="booking-form-title">
-                        Primary Guest <span className="text-red">(Mandatory)</span>
+                        {t("travelerDetails.primaryGuest")} <span className="text-red">({t("travelerDetails.mandatory")})</span>
                       </h3>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
                           <Input
                             name="primaryGuest.firstName"
-                            label="First Name"
+                            label={t("travelerDetails.firstName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder="Your first name"
+                            placeholder={t("travelerDetails.firstNamePlaceholder")}
                             className="form-input"
                           />
                           <Input
                             name="primaryGuest.lastName"
-                            label="Last Name"
+                            label={t("travelerDetails.lastName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder="Your last name"
+                            placeholder={t("travelerDetails.lastNamePlaceholder")}
                             className="form-input"
                           />
                         </div>
@@ -448,20 +461,20 @@ function CheckoutComponent() {
                         <div className="form-row">
                           <Input
                             name="primaryGuest.email"
-                            label="Email address"
+                            label={t("travelerDetails.email")}
                             labelWithContent={<span className="required">*</span>}
                             type="email"
                             disabled
-                            placeholder="Your email"
+                            placeholder={t("travelerDetails.emailPlaceholder")}
                             className="form-input"
                           />
                           <Input
                             name="primaryGuest.country"
-                            label="Country/ Region"
+                            label={t("travelerDetails.country")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder="Your country"
+                            placeholder={t("travelerDetails.countryPlaceholder")}
                             className="form-input"
                           />
                         </div>
@@ -469,7 +482,7 @@ function CheckoutComponent() {
                         <div className="form-row">
                           <div className="form-group select-with-input-field">
                             <label className="form-label">
-                              Phone Number <span className="required">*</span>
+                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
                             </label>
                             <div className="select-with-input">
                               <div className="country-code-input">
@@ -494,7 +507,7 @@ function CheckoutComponent() {
                                 <Input
                                   name="primaryGuest.phone"
                                   type="tel"
-                                  placeholder="Your phone number"
+                                  placeholder={t("travelerDetails.phonePlaceholder")}
                                   className="form-input form-control"
                                   disabled
                                 />
@@ -508,9 +521,9 @@ function CheckoutComponent() {
 
                     {/* Special Requests */}
                     <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">Special Request</h3>
+                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
                       <p className="booking-form-desc">
-                        Please write your request in English or Arabic.
+                        {t("travelerDetails.specialRequestDescription")}
                       </p>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
@@ -518,7 +531,7 @@ function CheckoutComponent() {
                             <Textarea
                               name="specialRequests"
                               rows={5}
-                              placeholder="Enter any requests..."
+                              placeholder={t("travelerDetails.specialRequestPlaceholder")}
                               className="w-100 text-field"
                               disabled
                             />
@@ -700,7 +713,7 @@ function CheckoutComponent() {
                 <div className="booking-hotel-content">
                   <h3 className="hotel-name">{hotelName}</h3>
                   <span className="booking-guest-info">
-                    {totalGuests} {totalGuests === 1 ? 'Guest' : 'Guests'} • {totalNights} {totalNights === 1 ? 'Night' : 'Nights'}
+                    {totalGuests} {totalGuests === 1 ? t("summary.guest") : t("summary.guests")} • {totalNights} {totalNights === 1 ? t("summary.night") : t("summary.nights")}
                   </span>
                 </div>
               </div>
@@ -740,7 +753,7 @@ function CheckoutComponent() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    Hotel Fare
+                    {t("summary.hotelFare")}
                   </div>
                   <div className="booking-pricing">
                     <span
@@ -792,7 +805,7 @@ function CheckoutComponent() {
                 </div> */}
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
-                  <span>Total Price</span>
+                  <span>{t("summary.totalPrice")}</span>
                   <span className="checkout-total-price">
                     <span
                       className="currency-icon"
@@ -806,7 +819,7 @@ function CheckoutComponent() {
                   </span>
                 </div>
                 <div className="booking-price-tax">
-                  Included all taxes & fees
+                  {t("summary.includedAllTaxes")}
                 </div>
               </div>
               <div className="chekout-agree-terms-box">
@@ -824,19 +837,19 @@ function CheckoutComponent() {
                     }}
                   />
                   <label className="form-check-label" htmlFor="agreeToTerms">
-                    I agree to <a href="#">Terms</a> and{" "}
-                    <a href="#">Privacy Policy.</a>
+                    {t("agreeToTerms.label")} <a href="#">{t("agreeToTerms.terms")}</a> {t("agreeToTerms.and")}{" "}
+                    <a href="#">{t("agreeToTerms.privacyPolicy")}</a>
                   </label>
                 </div>
                 {agreeToTermsError && (
                   <div className="terms-error-message">
-                    Please accept Terms and Privacy Policy.
+                    {t("agreeToTerms.errorMessage")}
                   </div>
                 )}
               </div>
               <div className="check-availability-action">
                 <button className="button-primary check-availability-btn" onClick={handleCheckout}>
-                  Pay
+                  {t("payButton")}
                 </button>
               </div>
             </div>

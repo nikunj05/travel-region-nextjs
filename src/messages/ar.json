@@ -378,7 +378,9 @@
     "rating": "التقييم",
     "guests": "ضيوف",
     "cancel": "إلغاء",
-    "modify": "تعديل"
+    "modify": "تعديل",
+    "completeBooking": "إتمام الدفع",
+    "bookingCanceled": "تم إلغاء الحجز"
   },
   "PaymentMethods": {
     "pageTitle": "طرق الدفع",
@@ -509,7 +511,139 @@
       "dateOfBirthFuture": "لا يمكن أن يكون تاريخ الميلاد في المستقبل",
       "nationalityRequired": "الجنسية مطلوبة",
       "addressMaxLength": "يجب ألا يتجاوز العنوان {max} حرفاً",
-      "passportMaxLength": "يجب ألا يتجاوز رقم جواز السفر {max} حرفاً"
+      "passportMaxLength": "يجب ألا يتجاوز رقم جواز السفر {max} حرفاً",
+      "countryRequired": "البلد مطلوب",
+      "specialRequestsMaxLength": "يجب ألا تتجاوز الطلبات الخاصة {max} حرفاً"
+    }
+  },
+  "BookingReview": {
+    "title": "مراجعة حجزك",
+    "description": "يرجى التحقق من تفاصيلك قبل المتابعة إلى الدفع.",
+    "loadingHotelDetails": "جاري تحميل تفاصيل الفندق...",
+    "notSelected": "لم يتم الاختيار",
+    "changeHotel": "تغيير الفندق",
+    "editDates": "تعديل التواريخ",
+    "proceedToPayment": "المتابعة إلى الدفع",
+    "progressSteps": {
+      "hotelSelection": "اختيار الفندق",
+      "yourDetails": "تفاصيلك",
+      "finishBooking": "إنهاء الحجز"
+    },
+    "staysDetails": {
+      "title": "تفاصيل الإقامة",
+      "checkIn": "تسجيل الوصول",
+      "checkOut": "تسجيل المغادرة",
+      "totalLengthOfStay": "إجمالي مدة الإقامة",
+      "totalNumberOfGuests": "إجمالي عدد الضيوف",
+      "night": "ليلة",
+      "nights": "ليالٍ",
+      "guest": "ضيف",
+      "guests": "ضيوف",
+      "roomType": "نوع الغرفة",
+      "room": "غرفة",
+      "roomOnly": "غرفة فقط",
+      "freeAmenities": "وسائل الراحة المجانية",
+      "amenity": "وسيلة راحة"
+    },
+    "priceDetails": {
+      "title": "تفاصيل السعر",
+      "total": "الإجمالي",
+      "subTotal": "المجموع الفرعي",
+      "ratesQuotedIn": "الأسعار مقتبسة بـ {currency}",
+      "priceMayIncrease": "قد يزيد هذا السعر إذا حجزت لاحقاً"
+    },
+    "cancelCost": {
+      "title": "كم سيكلف الإلغاء؟"
+    },
+    "travelerDetails": {
+      "title": "تفاصيل المسافر",
+      "primaryGuest": "الضيف الرئيسي",
+      "mandatory": "إلزامي",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "اسمك الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "اسم عائلتك",
+      "email": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "بريدك الإلكتروني",
+      "country": "البلد/ المنطقة",
+      "countryPlaceholder": "بلدك",
+      "phoneNumber": "رقم الهاتف",
+      "phonePlaceholder": "رقم هاتفك",
+      "specialRequest": "طلب خاص",
+      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية أو العربية.",
+      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
+    },
+    "summary": {
+      "hotelFare": "أجرة الفندق",
+      "totalPrice": "السعر الإجمالي",
+      "includedAllTaxes": "يشمل جميع الضرائب والرسوم",
+      "guest": "ضيف",
+      "guests": "ضيوف",
+      "night": "ليلة",
+      "nights": "ليالٍ"
+    },
+    "placeholders": {
+      "hotelName": "اسم الفندق",
+      "hotelAddress": "عنوان الفندق"
+    }
+  },
+  "Checkout": {
+    "title": "إكمال حجزك",
+    "description": "يرجى تقديم تفاصيل المسافر وإكمال الدفع الآمن.",
+    "notSelected": "لم يتم الاختيار",
+    "payButton": "دفع",
+    "progressSteps": {
+      "hotelSelection": "اختيار الفندق",
+      "yourDetails": "تفاصيلك",
+      "pending": "قيد الانتظار"
+    },
+    "stayDetails": {
+      "title": "تفاصيل الإقامة",
+      "checkIn": "تسجيل الوصول",
+      "checkOut": "تسجيل المغادرة",
+      "guestsAndRooms": "الضيوف والغرف",
+      "totalPrice": "السعر الإجمالي",
+      "guest": "ضيف",
+      "guests": "ضيوف",
+      "room": "غرفة",
+      "rooms": "غرف"
+    },
+    "travelerDetails": {
+      "title": "تفاصيل المسافر",
+      "primaryGuest": "الضيف الرئيسي",
+      "mandatory": "إلزامي",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "اسمك الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "اسم عائلتك",
+      "email": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "بريدك الإلكتروني",
+      "country": "البلد/ المنطقة",
+      "countryPlaceholder": "بلدك",
+      "phoneNumber": "رقم الهاتف",
+      "phonePlaceholder": "رقم هاتفك",
+      "specialRequest": "طلب خاص",
+      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية أو العربية.",
+      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
+    },
+    "summary": {
+      "hotelFare": "أجرة الفندق",
+      "totalPrice": "السعر الإجمالي",
+      "includedAllTaxes": "يشمل جميع الضرائب والرسوم",
+      "guest": "ضيف",
+      "guests": "ضيوف",
+      "night": "ليلة",
+      "nights": "ليالٍ"
+    },
+    "agreeToTerms": {
+      "label": "أوافق على",
+      "terms": "الشروط",
+      "and": "و",
+      "privacyPolicy": "سياسة الخصوصية.",
+      "errorMessage": "يرجى قبول الشروط وسياسة الخصوصية."
+    },
+    "placeholders": {
+      "hotelName": "اسم الفندق"
     }
   }
 }

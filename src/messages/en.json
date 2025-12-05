@@ -378,7 +378,9 @@
     "rating": "Rating",
     "guests": "Guests",
     "cancel": "Cancel",
-    "modify": "Modify"
+    "modify": "Modify",
+    "completeBooking": "Complete Payment",
+    "bookingCanceled": "Booking Canceled"
   },
   "PaymentMethods": {
     "pageTitle": "Payment Methods",
@@ -509,7 +511,139 @@
       "dateOfBirthFuture": "Date of birth cannot be in the future",
       "nationalityRequired": "Nationality is required",
       "addressMaxLength": "Address must not exceed {max} characters",
-      "passportMaxLength": "Passport number must not exceed {max} characters"
+      "passportMaxLength": "Passport number must not exceed {max} characters",
+      "countryRequired": "Country is required",
+      "specialRequestsMaxLength": "Special requests must not exceed {max} characters"
+    }
+  },
+  "BookingReview": {
+    "title": "Review Your Booking",
+    "description": "Please check your details before proceeding to payment.",
+    "loadingHotelDetails": "Loading hotel details...",
+    "notSelected": "Not selected",
+    "changeHotel": "Change Hotel",
+    "editDates": "Edit Dates",
+    "proceedToPayment": "Proceed to Payment",
+    "progressSteps": {
+      "hotelSelection": "Hotel Selection",
+      "yourDetails": "Your Details",
+      "finishBooking": "Finish Booking"
+    },
+    "staysDetails": {
+      "title": "Stays Details",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "totalLengthOfStay": "Total Length of Stay",
+      "totalNumberOfGuests": "Total number of Guests",
+      "night": "Night",
+      "nights": "Nights",
+      "guest": "Guest",
+      "guests": "Guests",
+      "roomType": "Room Type",
+      "room": "Room",
+      "roomOnly": "Room Only",
+      "freeAmenities": "Free Amenities",
+      "amenity": "Amenity"
+    },
+    "priceDetails": {
+      "title": "Price Details",
+      "total": "Total",
+      "subTotal": "Sub Total",
+      "ratesQuotedIn": "Rates are quoted in {currency}",
+      "priceMayIncrease": "This Price may increase if you book later"
+    },
+    "cancelCost": {
+      "title": "How much will it cost to cancel?"
+    },
+    "travelerDetails": {
+      "title": "Traveler Details",
+      "primaryGuest": "Primary Guest",
+      "mandatory": "Mandatory",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Your last name",
+      "email": "Email address",
+      "emailPlaceholder": "Your email",
+      "country": "Country/ Region",
+      "countryPlaceholder": "Your country",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "Your phone number",
+      "specialRequest": "Special Request",
+      "specialRequestDescription": "Please write your request in English or Arabic.",
+      "specialRequestPlaceholder": "Late checkin, Honeymoon etc"
+    },
+    "summary": {
+      "hotelFare": "Hotel Fare",
+      "totalPrice": "Total Price",
+      "includedAllTaxes": "Included all taxes & fees",
+      "guest": "Guest",
+      "guests": "Guests",
+      "night": "Night",
+      "nights": "Nights"
+    },
+    "placeholders": {
+      "hotelName": "Hotel Name",
+      "hotelAddress": "Hotel Address"
+    }
+  },
+  "Checkout": {
+    "title": "Complete Your Booking",
+    "description": "Please provide traveler details and complete your secure payment.",
+    "notSelected": "Not selected",
+    "payButton": "Pay",
+    "progressSteps": {
+      "hotelSelection": "Hotel Selection",
+      "yourDetails": "Your Details",
+      "pending": "Pending"
+    },
+    "stayDetails": {
+      "title": "Stay Details",
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "guestsAndRooms": "Guests & Rooms",
+      "totalPrice": "Total Price",
+      "guest": "Guest",
+      "guests": "Guests",
+      "room": "Room",
+      "rooms": "Rooms"
+    },
+    "travelerDetails": {
+      "title": "Traveler Details",
+      "primaryGuest": "Primary Guest",
+      "mandatory": "Mandatory",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Your last name",
+      "email": "Email address",
+      "emailPlaceholder": "Your email",
+      "country": "Country/ Region",
+      "countryPlaceholder": "Your country",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "Your phone number",
+      "specialRequest": "Special Request",
+      "specialRequestDescription": "Please write your request in English or Arabic.",
+      "specialRequestPlaceholder": "Late checkin, Honeymoon etc"
+    },
+    "summary": {
+      "hotelFare": "Hotel Fare",
+      "totalPrice": "Total Price",
+      "includedAllTaxes": "Included all taxes & fees",
+      "guest": "Guest",
+      "guests": "Guests",
+      "night": "Night",
+      "nights": "Nights"
+    },
+    "agreeToTerms": {
+      "label": "I agree to",
+      "terms": "Terms",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy.",
+      "errorMessage": "Please accept Terms and Privacy Policy."
+    },
+    "placeholders": {
+      "hotelName": "Hotel Name"
     }
   }
 }

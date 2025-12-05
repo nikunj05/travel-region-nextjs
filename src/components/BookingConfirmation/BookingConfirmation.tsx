@@ -99,6 +99,28 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
     }
   };
 
+  const handlePrintConfirmation = async () => {
+    try {
+      const order = bookingData?.order || bookingId;
+      if (!order) {
+        console.error("Order ID not found");
+        toast.error("Order ID not found");
+        return;
+      }
+      const response = await bookingService.getBookingPdf(order);
+      // console.log("Print Confirmation Response:", response);
+
+      if (response.status && response.data?.pdf_url) {
+        window.open(response.data.pdf_url, "_blank");
+      } else {
+        toast.error(response.message || "Failed to generate PDF");
+      }
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+      toast.error("Failed to fetch confirmation PDF");
+    }
+  };
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -233,7 +255,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
         )}
 
         <div className="booking-action d-flex align-items-center">
-          <button className="button-primary print-button">
+          <button className="button-primary print-button" onClick={handlePrintConfirmation}>
             <svg
               width="25"
               height="24"

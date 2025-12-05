@@ -24,13 +24,13 @@ const LANGUAGE_OPTIONS = [
 ];
 
 // Currency options with flags
-const CURRENCY_OPTIONS = [
-  { value: "USD", label: "US$/ U.S. Dollar", flag: EnglishFlag },
-  // { value: "EUR", label: "€/ Euro", flag: ArabicFlag },
-  // { value: "GBP", label: "£/ British Pound", flag: EnglishFlag },
-  { value: "AED", label: "د.إ/ UAE Dirham", flag: ArabicFlag },
-  // { value: "SAR", label: "ر.س/ Saudi Riyal", flag: ArabicFlag },
-];
+// const CURRENCY_OPTIONS = [
+//   { value: "USD", label: "US$/ U.S. Dollar", flag: EnglishFlag },
+//   // { value: "EUR", label: "€/ Euro", flag: ArabicFlag },
+//   // { value: "GBP", label: "£/ British Pound", flag: EnglishFlag },
+//   { value: "AED", label: "د.إ/ UAE Dirham", flag: ArabicFlag },
+//   // { value: "SAR", label: "ر.س/ Saudi Riyal", flag: ArabicFlag },
+// ];
 
 // Country code options using the same reference as signup
 // const COUNTRY_CODE_OPTIONS = COUNTRY_CODES.map((c) => ({
@@ -117,16 +117,16 @@ export default function Settings() {
     }
   };
 
-  const handleCurrencyChange = async (value: string) => {
-    try {
-      const updateData: UpdateUserSettingsRequest = {
-        currency: value,
-      };
-      await updateUserSettings(updateData);
-    } catch (error) {
-      console.error("Error updating currency:", error);
-    }
-  };
+  // const handleCurrencyChange = async (value: string) => {
+  //   try {
+  //     const updateData: UpdateUserSettingsRequest = {
+  //       currency: value,
+  //     };
+  //     await updateUserSettings(updateData);
+  //   } catch (error) {
+  //     console.error("Error updating currency:", error);
+  //   }
+  // };
 
   const handleCountryCodeChange = async (value: string) => {
     try {
@@ -238,7 +238,7 @@ export default function Settings() {
             </div>
 
             {/* Currency Preferences */}
-            <div className={styles.preferenceSection}>
+            {/* <div className={styles.preferenceSection}>
               <h2 className={`${styles.sectionLable} form-label`}>
                 {t("currencyPreferences")}
               </h2>
@@ -259,7 +259,7 @@ export default function Settings() {
                   )}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Sign-in & Security */}

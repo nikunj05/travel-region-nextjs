@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "@/i18/navigation";
 import { useTransition } from "react";
 import hamburgerMenuIcon from "@/assets/images/hamburger-menu-icon.svg";
 import travelRegionsLogo from "@/assets/images/travel-regions-logo.svg";
-import UserImage from "@/assets/images/user-image.png";
+import UserImage from "@/assets/images/userIcon.svg";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
 // import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
 // import arabicFlagIcon from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
@@ -370,6 +370,7 @@ const Header = () => {
                     onClick={toggleProfileMenu}
                   >
                     <Image
+                      key={user?.profile_image_url || 'default'}
                       src={profileImage}
                       width="42"
                       height="42"

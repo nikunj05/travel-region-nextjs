@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Controller, UseFormReturn } from "react-hook-form";
 import "./BookingReview.scss";
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
@@ -39,6 +39,8 @@ const getLanguageCode = (currentLocale: string): string => {
 const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("BookingReview");
+  const tv = useTranslations("Auth.validation");
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
@@ -102,10 +104,21 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     };
   }, [travelerDetails]);
 
-  // Create validation schema
+  // Create validation schema with translations
   const bookingSchema = useMemo(() => {
-    return createBookingSchema();
-  }, []);
+    return createBookingSchema((key, params) => {
+      if (key === 'firstNameMinLength' && params?.min) {
+        return tv('firstNameMinLength', { min: params.min });
+      }
+      if (key === 'lastNameMinLength' && params?.min) {
+        return tv('lastNameMinLength', { min: params.min });
+      }
+      if (key === 'specialRequestsMaxLength' && params?.max) {
+        return tv('specialRequestsMaxLength', { max: params.max });
+      }
+      return tv(key);
+    });
+  }, [tv]);
 
   // Format date to YYYY-MM-DD
   const formatDateForAPI = (date: string | Date | null | undefined): string => {
@@ -225,8 +238,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   }, [hotelData]);
 
   // Get dynamic hotel data
-  const hotelName = hotelData?.name?.content || "Hotel Name";
-  const hotelAddress = hotelData?.address?.content || "Hotel Address";
+  const hotelName = hotelData?.name?.content || t("placeholders.hotelName");
+  const hotelAddress = hotelData?.address?.content || t("placeholders.hotelAddress");
   const hotelCountry = hotelData?.country?.description?.content || hotelAddress;
   const displayedAmenities = hotelAmenities.slice(0, 3);
 
@@ -239,7 +252,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
   // Format dates and calculate stay duration
   const formatDate = (date: string | Date | null | undefined): string => {
-    if (!date) return "Not selected";
+    if (!date) return t("notSelected");
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
       return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
@@ -248,7 +261,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         year: "numeric",
       }).format(dateObj);
     } catch {
-      return "Not selected";
+      return t("notSelected");
     }
   };
 
@@ -288,13 +301,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     });
   }, [selectedRoomsInfo]);
 
-  const firstSelectedRoom = uniqueRooms[0];
+  // const firstSelectedRoom = uniqueRooms[0];
 
   // Get amenities for selected rooms
   const selectedRoomAmenities = useMemo(() => {
     if (!uniqueRooms || uniqueRooms.length === 0) return [];
     // Get unique amenities from all selected rooms
-    const amenitySet = new Set<string>();
+    // const amenitySet = new Set<string>();
     uniqueRooms.forEach((room) => {
       // You can add room-specific amenities here if available in your data structure
     });
@@ -348,8 +361,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       <main className="booking-review-page padding-top-100 section-space-b">
         <div className="container">
           <div className="review-booking-heading loading-heading">
-            <h1 className="review-booking-title">Review Your Booking</h1>
-            <p className="review-booking-desc">Loading hotel details...</p>
+            <h1 className="review-booking-title">{t("title")}</h1>
+            <p className="review-booking-desc">{t("loadingHotelDetails")}</p>
           </div>
         </div>
       </main>
@@ -380,7 +393,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Hotel Selection</span>
+            <span className="step-label">{t("progressSteps.hotelSelection")}</span>
           </div>
 
           <div className="step-line"></div>
@@ -405,7 +418,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Your Details</span>
+            <span className="step-label">{t("progressSteps.yourDetails")}</span>
           </div>
 
           <div className="step-line"></div>
@@ -429,14 +442,14 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">Finish Booking</span>
+            <span className="step-label">{t("progressSteps.finishBooking")}</span>
           </div>
         </div>
 
         <div className="review-booking-heading">
-          <h1 className="review-booking-title">Review Your Booking</h1>
+          <h1 className="review-booking-title">{t("title")}</h1>
           <p className="review-booking-desc">
-            Please check your details before proceeding to payment.
+            {t("description")}
           </p>
         </div>
 
@@ -558,13 +571,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     className="booking-edit-btn"
                     onClick={() => router.push(`/${locale}/search-result`)}
                   >
-                    Change Hotel
+                    {t("changeHotel")}
                   </button>
                 </div>
               </div>
             </div>
             <div className="booking-detail-box booking-stays-details">
-              <h3 className="booking-details-sub-title">Stays Details</h3>
+              <h3 className="booking-details-sub-title">{t("staysDetails.title")}</h3>
               <ul className="booking-listing-info">
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
@@ -590,7 +603,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Check-in
+                    {t("staysDetails.checkIn")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     {formatDate(checkInDate)}
@@ -621,7 +634,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Check-out
+                    {t("staysDetails.checkOut")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     {formatDate(checkOutDate)}
@@ -642,11 +655,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         fill="#09090B"
                       />
                     </svg>
-                    Total Length of Stay
+                    {t("staysDetails.totalLengthOfStay")}
                   </div>
                   <div className="booking-list-right d-flex flex-column align-items-end">
                     <span>
-                      {totalNights} {totalNights === 1 ? "Night" : "Nights"}
+                      {totalNights} {totalNights === 1 ? t("staysDetails.night") : t("staysDetails.nights")}
                     </span>
                     
                   </div>
@@ -675,11 +688,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                           strokeLinejoin="round"
                         />
                       </svg>
-                    Total number of Guests
+                    {t("staysDetails.totalNumberOfGuests")}
                   </div>
                   <div className="booking-list-right d-flex flex-column align-items-end">
                     <span>
-                        {totalGuests} {totalGuests === 1 ? "Guest" : "Guests"}
+                        {totalGuests} {totalGuests === 1 ? t("staysDetails.guest") : t("staysDetails.guests")}
                       </span>
                     
                   </div>
@@ -749,10 +762,10 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          Room Type {uniqueRooms.length > 1 ? `${index + 1}` : ""}
+                          {t("staysDetails.roomType")} {uniqueRooms.length > 1 ? `${index + 1}` : ""}
                         </div>
                         <div className="booking-list-right d-flex align-items-center">
-                          {room.roomName || "Room"} ({room.boardName || "Room Only"})
+                          {room.roomName || t("staysDetails.room")} ({room.boardName || t("staysDetails.roomOnly")})
                         </div>
                       </li>
                     ))}
@@ -761,14 +774,14 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               </ul>
               {selectedRoomAmenities.length > 0 && (
                 <div className="booking-inner-box">
-                  <h4 className="booking-inner-title">Free Amenities</h4>
+                  <h4 className="booking-inner-title">{t("staysDetails.freeAmenities")}</h4>
                   {selectedRoomAmenities.map((facility, index) => (
                     <div
                       key={`amenity-${facility.facilityCode}-${index}`}
                       className="booking-inner-list d-flex align-items-center"
                     >
                       <AmenityIcon facilityCode={facility.facilityCode} />
-                      {facility.description?.content || "Amenity"}
+                      {facility.description?.content || t("staysDetails.amenity")}
                     </div>
                   ))}
                 </div>
@@ -779,13 +792,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   className="booking-edit-btn"
                   onClick={() => router.back()}
                 >
-                  Edit Dates
+                  {t("editDates")}
                 </button>
               </div>
             </div>
 
             <div className="booking-detail-box booking-price-details ">
-              <h3 className="booking-details-sub-title">Price Details</h3>
+              <h3 className="booking-details-sub-title">{t("priceDetails.title")}</h3>
               <ul className="booking-listing-info">
                 {priceBreakdown.roomDetails.map((detail, index) => (
                   <li
@@ -819,7 +832,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <div className="booking-review-separetor"></div>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Total
+                    {t("priceDetails.total")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     <span
@@ -844,7 +857,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <div className="booking-review-separetor"></div>
                 <li className="booking-listing-item booking-sub-total d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                    Sub Total
+                    {t("priceDetails.subTotal")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
                     <span
@@ -859,7 +872,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   </div>
                 </li>
               </ul>
-              <div className="booking-rates">Rates are quoted in {priceBreakdown.currency}</div>
+              <div className="booking-rates">{t("priceDetails.ratesQuotedIn", { currency: priceBreakdown.currency })}</div>
               <div className="booking-price-increase d-flex align-items-center">
                 <svg
                   width="20"
@@ -880,7 +893,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     strokeLinejoin="round"
                   />
                 </svg>
-                This Price may increase if you book later
+                {t("priceDetails.priceMayIncrease")}
               </div>
               {/* <div className="booking-box-action">
                 <a href="#" className="booking-edit-btn">
@@ -891,7 +904,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
             <div className="booking-detail-box booking-cancel-cost">
               <h3 className="booking-details-sub-title">
-                How much will it cost to cancel?
+                {t("cancelCost.title")}
               </h3>
               <ul className="booking-listing-info">
                 {priceBreakdown.roomDetails.map((detail, index) => (
@@ -931,29 +944,29 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
                 return (
                   <>
-                    <h3 className="booking-details-sub-title">Traveler Details</h3>
+                    <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
 
                     {/* Primary Guest - Mandatory */}
                     <div className="booking-details-form mandatory-field">
                       <h3 className="booking-form-title">
-                        Primary Guest <span className="text-red">(Mandatory)</span>
+                        {t("travelerDetails.primaryGuest")} <span className="text-red">({t("travelerDetails.mandatory")})</span>
                       </h3>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
                           <Input
                             name="primaryGuest.firstName"
-                            label="First Name"
+                            label={t("travelerDetails.firstName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder="Your first name"
+                            placeholder={t("travelerDetails.firstNamePlaceholder")}
                             className="form-input"
                           />
                           <Input
                             name="primaryGuest.lastName"
-                            label="Last Name"
+                            label={t("travelerDetails.lastName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder="Your last name"
+                            placeholder={t("travelerDetails.lastNamePlaceholder")}
                             className="form-input"
                           />
                         </div>
@@ -961,18 +974,18 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         <div className="form-row">
                           <Input
                             name="primaryGuest.email"
-                            label="Email address"
+                            label={t("travelerDetails.email")}
                             labelWithContent={<span className="required">*</span>}
                             type="email"
-                            placeholder="Your email"
+                            placeholder={t("travelerDetails.emailPlaceholder")}
                             className="form-input"
                           />
                           <Input
                             name="primaryGuest.country"
-                            label="Country/ Region"
+                            label={t("travelerDetails.country")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder="Your country"
+                            placeholder={t("travelerDetails.countryPlaceholder")}
                             className="form-input"
                           />
                         </div>
@@ -980,7 +993,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         <div className="form-row">
                           <div className="form-group select-with-input-field">
                             <label className="form-label">
-                              Phone Number <span className="required">*</span>
+                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
                             </label>
                             <div className="select-with-input">
                               <div className="country-code-input">
@@ -1006,7 +1019,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                   type="tel"
                                   inputMode="numeric"
                                   pattern="\d*"
-                                  placeholder="Your phone number"
+                                  placeholder={t("travelerDetails.phonePlaceholder")}
                                   className="form-input form-control"
                                   maxLength={15}
                                 />
@@ -1021,9 +1034,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
                     {/* Special Requests */}
                     <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">Special Request</h3>
+                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
                       <p className="booking-form-desc">
-                        Please write your request in English or Arabic.
+                        {t("travelerDetails.specialRequestDescription")}
                       </p>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
@@ -1031,7 +1044,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             <Textarea
                               name="specialRequests"
                               rows={5}
-                              placeholder="Enter any requests..."
+                              placeholder={t("travelerDetails.specialRequestPlaceholder")}
                               className="w-100 text-field"
                             />
                           </div>
@@ -1058,7 +1071,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <div className="booking-hotel-content">
                   <h3 className="hotel-name">{hotelName}</h3>
                   <span className="booking-guest-info">
-                    {totalGuests} {totalGuests === 1 ? 'Guest' : 'Guests'} • {totalNights} {totalNights === 1 ? 'Night' : 'Nights'}
+                    {totalGuests} {totalGuests === 1 ? t("summary.guest") : t("summary.guests")} • {totalNights} {totalNights === 1 ? t("summary.night") : t("summary.nights")}
                   </span>
                 </div>
               </div>
@@ -1098,7 +1111,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         strokeLinecap="round"
                       />
                     </svg>
-                    Hotel Fare
+                    {t("summary.hotelFare")}
                   </div>
                   <div className="booking-pricing">
                     <span
@@ -1150,7 +1163,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </div> */}
                 <div className="booking-review-separetor"></div>
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
-                  <span>Total Price</span>
+                  <span>{t("summary.totalPrice")}</span>
                   <span className="booking-review-total-price">
                     <span
                       className="currency-icon"
@@ -1164,7 +1177,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   </span>
                 </div>
                 <div className="booking-price-tax">
-                  Included all taxes & fees
+                  {t("summary.includedAllTaxes")}
                 </div>
               </div>
               <div className="check-availability-action">
@@ -1178,7 +1191,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     }
                   }}
                 >
-                  Proceed to Payment
+                  {t("proceedToPayment")}
                 </button>
               </div>
             </div>

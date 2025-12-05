@@ -157,12 +157,26 @@ const SearchResult = () => {
   ) => {
     if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
-      const minRate = parseFloat(String(item.minRate ?? "")) || 0;
-      const maxRate = parseFloat(String(item.maxRate ?? "")) || 0;
-      if (preference === "max") {
-        return maxRate || minRate;
+      
+      // Parse rate string to number, handling empty strings and invalid values
+      const parseRate = (rate: string | undefined): number | null => {
+        if (!rate || rate.trim() === "") return null;
+        const parsed = parseFloat(String(rate));
+        return isNaN(parsed) ? null : parsed;
+      };
+      
+      // Always use minRate for sorting since that's what's displayed in the UI
+      // Both "Low to High" and "High to Low" should sort by minRate
+      const minRate = parseRate(item.minRate);
+      
+      // Return minRate if available, otherwise fallback to maxRate, or 0 as last resort
+      if (minRate !== null) {
+        return minRate;
       }
-      return minRate || maxRate;
+      
+      // Fallback to maxRate if minRate is not available
+      const maxRate = parseRate(item.maxRate);
+      return maxRate !== null ? maxRate : 0;
     }
     return 0;
   };
@@ -208,15 +222,18 @@ const SearchResult = () => {
 
     switch (sortBy) {
       case "Price: Low to High":
-        return sortable.sort((a, b) => {
+        return [...sortable].sort((a, b) => {
           const rateA = getHotelRateValue(a, "min");
           const rateB = getHotelRateValue(b, "min");
           return rateA - rateB;
         });
       case "Price: High to Low":
-        return sortable.sort((a, b) => {
-          const rateA = getHotelRateValue(a, "max");
-          const rateB = getHotelRateValue(b, "max");
+        return [...sortable].sort((a, b) => {
+          // Use minRate for both directions since that's what's displayed in UI
+          const rateA = getHotelRateValue(a, "min");
+          const rateB = getHotelRateValue(b, "min");
+          // Ensure proper descending sort
+          if (rateA === rateB) return 0;
           return rateB - rateA;
         });
       // case 'Rating':
@@ -251,6 +268,22 @@ const SearchResult = () => {
     setCurrentPage(1);
   }, [sortBy]);
 
+  // Sync local filter state with store on mount
+  useEffect(() => {
+    const storeFilters = useHotelSearchStore.getState().filters;
+    // Sync star rating
+    setSelectedStarRating(storeFilters.starRating);
+    // Sync price range (use defaults if null)
+    setMinPrice(storeFilters.minPrice ?? 0);
+    setMaxPrice(storeFilters.maxPrice ?? 5000);
+    // Sync accommodation codes
+    const codes = (storeFilters.accommodations || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    setSelectedAccommodationCodes(codes);
+  }, []);
+
   // Load accommodation types on mount
   useEffect(() => {
     (async () => {
@@ -258,14 +291,6 @@ const SearchResult = () => {
         const res = await hotelService.getAccommodationTypes();
         const list = res?.data?.accommodation_types || [];
         setAccommodationTypes(list);
-        // hydrate selected from store if present
-        const codes = (
-          useHotelSearchStore.getState().filters.accommodations || ""
-        )
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        setSelectedAccommodationCodes(codes);
       } catch (e) {
         console.error("Failed to load accommodation types", e);
       }

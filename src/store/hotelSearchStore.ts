@@ -162,9 +162,18 @@ export const useHotelSearchStore = create<HotelSearchState>()(
       name: 'hotel-search-storage',
       partialize: (state) => ({
         filters: {
-          ...state.filters,
+          // Only persist essential search criteria, not filter values
           checkIn: state.filters.checkIn ? state.filters.checkIn.toISOString() : null,
           checkOut: state.filters.checkOut ? state.filters.checkOut.toISOString() : null,
+          rooms: state.filters.rooms,
+          language: state.filters.language,
+          latitude: state.filters.latitude,
+          longitude: state.filters.longitude,
+          // Explicitly exclude filter values - they should reset on page refresh
+          starRating: null,
+          minPrice: null,
+          maxPrice: null,
+          accommodations: null,
         },
       }),
       onRehydrateStorage: () => (state) => {
@@ -175,6 +184,11 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           if (state.filters.checkOut && typeof state.filters.checkOut === 'string') {
             state.filters.checkOut = new Date(state.filters.checkOut)
           }
+          // Ensure filter values are reset to null on rehydration
+          state.filters.starRating = null
+          state.filters.minPrice = null
+          state.filters.maxPrice = null
+          state.filters.accommodations = null
         }
       },
     }

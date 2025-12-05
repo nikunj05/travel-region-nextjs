@@ -133,79 +133,80 @@ const ProfileLayout = ({ children }: ProfileLayoutProps) => {
         </svg>
       ),
     },
-    {
-      id: "payment-methods",
-      labelKey: "paymentMethods",
-      href: "/payment-methods",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M1.66602 9.9987C1.66602 7.05079 1.66602 5.57684 2.54335 4.59278C2.68367 4.43539 2.83833 4.28983 3.00556 4.15776C4.05113 3.33203 5.6172 3.33203 8.74935 3.33203H11.2493C14.3815 3.33203 15.9476 3.33203 16.9931 4.15776C17.1604 4.28983 17.315 4.43539 17.4554 4.59278C18.3327 5.57684 18.3327 7.05079 18.3327 9.9987C18.3327 12.9466 18.3327 14.4206 17.4554 15.4046C17.315 15.562 17.1604 15.7076 16.9931 15.8396C15.9476 16.6654 14.3815 16.6654 11.2493 16.6654H8.74935C5.6172 16.6654 4.05113 16.6654 3.00556 15.8396C2.83833 15.7076 2.68367 15.562 2.54335 15.4046C1.66602 14.4206 1.66602 12.9466 1.66602 9.9987Z"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M8.33398 13.332H9.58398"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M12.084 13.332L15.0007 13.332"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeMiterlimit="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M1.66602 7.5H18.3327"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "notification",
-      labelKey: "notification",
-      href: "/notification",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2.10892 12.3093C1.93171 13.471 2.72398 14.2773 3.69403 14.6792C7.41299 16.2198 12.5883 16.2198 16.3073 14.6792C17.2773 14.2773 18.0696 13.471 17.8924 12.3093C17.7835 11.5954 17.245 11.0009 16.846 10.4204C16.3234 9.65069 16.2715 8.81116 16.2714 7.91797C16.2714 4.46619 13.4639 1.66797 10.0007 1.66797C6.53742 1.66797 3.72992 4.46619 3.72992 7.91797C3.72985 8.81116 3.67792 9.65069 3.15532 10.4204C2.75635 11.0009 2.21783 11.5954 2.10892 12.3093Z"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M6.66602 15.832C7.04809 17.2697 8.39562 18.332 9.99935 18.332C11.6031 18.332 12.9506 17.2697 13.3327 15.832"
-            stroke="#71717B"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
+    // {
+    //   id: "payment-methods",
+    //   labelKey: "paymentMethods",
+    //   href: "/payment-methods",
+    //   icon: (
+    //     <svg
+    //       width="20"
+    //       height="20"
+    //       viewBox="0 0 20 20"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <path
+    //         d="M1.66602 9.9987C1.66602 7.05079 1.66602 5.57684 2.54335 4.59278C2.68367 4.43539 2.83833 4.28983 3.00556 4.15776C4.05113 3.33203 5.6172 3.33203 8.74935 3.33203H11.2493C14.3815 3.33203 15.9476 3.33203 16.9931 4.15776C17.1604 4.28983 17.315 4.43539 17.4554 4.59278C18.3327 5.57684 18.3327 7.05079 18.3327 9.9987C18.3327 12.9466 18.3327 14.4206 17.4554 15.4046C17.315 15.562 17.1604 15.7076 16.9931 15.8396C15.9476 16.6654 14.3815 16.6654 11.2493 16.6654H8.74935C5.6172 16.6654 4.05113 16.6654 3.00556 15.8396C2.83833 15.7076 2.68367 15.562 2.54335 15.4046C1.66602 14.4206 1.66602 12.9466 1.66602 9.9987Z"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M8.33398 13.332H9.58398"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeMiterlimit="10"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M12.084 13.332L15.0007 13.332"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeMiterlimit="10"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M1.66602 7.5H18.3327"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeLinejoin="round"
+    //       />
+    //     </svg>
+    //   ),
+    // },
+    
+    // {
+    //   id: "notification",
+    //   labelKey: "notification",
+    //   href: "/notification",
+    //   icon: (
+    //     <svg
+    //       width="20"
+    //       height="20"
+    //       viewBox="0 0 20 20"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <path
+    //         d="M2.10892 12.3093C1.93171 13.471 2.72398 14.2773 3.69403 14.6792C7.41299 16.2198 12.5883 16.2198 16.3073 14.6792C17.2773 14.2773 18.0696 13.471 17.8924 12.3093C17.7835 11.5954 17.245 11.0009 16.846 10.4204C16.3234 9.65069 16.2715 8.81116 16.2714 7.91797C16.2714 4.46619 13.4639 1.66797 10.0007 1.66797C6.53742 1.66797 3.72992 4.46619 3.72992 7.91797C3.72985 8.81116 3.67792 9.65069 3.15532 10.4204C2.75635 11.0009 2.21783 11.5954 2.10892 12.3093Z"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //       <path
+    //         d="M6.66602 15.832C7.04809 17.2697 8.39562 18.332 9.99935 18.332C11.6031 18.332 12.9506 17.2697 13.3327 15.832"
+    //         stroke="#71717B"
+    //         strokeWidth="1.5"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
+    //     </svg>
+    //   ),
+    // },
     {
       id: "settings",
       labelKey: "settings",

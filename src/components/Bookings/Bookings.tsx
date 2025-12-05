@@ -14,6 +14,8 @@ import { formatApiErrorMessage } from "@/lib/formatApiError";
 import Pagination from "@/components/common/Pagination/Pagination";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
@@ -51,12 +53,15 @@ interface BookingFiltersState {
 
 export default function Bookings() {
   const t = useTranslations("Bookings");
+  const router = useRouter();
+  const locale = useLocale();
   const { bookings, loading, error, fetchBookings, total, perPage, currentPage: storeCurrentPage, lastPage } = useBookingsListStore();
   const [filters, setFilters] = useState<BookingFiltersState>({
     status: "",
     hotel_code: "",
   });
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
+  const [completingOrder, setCompletingOrder] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   console.log("bookings", bookings);
@@ -157,6 +162,55 @@ export default function Bookings() {
       toast.error(errorMessage);
     } finally {
       setCancellingOrder(null);
+    }
+  };
+
+  const handleCompleteBooking = async (order: string | undefined) => {
+    if (!order) {
+      toast.error("Invalid booking order. Please try again.");
+      return;
+    }
+
+    try {
+      setCompletingOrder(order);
+
+      // Prepare checkout payload - only send order
+      const checkoutPayload = {
+        order: order,
+      };
+
+      console.log("🛒 Checkout Payload:", checkoutPayload);
+
+      // Call checkout service
+      const checkoutResponse = await bookingService.checkout(checkoutPayload);
+
+      // Console log the full response
+      console.log("✅ Checkout Response:", checkoutResponse);
+      console.log("📋 Checkout Status:", checkoutResponse.status);
+      console.log("📋 Checkout Message:", checkoutResponse.message);
+      if (checkoutResponse.data) {
+        console.log("📋 Checkout Data:", checkoutResponse.data);
+      }
+
+      // Redirect to payment URL on success
+      if (checkoutResponse.status) {
+        const redirectUrl = checkoutResponse.data?.checkout?.transaction?.url;
+        if (redirectUrl) {
+          // Redirect to the payment gateway URL
+          window.location.href = redirectUrl;
+        } else {
+          // Fallback to confirmation page if no redirect URL
+          router.push(`/${locale}/booking-confirmation`);
+        }
+      } else {
+        toast.error(checkoutResponse.message || "Checkout failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("❌ Checkout Error:", error);
+      const errorMessage = formatApiErrorMessage(error);
+      toast.error(errorMessage || "An error occurred during checkout. Please try again.");
+    } finally {
+      setCompletingOrder(null);
     }
   };
 
@@ -349,13 +403,46 @@ export default function Bookings() {
                 </div>
               </div>
               <div className="hotel-bookig-action d-flex align-items-center justify-content-between">
-                <button
-                  className="hotel-bookig-action-btn cancel-button"
-                  onClick={() => handleCancelBooking(booking.order)}
-                  disabled={cancellingOrder === booking.order}
-                >
-                  {cancellingOrder === booking.order ? `${t("cancel")}...` : t("cancel")}
-                </button>
+                {booking.status === "pending" ? (
+                  <button
+                    className="hotel-bookig-action-btn button-primary"
+                    onClick={() => handleCompleteBooking(booking.order)}
+                    disabled={completingOrder === booking.order}
+                  >
+                    {completingOrder === booking.order ? `${t("completeBooking")}...` : t("completeBooking")}
+                  </button>
+                ) : booking.status === "cancelled" ? (
+                  <button
+                    className="hotel-bookig-action-btn cancel-button"
+                    disabled
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ marginRight: "6px" }}
+                    >
+                      <path
+                        d="M15 5L5 15M5 5L15 15"
+                        stroke="#EF4444"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    {t("bookingCanceled")}
+                  </button>
+                ) : (
+                  <button
+                    className="hotel-bookig-action-btn cancel-button"
+                    onClick={() => handleCancelBooking(booking.order)}
+                    disabled={cancellingOrder === booking.order}
+                  >
+                    {cancellingOrder === booking.order ? `${t("cancel")}...` : t("cancel")}
+                  </button>
+                )}
                 {/* <button className="hotel-bookig-action-btn button-primary">
                   {t("modify")}
                 </button> */}

@@ -15,6 +15,7 @@ import { formatApiErrorMessage } from "@/lib/formatApiError";
 import { Controller } from "react-hook-form";
 import Image from "next/image";
 import styles from "./Profile.module.scss";
+import UserImage from "@/assets/images/userIcon.svg";
 
 // Import flag images for nationality
 import UAEFlag from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
@@ -55,7 +56,6 @@ const Profile = () => {
     () => createProfileSchema((key, params) => tv(key, params)),
     [tv]
   );
-
   const [defaultValues, setDefaultValues] = useState<ProfileFormData>({
     first_name: "",
     last_name: "",
@@ -77,6 +77,7 @@ const Profile = () => {
 
         if (response.status && response.data.user) {
           const userData = response.data.user;
+          // console.log("userData", userData);
           setDefaultValues({
             first_name: userData.first_name || "",
             last_name: userData.last_name || "",
@@ -135,6 +136,13 @@ const Profile = () => {
       if (response.status && response.data.user) {
         // Update user in auth context
         const updatedUser = response.data.user;
+        
+        // Add cache-busting timestamp2 to profile image URL if it exists
+        if (updatedUser.profile_image_url && imageFile) {
+          const separator = updatedUser.profile_image_url.includes('?') ? '&' : '?';
+          updatedUser.profile_image_url = `${updatedUser.profile_image_url}${separator}t=${Date.now()}`;
+        }
+        
         if (setUser) {
           setUser(updatedUser);
           localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -280,23 +288,14 @@ const Profile = () => {
                 />
               </div>
             ) : (
-              <div className={styles.avatarPlaceholder}>
-                <svg
-                  width="38"
-                  height="37"
-                  viewBox="0 0 38 37"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M27.8474 22.8019C28.0247 22.9075 28.2436 23.031 28.4915 23.1708C29.5777 23.7836 31.2196 24.7099 32.3444 25.8109C33.0479 26.4995 33.7163 27.4069 33.8379 28.5186C33.9671 29.7009 33.4513 30.8103 32.4166 31.7961C30.6316 33.4967 28.4894 34.8596 25.7187 34.8596H12.2813C9.51056 34.8596 7.36841 33.4967 5.58335 31.7961C4.54865 30.8103 4.0329 29.7009 4.16213 28.5186C4.28364 27.4069 4.95207 26.4995 5.65556 25.8109C6.78039 24.7099 8.42231 23.7836 9.5085 23.1708C9.75636 23.031 9.97531 22.9075 10.1525 22.8019C15.5682 19.5772 22.4317 19.5772 27.8474 22.8019Z"
-                    fill="#3E5B96"
-                  />
-                  <path
-                    d="M11 10.0977C11 5.67938 14.5817 2.09766 19 2.09766C23.4183 2.09766 27 5.67938 27 10.0977C27 14.5159 23.4183 18.0977 19 18.0977C14.5817 18.0977 11 14.5159 11 10.0977Z"
-                    fill="#3E5B96"
-                  />
-                </svg>
+              <div className={styles.avatarImage}>
+                <Image
+                  src={UserImage}
+                  alt="Profile"
+                  fill
+                  className={styles.imagePreview}
+                  style={{ objectFit: "cover" }}
+                />
               </div>
             )}
             <button
