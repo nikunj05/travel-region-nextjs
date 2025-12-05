@@ -85,8 +85,8 @@ const Banner = () => {
   const heroImage = setting?.home_hero_image && setting.home_hero_image.trim()
     ? setting.home_hero_image
     : null;
-  const heroTitle = (setting?.home_title && setting.home_title.trim()) ;
-  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim()) ;
+  const heroTitle = (setting?.home_title && setting.home_title.trim());
+  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim());
 
   const toggleLocationDropdown = () => {
     // Close other dropdowns when opening location dropdown
@@ -153,7 +153,7 @@ const Banner = () => {
 
     // Additional date validation - ensure check-in is today or later
     const today = getTodayAtMidnight();
-    
+
     if (filters.checkInDate && filters.checkInDate < today) {
       e.preventDefault();
       setCheckInError(t("validation.checkInDateInvalid"));
@@ -167,7 +167,7 @@ const Banner = () => {
       e.preventDefault();
       return;
     }
-    
+
     // Prevent default navigation to set store state before navigating
     e.preventDefault();
 
@@ -196,10 +196,10 @@ const Banner = () => {
       console.error("Failed to set search store state:", err);
       // Still navigate even if there's an error setting state
       router.push("/search-result");
-    } 
+    }
     // finally {
-      // Reset loading state
-      // setIsSearching(false);
+    // Reset loading state
+    // setIsSearching(false);
     // }
   };
 
@@ -215,7 +215,7 @@ const Banner = () => {
   const getGuestsDisplayText = () => {
     // Safety check for rooms array
     const rooms = filters.rooms || [{ adults: 0, children: 0 }];
-    
+
     const totalAdults = rooms.reduce(
       (acc, room) => acc + (room?.adults || 0),
       0
@@ -227,13 +227,11 @@ const Banner = () => {
     const totalGuests = totalAdults + totalChildren;
 
     if (totalGuests === 0) return t("addGuests");
-    
-    const guestsText = `${totalGuests} ${
-      totalGuests > 1 ? t("guests") : t("guest")
-    }`;
-    const roomsText = `${rooms.length} ${
-      rooms.length > 1 ? t("rooms") : t("room")
-    }`;
+
+    const guestsText = `${totalGuests} ${totalGuests > 1 ? t("guests") : t("guest")
+      }`;
+    const roomsText = `${rooms.length} ${rooms.length > 1 ? t("rooms") : t("room")
+      }`;
 
     return `${guestsText} • ${roomsText}`;
   };
@@ -287,11 +285,11 @@ const Banner = () => {
       style={
         heroImage
           ? {
-              backgroundImage: `url(${heroImage})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-            }
+            backgroundImage: `url(${heroImage})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }
           : undefined
       }
     >
@@ -299,8 +297,8 @@ const Banner = () => {
         <div className="banner-overlay"></div>
         <div className="banner-content">
           <div className="heading_section">
-            <h1 className="section-title">{heroTitle }</h1>
-            <p className="section-description">{heroSubtitle }</p>
+            <h1 className="section-title">{heroTitle}</h1>
+            <p className="section-description">{heroSubtitle}</p>
           </div>
           <div className="banner-property-filter">
             <h3 className="property-filter-title">{t("exploreJourney")}</h3>
@@ -329,7 +327,7 @@ const Banner = () => {
                         onFocus={handleLocationInputFocus}
                         onClick={toggleLocationDropdown}
                       />
-                      {!filters.location && (
+                      {/* {!filters.location && (
                         <Image
                           src={downBlackArrowIcon}
                           width="24"
@@ -339,9 +337,9 @@ const Banner = () => {
                           onClick={toggleLocationDropdown}
                           style={{ cursor: "pointer" }}
                         />
-                      )}
+                      )} */}
                     </div>
-                    {filters.location && (
+                    {/* {filters.location && (
                       <div className="location-actions d-flex align-items-center">
                         <button
                           type="button"
@@ -366,7 +364,7 @@ const Banner = () => {
                           </svg>
                         </button>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   <LocationPicker
                     isOpen={isLocationDropdownOpen}
@@ -485,7 +483,7 @@ const Banner = () => {
               </div>
             </div>
             <div className="banner-filter-action d-flex align-items-center justify-content-between">
-              <div className="form-check">
+              {/* <div className="form-check">
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -499,13 +497,14 @@ const Banner = () => {
                 <label className="form-check-label" htmlFor="freeCancel">
                   {t("freeCancellation")}
                 </label>
-              </div>
+              </div> */}
+              <div className="d-none d-md-block"></div>
               <Link
                 href="/search-result"
                 className="text-decoration-none banner-search-button"
                 onClick={handleSearchClick}
               >
-                <button 
+                <button
                   className="btn banner-search-btn"
                   disabled={isSearching}
                 >

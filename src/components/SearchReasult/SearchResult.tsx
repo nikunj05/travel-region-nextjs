@@ -1184,7 +1184,7 @@ const SearchResult = () => {
                         onClick={toggleLocationPicker}
                       />
                     </div>
-                    <div className="location-actions d-flex align-items-center">
+                    {/* <div className="location-actions d-flex align-items-center">
                       {filters.location && (
                         <button
                           type="button"
@@ -1220,7 +1220,7 @@ const SearchResult = () => {
                           style={{ cursor: "pointer" }}
                         />
                       )}
-                    </div>
+                    </div> */}
                   </div>
                   {locationError && (
                     <div className="location-error-message">
