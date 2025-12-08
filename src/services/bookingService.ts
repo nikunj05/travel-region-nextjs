@@ -92,5 +92,26 @@ export const bookingService = {
       throw error;
     }
   },
+
+  getCancellationPolicies: async (
+    order: string
+  ): Promise<{
+    status: boolean;
+    message: string;
+    data?: unknown;
+    [key: string]: unknown;
+  }> => {
+    try {
+      const response = await api.get<{
+        status: boolean;
+        message: string;
+        data?: unknown;
+        [key: string]: unknown;
+      }>(`/bookings/${order}/cancellation-policies`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 

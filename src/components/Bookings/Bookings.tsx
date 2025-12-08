@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import "./Bookings.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
@@ -16,6 +16,8 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
+import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
+import { buildCurrencySvgMarkup } from "@/constants";
 
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
@@ -51,6 +53,19 @@ interface BookingFiltersState {
   hotel_code: string;
 }
 
+interface CancellationPolicy {
+  id: number;
+  booking_room_id: number;
+  amount: string;
+  from: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface CancellationPoliciesResponseData {
+  cancellation_policies?: CancellationPolicy[];
+}
+
 export default function Bookings() {
   const t = useTranslations("Bookings");
   const router = useRouter();
@@ -63,6 +78,18 @@ export default function Bookings() {
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
   const [completingOrder, setCompletingOrder] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isCancellationModalOpen, setIsCancellationModalOpen] = useState(false);
+  const [cancellationPoliciesData, setCancellationPoliciesData] = useState<{
+    order: string;
+    policies: Array<{
+      id: number;
+      booking_room_id: number;
+      amount: string;
+      from: string;
+      created_at: string;
+      updated_at: string;
+    }>;
+  } | null>(null);
 
   console.log("bookings", bookings);
 
@@ -142,6 +169,40 @@ export default function Bookings() {
     try {
       setCancellingOrder(order);
 
+      // Get cancellation policies first
+      const cancellationPoliciesResponse = await bookingService.getCancellationPolicies(order);
+      console.log("📋 Cancellation Policies Response:", cancellationPoliciesResponse);
+
+      // Check if policies exist and have data
+      // API response structure: { status: true, message: "...", data: { cancellation_policies: [...] } }
+      const responseData = cancellationPoliciesResponse.data as CancellationPoliciesResponseData | CancellationPolicy[] | undefined;
+      const policies = (responseData && 'cancellation_policies' in responseData 
+                        ? responseData.cancellation_policies 
+                        : Array.isArray(responseData) ? responseData : []) || [];
+      
+      if (policies && policies.length > 0) {
+        // Show modal with policies
+        setCancellationPoliciesData({
+          order,
+          policies: policies,
+        });
+        setIsCancellationModalOpen(true);
+        setCancellingOrder(null);
+      } else {
+        // No policies, directly cancel
+        await proceedWithCancellation(order);
+      }
+    } catch (err: unknown) {
+      const errorMessage = formatApiErrorMessage(err);
+      toast.error(errorMessage);
+      setCancellingOrder(null);
+    }
+  };
+
+  const proceedWithCancellation = async (order: string) => {
+    try {
+      setCancellingOrder(order);
+
       const response = await bookingService.cancelBooking(order);
 
       if (response.status) {
@@ -164,6 +225,46 @@ export default function Bookings() {
       setCancellingOrder(null);
     }
   };
+
+  const handleConfirmCancellation = async () => {
+    if (!cancellationPoliciesData) return;
+
+    setIsCancellationModalOpen(false);
+    await proceedWithCancellation(cancellationPoliciesData.order);
+    setCancellationPoliciesData(null);
+  };
+
+  const handleCloseCancellationModal = () => {
+    setIsCancellationModalOpen(false);
+    setCancellationPoliciesData(null);
+    setCancellingOrder(null);
+  };
+
+  // Format date helper
+  const formatCancellationDate = useCallback((dateString: string) => {
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+    return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  }, [locale]);
+
+  // Price formatter
+  const priceFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        numberingSystem: "latn",
+      }),
+    [locale]
+  );
 
   const handleCompleteBooking = async (order: string | undefined) => {
     if (!order) {
@@ -460,6 +561,103 @@ export default function Bookings() {
           totalPages={totalPages}
           onChange={handlePageChange}
         />
+      )}
+
+      {/* Cancellation Policy Modal */}
+      {isCancellationModalOpen && cancellationPoliciesData && (
+        <div className="room-modal-overlay" onClick={handleCloseCancellationModal}>
+          <div className="cancellation-policy-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="room-modal-header d-flex align-items-center">
+              <button
+                className="room-modal-close p-0"
+                onClick={handleCloseCancellationModal}
+              >
+                <Image
+                  src={ClosePopupIcon}
+                  width={24}
+                  height={24}
+                  alt="close icon"
+                />
+              </button>
+              <h2 className="room-modal-title">
+                {t("cancellationPolicy") || "Cancellation Policy"}
+              </h2>
+            </div>
+
+            <div className="cancellation-policy-modal-body">
+              <div className="cancellation-policies-section">
+                <h3 className="policy-section-title">
+                  {t("cancellationCharges") || "Cancellation Charges"}
+                </h3>
+                <p className="policy-description">
+                  {t("cancellationPolicyDescription") || "The following cancellation charges will apply:"}
+                </p>
+
+                <div className="policies-list">
+                  {cancellationPoliciesData.policies.map((policy, index) => {
+                    const formattedDate = formatCancellationDate(policy.from);
+                    const amount = Number(policy.amount) || 0;
+
+                    return (
+                      <div key={policy.id} className="policy-item">
+                        <div className="policy-date-amount">
+                          <div className="policy-date">
+                            {formattedDate ? (
+                              <>
+                                <span className="policy-date-label">
+                                  {t("cancelBefore") || "Cancel before"}:
+                                </span>
+                                <span className="policy-date-value">{formattedDate}</span>
+                              </>
+                            ) : (
+                              <span className="policy-date-value">N/A</span>
+                            )}
+                          </div>
+                          <div className="policy-amount d-inline-flex align-items-center">
+                            <span className="policy-amount-label">
+                              {t("refundAmount") || "Refund Amount"}:
+                            </span>
+                            <span
+                              className="currency-icon"
+                              aria-hidden="true"
+                              dangerouslySetInnerHTML={{
+                                __html: buildCurrencySvgMarkup("#09090b"),
+                              }}
+                              style={{ display: "inline-flex", margin: "0 4px" }}
+                            />
+                            <span className="policy-amount-value">
+                              {priceFormatter.format(amount)}
+                            </span>
+                          </div>
+                        </div>
+                        {index < cancellationPoliciesData.policies.length - 1 && (
+                          <div className="policy-separator"></div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="cancellation-modal-actions">
+                <button
+                  className="button-secondary"
+                  onClick={handleCloseCancellationModal}
+                  disabled={cancellingOrder !== null}
+                >
+                  {t("cancel") || "Cancel"}
+                </button>
+                <button
+                  className="button-primary"
+                  onClick={handleConfirmCancellation}
+                  disabled={cancellingOrder !== null}
+                >
+                  {cancellingOrder ? `${t("confirmCancellation") || "Confirming"}...` : t("confirmCancellation") || "Confirm Cancellation"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

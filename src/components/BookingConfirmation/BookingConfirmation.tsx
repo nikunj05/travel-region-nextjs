@@ -4,7 +4,7 @@ import "./BookingConfirmation.scss";
 import Image from "next/image";
 import BookingConfirmIcon from "@/assets/images/booking-confirmed-icon.svg";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { bookingService } from "@/services/bookingService";
 import { toast } from "react-toastify";
 import { BookingDetailsData } from "@/types/booking";
@@ -22,6 +22,7 @@ interface BookingData {
 function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("BookingConfirmation");
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -124,7 +125,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
   const renderContent = () => {
     if (loading) {
       return (
-        <p className="card-booking-num">Loading booking details...</p>
+        <p className="card-booking-num">{t("loadingBookingDetails")}</p>
       );
     }
 
@@ -133,21 +134,21 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
       return (
         <>
           <h1 className="card-title">
-            Payment is pending for your booking.
+            {t("pendingPaymentTitle")}
           </h1>
           <p className="card-booking-num">
-            Booking reference:{" "}
+            {t("bookingReference")}{" "}
             <span className="card-booking-id">
               #{bookingData?.order || bookingId || "N/A"}
             </span>
           </p>
           {bookingData?.email && (
             <p className="confirmation-email">
-              We&apos;ll notify you at{" "}
+              {t("notifyEmailPending")}{" "}
               <span className="confirmation-email-address">
                 {bookingData.email}
               </span>{" "}
-              once the payment is completed.
+              {t("oncePaymentCompleted")}
             </p>
           )}
           <div className="booking-action d-flex align-items-center">
@@ -155,7 +156,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
               className="button-primary print-button"
               onClick={handleRetryPayment}
             >
-              Retry Payment
+              {t("retryPayment")}
             </button>
           </div>
         </>
@@ -180,24 +181,24 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
           </div>
 
           <h1 className="card-title">
-            We&apos;re sorry! Your booking could not be completed.
+            {t("failedTitle")}
           </h1>
           <p className="card-booking-num">
-            Booking reference:{" "}
+            {t("bookingReference")}{" "}
             <span className="card-booking-id">
               #{bookingData?.order || bookingId || "N/A"}
             </span>
           </p>
           {bookingData?.email && (
             <p className="confirmation-email">
-              We&apos;ll send an update to{" "}
+              {t("notifyEmailFailed")}{" "}
               <span className="confirmation-email-address">
                 {bookingData.email}
               </span>
             </p>
           )}
           <p className="failed-message">
-            Please try again or contact our support team for assistance.
+            {t("failedMessage")}
           </p>
 
           <div className="booking-action d-flex align-items-center">
@@ -206,14 +207,16 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                 className="button-primary try-again-button"
                 onClick={handleRetryPayment}
               >
-                Try Again
+                {t("tryAgain")}
               </button>
             )}
             <button
               className="button-primary contact-button"
-              onClick={() => router.push(`/${locale}/bookings`)}
+              onClick={() => {
+                window.location.href = "#";
+              }}
             >
-              Contact Support
+              {t("contactSupport")}
               <svg
                 width="25"
                 height="24"
@@ -237,17 +240,17 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
     return (
       <>
         <h1 className="card-title">
-          🎉 Thank You! Your Booking is Confirmed.
+          {t("successTitle")}
         </h1>
         <p className="card-booking-num">
-          Your booking number is{" "}
+          {t("yourBookingNumber")}{" "}
           <span className="card-booking-id">
             #{bookingData?.order || bookingId || "N/A"}
           </span>
         </p>
         {bookingData?.email && (
           <p className="confirmation-email">
-            A confirmation email has been sent to{" "}
+            {t("confirmationEmailSent")}{" "}
             <span className="confirmation-email-address">
               {bookingData.email}
             </span>
@@ -288,13 +291,13 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            Print Confirmation
+            {t("printConfirmation")}
           </button>
           <button
             className="button-primary view-button"
             onClick={() => router.push(`/${locale}/bookings`)}
           >
-            View my Booking
+            {t("viewMyBooking")}
             <svg
               width="25"
               height="24"

@@ -1615,4 +1615,45 @@
   .slider-track {
     pointer-events: none;
   }
+
+  // RTL Support for price slider
+  &.rtl-slider {
+    .price-range-input {
+      // Inputs use direction: rtl in RTL mode
+    }
+  }
+}
+
+// RTL Layout adjustments for price range
+[dir="rtl"] {
+  .price-range {
+    .pricing-range-slider {
+      // Swap visual positions of min/max in RTL
+      flex-direction: row-reverse;
+    }
+
+    .price-slider-container {
+      .slider-track {
+        // Track positioning
+      }
+
+      .slider-range {
+        // Range fills from right in RTL (handled inline)
+      }
+
+      .price-range-input {
+        // Inputs use direction: rtl (handled inline)
+        // This reverses the slider behavior naturally
+        
+        // Ensure thumbs are visible and work correctly in RTL
+        &::-webkit-slider-thumb {
+          // Thumb positioning is handled by browser in RTL
+        }
+        
+        &::-moz-range-thumb {
+          // Thumb positioning is handled by browser in RTL
+        }
+      }
+    }
+  }
 }

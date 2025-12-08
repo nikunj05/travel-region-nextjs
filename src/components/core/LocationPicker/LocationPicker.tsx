@@ -36,6 +36,7 @@ interface GooglePlaceResult {
 interface GoogleTextSearchRequest {
   query: string
   type?: string
+  language?: string
 }
 
 // Service Status Constants (we'll use strings matching the SDK)
@@ -77,6 +78,7 @@ interface LocationPickerProps {
   suggestedDestinations?: Location[]
   searchQuery?: string
   onSearchQueryChange?: (query: string) => void
+  locale?: string
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({
@@ -84,7 +86,8 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationSelect,
   recentSearches = [],
   searchQuery: externalSearchQuery = '',
-  onSearchQueryChange
+  onSearchQueryChange,
+  locale = 'en'
 }) => {
   const [internalSearchQuery, setInternalSearchQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Location[]>([])
@@ -92,38 +95,96 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const inputRef = useRef<HTMLInputElement>(null)
   
   const placesService = useRef<GooglePlacesService | null>(null)
+  const currentLocale = useRef<string>(locale)
+  const scriptLoaded = useRef<boolean>(false)
+  const isScriptLoading = useRef<boolean>(false)
 
   // Use external search query if provided, otherwise use internal
   const searchQuery = externalSearchQuery || internalSearchQuery
 
-  // Load Google Maps Script
+  // Map locale to Google Maps language code
+  const getGoogleLanguageCode = (currentLocale: string): string => {
+    return currentLocale === 'ar' ? 'ar' : 'en'
+  }
+
+  // Load Google Maps Script with language parameter
   useEffect(() => {
     const loadGoogleMaps = () => {
-      if (window.google && window.google.maps) {
+      const languageCode = getGoogleLanguageCode(locale)
+      
+      // Reset service when locale changes
+      if (currentLocale.current !== locale) {
+        placesService.current = null
+        scriptLoaded.current = false
+        isScriptLoading.current = false
+        setIsLoading(false) // Clear loading state when locale changes
+        setSuggestions([]) // Clear suggestions when locale changes
+      }
+      
+      currentLocale.current = locale
+
+      // Check if script already exists with different language
+      const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`) as HTMLScriptElement
+      
+      if (existingScript) {
+        const scriptLanguage = existingScript.src.match(/[?&]language=([^&]+)/)?.[1]
+        // If language changed, remove old script and reload
+        if (scriptLanguage !== languageCode) {
+          existingScript.remove()
+          scriptLoaded.current = false
+          isScriptLoading.current = false
+          placesService.current = null
+          // Clear google object to force reload
+          if (window.google) {
+            delete (window as unknown as Record<string, unknown>).google
+          }
+        } else if (window.google && window.google.maps) {
+          // Script already loaded with correct language, just initialize service
+          initializeServices()
+          return
+        }
+      }
+
+      // If script already loaded with correct language, just initialize
+      if (window.google && window.google.maps && scriptLoaded.current) {
         initializeServices()
         return
       }
 
+      // Don't load if already loading
+      if (isScriptLoading.current) {
+        return
+      }
+
+      isScriptLoading.current = true
       const script = document.createElement('script')
-      // We must use the Javascript API script loader, not the Places API REST endpoint directly
-      // The REST endpoint (textsearch/json) cannot be used as a script source and has CORS issues if fetched directly
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places`
+      // Add language parameter to the script URL
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places&language=${languageCode}`
       script.async = true
       script.defer = true
-      script.onload = () => initializeServices()
+      script.onload = () => {
+        initializeServices()
+        scriptLoaded.current = true
+        isScriptLoading.current = false
+      }
+      script.onerror = () => {
+        isScriptLoading.current = false
+        scriptLoaded.current = false
+        console.error('Failed to load Google Maps script')
+      }
       document.head.appendChild(script)
     }
 
     loadGoogleMaps()
-  }, [])
+  }, [locale])
 
   const initializeServices = () => {
-    if (!window.google) return
-    
-    if (!placesService.current) {
-      // PlacesService requires a DOM element (even if not used for display)
-      placesService.current = new window.google.maps.places.PlacesService(document.createElement('div'))
+    if (!window.google || !window.google.maps) {
+      return
     }
+    
+    // Always recreate the service to ensure it's fresh
+    placesService.current = new window.google.maps.places.PlacesService(document.createElement('div'))
   }
 
   // Focus input when dropdown opens
@@ -137,57 +198,78 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const searchGooglePlaces = (query: string) => {
     if (!query.trim()) {
       setSuggestions([])
+      setIsLoading(false)
       return
     }
 
+    // Check if Google Maps is loaded
+    if (!window.google || !window.google.maps) {
+      setIsLoading(false)
+      setSuggestions([])
+      return
+    }
+
+    // Initialize service if not exists
     if (!placesService.current) {
       initializeServices()
-      if (!placesService.current) return
+      if (!placesService.current) {
+        setIsLoading(false)
+        setSuggestions([])
+        return
+      }
     }
 
     setIsLoading(true)
     
+    const languageCode = getGoogleLanguageCode(locale)
     const request: GoogleTextSearchRequest = {
       query: query,
+      language: languageCode,
       // type: 'lodging'
       // 'type' parameter can be used to filter, e.g., 'lodging' for hotels, 
       // but omitting it allows searching for both cities and hotels as requested.
     }
 
-    placesService.current.textSearch(
-      request,
-      (results: GooglePlaceResult[] | null, status: GooglePlacesServiceStatus) => {
-        setIsLoading(false)
-        if (
-          status === 'OK' && // matches google.maps.places.PlacesServiceStatus.OK
-          results
-        ) {
-          const newSuggestions: Location[] = results.map((place) => ({
-            id: place.place_id,
-            name: place.name,
-            country: place.formatted_address || '', // Text Search returns formatted address
-            coordinates: place.geometry ? {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng()
-            } : undefined,
-            types: place.types
-          }))
-          setSuggestions(newSuggestions)
-        } else {
-          setSuggestions([])
+    try {
+      placesService.current.textSearch(
+        request,
+        (results: GooglePlaceResult[] | null, status: GooglePlacesServiceStatus) => {
+          setIsLoading(false)
+          if (
+            status === 'OK' && // matches google.maps.places.PlacesServiceStatus.OK
+            results
+          ) {
+            const newSuggestions: Location[] = results.map((place) => ({
+              id: place.place_id,
+              name: place.name,
+              country: place.formatted_address || '', // Text Search returns formatted address
+              coordinates: place.geometry ? {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+              } : undefined,
+              types: place.types
+            }))
+            setSuggestions(newSuggestions)
+          } else {
+            setSuggestions([])
+          }
         }
-      }
-    )
+      )
+    } catch (error) {
+      console.error('Error searching Google Places:', error)
+      setIsLoading(false)
+      setSuggestions([])
+    }
   }
 
-  // Debounced search
+  // Debounced search - re-run when locale changes too
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       searchGooglePlaces(searchQuery)
     }, 300)
 
     return () => clearTimeout(timeoutId)
-  }, [searchQuery])
+  }, [searchQuery, locale])
 
   const handleLocationClick = (location: Location) => {
     // Text Search results already include coordinates, so we can select immediately

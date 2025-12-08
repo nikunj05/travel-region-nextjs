@@ -780,6 +780,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
+        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }),
     [locale]
   );
@@ -2002,7 +2003,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                       )
                                     }
                                   >
-                                    See All Rooms
+                                    {t("labels.seeAllRooms")}
                                     <svg
                                       width="20"
                                       height="20"
@@ -2301,7 +2302,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   );
                                                 }}
                                               >
-                                                Price details
+                                                {t("labels.priceDetails")}
                                               </a>
 
                                               <div className="rate-selection-controls">
@@ -2317,7 +2318,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   )} */}
 
                                                 <label className="room-count-label">
-                                                  Select Rooms:
+                                                  {t("labels.selectRooms")}:
                                                   <select
                                                     value={selectedCount}
                                                     onChange={(e) => {
@@ -2374,7 +2375,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         <li>
                           <span className="label">
                             {bookingSummary.totalRooms}{" "}
-                            {bookingSummary.totalRooms === 1 ? "Room" : "Rooms"} for{" "}
+                            {bookingSummary.totalRooms === 1 ? t("labels.room") : t("labels.rooms")} {t("labels.for")}{" "}
                             {(() => {
                               if (!searchFilters.checkInDate || !searchFilters.checkOutDate) {
                                 return "";
@@ -2385,7 +2386,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 (checkOut.getTime() - checkIn.getTime()) /
                                 (1000 * 60 * 60 * 24)
                               );
-                              return `${nights} ${nights === 1 ? "night" : "nights"}`;
+                              return `${nights} ${nights === 1 ? t("labels.night") : t("labels.nights")}`;
                             })()}
                           </span>
                           <span className="value">
@@ -2401,7 +2402,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </span>
                         </li>
                         <li className="total">
-                          <span className="label">Subtotal</span>
+                          <span className="label">{t("labels.subtotal")}</span>
                           <span className="value">
                             <span
                               className="currency-icon"
@@ -2903,10 +2904,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   <>
                     <div className="price-per-night-section">
                       <h3 className="price-section-title">
-                        Price per night ({nights} {nights === 1 ? 'night' : 'nights'})
+                        {t("modal.pricePerNight")} ({nights} {nights === 1 ? t("labels.night") : t("labels.nights")})
                       </h3>
                       <p className="average-price">
-                        Average: {" "}
+                        {t("modal.average")}: {" "}
                         <span className="d-inline-flex align-items-center">
                           <span
                             className="currency-icon"
@@ -2941,10 +2942,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     </div>
 
                     <div className="price-details-section">
-                      <h3 className="price-section-title">Price details</h3>
+                      <h3 className="price-section-title">{t("labels.priceDetails")}</h3>
                       <div className="price-breakdown-item">
                         <span className="breakdown-label">
-                          {selectedRateForPriceDetails.count || 1} room{selectedRateForPriceDetails.count !== 1 ? 's' : ''} x {selectedRateForPriceDetails.roomName}, {selectedRateForPriceDetails.rate.boardName || "Room Only"}
+                          {selectedRateForPriceDetails.count || 1} {selectedRateForPriceDetails.count !== 1 ? t("labels.rooms") : t("labels.room")} x {selectedRateForPriceDetails.roomName}, {selectedRateForPriceDetails.rate.boardName || t("labels.roomOnly")}
                         </span>
                         <span className="breakdown-value d-inline-flex align-items-center">
                           <span
@@ -2962,7 +2963,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
                     <div className="total-net-price-section">
                       <div className="total-price-row">
-                        <span className="total-label">Total Price</span>
+                        <span className="total-label">{t("modal.totalPrice")}</span>
                         <span className="total-value d-inline-flex align-items-center">
                           <span
                             className="currency-icon"

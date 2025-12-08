@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import locationIcon from "@/assets/images/location-icon.svg";
 import downBlackArrowIcon from "@/assets/images/down-black-arrow-icon.svg";
 import calendarIcon from "@/assets/images/calendar-icon.svg";
@@ -25,6 +25,7 @@ import { useSettingsStore } from "@/store/settingsStore";
 const Banner = () => {
   const t = useTranslations("Banner");
   const router = useRouter();
+  const locale = useLocale();
 
   // App settings store (hydrated from server) for dynamic hero content
   const setting = useSettingsStore((s) => s.setting);
@@ -372,6 +373,7 @@ const Banner = () => {
                     selectedLocation={filters.location}
                     searchQuery={locationSearchQuery}
                     onSearchQueryChange={setLocationSearchQuery}
+                    locale={locale}
                   />
                 </div>
                 {locationError && (

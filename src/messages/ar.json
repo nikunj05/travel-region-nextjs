@@ -48,6 +48,7 @@
     "readMore": "اقرأ المزيد",
     "perNight": "لكل ليلة",
     "loading": "جاري التحميل...",
+    "loadingMore": "جاري تحميل المزيد من الفنادق...",
     "viewDetails": "عرض التفاصيل",
     "noHotelsFound": "لم يتم العثور على فنادق",
     "noHotelsFoundDesc": "لم نتمكن من العثور على أي فنادق تطابق بحثك.",
@@ -172,7 +173,17 @@
       "noRepay": "لا حاجة للدفع مقدماً",
       "bestValue": "أفضل قيمة",
       "sleeps": "يتسع لـ {count}",
-      "totalWithTaxesAndFees": "الإجمالي مع الضرائب والرسوم"
+      "totalWithTaxesAndFees": "الإجمالي مع الضرائب والرسوم",
+      "night": "ليلة",
+      "nights": "ليالٍ",
+      "subtotal": "المجموع الفرعي",
+      "priceDetails": "تفاصيل السعر",
+      "selectRooms": "اختر الغرف",
+      "room": "غرفة",
+      "rooms": "غرف",
+      "for": "لـ",
+      "roomOnly": "غرفة فقط",
+      "seeAllRooms": "عرض جميع الغرف"
     },
     "actions": {
       "favorite": "المفضلة",
@@ -196,7 +207,10 @@
       "roomPlaceholder": "صورة توضيحية للغرفة"
     },
     "modal": {
-      "roomInformationTitle": "معلومات الغرفة"
+      "roomInformationTitle": "معلومات الغرفة",
+      "pricePerNight": "السعر لكل ليلة",
+      "average": "المتوسط",
+      "totalPrice": "السعر الإجمالي"
     },
     "filters": {
       "checkInLabel": "تاريخ تسجيل الوصول",
@@ -380,7 +394,13 @@
     "cancel": "إلغاء",
     "modify": "تعديل",
     "completeBooking": "إتمام الدفع",
-    "bookingCanceled": "تم إلغاء الحجز"
+    "bookingCanceled": "تم إلغاء الحجز",
+    "cancellationPolicy": "سياسة الإلغاء",
+    "cancellationCharges": "رسوم الإلغاء",
+    "cancellationPolicyDescription": "ستطبق رسوم الإلغاء التالية:",
+    "cancelBefore": "إلغاء قبل",
+    "refundAmount": "مبلغ الاسترداد",
+    "confirmCancellation": "تأكيد الإلغاء"
   },
   "PaymentMethods": {
     "pageTitle": "طرق الدفع",
@@ -645,5 +665,23 @@
     "placeholders": {
       "hotelName": "اسم الفندق"
     }
+  },
+  "BookingConfirmation": {
+    "loadingBookingDetails": "جاري تحميل تفاصيل الحجز...",
+    "pendingPaymentTitle": "الدفع معلق لحجزك.",
+    "bookingReference": "رقم الحجز:",
+    "notifyEmailPending": "سنخطرك على",
+    "oncePaymentCompleted": "بمجرد اكتمال الدفع.",
+    "retryPayment": "إعادة محاولة الدفع",
+    "failedTitle": "نأسف! لم يتم إكمال حجزك.",
+    "notifyEmailFailed": "سنرسل تحديثاً إلى",
+    "failedMessage": "يرجى المحاولة مرة أخرى أو الاتصال بفريق الدعم للحصول على المساعدة.",
+    "tryAgain": "حاول مرة أخرى",
+    "contactSupport": "اتصل بالدعم",
+    "successTitle": "🎉 شكراً لك! تم تأكيد حجزك.",
+    "yourBookingNumber": "رقم حجزك هو",
+    "confirmationEmailSent": "تم إرسال بريد تأكيد إلى",
+    "printConfirmation": "طباعة التأكيد",
+    "viewMyBooking": "عرض حجزي"
   }
 }

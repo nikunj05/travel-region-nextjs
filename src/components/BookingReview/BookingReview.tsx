@@ -44,6 +44,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
+  const lastLanguageRef = useRef<string | null>(null);
 
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
@@ -70,11 +71,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     };
   }, [setTravelerDetails]);
 
-  // Fetch hotel details if not available (on page refresh)
+  // Fetch hotel details if not available (on page refresh) or when locale changes
   useEffect(() => {
-    if (!hotelData && hotelId) {
-      const languageCode = getLanguageCode(locale);
-      // console.log("📍 Hotel data not found, fetching for hotelId:", hotelId);
+    if (!hotelId) return;
+    
+    const languageCode = getLanguageCode(locale);
+    
+    // Fetch if hotel data doesn't exist or if language has changed
+    if (!hotelData || lastLanguageRef.current !== languageCode) {
+      lastLanguageRef.current = languageCode;
       fetchHotel({ hotelId, language: languageCode });
     }
   }, [hotelId, hotelData, locale, fetchHotel]);
@@ -133,7 +138,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
   // Handle form submission
   const handleSubmit = async (data: BookingFormData) => {
-    console.log("=== BOOKING FORM SUBMISSION ===");
+    // console.log("=== BOOKING FORM SUBMISSION ===");
 
     // Prepare room details
     const roomDetails = uniqueRooms.map(room => ({
@@ -184,13 +189,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       details: bookingDetails,
     };
 
-    console.log("Booking Request Payload:");
-    console.log(JSON.stringify(bookingRequest, null, 2));
+    // console.log("Booking Request Payload:");
+    // console.log(JSON.stringify(bookingRequest, null, 2));
 
     // Call API to create booking via Zustand store
     const response = await createBooking(bookingRequest);
 
-    console.log("=== END OF SUBMISSION ===");
+    // console.log("=== END OF SUBMISSION ===");
 
     // Redirect to checkout page after successful booking
     if (response && response.status) {
@@ -259,6 +264,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         day: "numeric",
         month: "short",
         year: "numeric",
+        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }).format(dateObj);
     } catch {
       return t("notSelected");
@@ -350,6 +356,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
+        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }),
     [locale]
   );

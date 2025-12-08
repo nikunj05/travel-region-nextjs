@@ -37,7 +37,6 @@ import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { buildHotelSlug } from "@/lib/hotelSlug";
-import Pagination from "../common/Pagination/Pagination";
 import { buildCurrencySvgMarkup } from "@/constants";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
@@ -77,8 +76,8 @@ const SearchResult = () => {
   const [sortBy, setSortBy] = useState("Recommended");
   // const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10; // Number of hotels per page
+  const [visibleItemsCount, setVisibleItemsCount] = useState(10); // Initial number of hotels to show
+  const ITEMS_PER_LOAD = 10; // Number of hotels to load per scroll
 
   // Filter states
   const [selectedStarRating, setSelectedStarRating] = useState<number | null>(
@@ -243,18 +242,14 @@ const SearchResult = () => {
     }
   }, [apiHotels, sortBy, filters.location]);
 
-  const totalPages = useMemo(
-    () => Math.ceil(sortedHotels.length / ITEMS_PER_PAGE),
-    [sortedHotels]
+  // Hotels to display (lazy loaded)
+  const visibleHotels = useMemo(
+    () => sortedHotels.slice(0, visibleItemsCount),
+    [sortedHotels, visibleItemsCount]
   );
-  const paginatedHotels = useMemo(
-    () =>
-      sortedHotels.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-      ),
-    [sortedHotels, currentPage]
-  );
+
+  // Check if there are more hotels to load
+  const hasMoreHotels = visibleItemsCount < sortedHotels.length;
 
   // Refs for click outside detection
   const locationPickerRef = useRef<HTMLDivElement>(null);
@@ -263,10 +258,10 @@ const SearchResult = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
 
-  // Reset to first page when sort criteria changes
+  // Reset visible items count when sort criteria or hotels list changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [sortBy]);
+    setVisibleItemsCount(10);
+  }, [sortBy, sortedHotels.length]);
 
   // Sync local filter state with store on mount
   useEffect(() => {
@@ -290,19 +285,51 @@ const SearchResult = () => {
       try {
         const res = await hotelService.getAccommodationTypes();
         const list = res?.data?.accommodation_types || [];
-        setAccommodationTypes(list);
+        // Filter to show only: Hotel, Hostel, Apartment, Villa, Resort
+        const allowedCodes = ["H", "S", "A", "V", "W"]; // H=Hotel, S=Hostel, A=Apartment, V=Villa, W=Resort
+        const filteredList = list.filter((item: AccommodationType) =>
+          allowedCodes.includes(item.code)
+        );
+        setAccommodationTypes(filteredList);
       } catch (e) {
         console.error("Failed to load accommodation types", e);
       }
     })();
   }, []);
 
-  // Scroll to top when page changes
+  // Ref for the last hotel card to observe
+  const lastHotelRef = useRef<HTMLDivElement | null>(null);
+
+  // Infinite scroll handler using Intersection Observer
   useEffect(() => {
-    if (resultsRef.current) {
-      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!hasMoreHotels || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const lastEntry = entries[0];
+        // When the last hotel card becomes visible, load more
+        if (lastEntry.isIntersecting) {
+          setVisibleItemsCount((prev) => prev + ITEMS_PER_LOAD);
+        }
+      },
+      {
+        root: null, // viewport
+        rootMargin: "0px",
+        threshold: 0.1, // Trigger when 10% of the element is visible
+      }
+    );
+
+    const currentLastRef = lastHotelRef.current;
+    if (currentLastRef) {
+      observer.observe(currentLastRef);
     }
-  }, [currentPage]);
+
+    return () => {
+      if (currentLastRef) {
+        observer.unobserve(currentLastRef);
+      }
+    };
+  }, [hasMoreHotels, loading, visibleHotels.length]);
 
   // Close modals when clicking outside
   useEffect(() => {
@@ -365,13 +392,13 @@ const SearchResult = () => {
     const currentStoreLanguage = storeFilters.language;
     const newLanguageCode = getLanguageCode(locale);
 
-    console.log("Locale effect triggered:", {
-      locale,
-      currentStoreLanguage,
-      newLanguageCode,
-      hasValidSearchCriteria,
-      loading,
-    });
+    // console.log("Locale effect triggered:", {
+    //   locale,
+    //   currentStoreLanguage,
+    //   newLanguageCode,
+    //   hasValidSearchCriteria,
+    //   loading,
+    // });
 
     // Only re-search if:
     // 1. We have valid search criteria
@@ -382,10 +409,10 @@ const SearchResult = () => {
       currentStoreLanguage !== newLanguageCode &&
       !loading
     ) {
-      console.log(
-        "Language changed - re-triggering search with language:",
-        newLanguageCode
-      );
+      // console.log(
+      //   "Language changed - re-triggering search with language:",
+      //   newLanguageCode
+      // );
 
       // Update the language in the hotel search store
       useHotelSearchStore.getState().setLanguage(newLanguageCode);
@@ -872,31 +899,61 @@ const SearchResult = () => {
         {isPriceRangeOpen && (
           <div className="price-range">
             <div className="pricing-range-slider d-flex align-items-center justify-content-between">
-              <div>
-                <span
-                  className="currency-icon"
-                  aria-hidden="true"
-                  dangerouslySetInnerHTML={{
-                    __html: buildCurrencySvgMarkup("#27272a"),
-                  }}
-                  style={{ display: "inline-flex" }}
-                />{" "}
-                <span>{minPrice}</span>
-              </div>
-              <div>
-                <span
-                  className="currency-icon"
-                  aria-hidden="true"
-                  dangerouslySetInnerHTML={{
-                    __html: buildCurrencySvgMarkup("#27272a"),
-                  }}
-                  style={{ display: "inline-flex" }}
-                />{" "}
-                <span>{maxPrice}</span>
-              </div>
+              {/* For RTL: max price on left, min price on right */}
+              {locale === "ar" ? (
+                <>
+                  <div>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#27272a"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    <span>{maxPrice}</span>
+                  </div>
+                  <div>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#27272a"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    <span>{minPrice}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#27272a"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    <span>{minPrice}</span>
+                  </div>
+                  <div>
+                    <span
+                      className="currency-icon"
+                      aria-hidden="true"
+                      dangerouslySetInnerHTML={{
+                        __html: buildCurrencySvgMarkup("#27272a"),
+                      }}
+                      style={{ display: "inline-flex" }}
+                    />{" "}
+                    <span>{maxPrice}</span>
+                  </div>
+                </>
+              )}
             </div>
             <div
-              className="price-slider-container"
+              className={`price-slider-container ${locale === "ar" ? "rtl-slider" : ""}`}
               style={{
                 position: "relative",
                 height: "40px",
@@ -924,8 +981,18 @@ const SearchResult = () => {
                     position: "absolute",
                     height: "100%",
                     background: "#3E5B96",
-                    left: `${(minPrice / 5000) * 100}%`,
-                    width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                    ...(locale === "ar"
+                      ? {
+                          // RTL: calculate from right side
+                          right: `${(minPrice / 5000) * 100}%`,
+                          left: "auto",
+                          width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                        }
+                      : {
+                          // LTR: calculate from left side
+                          left: `${(minPrice / 5000) * 100}%`,
+                          width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                        }),
                     borderRadius: "10px",
                   }}
                 />
@@ -954,6 +1021,7 @@ const SearchResult = () => {
                   transform: "translateY(-50%)",
                   pointerEvents: "all",
                   zIndex: activePriceSlider === "min" ? 5 : 1,
+                  direction: locale === "ar" ? "rtl" : "ltr",
                 }}
                 className="price-range-input price-range-input-min"
               />
@@ -981,6 +1049,7 @@ const SearchResult = () => {
                   transform: "translateY(-50%)",
                   pointerEvents: "all",
                   zIndex: activePriceSlider === "max" ? 5 : 1,
+                  direction: locale === "ar" ? "rtl" : "ltr",
                 }}
                 className="price-range-input price-range-input-max"
               />
@@ -1209,7 +1278,7 @@ const SearchResult = () => {
                         onClick={toggleLocationPicker}
                       />
                     </div>
-                    {/* <div className="location-actions d-flex align-items-center">
+                    <div className="location-actions d-flex align-items-center">
                       {filters.location && (
                         <button
                           type="button"
@@ -1234,7 +1303,7 @@ const SearchResult = () => {
                           </svg>
                         </button>
                       )}
-                      {!filters.location && (
+                      {/* {!filters.location && (
                         <Image
                           src={downBlackArrowIcon}
                           width="24"
@@ -1244,8 +1313,8 @@ const SearchResult = () => {
                           onClick={toggleLocationPicker}
                           style={{ cursor: "pointer" }}
                         />
-                      )}
-                    </div> */}
+                      )} */}
+                    </div>
                   </div>
                   {locationError && (
                     <div className="location-error-message">
@@ -1463,9 +1532,15 @@ const SearchResult = () => {
                       ))
                     ) : apiHotels.length > 0 ? (
                       // Show actual hotel results
-                      paginatedHotels.map(
-                        (hotel: HotelItem | FavoriteHotel) => (
-                          <div key={getHotelId(hotel)} className="hotel-card">
+                      visibleHotels.map(
+                        (hotel: HotelItem | FavoriteHotel, index: number) => {
+                          const isLastHotel = index === visibleHotels.length - 1;
+                          return (
+                          <div 
+                            key={getHotelId(hotel)} 
+                            className="hotel-card"
+                            ref={isLastHotel && hasMoreHotels ? lastHotelRef : null}
+                          >
                             <div className="hotel-images">
                               {(() => {
                                 const images = getMainAndThumbImages(hotel);
@@ -1655,7 +1730,8 @@ const SearchResult = () => {
                               </div>
                             </div>
                           </div>
-                        )
+                          );
+                        }
                       )
                     ) : (
                       <div className="no-hotels-found">
@@ -1664,12 +1740,21 @@ const SearchResult = () => {
                       </div>
                     )}
                   </div>
-                  {totalPages > 1 && (
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onChange={(page) => setCurrentPage(page)}
-                    />
+                  {hasMoreHotels && (
+                    <div className="loading-more-hotels" style={{ 
+                      textAlign: 'center', 
+                      padding: '20px',
+                      marginTop: '20px'
+                    }}>
+                      <div className="view-details-spinner" style={{ 
+                        margin: '0 auto',
+                        width: '24px',
+                        height: '24px'
+                      }}></div>
+                      <p style={{ marginTop: '10px', color: '#6B7280' }}>
+                        {tSearch("loadingMore")}
+                      </p>
+                    </div>
                   )}
                 </>
               </div>
