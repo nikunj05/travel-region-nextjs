@@ -144,6 +144,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     const roomDetails = uniqueRooms.map(room => ({
       rate_key: room.rateKey,
       room_code: room.roomCode,
+      room_name: room.roomName,
+      board_name: room.boardName,
     }));
 
     // Prepare booking details (guest information) - only primary guest

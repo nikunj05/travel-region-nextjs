@@ -8,38 +8,15 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
-import { SelectWithFlag } from "@/components/core/SelectWithFlag/SelectWithFlag";
+import { SelectWithFlag, SelectWithFlagOption } from "@/components/core/SelectWithFlag/SelectWithFlag";
 import { createProfileSchema, ProfileFormData } from "@/schemas/profileSchema";
 import { userService } from "@/services/userService";
+import { countryService } from "@/services/countryService";
 import { formatApiErrorMessage } from "@/lib/formatApiError";
 import { Controller } from "react-hook-form";
 import Image from "next/image";
 import styles from "./Profile.module.scss";
 import UserImage from "@/assets/images/userIcon.svg";
-
-// Import flag images for nationality
-import UAEFlag from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
-// import IndiaFlag from "@/assets/images/english-flag-icon.svg";
-import USAFlag from "@/assets/images/english-flag-icon.svg";
-// import UKFlag from "@/assets/images/english-flag-icon.svg";
-// import CanadaFlag from "@/assets/images/english-flag-icon.svg";
-// import AustraliaFlag from "@/assets/images/english-flag-icon.svg";
-// import SaudiFlag from "@/assets/images/arabic-flag-icon.svg";
-
-// Nationality options with flags
-const NATIONALITY_OPTIONS = [
-  {
-    value: "United Arab Emirates",
-    label: "United Arab Emirates",
-    flag: UAEFlag,
-  },
-  // { value: "India", label: "India", flag: IndiaFlag },
-  { value: "USA", label: "USA", flag: USAFlag },
-  // { value: "UK", label: "UK", flag: UKFlag },
-  // { value: "Canada", label: "Canada", flag: CanadaFlag },
-  // { value: "Australia", label: "Australia", flag: AustraliaFlag },
-  // { value: "Saudi Arabia", label: "Saudi Arabia", flag: SaudiFlag },
-];
 
 const Profile = () => {
   const t = useTranslations("Profile");
@@ -49,6 +26,7 @@ const Profile = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [nationalityOptions, setNationalityOptions] = useState<SelectWithFlagOption[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Create profile schema with translations
@@ -107,6 +85,39 @@ const Profile = () => {
 
     fetchProfile();
   }, [t]);
+
+  // Fetch countries list
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await countryService.getCountries();
+        console.log("Countries data:", response);
+        
+        if (response.data && response.data.countries) {
+          // Transform countries data to match SelectWithFlagOption format
+          const options: SelectWithFlagOption[] = response.data.countries.map((country) => {
+            const option: SelectWithFlagOption = {
+              value: country.name,
+              label: country.name,
+            };
+            
+            // Only include flag if country has a flag and code
+            if (country.flag && country.code) {
+              option.flag = `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
+            }
+            
+            return option;
+          });
+          
+          setNationalityOptions(options);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   const handleSubmit = async (data: ProfileFormData) => {
     try {
@@ -445,7 +456,7 @@ const Profile = () => {
                     control={methods.control}
                     render={({ field }) => (
                       <SelectWithFlag
-                        options={NATIONALITY_OPTIONS}
+                        options={nationalityOptions}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder={t("nationalityPlaceholder")}

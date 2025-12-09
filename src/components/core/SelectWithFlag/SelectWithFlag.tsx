@@ -7,7 +7,7 @@ import styles from "./SelectWithFlag.module.scss";
 export interface SelectWithFlagOption {
   value: string;
   label: string;
-  flag: string; // Image source path
+  flag?: string; // Image source path (optional)
 }
 
 export interface SelectWithFlagProps {
@@ -97,13 +97,15 @@ export const SelectWithFlag = ({
           disabled={disabled}
         >
           <div className={styles.selectContent}>
-            <Image
-              src={displayFlag}
-              alt="Flag"
-              width={30}
-              height={20}
-              className={styles.flagIcon}
-            />
+            {displayFlag && (
+              <Image
+                src={displayFlag}
+                alt="Flag"
+                width={30}
+                height={20}
+                className={styles.flagIcon}
+              />
+            )}
             <span className={styles.selectText}>{displayText}</span>
           </div>
           <Image
@@ -128,13 +130,15 @@ export const SelectWithFlag = ({
                 onClick={() => handleOptionClick(option.value)}
               >
                 <div className={styles.optionContent}>
-                  <Image
-                    src={option.flag}
-                    alt="Flag"
-                    width={24}
-                    height={24}
-                    className={styles.optionFlag}
-                  />
+                  {option.flag && (
+                    <Image
+                      src={option.flag}
+                      alt="Flag"
+                      width={24}
+                      height={24}
+                      className={styles.optionFlag}
+                    />
+                  )}
                   <span className={styles.optionText}>{option.label}</span>
                 </div>
               </li>

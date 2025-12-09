@@ -1,6 +1,8 @@
 export interface RoomDetail {
   rate_key: string;
   room_code: string;
+  room_name?: string;
+  board_name?: string;
 }
 
 export interface BookingDetail {
