@@ -326,8 +326,18 @@
       }
 
       .booking-traveler-details {
+        // Force entire form to stay LTR regardless of page direction
+        direction: ltr !important;
+
         .booking-details-sub-title {
           margin-bottom: 24px;
+        }
+
+        // Force LTR direction for all input and textarea fields
+        input,
+        textarea {
+          direction: ltr !important;
+          text-align: left !important;
         }
 
         .booking-form-title {
@@ -400,7 +410,8 @@
                   display: flex;
                   position: absolute;
                   top: 2px;
-                  left: 3px;
+                  left: 3px !important;
+                  right: auto !important;
 
                   .selectContainer {
                     display: flex;
@@ -417,6 +428,16 @@
 
                   .form-input {
                     padding-left: 110px !important;
+                    padding-right: 12px !important;
+                    direction: ltr !important;
+                    text-align: left !important;
+                  }
+
+                  input {
+                    padding-left: 110px !important;
+                    padding-right: 12px !important;
+                    direction: ltr !important;
+                    text-align: left !important;
                   }
                 }
               }
@@ -427,6 +448,7 @@
         .special-request-field {
           .booking-form-title {
             margin-bottom: 16px;
+            text-align: left !important;
           }
 
           .booking-form-desc {
@@ -434,6 +456,7 @@
             color: $color-black-zinc-500;
             font-weight: $font-weight500;
             margin-bottom: 8px;
+            text-align: left !important;
           }
 
           .text-field {
@@ -933,6 +956,7 @@
           .special-request-field {
             .booking-form-title {
               font-size: 20px;
+              text-align: left !important;
             }
 
             .form-row {
@@ -944,6 +968,7 @@
               color: $color-black-zinc-500;
               font-weight: $font-weight500;
               margin-bottom: 8px;
+              text-align: left !important;
             }
 
             .text-field {
@@ -1019,7 +1044,7 @@
 }
 
 
-// RTL Layout
+// RTL Layout - But keep traveler details form LTR
 [dir="rtl"] {
   .booking-review-page {
     .review-booking-details-left {
@@ -1029,8 +1054,9 @@
             .select-with-input-field {
               .select-with-input {
                 .country-code-input {
-                  right: 3px;
-                  left: auto;
+                  // Keep LTR positioning even in RTL mode
+                  left: 3px !important;
+                  right: auto !important;
                 }
               }
             }

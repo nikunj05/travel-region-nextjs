@@ -967,7 +967,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             label={t("travelerDetails.firstName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder={t("travelerDetails.firstNamePlaceholder")}
+                            placeholder="First Name"
                             className="form-input"
                           />
                           <Input
@@ -975,7 +975,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             label={t("travelerDetails.lastName")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder={t("travelerDetails.lastNamePlaceholder")}
+                            placeholder="Last Name"
                             className="form-input"
                           />
                         </div>
@@ -986,7 +986,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             label={t("travelerDetails.email")}
                             labelWithContent={<span className="required">*</span>}
                             type="email"
-                            placeholder={t("travelerDetails.emailPlaceholder")}
+                            placeholder="Email"
                             className="form-input"
                           />
                           <Input
@@ -994,7 +994,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             label={t("travelerDetails.country")}
                             labelWithContent={<span className="required">*</span>}
                             type="text"
-                            placeholder={t("travelerDetails.countryPlaceholder")}
+                            placeholder="Country"
                             className="form-input"
                           />
                         </div>
@@ -1028,7 +1028,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                   type="tel"
                                   inputMode="numeric"
                                   pattern="\d*"
-                                  placeholder={t("travelerDetails.phonePlaceholder")}
+                                  placeholder="Phone Number"
                                   className="form-input form-control"
                                   maxLength={15}
                                 />

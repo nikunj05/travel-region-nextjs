@@ -78,6 +78,7 @@ const SearchResult = () => {
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
   const [visibleItemsCount, setVisibleItemsCount] = useState(10); // Initial number of hotels to show
   const ITEMS_PER_LOAD = 10; // Number of hotels to load per scroll
+  const [translatedNames, setTranslatedNames] = useState<Map<string, string>>(new Map());
 
   // Filter states
   const [selectedStarRating, setSelectedStarRating] = useState<number | null>(
@@ -128,10 +129,28 @@ const SearchResult = () => {
   // Derived hotel lists
   const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
     "code" in hotel ? hotel.code : (hotel as HotelItem).id;
-  const getHotelName = (hotel: HotelItem | FavoriteHotel) =>
-    ("name" in hotel && typeof hotel.name === "string"
-      ? hotel.name
-      : (hotel as FavoriteHotel).name?.content) || "Hotel";
+  const getHotelName = (hotel: HotelItem | FavoriteHotel) => {
+    const hotelId = ("code" in hotel && hotel.code) 
+      ? hotel.code.toString() 
+      : getHotelId(hotel).toString();
+    
+    // Handle both HotelItem (name: string) and FavoriteHotel (name: {content: string})
+    let originalName: string;
+    if ("name" in hotel && typeof hotel.name === "string") {
+      originalName = hotel.name;
+    } else if ("name" in hotel && hotel.name && typeof hotel.name === "object" && "content" in hotel.name) {
+      originalName = (hotel.name as { content: string }).content || "Hotel";
+    } else {
+      originalName = (hotel as FavoriteHotel).name?.content || "Hotel";
+    }
+    
+    // Return translated name if available
+    if (locale === 'ar' && translatedNames.has(hotelId)) {
+      return translatedNames.get(hotelId)!;
+    }
+    
+    return originalName;
+  };
   const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
     (hotel as FavoriteHotel).address?.content ||
     (hotel as FavoriteHotel).city?.content ||
@@ -262,6 +281,71 @@ const SearchResult = () => {
   useEffect(() => {
     setVisibleItemsCount(10);
   }, [sortBy, sortedHotels.length]);
+
+  // Translate hotel names using Google Translate when locale is Arabic
+  useEffect(() => {
+    if (locale !== 'ar' || sortedHotels.length === 0) {
+      return;
+    }
+
+    const translateHotels = async () => {
+      const translations = new Map<string, string>();
+      
+      const translatePromises = sortedHotels.map(async (hotel) => {
+        const hotelId = ("code" in hotel && hotel.code) 
+          ? hotel.code.toString() 
+          : getHotelId(hotel).toString();
+        
+        const originalName = getHotelName(hotel);
+        
+        // Skip if already translated
+        if (translatedNames.has(hotelId)) {
+          return;
+        }
+        
+        // Only translate English text
+        const isEnglish = originalName && 
+          !originalName.match(/[\u0600-\u06FF]/) && 
+          originalName.match(/[a-zA-Z]/);
+        
+        if (isEnglish && originalName !== "Hotel") {
+          try {
+            // Use Google Translate API
+            const response = await fetch(
+              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(originalName)}`
+            );
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data && data[0] && data[0][0] && data[0][0][0]) {
+                const translated = data[0][0][0];
+                if (translated !== originalName) {
+                  translations.set(hotelId, translated);
+                }
+              }
+            }
+          } catch (error) {
+            console.warn(`Translation failed for "${originalName}":`, error);
+          }
+        }
+      });
+
+      await Promise.all(translatePromises);
+      
+      if (translations.size > 0) {
+        setTranslatedNames((prev) => {
+          const updated = new Map(prev);
+          translations.forEach((value, key) => {
+            updated.set(key, value);
+          });
+          return new Map(updated);
+        });
+      }
+    };
+
+    translateHotels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, sortedHotels.length]);
 
   // Sync local filter state with store on mount
   useEffect(() => {

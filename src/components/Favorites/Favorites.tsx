@@ -5,12 +5,14 @@ import { useTranslations, useLocale } from "next-intl";
 import "./Favorites.scss";
 import Image from "next/image";
 import HotelBookingImg from "@/assets/images/room-information-image.jpg";
-// import StartIcon from "@/assets/images/star-fill-icon.svg";
+import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Pagination from "@/components/common/Pagination/Pagination";
 import { buildHotelSlug } from "@/lib/hotelSlug";
+import { buildHotelbedsImageUrl } from "@/constants";
+import { HotelImage } from "@/types/favorite";
 
 export default function Favorites() {
   const t = useTranslations("Favorites");
@@ -64,14 +66,54 @@ export default function Favorites() {
     }
   };
 
-  // Get the first image from hotel images array
-  const getHotelImage = (hotel: typeof favorites[0]) => {
-    if (hotel.images && hotel.images.length > 0) {
-      // Check if the image path is a full URL or relative path
-      const imagePath = hotel.images[0].path;
-      return imagePath.startsWith('http') ? imagePath : HotelBookingImg;
+  // Helper function to extract star rating from categoryCode
+  const getStarRating = (hotel: typeof favorites[0]): number => {
+    if (hotel.categoryCode) {
+      // Extract number from categoryCode (e.g., "4EST" -> 4)
+      const match = hotel.categoryCode.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
     }
-    return HotelBookingImg;
+    return 5; // Default fallback
+  };
+
+  // Get the main image prioritizing GEN type images, similar to HotelDetails
+  const getHotelImage = (hotel: typeof favorites[0]) => {
+    if (!hotel.images || hotel.images.length === 0) {
+      return HotelBookingImg;
+    }
+
+    // Filter images that have a path
+    const images = hotel.images.filter((img) => !!img?.path);
+    if (images.length === 0) {
+      return HotelBookingImg;
+    }
+
+    // Helper function to get order value for sorting
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+
+    // Prioritize GEN images first; within each group, sort by 'order' then 'visualOrder'
+    const genImages = images
+      .filter((img) => img.type?.code === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    
+    const otherImages = images
+      .filter((img) => img.type?.code !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+
+    // Return prioritized list (GEN first, then others)
+    const sortedImages = [...genImages, ...otherImages];
+    const mainImage = sortedImages[0];
+
+    if (!mainImage || !mainImage.path) {
+      return HotelBookingImg;
+    }
+
+    // Build the full URL using buildHotelbedsImageUrl
+    return buildHotelbedsImageUrl(mainImage.path);
   };
 
   return (
@@ -108,7 +150,11 @@ export default function Favorites() {
           <div className="hotel-booking-card d-grid">
             {favorites.map((hotel) => (
               <div key={hotel.code} className="hotel-booking-card-item">
-                <div className="hotel-booking-image">
+                <div 
+                  className="hotel-booking-image"
+                  onClick={() => handleBookNowClick(hotel.code, hotel.name?.content)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <Image
                     src={getHotelImage(hotel)}
                     alt={hotel.name.content}
@@ -119,21 +165,37 @@ export default function Favorites() {
                 </div>
                 <div className="hotel-booking-info">
                   <div className="hotel-title-with-rating d-flex align-items-start justify-content-between">
-                    <h2 className="hotel-title">{hotel.name.content}</h2>
-                    {/* <div className="hotel-review-rating d-flex align-items-center">
-                      <Image
-                        src={StartIcon}
-                        alt="star icon"
-                        width={20}
-                        height={20}
-                        className="ration-star-icon"
-                      />
-                      4.9 {t("rating")}
-                    </div> */}
+                    <h2 
+                      className="hotel-title"
+                      onClick={() => handleBookNowClick(hotel.code, hotel.name?.content)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {hotel.name.content}
+                    </h2>
+                    <div className="hotel-review-rating d-flex align-items-center">
+                      <div className="rating-stars d-flex align-items-center">
+                        {Array.from(
+                          { length: getStarRating(hotel) },
+                          (_, index) => (
+                            <Image
+                              key={`${hotel.code}-star-${index}`}
+                              src={starFillIcon}
+                              alt="star icon"
+                              width={16}
+                              height={16}
+                              className="ration-star-icon"
+                            />
+                          )
+                        )}
+                      </div>
+                      <span className="rating-value-wrapper d-flex align-items-center">
+                        <span className="rating-value">{getStarRating(hotel)}</span>
+                      </span>
+                    </div>
                   </div>
-                  <div className="hotel-pricing d-flex">
+                  {/* <div className="hotel-pricing d-flex">
                     $200 <span className="hotel-pricing-per">{t("perNight")}</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="hotel-bookig-action d-flex align-items-center justify-content-between">

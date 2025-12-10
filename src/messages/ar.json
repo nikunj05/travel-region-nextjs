@@ -590,7 +590,7 @@
       "phoneNumber": "رقم الهاتف",
       "phonePlaceholder": "رقم هاتفك",
       "specialRequest": "طلب خاص",
-      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية أو العربية.",
+      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية.",
       "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
     },
     "summary": {
@@ -643,7 +643,7 @@
       "phoneNumber": "رقم الهاتف",
       "phonePlaceholder": "رقم هاتفك",
       "specialRequest": "طلب خاص",
-      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية أو العربية.",
+      "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية.",
       "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
     },
     "summary": {
