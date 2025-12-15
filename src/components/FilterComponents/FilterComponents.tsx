@@ -111,15 +111,8 @@ const FilterComponents = ({ onCheckAvailability }: FilterComponentsProps) => {
   };
 
   const formatDate = (date: Date | null) => {
-    if (!date) return t("filters.addDate");
-    // Ensure date is a valid Date object
-    const validDate = date instanceof Date ? date : new Date(date);
-    if (isNaN(validDate.getTime())) return t("filters.addDate");
-    const intlLocale = locale === "ar" ? "ar-SA" : "en-US";
-    return new Intl.DateTimeFormat(intlLocale, {
-      month: "short",
-      day: "2-digit",
-    }).format(validDate);
+    if (!date) return "Add Date";
+    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
   };
 
   const getGuestsDisplayText = () => {

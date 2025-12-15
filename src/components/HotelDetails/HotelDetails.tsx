@@ -672,6 +672,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     setSelectedRateForPriceDetails(null);
   };
 
+  // Helper: format dates in a consistent Gregorian "Mon DD" style (same as search results)
+  const formatShortGregorianDate = (date: Date | null) => {
+    if (!date) return "Add Date";
+    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+  };
+
   // Calculate daily prices based on total (backend already includes total stay price)
   const calculateDailyPrices = useCallback(() => {
     if (!searchFilters.checkInDate || !searchFilters.checkOutDate || !selectedRateForPriceDetails) {
@@ -693,16 +699,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       dates.push({
         date: currentDate,
         price: pricePerNight,
-        formattedDate: currentDate.toLocaleDateString(locale, {
-          weekday: 'short',
-          day: '2-digit',
-          month: 'short'
-        })
+        // Use manual Gregorian formatter to avoid Arabic locale switching to Islamic calendar
+        formattedDate: formatShortGregorianDate(currentDate),
       });
     }
 
     return { dates, nights, averagePrice: pricePerNight, totalPrice };
-  }, [searchFilters.checkInDate, searchFilters.checkOutDate, selectedRateForPriceDetails, locale]);
+  }, [searchFilters.checkInDate, searchFilters.checkOutDate, selectedRateForPriceDetails]);
 
   // Helper functions for hotel images
   const getOrderedHotelImages = () => {
@@ -2172,7 +2175,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                                 </svg>
                                                                 <div className="cancellation-popover">
                                                                   <div className="popover-header">
-                                                                    Cancellation Charges
+                                                                    {t("cancellationPopover.title")}
                                                                   </div>
                                                                   <div className="popover-content">
                                                                     {policyItem.refundDate ? (
@@ -2180,7 +2183,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                                         <div className="popover-message">
                                                                           {isFullyRefundable ? (
                                                                             <>
-                                                                              {policyRefundDateLabel}, get full refund of{" "}
+                                                                              {policyRefundDateLabel},{" "}
+                                                                              {t("cancellationPopover.getFullRefundOf")}{" "}
                                                                               <span className="d-inline-flex align-items-center">
                                                                                 <span
                                                                                   className="currency-icon"
@@ -2200,7 +2204,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                                             </>
                                                                           ) : (
                                                                             <>
-                                                                              {policyRefundDateLabel}, refundable amount{" "}
+                                                                              {policyRefundDateLabel},{" "}
+                                                                              {t("cancellationPopover.refundableAmount")}{" "}
                                                                               <span className="d-inline-flex align-items-center">
                                                                                 <span
                                                                                   className="currency-icon"
@@ -2221,12 +2226,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                                           )}
                                                                         </div>
                                                                         <div className="popover-note">
-                                                                          Date and time is calculated based on local time of destination.
+                                                                          {t("cancellationPopover.dateTimeNote")}
                                                                         </div>
                                                                       </>
                                                                     ) : (
                                                                       <div className="popover-message">
-                                                                        No cancellation policy available.
+                                                                        {t("cancellationPopover.noCancellationPolicy")}
                                                                       </div>
                                                                     )}
                                                                   </div>

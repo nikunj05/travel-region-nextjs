@@ -202,12 +202,14 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
         <div className="container">
           <div className="banner-content">
             <div className="heading_section text-center">
-              <h1 className="section-title">{t('bannerTitle')}</h1>
+              <h1 className="section-title">
+                {page.ready_to_explore_title || t("readyToExplore")}
+              </h1>
               <p className="section-description">
-                {t('bannerDescription')}
+                {page.ready_to_explore_sub_title || t("readyToExploreDescription")}
               </p>
               <button className="button-primary mx-auto banner-common-button">
-                {t('exploreStory')}
+                {t("exploreStory")}
               </button>
             </div>
           </div>

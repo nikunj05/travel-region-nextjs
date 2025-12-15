@@ -212,6 +212,13 @@
       "average": "Average",
       "totalPrice": "Total Price"
     },
+    "cancellationPopover": {
+      "title": "Cancellation Charges",
+      "getFullRefundOf": "get full refund of",
+      "refundableAmount": "refundable amount",
+      "dateTimeNote": "Date and time is calculated based on local time of destination.",
+      "noCancellationPolicy": "No cancellation policy available."
+    },
     "filters": {
       "checkInLabel": "Check-in Date",
       "checkOutLabel": "Check-out Date",

@@ -25,6 +25,13 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
   const t = useTranslations("BookingConfirmation");
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [delayCompleted, setDelayCompleted] = useState(false);
+
+  // Ensure we always show a short pending/loading state (1–2s) before showing final status
+  useEffect(() => {
+    const timer = setTimeout(() => setDelayCompleted(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (bookingId) {
@@ -38,14 +45,18 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
             const bookingData = response.data as BookingDetailsData;
             const booking = bookingData.booking;
             if (booking) {
-              const email = booking.details && booking.details.length > 0 
-                ? booking.details[0].email 
-                : '';
-              
+              const email =
+                booking.details && booking.details.length > 0
+                  ? booking.details[0].email
+                  : "";
+
               setBookingData({
                 order: booking.order || bookingId,
                 email: email,
-                status: typeof booking.status === "string" ? booking.status : undefined,
+                status:
+                  typeof booking.status === "string"
+                    ? booking.status
+                    : undefined,
               });
             }
           }
@@ -123,9 +134,16 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
   };
 
   const renderContent = () => {
-    if (loading) {
+    const isLoadingState = loading || !delayCompleted;
+
+    // While waiting for API + minimum delay, show a skeleton instead of text
+    if (isLoadingState) {
       return (
-        <p className="card-booking-num">{t("loadingBookingDetails")}</p>
+        <div className="booking-confirmation-skeleton">
+          <div className="skeleton-line skeleton-title" />
+          <div className="skeleton-line skeleton-subtitle" />
+          <div className="skeleton-line skeleton-subtitle short" />
+        </div>
       );
     }
 

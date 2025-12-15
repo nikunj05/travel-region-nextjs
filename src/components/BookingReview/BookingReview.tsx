@@ -262,11 +262,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     if (!date) return t("notSelected");
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
-      return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+      // Always use Gregorian calendar (en-US) so Arabic does NOT switch to Islamic months
+      return new Intl.DateTimeFormat("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",
-        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }).format(dateObj);
     } catch {
       return t("notSelected");
@@ -1053,7 +1053,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             <Textarea
                               name="specialRequests"
                               rows={5}
-                              placeholder={t("travelerDetails.specialRequestPlaceholder")}
+                              // Keep placeholder text always in English (per requirements)
+                              placeholder="Write your special requests here"
                               className="w-100 text-field"
                             />
                           </div>

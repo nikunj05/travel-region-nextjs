@@ -212,6 +212,13 @@
       "average": "المتوسط",
       "totalPrice": "السعر الإجمالي"
     },
+    "cancellationPopover": {
+      "title": "رسوم الإلغاء",
+      "getFullRefundOf": "احصل على استرداد كامل بقيمة",
+      "refundableAmount": "مبلغ قابل للاسترداد",
+      "dateTimeNote": "يتم احتساب التاريخ والوقت بناءً على التوقيت المحلي لوجهة السفر.",
+      "noCancellationPolicy": "لا توجد سياسة إلغاء متاحة."
+    },
     "filters": {
       "checkInLabel": "تاريخ تسجيل الوصول",
       "checkOutLabel": "تاريخ تسجيل المغادرة",

@@ -198,7 +198,8 @@ function CheckoutComponent() {
     if (!date) return t("notSelected");
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
-      return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+      // Always use Gregorian calendar (en-US) so Arabic does NOT switch to Islamic months
+      return new Intl.DateTimeFormat("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -271,12 +272,13 @@ function CheckoutComponent() {
     };
   }, [bookingData]);
 
-  // Price formatter
+  // Price formatter - keep amounts consistent with BookingReview (always Western digits)
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
+        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }),
     [locale]
   );
@@ -444,7 +446,8 @@ function CheckoutComponent() {
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder={t("travelerDetails.firstNamePlaceholder")}
+                            // Keep placeholder text always in English
+                            placeholder="First Name"
                             className="form-input"
                           />
                           <Input
@@ -453,7 +456,8 @@ function CheckoutComponent() {
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder={t("travelerDetails.lastNamePlaceholder")}
+                            // Keep placeholder text always in English
+                            placeholder="Last Name"
                             className="form-input"
                           />
                         </div>
@@ -465,7 +469,8 @@ function CheckoutComponent() {
                             labelWithContent={<span className="required">*</span>}
                             type="email"
                             disabled
-                            placeholder={t("travelerDetails.emailPlaceholder")}
+                            // Keep placeholder text always in English
+                            placeholder="Email"
                             className="form-input"
                           />
                           <Input
@@ -474,7 +479,8 @@ function CheckoutComponent() {
                             labelWithContent={<span className="required">*</span>}
                             type="text"
                             disabled
-                            placeholder={t("travelerDetails.countryPlaceholder")}
+                            // Keep placeholder text always in English
+                            placeholder="Country"
                             className="form-input"
                           />
                         </div>
@@ -507,7 +513,8 @@ function CheckoutComponent() {
                                 <Input
                                   name="primaryGuest.phone"
                                   type="tel"
-                                  placeholder={t("travelerDetails.phonePlaceholder")}
+                                  // Keep placeholder text always in English
+                                  placeholder="Phone Number"
                                   className="form-input form-control"
                                   disabled
                                 />
@@ -531,7 +538,8 @@ function CheckoutComponent() {
                             <Textarea
                               name="specialRequests"
                               rows={5}
-                              placeholder={t("travelerDetails.specialRequestPlaceholder")}
+                              // Keep placeholder text always in English (same as BookingReview)
+                              placeholder="Write your special requests here"
                               className="w-100 text-field"
                               disabled
                             />
