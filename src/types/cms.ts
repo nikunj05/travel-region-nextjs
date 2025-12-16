@@ -20,6 +20,7 @@ export interface FewHighlightsItem {
 export interface CmsPageItem {
   id: number;
   title: string;
+  sub_title: string | null;
   slug: string;
   content: string;
   about_us: boolean;
@@ -32,6 +33,7 @@ export interface CmsPageItem {
   ready_to_explore_sub_title: string | null;
   ready_to_explore_image: string | null;
   ready_to_explore_image_url: string | null;
+  background_image_url: string | null;
   created_at: string;
   updated_at: string;
 }

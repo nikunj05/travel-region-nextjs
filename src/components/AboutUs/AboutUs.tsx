@@ -198,19 +198,31 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
   return (
     
     <main className="about-us-page section-space-b">
-      <section className="banner-section-common about-us-banner-section">
+      <section 
+        className="banner-section-common about-us-banner-section"
+        style={
+          page.background_image_url
+            ? {
+                backgroundImage: `url(${page.background_image_url})`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }
+            : undefined
+        }
+      >
         <div className="container">
           <div className="banner-content">
             <div className="heading_section text-center">
               <h1 className="section-title">
-                {page.ready_to_explore_title || t("readyToExplore")}
+                {page.title || t("readyToExplore")}
               </h1>
               <p className="section-description">
-                {page.ready_to_explore_sub_title || t("readyToExploreDescription")}
+                {page.sub_title || t("readyToExploreDescription")}
               </p>
-              <button className="button-primary mx-auto banner-common-button">
+              {/* <button className="button-primary mx-auto banner-common-button">
                 {t("exploreStory")}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

@@ -176,6 +176,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   >(null);
   // Active room count - only updated when Check Availability is clicked
   const [activeRoomCount, setActiveRoomCount] = useState<number>(1);
+  const [translatedRoomNames, setTranslatedRoomNames] = useState<Map<string, string>>(new Map());
+  const [translatedHotelName, setTranslatedHotelName] = useState<string | null>(null);
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
@@ -326,11 +328,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       };
     }
 
-    const checkIn = new Date(searchFilters.checkInDate);
-    const checkOut = new Date(searchFilters.checkOutDate);
-    const nights = Math.ceil(
-      (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    // const checkIn = new Date(searchFilters.checkInDate);
+    // const checkOut = new Date(searchFilters.checkOutDate);
+    // const nights = Math.ceil(
+    //   (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+    // );
 
     // Track processed keys to avoid duplicate rates
     // Use roomCode_rateKey combination to match selectedRoomCounts key format
@@ -921,12 +923,139 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     [priceFormatter, formatCancellationDate]
   );
 
+  // Helper function to get translated room name
+  const getRoomDisplayName = useCallback((room: ProcessedRoom): string => {
+    const originalName = room.name || room.description || t("placeholders.roomName");
+    
+    // Return translated name if available
+    if (locale === 'ar' && translatedRoomNames.has(room.roomCode)) {
+      return translatedRoomNames.get(room.roomCode)!;
+    }
+    
+    return originalName;
+  }, [locale, translatedRoomNames, t]);
+
+  // Translate room names using Google Translate when locale is Arabic
+  useEffect(() => {
+    if (locale !== 'ar' || processedRooms.length === 0) {
+      return;
+    }
+
+    const translateRooms = async () => {
+      const translations = new Map<string, string>();
+      
+      const translatePromises = processedRooms.map(async (room) => {
+        const originalName = room.name || room.description || t("placeholders.roomName");
+        
+        // Skip if already translated
+        if (translatedRoomNames.has(room.roomCode)) {
+          return;
+        }
+        
+        // Only translate English text
+        const isEnglish = originalName && 
+          !originalName.match(/[\u0600-\u06FF]/) && 
+          originalName.match(/[a-zA-Z]/);
+        
+        if (isEnglish && originalName !== t("placeholders.roomName")) {
+          try {
+            // Use Google Translate API
+            const response = await fetch(
+              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(originalName)}`
+            );
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data && data[0] && data[0][0] && data[0][0][0]) {
+                const translated = data[0][0][0];
+                if (translated !== originalName) {
+                  translations.set(room.roomCode, translated);
+                }
+              }
+            }
+          } catch (error) {
+            console.warn(`Translation failed for room "${originalName}":`, error);
+          }
+        }
+      });
+
+      await Promise.all(translatePromises);
+      
+      if (translations.size > 0) {
+        setTranslatedRoomNames((prev) => {
+          const updated = new Map(prev);
+          translations.forEach((value, key) => {
+            updated.set(key, value);
+          });
+          return new Map(updated);
+        });
+      }
+    };
+
+    translateRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, processedRooms.length]);
+
+  // Translate hotel name using Google Translate when locale is Arabic
+  useEffect(() => {
+    // Reset translation when hotel changes
+    setTranslatedHotelName(null);
+    
+    if (locale !== 'ar' || !hotelData?.name?.content) {
+      return;
+    }
+
+    const originalName = hotelData.name.content;
+    
+    // Only translate English text
+    const isEnglish = originalName && 
+      !originalName.match(/[\u0600-\u06FF]/) && 
+      originalName.match(/[a-zA-Z]/);
+    
+    if (isEnglish && originalName !== t("placeholders.hotelName")) {
+      const translateHotel = async () => {
+        try {
+          // Use Google Translate API
+          const response = await fetch(
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(originalName)}`
+          );
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data[0] && data[0][0] && data[0][0][0]) {
+              const translated = data[0][0][0];
+              if (translated !== originalName) {
+                setTranslatedHotelName(translated);
+              }
+            }
+          }
+        } catch (error) {
+          console.warn(`Translation failed for hotel "${originalName}":`, error);
+        }
+      };
+
+      translateHotel();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, hotelId, hotelData?.name?.content]);
+
+  // Helper function to extract star rating from category code
+  const getStarRating = (): number => {
+    if (hotelData?.category?.code) {
+      // Extract number from category code (e.g., "3EST" -> 3)
+      const match = hotelData.category.code.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
+    }
+    return 5; // Default fallback
+  };
+
   const selectedRoomRateDetails = findPrimaryRate(selectedRoom);
   const descriptionContent =
     hotelData?.description?.content || t("description.fallback");
-  const hotelName = hotelData?.name?.content || t("placeholders.hotelName");
+  const hotelName = translatedHotelName || hotelData?.name?.content || t("placeholders.hotelName");
   const hotelAddress =
     hotelData?.address?.content || t("placeholders.hotelAddress");
+  const starRating = getStarRating();
   const descriptionPreviewLength = 300;
   const truncatedDescription =
     descriptionContent.length > descriptionPreviewLength
@@ -1479,41 +1608,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   <h2 className="hotel-name">{hotelName}</h2>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
-                      <Image
-                        src={starFillIcon}
-                        width={16}
-                        height={16}
-                        alt="star"
-                        className="hotel-rating-icon"
-                      />
-                      <Image
-                        src={starFillIcon}
-                        width={16}
-                        height={16}
-                        alt="star"
-                        className="hotel-rating-icon"
-                      />
-                      <Image
-                        src={starFillIcon}
-                        width={16}
-                        height={16}
-                        alt="star"
-                        className="hotel-rating-icon"
-                      />
-                      <Image
-                        src={starFillIcon}
-                        width={16}
-                        height={16}
-                        alt="star"
-                        className="hotel-rating-icon"
-                      />
-                      <Image
-                        src={starFillIcon}
-                        width={16}
-                        height={16}
-                        alt="star"
-                        className="hotel-rating-icon"
-                      />
+                      {Array.from(
+                        { length: starRating },
+                        (_, index) => (
+                          <Image
+                            key={`hotel-star-${index}`}
+                            src={starFillIcon}
+                            width={16}
+                            height={16}
+                            alt="star"
+                            className="hotel-rating-icon"
+                          />
+                        )
+                      )}
                     </div>
                     {/* <span className="rating-value-wrapper d-flex align-items-center">
                       <span className="rating-value">4.5</span> (120 Reviews)
@@ -1647,8 +1754,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         slidesToScroll: 1,
                         arrows: false,
                       };
-                      const roomDisplayName =
-                        room.name || room.description || t("placeholders.roomName");
+                      const roomDisplayName = getRoomDisplayName(room);
                       const roomFacilitiesWithDescriptions = room.facilities.filter(
                         (facility) => facility.description
                       );
