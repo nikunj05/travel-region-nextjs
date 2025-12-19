@@ -1386,6 +1386,66 @@
                   }
                 }
 
+                .mobile-room-booking-summary {
+                  display: none;
+                  width: 100%;
+                  margin-top: 12px;
+                  padding: 12px;
+                  background: #f9fafb;
+                  border-radius: 8px;
+                  border: 1px solid #e5e7eb;
+
+                  .mobile-summary-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 8px;
+
+                    &:last-child {
+                      margin-bottom: 0;
+                    }
+
+                    &.mobile-summary-subtotal {
+                      margin-top: 8px;
+                      padding-top: 8px;
+                      border-top: 1px solid #e5e7eb;
+                    }
+
+                    .mobile-summary-label {
+                      font-size: 14px;
+                      font-weight: 500;
+                      color: #18181b;
+                    }
+
+                    .mobile-summary-value {
+                      display: flex;
+                      align-items: center;
+                      gap: 4px;
+                      font-size: 14px;
+                      font-weight: 700;
+                      color: $brand-color;
+
+                      .currency-icon {
+                        display: inline-flex;
+                        margin: 0;
+
+                        svg {
+                          width: 14px;
+                          height: 14px;
+
+                          path {
+                            fill: $brand-color;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                .mobile-room-book-button {
+                  display: none;
+                }
+
                 .select-rate-btn {
                   padding: 8px 16px;
                   background: $brand-color;
@@ -2976,6 +3036,38 @@
           }
         }
       }
+
+      .rooms-filter-section {
+        .room-list {
+          .room-card {
+            .room-card-more-details {
+              .room-card-more-hotel {
+                .room-right {
+                  .more-room-pricing {
+                    .rate-selection-controls {
+                      margin: 0px;
+                      width: 100%;
+                      align-items: start;
+                    }
+
+                    .mobile-room-booking-summary {
+                      display: block;
+                    }
+
+                    .mobile-room-book-button {
+                      display: block;
+                      width: 100%;
+                      margin-top: 12px;
+                      padding: 10.2px 15px;
+                      font-size: 16px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     .hotel-section-title {
@@ -3660,6 +3752,18 @@
                     width: 100%;
                     align-items: start;
                   }
+
+                  .mobile-room-booking-summary {
+                    display: block;
+                  }
+
+                  .mobile-room-book-button {
+                    display: block;
+                    width: 100%;
+                    margin-top: 12px;
+                    padding: 10.2px 15px;
+                    font-size: 16px;
+                  }
                 }
               }
 
@@ -3895,6 +3999,18 @@
                         background-position-x: calc(0% + 10px);
                       }
                     }
+                  }
+
+                  .mobile-room-booking-summary {
+                    display: block;
+                  }
+
+                  .mobile-room-book-button {
+                    display: block;
+                    width: 100%;
+                    margin-top: 12px;
+                    padding: 10.2px 15px;
+                    font-size: 16px;
                   }
                 }
               }

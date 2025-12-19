@@ -140,13 +140,16 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const handleSubmit = async (data: BookingFormData) => {
     // console.log("=== BOOKING FORM SUBMISSION ===");
 
-    // Prepare room details
-    const roomDetails = uniqueRooms.map(room => ({
-      rate_key: room.rateKey,
-      room_code: room.roomCode,
-      room_name: room.roomName,
-      board_name: room.boardName,
-    }));
+    // Prepare room details - create one object per room (based on count)
+    const roomDetails = uniqueRooms.flatMap(room => {
+      // Create an array of room objects based on the count
+      return Array.from({ length: room.count || 1 }, () => ({
+        rate_key: room.rateKey,
+        room_code: room.roomCode,
+        room_name: room.roomName,
+        board_name: room.boardName,
+      }));
+    });
 
     // Prepare booking details (guest information) - only primary guest
     // Add "+" prefix to country code if not already present

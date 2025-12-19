@@ -39,6 +39,8 @@ function CheckoutComponent() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [agreeToTermsError, setAgreeToTermsError] = useState(false);
 
+  
+
   // Generate default values for the form - load from store if available
   const defaultValues = useMemo(() => {
     if (travelerDetails) {

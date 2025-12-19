@@ -20,7 +20,7 @@ import HighlightsIcon1 from "@/assets/images/bookings-completed-icon.svg";
 import HighlightsIcon2 from "@/assets/images/customer-satisfaction-icon.svg";
 import HighlightsIcon3 from "@/assets/images/verified-hotels-icon.svg";
 import HighlightsIcon4 from "@/assets/images/supports-icon.svg";
-import Travelers from "../LandingPage/Travelers";
+// import Travelers from "../LandingPage/Travelers";
 
 interface AboutUsProps {
   page: CmsPageItem;

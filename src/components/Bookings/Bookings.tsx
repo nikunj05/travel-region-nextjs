@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import { buildCurrencySvgMarkup } from "@/constants";
+import { buildHotelSlug } from "@/lib/hotelSlug";
 
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
@@ -266,6 +267,24 @@ export default function Bookings() {
     [locale]
   );
 
+  const handleOpenHotelDetails = (hotelCode?: string | number, hotelName?: string) => {
+    if (!hotelCode) return;
+
+    const numericCode =
+      typeof hotelCode === "string" ? parseInt(hotelCode, 10) : hotelCode;
+
+    if (!numericCode || Number.isNaN(numericCode)) return;
+
+    const hotelSlug = buildHotelSlug(hotelName, numericCode);
+
+    try {
+      const url = `/${locale}/hotel-details/${hotelSlug}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  };
+
   const handleCompleteBooking = async (order: string | undefined) => {
     if (!order) {
       toast.error("Invalid booking order. Please try again.");
@@ -389,7 +408,11 @@ export default function Bookings() {
 
           return (
             <div key={booking.id} className="hotel-booking-card-item">
-              <div className="hotel-booking-image">
+              <div
+                className="hotel-booking-image"
+                onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
+                style={{ cursor: "pointer" }}
+              >
                 <Image
                   src={hotelImageSrc}
                   alt={hotelName}
@@ -400,7 +423,13 @@ export default function Bookings() {
               </div>
               <div className="hotel-booking-info">
                 <div className="hotel-title-with-rating d-flex align-items-start justify-content-between">
-                  <h2 className="hotel-title">{hotelName}</h2>
+                  <h2
+                    className="hotel-title"
+                    onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {hotelName}
+                  </h2>
                   {/* <div className="hotel-review-rating d-flex align-items-center">
                     <Image
                       src={StartIcon}

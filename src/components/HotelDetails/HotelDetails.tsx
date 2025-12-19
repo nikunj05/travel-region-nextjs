@@ -250,29 +250,38 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     );
   }, [selectedRoomCounts]);
 
-  // Get available options for a specific room rate (based on search filters)
+  // Get available options for a specific room rate (based on search filters and allotment)
   const getAvailableRoomOptionsForRate = useCallback(
-    (roomCode: string, rateKey: string) => {
+    (roomCode: string, rateKey: string, allotment: number) => {
       const key = `${roomCode}_${rateKey}`;
       const currentSelection = selectedRoomCounts[key] || 0;
       const remainingSlots =
         totalRoomCount - totalSelectedRooms + currentSelection;
-      return Math.min(remainingSlots, totalRoomCount);
+      // Consider both total room count limit and allotment limit
+      // Allotment represents how many rooms of this specific rate are available
+      // The maximum selectable is the minimum of:
+      // 1. Remaining slots from total room count
+      // 2. Allotment (total available for this rate)
+      const maxFromTotal = Math.min(remainingSlots, totalRoomCount);
+      const maxFromAllotment = allotment; // Total allotment for this rate
+      return Math.min(maxFromTotal, maxFromAllotment);
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
 
   // Check if a room rate dropdown should be disabled
   const isRoomRateDisabled = useCallback(
-    (roomCode: string, rateKey: string) => {
+    (roomCode: string, rateKey: string, allotment: number) => {
       const key = `${roomCode}_${rateKey}`;
       const currentSelection = selectedRoomCounts[key] || 0;
-      // If this rate already has a selection, don't disable it
+      // If this rate already has a selection, don't disable it (user can still adjust)
       if (currentSelection > 0) {
         return false;
       }
-      // If total selected rooms equals or exceeds the limit, disable this dropdown
-      return totalSelectedRooms >= totalRoomCount;
+      // Disable if:
+      // 1. Total selected rooms equals or exceeds the search limit, OR
+      // 2. Allotment is 0 or less (no rooms available for this rate)
+      return totalSelectedRooms >= totalRoomCount || allotment <= 0;
     },
     [selectedRoomCounts, totalSelectedRooms, totalRoomCount]
   );
@@ -2167,11 +2176,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     const maxAvailable =
                                       getAvailableRoomOptionsForRate(
                                         room.roomCode,
-                                        rate.rateKey
+                                        rate.rateKey,
+                                        rate.allotment || 0
                                       );
                                     const isDisabled = isRoomRateDisabled(
                                       room.roomCode,
-                                      rate.rateKey
+                                      rate.rateKey,
+                                      rate.allotment || 0
                                     );
 
                                     // Get cancellation details for this specific rate
@@ -2181,12 +2192,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                       rateCancellationDetails.isFullyRefundable
                                         ? t("refund.fullyRefundable")
                                         : t("refund.notFullyRefundable");
-                                    const rateRefundDateLabel =
-                                      rateCancellationDetails.refundDate
-                                        ? t("refund.beforeDate", {
-                                          date: rateCancellationDetails.refundDate,
-                                        })
-                                        : t("placeholders.refundDateUnavailable");
+                                    // const rateRefundDateLabel =
+                                    //   rateCancellationDetails.refundDate
+                                    //     ? t("refund.beforeDate", {
+                                    //       date: rateCancellationDetails.refundDate,
+                                    //     })
+                                    //     : t("placeholders.refundDateUnavailable");
 
                                     return (
                                       <React.Fragment
@@ -2453,9 +2464,65 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                     ))}
                                                   </select>
                                                 </label>
-
-
                                               </div>
+
+                                              {selectedCount > 0 && (
+                                                <>
+                                                  <div className="mobile-room-booking-summary">
+                                                    <div className="mobile-summary-item">
+                                                      <span className="mobile-summary-label">
+                                                        {selectedCount}{" "}
+                                                        {selectedCount === 1 ? t("labels.room") : t("labels.rooms")}{" "}
+                                                        {t("labels.for")}{" "}
+                                                        {(() => {
+                                                          if (!searchFilters.checkInDate || !searchFilters.checkOutDate) {
+                                                            return "";
+                                                          }
+                                                          const checkIn = new Date(searchFilters.checkInDate);
+                                                          const checkOut = new Date(searchFilters.checkOutDate);
+                                                          const nights = Math.ceil(
+                                                            (checkOut.getTime() - checkIn.getTime()) /
+                                                            (1000 * 60 * 60 * 24)
+                                                          );
+                                                          return `${nights} ${nights === 1 ? t("labels.night") : t("labels.nights")}`;
+                                                        })()}
+                                                      </span>
+                                                      <span className="mobile-summary-value">
+                                                        <span
+                                                          className="currency-icon"
+                                                          aria-hidden="true"
+                                                          dangerouslySetInnerHTML={{
+                                                            __html: buildCurrencySvgMarkup("#09090b"),
+                                                          }}
+                                                          style={{ display: "inline-flex" }}
+                                                        />
+                                                        {priceFormatter.format(Number(rate.net || 0) * selectedCount)}
+                                                      </span>
+                                                    </div>
+                                                    <div className="mobile-summary-item mobile-summary-subtotal">
+                                                      <span className="mobile-summary-label">{t("labels.subtotal")}</span>
+                                                      <span className="mobile-summary-value">
+                                                        <span
+                                                          className="currency-icon"
+                                                          aria-hidden="true"
+                                                          dangerouslySetInnerHTML={{
+                                                            __html: buildCurrencySvgMarkup("#09090b"),
+                                                          }}
+                                                          style={{ display: "inline-flex" }}
+                                                        />
+                                                        {priceFormatter.format(Number(rate.net || 0) * selectedCount)}
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  <button
+                                                    type="button"
+                                                    className="button-primary room-booking-btn mobile-room-book-button"
+                                                    onClick={handleBookNowClick}
+                                                  >
+                                                    {t("actions.bookNow")}
+                                                  </button>
+                                                </>
+                                              )}
                                             </div>
                                           </div>
                                         </div>
