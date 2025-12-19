@@ -405,7 +405,7 @@
     "cancellationPolicy": "سياسة الإلغاء",
     "cancellationCharges": "رسوم الإلغاء",
     "cancellationPolicyDescription": "ستطبق رسوم الإلغاء التالية:",
-    "cancelBefore": "إلغاء قبل",
+    "cancelAfter": "إلغاء بعد",
     "penaltyAmount": "مبلغ الغرامة",
     "confirmCancellation": "تأكيد الإلغاء"
   },

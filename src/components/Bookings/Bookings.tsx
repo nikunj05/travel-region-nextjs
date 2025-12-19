@@ -634,7 +634,7 @@ export default function Bookings() {
                             {formattedDate ? (
                               <>
                                 <span className="policy-date-label">
-                                  {t("cancelBefore") || "Cancel before"}:
+                                  {t("cancelAfter") || "Cancel after"}:
                                 </span>
                                 <span className="policy-date-value">{formattedDate}</span>
                               </>

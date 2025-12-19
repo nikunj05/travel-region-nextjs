@@ -405,7 +405,7 @@
     "cancellationPolicy": "Cancellation Policy",
     "cancellationCharges": "Cancellation Charges",
     "cancellationPolicyDescription": "The following cancellation charges will apply:",
-    "cancelBefore": "Cancel before",
+    "cancelAfter": "Cancel after",
     "penaltyAmount": "Penalty Amount",
     "confirmCancellation": "Confirm Cancellation"
   },
