@@ -26,6 +26,7 @@ import { Textarea } from "@/components/core/Textarea/Textarea";
 import { Select } from "@/components/core/Select/Select";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 import { CreateBookingRequest } from "@/types/booking";
+import { formatDateForAPI } from "@/lib/dateUtils";
 
 interface BookingReviewPageProps {
   hotelId: string;
@@ -125,17 +126,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     });
   }, [tv]);
 
-  // Format date to YYYY-MM-DD
-  const formatDateForAPI = (date: string | Date | null | undefined): string => {
-    if (!date) return "";
-    try {
-      const dateObj = date instanceof Date ? date : new Date(date);
-      return dateObj.toISOString().split('T')[0];
-    } catch {
-      return "";
-    }
-  };
-
   // Handle form submission
   const handleSubmit = async (data: BookingFormData) => {
     // console.log("=== BOOKING FORM SUBMISSION ===");
@@ -178,8 +168,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     // Prepare the complete booking request
     const bookingRequest: CreateBookingRequest = {
       hotel_code: parseInt(hotelId),
-      check_in: formatDateForAPI(searchFilters.checkInDate),
-      check_out: formatDateForAPI(searchFilters.checkOutDate),
+      check_in: searchFilters.checkInDate ? formatDateForAPI(searchFilters.checkInDate) : "",
+      check_out: searchFilters.checkOutDate ? formatDateForAPI(searchFilters.checkOutDate) : "",
       rooms: totalRooms,
       adults: totalAdults,
       children: totalChildren,

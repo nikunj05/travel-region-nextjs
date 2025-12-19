@@ -24,6 +24,7 @@ import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
 import { Textarea } from "@/components/core/Textarea/Textarea";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
+import { BookingDetailsResponse, BookingDetail, RoomDetailWithComments } from "@/types/booking";
 
 function CheckoutComponent() {
   const router = useRouter();
@@ -38,14 +39,37 @@ function CheckoutComponent() {
   const watchSetupRef = useRef(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [agreeToTermsError, setAgreeToTermsError] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState<BookingDetailsResponse | null>(null);
+  const [roomDetails, setRoomDetails] = useState<Array<{ room_name: string; rate_comments: string }>>([]);
 
   
 
-  // Generate default values for the form - load from store if available
+  // Generate default values for the form - load from store if available, otherwise from booking details
   const defaultValues = useMemo(() => {
     if (travelerDetails) {
       return travelerDetails;
     }
+    
+    // Try to populate from booking details API response
+    if (bookingDetails?.data?.booking?.details && Array.isArray(bookingDetails.data.booking.details)) {
+      const primaryGuest = bookingDetails.data.booking.details.find((detail: BookingDetail) => 
+        detail.is_primary === 1 || detail.is_primary === true
+      );
+      if (primaryGuest) {
+        return {
+          primaryGuest: {
+            firstName: primaryGuest.first_name || "",
+            lastName: primaryGuest.last_name || "",
+            email: primaryGuest.email || "",
+            country: primaryGuest.country || "",
+            countryCode: primaryGuest.country_code?.replace("+", "") || "966",
+            phone: primaryGuest.phone || "",
+          },
+          specialRequests: "",
+        };
+      }
+    }
+    
     return {
       primaryGuest: {
         firstName: "",
@@ -57,7 +81,7 @@ function CheckoutComponent() {
       },
       specialRequests: "",
     };
-  }, [travelerDetails]);
+  }, [travelerDetails, bookingDetails]);
 
   // Create validation schema with translations
   const bookingSchema = useMemo(() => {
@@ -95,6 +119,105 @@ function CheckoutComponent() {
       }
     };
   }, [setTravelerDetails]);
+
+  // Reset form when booking details are loaded and form is ready
+  useEffect(() => {
+    if (!bookingDetails || !formMethodsRef.current || travelerDetails) return;
+
+    if (bookingDetails?.data?.booking?.details && Array.isArray(bookingDetails.data.booking.details)) {
+      const primaryGuest = bookingDetails.data.booking.details.find((detail: BookingDetail) => 
+        detail.is_primary === 1 || detail.is_primary === true
+      );
+      if (primaryGuest) {
+        const formData: BookingFormData = {
+          primaryGuest: {
+            firstName: primaryGuest.first_name || "",
+            lastName: primaryGuest.last_name || "",
+            email: primaryGuest.email || "",
+            country: primaryGuest.country || "",
+            countryCode: primaryGuest.country_code?.replace("+", "") || "966",
+            phone: primaryGuest.phone || "",
+          },
+          specialRequests: "",
+        };
+        // Reset form with new values
+        formMethodsRef.current.reset(formData);
+        // Save to store
+        setTravelerDetails(formData);
+      }
+    }
+  }, [bookingDetails, travelerDetails, setTravelerDetails]);
+
+  // Call getBookingDetails API and populate form data
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      // Get order from booking response
+      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
+        ? bookingResponse.data.booking.order
+        : undefined;
+
+      if (!order || typeof order !== 'string') {
+        return;
+      }
+
+      try {
+        const response = await bookingService.getBookingDetails(order);
+        console.log("📋 Booking Details Response:", response);
+        
+        // Store booking details
+        setBookingDetails(response);
+        
+        // Extract room details with room names and rate comments
+        if (response?.data?.booking?.room_details && Array.isArray(response.data.booking.room_details)) {
+          // Get unique rooms based on room_name and rate_key combination, keeping only those with rate_comments
+          const roomMap = new Map<string, { room_name: string; rate_comments: string }>();
+          
+          response.data.booking.room_details.forEach((room: RoomDetailWithComments) => {
+            if (room.rate_comments && room.rate_comments.trim() !== "") {
+              const key = `${room.room_name}_${room.rate_key}`;
+              // Only add if not already in map (to avoid duplicates)
+              if (!roomMap.has(key)) {
+                roomMap.set(key, {
+                  room_name: room.room_name || "Room",
+                  rate_comments: room.rate_comments
+                });
+              }
+            }
+          });
+          
+          setRoomDetails(Array.from(roomMap.values()));
+        }
+        
+        // Populate form if travelerDetails is not available
+        if (!travelerDetails && response?.data?.booking?.details && Array.isArray(response.data.booking.details)) {
+          const primaryGuest = response.data.booking.details.find((detail: BookingDetail) => detail.is_primary === 1);
+          if (primaryGuest) {
+            const formData: BookingFormData = {
+              primaryGuest: {
+                firstName: primaryGuest.first_name || "",
+                lastName: primaryGuest.last_name || "",
+                email: primaryGuest.email || "",
+                country: primaryGuest.country || "",
+                countryCode: primaryGuest.country_code?.replace("+", "") || "966",
+                phone: primaryGuest.phone || "",
+              },
+              specialRequests: "",
+            };
+            // Save to store first
+            setTravelerDetails(formData);
+            // Reset form with new values if form is ready
+            if (formMethodsRef.current) {
+              formMethodsRef.current.reset(formData);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error fetching booking details:", error);
+      }
+    };
+
+    fetchBookingDetails();
+  }, [bookingResponse, travelerDetails, setTravelerDetails]);
 
   // Handle form submission (if needed for checkout)
   const handleSubmit = async (data: BookingFormData) => {
@@ -553,6 +676,40 @@ function CheckoutComponent() {
                 );
               }}
             </Form>
+
+            {/* Rate Comments Card */}
+            {roomDetails.length > 0 && (
+              <div className="booking-detail-box booking-rate-comments">
+                <h3 className="booking-details-sub-title">
+                  {(() => {
+                    try {
+                      return t("rateComments.title");
+                    } catch {
+                      return "Rate Comments";
+                    }
+                  })()}
+                </h3>
+                <div className="rate-comments-content">
+                  {roomDetails.map((room, index) => (
+                    <div key={`room-detail-${index}`} className="rate-comment-item">
+                      <h4 className="room-label">
+                        {(() => {
+                          try {
+                            return t("rateComments.roomWithName", { 
+                              number: index + 1, 
+                              roomName: room.room_name 
+                            });
+                          } catch {
+                            return `Room ${index + 1} - ${room.room_name}`;
+                          }
+                        })()}
+                      </h4>
+                      <p className="rate-comment-text">{room.rate_comments}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* <div className="booking-detail-box booking-traveler-details choose-payment-option">
               <h3 className="booking-details-sub-title">
                 Choose Payment Option

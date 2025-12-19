@@ -6,14 +6,19 @@ export interface RoomDetail {
 }
 
 export interface BookingDetail {
-  price_per_night: number;
+  id?: number;
+  booking_id?: number;
+  price_per_night?: number | string;
   first_name: string;
   last_name: string;
   email: string;
   country: string;
   country_code: string;
   phone: string;
-  is_primary: boolean;
+  is_primary: number | boolean; // API returns 1/0, but can be boolean in some cases
+  created_at?: string;
+  updated_at?: string;
+  [key: string]: unknown;
 }
 
 export interface CreateBookingRequest {
@@ -76,12 +81,29 @@ export interface CheckoutResponse {
   };
 }
 
+export interface RoomDetailWithComments {
+  id?: number;
+  booking_id?: number;
+  room_code: string;
+  room_name?: string;
+  rate_key: string;
+  rate_comments?: string | null;
+  amount?: string;
+  board_name?: string;
+  net_amount?: string | null;
+  net_currency?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  [key: string]: unknown;
+}
+
 export interface BookingDetailsData {
   booking?: {
     id?: number;
     order: string;
     status?: string;
     details?: BookingDetail[];
+    room_details?: RoomDetailWithComments[];
     [key: string]: unknown;
   };
   [key: string]: unknown;

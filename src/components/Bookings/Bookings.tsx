@@ -644,7 +644,7 @@ export default function Bookings() {
                           </div>
                           <div className="policy-amount d-inline-flex align-items-center">
                             <span className="policy-amount-label">
-                              {t("refundAmount") || "Refund Amount"}:
+                              {t("penaltyAmount") || "Penalty Amount"}:
                             </span>
                             <span
                               className="currency-icon"

@@ -244,6 +244,41 @@
         }
       }
 
+      .booking-rate-comments {
+        .rate-comments-content {
+          margin-top: 20px;
+
+          .rate-comment-item {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+
+            &:last-child {
+              margin-bottom: 0;
+              padding-bottom: 0;
+              border-bottom: none;
+            }
+
+            .room-label {
+              font-size: 18px;
+              font-weight: $font-weight600;
+              color: $color-black-zinc-950;
+              margin-bottom: 12px;
+              line-height: 1.4;
+            }
+
+            .rate-comment-text {
+              font-size: 16px;
+              color: $color-black-zinc-800;
+              line-height: 1.6;
+              margin: 0;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            }
+          }
+        }
+      }
+
       .choose-payment-option {
         .payment-options {
           margin-bottom: 24px;

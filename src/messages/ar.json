@@ -406,7 +406,7 @@
     "cancellationCharges": "رسوم الإلغاء",
     "cancellationPolicyDescription": "ستطبق رسوم الإلغاء التالية:",
     "cancelBefore": "إلغاء قبل",
-    "refundAmount": "مبلغ الاسترداد",
+    "penaltyAmount": "مبلغ الغرامة",
     "confirmCancellation": "تأكيد الإلغاء"
   },
   "PaymentMethods": {
@@ -668,6 +668,12 @@
       "and": "و",
       "privacyPolicy": "سياسة الخصوصية.",
       "errorMessage": "يرجى قبول الشروط وسياسة الخصوصية."
+    },
+    "rateComments": {
+      "title": "تعليقات السعر",
+      "forRoom": "تعليق السعر لـ - {roomName}",
+      "room": "غرفة {number}",
+      "roomWithName": "غرفة {number} - {roomName}"
     },
     "placeholders": {
       "hotelName": "اسم الفندق"
