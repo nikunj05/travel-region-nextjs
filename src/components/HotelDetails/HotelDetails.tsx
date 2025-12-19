@@ -2600,8 +2600,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   <div className="mobile-room-booking-summary">
                                                     <div className="mobile-summary-item">
                                                       <span className="mobile-summary-label">
-                                                        {selectedCount}{" "}
-                                                        {selectedCount === 1
+                                                        {totalSelectedRooms}{" "}
+                                                        {totalSelectedRooms === 1
                                                           ? t("labels.room")
                                                           : t(
                                                               "labels.rooms"
@@ -2658,9 +2658,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                           }}
                                                         />
                                                         {priceFormatter.format(
-                                                          Number(
-                                                            rate.net || 0
-                                                          ) * selectedCount
+                                                          bookingSummary.totalPrice
                                                         )}
                                                       </span>
                                                     </div>
@@ -2684,9 +2682,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                           }}
                                                         />
                                                         {priceFormatter.format(
-                                                          Number(
-                                                            rate.net || 0
-                                                          ) * selectedCount
+                                                          bookingSummary.subtotal
                                                         )}
                                                       </span>
                                                     </div>
