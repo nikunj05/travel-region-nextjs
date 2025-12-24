@@ -39,6 +39,21 @@ interface AutocompleteResponse {
   status: string;
 }
 
+// Google Places Details API Response Interfaces
+interface PlaceDetailsGeometry {
+  location: {
+    lat: number;
+    lng: number;
+  };
+}
+
+interface PlaceDetailsResponse {
+  result?: {
+    geometry?: PlaceDetailsGeometry;
+  };
+  status: string;
+}
+
 interface LocationPickerProps {
   isOpen: boolean;
   onLocationSelect: (location: Location | null) => void;
@@ -61,6 +76,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [internalSearchQuery, setInternalSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Use external search query if provided, otherwise use internal
@@ -179,9 +195,44 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     return () => clearTimeout(timeoutId);
   }, [searchQuery, locale]);
 
-  const handleLocationClick = (location: Location) => {
-    // Text Search results already include coordinates, so we can select immediately
-    onLocationSelect(location);
+  const handleLocationClick = async (location: Location) => {
+    // Show loading state while fetching coordinates
+    setIsFetchingCoordinates(true);
+    
+    // Fetch coordinates using Place Details API
+    try {
+      const languageCode = getGoogleLanguageCode(locale);
+      const url = `/api/places/details?place_id=${encodeURIComponent(
+        location.id
+      )}&language=${languageCode}`;
+      
+      const response = await fetch(url);
+      const data: PlaceDetailsResponse = await response.json();
+
+      if (data.status === "OK" && data.result?.geometry?.location) {
+        // Add coordinates to the location object
+        const locationWithCoords: Location = {
+          ...location,
+          coordinates: {
+            lat: data.result.geometry.location.lat,
+            lng: data.result.geometry.location.lng,
+          },
+        };
+        onLocationSelect(locationWithCoords);
+      } else {
+        // If we can't get coordinates, still select the location
+        // (this allows the UI to show the selection even if coordinates fail)
+        console.warn("Could not fetch coordinates for location:", location.name);
+        onLocationSelect(location);
+      }
+    } catch (error) {
+      console.error("Error fetching place details:", error);
+      // Still select the location on error
+      onLocationSelect(location);
+    } finally {
+      setIsFetchingCoordinates(false);
+    }
+    
     updateSearchQuery(location.name);
     setSuggestions([]);
   };
@@ -252,11 +303,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
 
             <div className="locationpicker-section">
               <span className="locationpicker-section-header">
-                {isLoading ? "Searching..." : "Search Results"}
+                {isLoading ? "Searching..." : isFetchingCoordinates ? "Loading..." : "Search Results"}
               </span>
-              {isLoading ? (
+              {isLoading || isFetchingCoordinates ? (
                 <div className="locationpicker-loading">
-                  <p>Loading suggestions...</p>
+                  <p>{isLoading ? "Loading suggestions..." : "Getting location details..."}</p>
                 </div>
               ) : suggestions.length > 0 ? (
                 <ul className="locationpicker-list">
@@ -266,6 +317,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
                         className="locationpicker-item"
                         onClick={() => handleLocationClick(location)}
                         type="button"
+                        disabled={isFetchingCoordinates}
                       >
                         {renderLocationIcon()}
                         <div className="destination-suggestion">

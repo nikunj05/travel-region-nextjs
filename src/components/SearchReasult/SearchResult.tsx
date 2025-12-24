@@ -666,6 +666,15 @@ const SearchResult = () => {
     }
     setLocationError("");
 
+    // Validate that location has coordinates
+    const coords = filters.location?.coordinates;
+    if (!coords || coords.lat == null || coords.lng == null) {
+      e.preventDefault();
+      setLocationError("Please select a valid location with coordinates");
+      console.error("Location missing coordinates:", filters.location);
+      return;
+    }
+
     const isCheckInMissing = !filters.checkInDate;
     const isCheckOutMissing = !filters.checkOutDate;
 
@@ -690,9 +699,10 @@ const SearchResult = () => {
 
     // Wire dynamic filters to hotel search store and call API
     try {
-      const coords = filters.location?.coordinates;
-      const latitude = coords?.lat ?? null;
-      const longitude = coords?.lng ?? null;
+      const latitude = coords.lat;
+      const longitude = coords.lng;
+
+      console.log("Search with coordinates:", { latitude, longitude, location: filters.location.name });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
