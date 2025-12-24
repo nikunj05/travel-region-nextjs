@@ -15,68 +15,28 @@ interface Location {
   types?: string[];
 }
 
-// Google Maps Interfaces
-interface GoogleLatLng {
-  lat: () => number;
-  lng: () => number;
-}
-
-interface GoogleGeometry {
-  location: GoogleLatLng;
-}
-
-interface GooglePlaceResult {
+// Google Places Autocomplete API Response Interfaces
+interface AutocompletePrediction {
+  description: string;
   place_id: string;
-  name: string;
-  formatted_address?: string;
-  geometry?: GoogleGeometry;
-  types?: string[];
+  structured_formatting: {
+    main_text: string;
+    main_text_matched_substrings: Array<{
+      length: number;
+      offset: number;
+    }>;
+    secondary_text: string;
+  };
+  terms: Array<{
+    offset: number;
+    value: string;
+  }>;
+  types: string[];
 }
 
-interface GoogleTextSearchRequest {
-  query: string;
-  type?: string;
-  language?: string;
-}
-
-// Service Status Constants (we'll use strings matching the SDK)
-type GooglePlacesServiceStatus =
-  | "OK"
-  | "ZERO_RESULTS"
-  | "INVALID_REQUEST"
-  | "OVER_QUERY_LIMIT"
-  | "REQUEST_DENIED"
-  | "UNKNOWN_ERROR";
-
-// Google Places Service Interface
-interface GooglePlacesService {
-  textSearch: (
-    request: GoogleTextSearchRequest,
-    callback: (
-      results: GooglePlaceResult[] | null,
-      status: GooglePlacesServiceStatus
-    ) => void
-  ) => void;
-}
-
-// Google Maps API Interfaces
-interface GoogleMapsPlaces {
-  PlacesService: new (element: HTMLElement) => GooglePlacesService;
-}
-
-interface GoogleMaps {
-  places: GoogleMapsPlaces;
-}
-
-interface GoogleAPI {
-  maps: GoogleMaps;
-}
-
-// Extend Window interface to include google
-declare global {
-  interface Window {
-    google?: GoogleAPI;
-  }
+interface AutocompleteResponse {
+  predictions: AutocompletePrediction[];
+  status: string;
 }
 
 interface LocationPickerProps {
@@ -102,11 +62,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [suggestions, setSuggestions] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-// console.log('suggestions', suggestions);
-  const placesService = useRef<GooglePlacesService | null>(null);
-  const currentLocale = useRef<string>(locale);
-  const scriptLoaded = useRef<boolean>(false);
-  const isScriptLoading = useRef<boolean>(false);
 
   // Use external search query if provided, otherwise use internal
   const searchQuery = externalSearchQuery || internalSearchQuery;
@@ -116,91 +71,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     return currentLocale === "ar" ? "ar" : "en";
   };
 
-  // Load Google Maps Script with language parameter
-  useEffect(() => {
-    const loadGoogleMaps = () => {
-      const languageCode = getGoogleLanguageCode(locale);
-
-      // Reset service when locale changes
-      if (currentLocale.current !== locale) {
-        placesService.current = null;
-        scriptLoaded.current = false;
-        isScriptLoading.current = false;
-        setIsLoading(false); // Clear loading state when locale changes
-        setSuggestions([]); // Clear suggestions when locale changes
-      }
-
-      currentLocale.current = locale;
-
-      // Check if script already exists with different language
-      const existingScript = document.querySelector(
-        `script[src*="maps.googleapis.com"]`
-      ) as HTMLScriptElement;
-
-      if (existingScript) {
-        const scriptLanguage =
-          existingScript.src.match(/[?&]language=([^&]+)/)?.[1];
-        // If language changed, remove old script and reload
-        if (scriptLanguage !== languageCode) {
-          existingScript.remove();
-          scriptLoaded.current = false;
-          isScriptLoading.current = false;
-          placesService.current = null;
-          // Clear google object to force reload
-          if (window.google) {
-            delete (window as unknown as Record<string, unknown>).google;
-          }
-        } else if (window.google && window.google.maps) {
-          // Script already loaded with correct language, just initialize service
-          initializeServices();
-          return;
-        }
-      }
-
-      // If script already loaded with correct language, just initialize
-      if (window.google && window.google.maps && scriptLoaded.current) {
-        initializeServices();
-        return;
-      }
-
-      // Don't load if already loading
-      if (isScriptLoading.current) {
-        return;
-      }
-
-      isScriptLoading.current = true;
-      const script = document.createElement("script");
-      // Add language parameter to the script URL
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places&language=${languageCode}`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        initializeServices();
-        scriptLoaded.current = true;
-        isScriptLoading.current = false;
-      };
-      script.onerror = () => {
-        isScriptLoading.current = false;
-        scriptLoaded.current = false;
-        console.error("Failed to load Google Maps script");
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleMaps();
-  }, [locale]);
-
-  const initializeServices = () => {
-    if (!window.google || !window.google.maps) {
-      return;
-    }
-
-    // Always recreate the service to ensure it's fresh
-    placesService.current = new window.google.maps.places.PlacesService(
-      document.createElement("div")
-    );
-  };
-
   // Focus input when dropdown opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -208,7 +78,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     }
   }, [isOpen]);
 
-  // Google Places Text Search function
+  // Google Places Autocomplete API function
   const searchGooglePlaces = async (query: string) => {
     const trimmedQuery = query.trim();
     
@@ -219,109 +89,77 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
       return;
     }
 
-    // Check if Google Maps is loaded
-    if (!window.google || !window.google.maps) {
-      setIsLoading(false);
-      setSuggestions([]);
-      return;
-    }
-
-    // Initialize service if not exists
-    if (!placesService.current) {
-      initializeServices();
-      if (!placesService.current) {
-        setIsLoading(false);
-        setSuggestions([]);
-        return;
-      }
-    }
-
     setIsLoading(true);
 
     const languageCode = getGoogleLanguageCode(locale);
 
-    // Helper function to convert callback-based textSearch to Promise
-    const textSearchPromise = (
-      request: GoogleTextSearchRequest
-    ): Promise<GooglePlaceResult[]> => {
-      return new Promise((resolve, reject) => {
-        if (!placesService.current) {
-          reject(new Error("Places service not initialized"));
-          return;
-        }
+    // Helper function to fetch autocomplete suggestions via our API route
+    const fetchAutocompleteSuggestions = async (
+      input: string,
+      types: string
+    ): Promise<AutocompletePrediction[]> => {
+      try {
+        const url = `/api/places/autocomplete?input=${encodeURIComponent(
+          input
+        )}&types=${encodeURIComponent(types)}&language=${languageCode}`;
+        
+        const response = await fetch(url);
+        const data: AutocompleteResponse = await response.json();
 
-        placesService.current.textSearch(
-          request,
-          (
-            results: GooglePlaceResult[] | null,
-            status: GooglePlacesServiceStatus
-          ) => {
-            if (status === "OK" && results) {
-              resolve(results);
-            } else if (status === "ZERO_RESULTS") {
-              resolve([]);
-            } else {
-              reject(new Error(`Places API error: ${status}`));
-            }
-          }
-        );
-      });
+        if (data.status === "OK" && data.predictions) {
+          return data.predictions;
+        } else if (data.status === "ZERO_RESULTS") {
+          return [];
+        } else {
+          console.error(`Autocomplete API error: ${data.status}`);
+          return [];
+        }
+      } catch (error) {
+        console.error("Error fetching autocomplete suggestions:", error);
+        return [];
+      }
     };
 
     try {
-      // Make parallel calls for cities and hotels
-      const [citiesResults, hotelsResults] = await Promise.all([
-        textSearchPromise({
-          query: trimmedQuery,
-          type: "locality",
-          language: languageCode,
-        }),
-        textSearchPromise({
-          query: trimmedQuery,
-          type: "lodging",
-          language: languageCode,
-        }),
+      // Make parallel calls for cities and lodging
+      const [citiesResults, lodgingResults] = await Promise.all([
+        fetchAutocompleteSuggestions(trimmedQuery, "(cities)"),
+        fetchAutocompleteSuggestions(trimmedQuery, "lodging"),
       ]);
 
       // Merge results and deduplicate by place_id
-      const allResults = [...citiesResults, ...hotelsResults];
-      const uniqueResultsMap = new Map<string, GooglePlaceResult>();
+      const allResults = [...citiesResults, ...lodgingResults];
+      const uniqueResultsMap = new Map<string, AutocompletePrediction>();
 
-      for (const place of allResults) {
-        if (!uniqueResultsMap.has(place.place_id)) {
-          uniqueResultsMap.set(place.place_id, place);
+      for (const prediction of allResults) {
+        if (!uniqueResultsMap.has(prediction.place_id)) {
+          uniqueResultsMap.set(prediction.place_id, prediction);
         }
       }
 
-      // Convert to Location array and sort: cities first, then hotels
+      // Convert to Location array
       const locations: Location[] = Array.from(uniqueResultsMap.values()).map(
-        (place) => ({
-          id: place.place_id,
-          name: place.name,
-          country: place.formatted_address || "",
-          coordinates: place.geometry
-            ? {
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng(),
-              }
-            : undefined,
-          types: place.types,
+        (prediction) => ({
+          id: prediction.place_id,
+          name: prediction.structured_formatting.main_text,
+          country: prediction.structured_formatting.secondary_text || "",
+          types: prediction.types,
         })
       );
 
-      // Sort: hotels (lodging) first, then cities (locality)
-      locations.sort((a, b) => {
-        const aIsCity = a.types?.includes("locality") ?? false;
-        const bIsCity = b.types?.includes("locality") ?? false;
-        const aIsHotel = a.types?.includes("lodging") ?? false;
-        const bIsHotel = b.types?.includes("lodging") ?? false;
+      // // Sort: lodging first, then cities
+      // locations.sort((a, b) => {
+      //   const aIsCity = a.types?.includes("locality") ?? false;
+      //   const bIsCity = b.types?.includes("locality") ?? false;
+      //   const aIsLodging = a.types?.includes("lodging") ?? false;
+      //   const bIsLodging = b.types?.includes("lodging") ?? false;
 
-        if (aIsHotel && !bIsHotel) return -1;
-        if (!aIsHotel && bIsHotel) return 1;
-        if (aIsCity && !bIsCity && !aIsHotel && !bIsHotel) return -1;
-        if (!aIsCity && bIsCity && !aIsHotel && !bIsHotel) return 1;
-        return 0;
-      });
+      //   if (aIsLodging && !bIsLodging) return -1;
+      //   if (!aIsLodging && bIsLodging) return 1;
+      //   if (aIsCity && !bIsCity && !aIsLodging && !bIsLodging) return -1;
+      //   if (!aIsCity && bIsCity && !aIsLodging && !bIsLodging) return 1;
+      //   return 0;
+      // });
 
       setSuggestions(locations);
       setIsLoading(false);
