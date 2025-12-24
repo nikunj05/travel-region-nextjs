@@ -102,7 +102,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   const [suggestions, setSuggestions] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
+// console.log('suggestions', suggestions);
   const placesService = useRef<GooglePlacesService | null>(null);
   const currentLocale = useRef<string>(locale);
   const scriptLoaded = useRef<boolean>(false);
@@ -209,8 +209,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
   }, [isOpen]);
 
   // Google Places Text Search function
-  const searchGooglePlaces = (query: string) => {
-    if (!query.trim()) {
+  const searchGooglePlaces = async (query: string) => {
+    const trimmedQuery = query.trim();
+    
+    // Minimum search length check
+    if (!trimmedQuery || trimmedQuery.length < 3) {
       setSuggestions([]);
       setIsLoading(false);
       return;
@@ -236,44 +239,92 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
     setIsLoading(true);
 
     const languageCode = getGoogleLanguageCode(locale);
-    const request: GoogleTextSearchRequest = {
-      query: query,
-      language: languageCode,
-      // type: 'lodging'
-      // 'type' parameter can be used to filter, e.g., 'lodging' for hotels,
-      // but omitting it allows searching for both cities and hotels as requested.
+
+    // Helper function to convert callback-based textSearch to Promise
+    const textSearchPromise = (
+      request: GoogleTextSearchRequest
+    ): Promise<GooglePlaceResult[]> => {
+      return new Promise((resolve, reject) => {
+        if (!placesService.current) {
+          reject(new Error("Places service not initialized"));
+          return;
+        }
+
+        placesService.current.textSearch(
+          request,
+          (
+            results: GooglePlaceResult[] | null,
+            status: GooglePlacesServiceStatus
+          ) => {
+            if (status === "OK" && results) {
+              resolve(results);
+            } else if (status === "ZERO_RESULTS") {
+              resolve([]);
+            } else {
+              reject(new Error(`Places API error: ${status}`));
+            }
+          }
+        );
+      });
     };
 
     try {
-      placesService.current.textSearch(
-        request,
-        (
-          results: GooglePlaceResult[] | null,
-          status: GooglePlacesServiceStatus
-        ) => {
-          setIsLoading(false);
-          if (
-            status === "OK" && // matches google.maps.places.PlacesServiceStatus.OK
-            results
-          ) {
-            const newSuggestions: Location[] = results.map((place) => ({
-              id: place.place_id,
-              name: place.name,
-              country: place.formatted_address || "", // Text Search returns formatted address
-              coordinates: place.geometry
-                ? {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng(),
-                  }
-                : undefined,
-              types: place.types,
-            }));
-            setSuggestions(newSuggestions);
-          } else {
-            setSuggestions([]);
-          }
+      // Make parallel calls for cities and hotels
+      const [citiesResults, hotelsResults] = await Promise.all([
+        textSearchPromise({
+          query: trimmedQuery,
+          type: "locality",
+          language: languageCode,
+        }),
+        textSearchPromise({
+          query: trimmedQuery,
+          type: "lodging",
+          language: languageCode,
+        }),
+      ]);
+
+      // Merge results and deduplicate by place_id
+      const allResults = [...citiesResults, ...hotelsResults];
+      const uniqueResultsMap = new Map<string, GooglePlaceResult>();
+
+      for (const place of allResults) {
+        if (!uniqueResultsMap.has(place.place_id)) {
+          uniqueResultsMap.set(place.place_id, place);
         }
+      }
+
+      // Convert to Location array and sort: cities first, then hotels
+      const locations: Location[] = Array.from(uniqueResultsMap.values()).map(
+        (place) => ({
+          id: place.place_id,
+          name: place.name,
+          country: place.formatted_address || "",
+          coordinates: place.geometry
+            ? {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng(),
+              }
+            : undefined,
+          types: place.types,
+        })
       );
+
+      // Sort: hotels (lodging) first, then cities (locality)
+      locations.sort((a, b) => {
+        const aIsCity = a.types?.includes("locality") ?? false;
+        const bIsCity = b.types?.includes("locality") ?? false;
+        const aIsHotel = a.types?.includes("lodging") ?? false;
+        const bIsHotel = b.types?.includes("lodging") ?? false;
+
+        if (aIsHotel && !bIsHotel) return -1;
+        if (!aIsHotel && bIsHotel) return 1;
+        if (aIsCity && !bIsCity && !aIsHotel && !bIsHotel) return -1;
+        if (!aIsCity && bIsCity && !aIsHotel && !bIsHotel) return 1;
+        return 0;
+      });
+
+      setSuggestions(locations);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error searching Google Places:", error);
       setIsLoading(false);
