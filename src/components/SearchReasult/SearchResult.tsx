@@ -38,6 +38,8 @@ import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { buildHotelSlug } from "@/lib/hotelSlug";
 import { buildCurrencySvgMarkup } from "@/constants";
+import { useInactivity } from "@/hooks/useInactivity";
+import SessionTimeoutModal from "../common/SessionTimeoutModal/SessionTimeoutModal";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
@@ -45,6 +47,9 @@ const SearchResult = () => {
   const locale = useLocale();
   const t = useTranslations("Banner");
   const tSearch = useTranslations("SearchResult");
+
+  // Inactivity detection (20 minutes)
+  const { isInactive } = useInactivity(20 * 60 * 1000);
 
   // Helper function to map locale to API language code
   const getLanguageCode = (currentLocale: string): string => {
@@ -1827,6 +1832,9 @@ const SearchResult = () => {
             </div>
           </div>
         </div>
+
+        {/* Inactivity Modal */}
+        <SessionTimeoutModal isOpen={isInactive} />
 
         {/* Mobile Filter Modal */}
         {isMobileFilterOpen && (

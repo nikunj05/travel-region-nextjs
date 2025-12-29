@@ -53,6 +53,8 @@ import { toast } from "react-toastify";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { buildCurrencySvgMarkup } from "@/constants";
 import { useBookingStore, SelectedRoom } from "@/store/bookingStore";
+import { useInactivity } from "@/hooks/useInactivity";
+import SessionTimeoutModal from "../common/SessionTimeoutModal/SessionTimeoutModal";
 
 interface HotelDetailsProps {
   hotelId: string;
@@ -151,6 +153,7 @@ interface ProcessedRate {
 const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const locale = useLocale();
+  const { isInactive } = useInactivity(20 * 60 * 1000);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ProcessedRoom | null>(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -3368,6 +3371,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           </div>
         </div>
       )}
+      <SessionTimeoutModal isOpen={isInactive} />
     </main>
   );
 };

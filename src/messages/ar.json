@@ -705,5 +705,10 @@
     "confirmationEmailSent": "تم إرسال بريد تأكيد إلى",
     "printConfirmation": "طباعة التأكيد",
     "viewMyBooking": "عرض حجزي"
+  },
+  "SessionTimeout": {
+    "title": "انتهت الجلسة",
+    "message": "انتهت مهلة الجلسة لضمان حصولك على أفضل الأسعار. يرجى تحديث الصفحة.",
+    "refreshButton": "تحديث الصفحة"
   }
 }

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { formatApiErrorMessage } from '@/lib/formatApiError';
 import { bookingService } from '@/services/bookingService';
 import { ApplyCouponRequest, ApplyCouponResponse } from '@/types';
 import { toast } from 'react-toastify';
@@ -35,9 +36,9 @@ export const useCouponStore = create<CouponState>((set) => ({
             } else {
                 toast.error(response.message || 'Failed to apply coupon');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error applying coupon:', error);
-            const errorMessage = error?.response?.data?.message || error.message || 'Error applying coupon';
+            const errorMessage = formatApiErrorMessage(error);
             set({ loading: false, error: errorMessage });
             toast.error(errorMessage);
         }

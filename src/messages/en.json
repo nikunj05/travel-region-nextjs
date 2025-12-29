@@ -705,5 +705,10 @@
     "confirmationEmailSent": "A confirmation email has been sent to",
     "printConfirmation": "Print Confirmation",
     "viewMyBooking": "View my Booking"
+  },
+  "SessionTimeout": {
+    "title": "Session Expired",
+    "message": "Your session has timed out to ensure you get the best rates. Please refresh the page.",
+    "refreshButton": "Refresh Page"
   }
 }
