@@ -1,5 +1,23 @@
 @use "variables" as *;
 
+@media (min-width: 1600px) {
+  .home-banner-section {
+    height: 70vh;
+  }
+}
+
+@media (min-width: 1920px) {
+  .home-banner-section {
+    height: 85vh;
+  }
+}
+
+@media (min-width: 3840px) {
+  .home-banner-section {
+    height: 75vh;
+  }
+}
+
 @media (min-width: 1200px) {
   .container-xl,
   .container-lg,
