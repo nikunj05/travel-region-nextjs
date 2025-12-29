@@ -540,7 +540,9 @@
       "addressMaxLength": "يجب ألا يتجاوز العنوان {max} حرفاً",
       "passportMaxLength": "يجب ألا يتجاوز رقم جواز السفر {max} حرفاً",
       "countryRequired": "البلد مطلوب",
-      "specialRequestsMaxLength": "يجب ألا تتجاوز الطلبات الخاصة {max} حرفاً"
+      "specialRequestsMaxLength": "يجب ألا تتجاوز الطلبات الخاصة {max} حرفاً",
+      "firstNameEnglishOnly": "يجب أن يكون الاسم الأول بأحرف إنجليزية فقط",
+      "lastNameEnglishOnly": "يجب أن يكون اسم العائلة بأحرف إنجليزية فقط"
     }
   },
   "BookingReview": {
@@ -660,7 +662,8 @@
       "guest": "ضيف",
       "guests": "ضيوف",
       "night": "ليلة",
-      "nights": "ليالٍ"
+      "nights": "ليالٍ",
+      "discount": "خَصم"
     },
     "agreeToTerms": {
       "label": "أوافق على",
@@ -677,6 +680,12 @@
     },
     "placeholders": {
       "hotelName": "اسم الفندق"
+    },
+    "coupon": {
+      "label": "رمز القسيمة",
+      "placeholder": "أدخل رمز القسيمة",
+      "apply": "تطبيق",
+      "applying": "جاري التطبيق..."
     }
   },
   "BookingConfirmation": {

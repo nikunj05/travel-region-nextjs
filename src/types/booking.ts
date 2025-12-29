@@ -150,3 +150,21 @@ export interface GetBookingsResponse {
   };
 }
 
+
+export interface ApplyCouponRequest {
+  coupon_code: string;
+  order: string;
+}
+
+export interface ApplyCouponResponse {
+  status: boolean;
+  message: string;
+  data?: {
+    booking?: {
+      discount_amount?: string | number;
+      total_price?: string | number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+}

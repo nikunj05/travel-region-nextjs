@@ -44,4 +44,7 @@
   font-size: 14px;
   display: block;
   color: #dc2626;
+  // Always keep error messages in LTR / left-aligned even inside RTL layouts
+  direction: ltr;
+  text-align: left;
 }

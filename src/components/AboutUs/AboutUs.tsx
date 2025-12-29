@@ -28,6 +28,7 @@ interface AboutUsProps {
 }
 
 export default function AboutUs({ page, loading = false }: AboutUsProps) {
+  console.log('page', page);
   const t = useTranslations('AboutUs');
 
   // console.log(page)
@@ -143,12 +144,8 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
     return <AboutUsSkeleton />;
   }
 
-  // Parse the dynamic content from page.content
-  const parseContent = (content: string) => {
-    // Extract title - handle both <h2>Title</h2> and <h2><sub>Title</sub></h2> structures
-    const titleMatch = content.match(/<h2>(?:<sub>)?(.*?)(?:<\/sub>)?<\/h2>/);
-    const title = titleMatch ? titleMatch[1] : "Our Story – How It All Started";
-
+  // Parse the description from page.content (only if needed)
+  const parseDescription = (content: string) => {
     // Extract description - handle different structures
     let description = "";
     
@@ -164,37 +161,14 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
         : "Founded in 2015, our journey began with a simple yet powerful vision — to make hotel discovery and booking effortless, transparent, and enjoyable for travelers everywhere. What started as a small idea born from personal travel frustrations quickly grew into a platform trusted by thousands of users every month. Over the years, we've partnered with top hotels, refined our technology, and built a passionate team dedicated to delivering seamless travel experiences. Every booking we facilitate is a step towards our mission.";
     }
 
-    // Extract founder name and title - handle both <h3> and <strong> structures
-    let founderName = "Imran Ahmed";
-    let founderTitle = "Founder of Travel Region";
-    
-    // Try h3 structure first (Arabic)
-    const h3Match = content.match(/<h3>(.*?)<\/h3>/);
-    if (h3Match) {
-      founderName = h3Match[1];
-      // Look for the next p tag for the title
-      const nextPMatch = content.match(/<h3>.*?<\/h3>\s*<p>(.*?)<\/p>/);
-      if (nextPMatch) {
-        founderTitle = nextPMatch[1];
-      }
-    } else {
-      // Fallback to strong structure (English)
-      const founderMatch = content.match(/<strong>(.*?)<\/strong><br>([\s\S]*?)<\/p>/);
-      if (founderMatch) {
-        founderName = founderMatch[1];
-        founderTitle = founderMatch[2];
-      }
-    }
-
-    return { title, description, founderName, founderTitle };
+    return description;
   };
 
-  const dynamicContent = page.content ? parseContent(page.content) : {
-    title: "Our Story – How It All Started",
-    description: "Founded in 2015, our journey began with a simple yet powerful vision — to make hotel discovery and booking effortless, transparent, and enjoyable for travelers everywhere. What started as a small idea born from personal travel frustrations quickly grew into a platform trusted by thousands of users every month. Over the years, we've partnered with top hotels, refined our technology, and built a passionate team dedicated to delivering seamless travel experiences. Every booking we facilitate is a step towards our mission.",
-    founderName: "Imran Ahmed",
-    founderTitle: "Founder of Travel Region"
-  };
+  // Use dynamic fields from API or fallback to static values
+  const storyTitle = page.founder_title || "Our Story – How It All Started";
+  const storyDescription = page.content ? parseDescription(page.content) : "Founded in 2015, our journey began with a simple yet powerful vision — to make hotel discovery and booking effortless, transparent, and enjoyable for travelers everywhere. What started as a small idea born from personal travel frustrations quickly grew into a platform trusted by thousands of users every month. Over the years, we've partnered with top hotels, refined our technology, and built a passionate team dedicated to delivering seamless travel experiences. Every booking we facilitate is a step towards our mission.";
+  const founderName = page.founder_name || "Imran Ahmed";
+  const founderDesignation = page.founder_designation || "Founder of Travel Region";
   return (
     
     <main className="about-us-page section-space-b">
@@ -243,14 +217,14 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
             <div className="col-md-7">
               <div className="about-our-story-content">
                 <h2 className="about-us-section-title">
-                  {dynamicContent.title}
+                  {storyTitle}
                 </h2>
                 <p className="about-our-story-description">
-                  {dynamicContent.description}
+                  {storyDescription}
                 </p>
                 <div className="about-self-info">
-                  <h4 className="about-self-name">{dynamicContent.founderName}</h4>
-                  <p className="about-self-title">{dynamicContent.founderTitle}</p>
+                  <h4 className="about-self-name">{founderName}</h4>
+                  <p className="about-self-title">{founderDesignation}</p>
                 </div>
               </div>
             </div>

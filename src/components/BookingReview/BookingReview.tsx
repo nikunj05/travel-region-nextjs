@@ -41,7 +41,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("BookingReview");
-  const tv = useTranslations("Auth.validation");
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
@@ -110,21 +109,28 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     };
   }, [travelerDetails]);
 
-  // Create validation schema with translations
+  // Create validation schema with English-only messages
   const bookingSchema = useMemo(() => {
     return createBookingSchema((key, params) => {
-      if (key === 'firstNameMinLength' && params?.min) {
-        return tv('firstNameMinLength', { min: params.min });
-      }
-      if (key === 'lastNameMinLength' && params?.min) {
-        return tv('lastNameMinLength', { min: params.min });
-      }
-      if (key === 'specialRequestsMaxLength' && params?.max) {
-        return tv('specialRequestsMaxLength', { max: params.max });
-      }
-      return tv(key);
+      // Always return English messages regardless of locale
+      const englishMessages: Record<string, string> = {
+        'firstNameRequired': 'First name field is required.',
+        'lastNameRequired': 'Last name field is required.',
+        'emailRequired': 'Email is required',
+        'emailInvalid': 'Please enter a valid email address',
+        'countryRequired': 'Country is required',
+        'countryCodeRequired': 'Country code field is required.',
+        'phoneRequired': 'Phone number is required',
+        'phoneInvalid': 'Phone number must be valid',
+        'firstNameEnglishOnly': 'First name must contain only English letters (A-Z) and spaces',
+        'lastNameEnglishOnly': 'Last name must contain only English letters (A-Z) and spaces',
+        // 'firstNameMinLength': `First name must be at least ${params?.min || 2} characters`,
+        // 'lastNameMinLength': `Last name must be at least ${params?.min || 2} characters`,
+        'specialRequestsMaxLength': `Special requests must not exceed ${params?.max || 500} characters`,
+      };
+      return englishMessages[key] || key;
     });
-  }, [tv]);
+  }, []);
 
   // Handle form submission
   const handleSubmit = async (data: BookingFormData) => {
@@ -955,21 +961,61 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       </h3>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
-                          <Input
+                          <Controller
                             name="primaryGuest.firstName"
-                            label={t("travelerDetails.firstName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="First Name"
-                            className="form-input"
+                            control={methods.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                name="primaryGuest.firstName"
+                                label={t("travelerDetails.firstName")}
+                                labelWithContent={<span className="required">*</span>}
+                                type="text"
+                                placeholder="First Name"
+                                className="form-input"
+                                pattern="[A-Za-z\s]+"
+                                onKeyPress={(e) => {
+                                  // Only allow English letters (A-Z, a-z) and spaces
+                                  const char = String.fromCharCode(e.which || e.keyCode);
+                                  if (!/^[A-Za-z\s]$/.test(char)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  // Filter out any invalid characters that might have been pasted
+                                  const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                                  field.onChange(value);
+                                }}
+                              />
+                            )}
                           />
-                          <Input
+                          <Controller
                             name="primaryGuest.lastName"
-                            label={t("travelerDetails.lastName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Last Name"
-                            className="form-input"
+                            control={methods.control}
+                            render={({ field }) => (
+                              <Input
+                                {...field}
+                                name="primaryGuest.lastName"
+                                label={t("travelerDetails.lastName")}
+                                labelWithContent={<span className="required">*</span>}
+                                type="text"
+                                placeholder="Last Name"
+                                className="form-input"
+                                pattern="[A-Za-z\s]+"
+                                onKeyPress={(e) => {
+                                  // Only allow English letters (A-Z, a-z) and spaces
+                                  const char = String.fromCharCode(e.which || e.keyCode);
+                                  if (!/^[A-Za-z\s]$/.test(char)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  // Filter out any invalid characters that might have been pasted
+                                  const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                                  field.onChange(value);
+                                }}
+                              />
+                            )}
                           />
                         </div>
 
@@ -1027,6 +1073,11 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                 />
                               </div>
                             </div>
+                            {methods.formState.errors.primaryGuest?.countryCode && (
+                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
+                                {methods.formState.errors.primaryGuest.countryCode.message}
+                              </p>
+                            )}
                           </div>
                           <div className="form-group"></div>
                         </div>

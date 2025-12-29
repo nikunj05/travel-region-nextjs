@@ -26,6 +26,9 @@ export interface CmsPageItem {
   about_us: boolean;
   founder_image: string | null;
   founder_image_url: string | null;
+  founder_name: string | null;
+  founder_title: string | null;
+  founder_designation: string | null;
   why_we_exist: WhyWeExistItem[] | null;
   our_partners: string[] | null;
   few_highlights: FewHighlightsItem[] | null;

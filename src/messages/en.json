@@ -540,7 +540,9 @@
       "addressMaxLength": "Address must not exceed {max} characters",
       "passportMaxLength": "Passport number must not exceed {max} characters",
       "countryRequired": "Country is required",
-      "specialRequestsMaxLength": "Special requests must not exceed {max} characters"
+      "specialRequestsMaxLength": "Special requests must not exceed {max} characters",
+      "firstNameEnglishOnly": "First name must be English characters only",
+      "lastNameEnglishOnly": "Last name must be English characters only"
     }
   },
   "BookingReview": {
@@ -660,7 +662,8 @@
       "guest": "Guest",
       "guests": "Guests",
       "night": "Night",
-      "nights": "Nights"
+      "nights": "Nights",
+      "discount": "Discount"
     },
     "agreeToTerms": {
       "label": "I agree to",
@@ -677,6 +680,12 @@
     },
     "placeholders": {
       "hotelName": "Hotel Name"
+    },
+    "coupon": {
+      "label": "Coupon Code",
+      "placeholder": "Enter coupon code",
+      "apply": "Apply",
+      "applying": "Applying..."
     }
   },
   "BookingConfirmation": {

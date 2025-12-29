@@ -7,6 +7,8 @@ import {
   BookingDetailsResponse,
   GetBookingsRequest,
   GetBookingsResponse,
+  ApplyCouponRequest,
+  ApplyCouponResponse,
 } from '@/types';
 
 export const bookingService = {
@@ -108,6 +110,18 @@ export const bookingService = {
         data?: unknown;
         [key: string]: unknown;
       }>(`/bookings/${order}/cancellation-policies`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  applyCoupon: async (payload: ApplyCouponRequest): Promise<ApplyCouponResponse> => {
+    try {
+      const response = await api.post<ApplyCouponResponse>(
+        '/apply-coupon',
+        payload
+      );
       return response.data;
     } catch (error) {
       throw error;

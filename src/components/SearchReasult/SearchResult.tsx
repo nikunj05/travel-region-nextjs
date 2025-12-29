@@ -202,6 +202,39 @@ const SearchResult = () => {
   const sortedHotels = useMemo(() => {
     let sortable = [...apiHotels];
 
+    // 1) Apply client-side filters (star rating, price range, property type)
+    sortable = sortable.filter((hotel) => {
+      // Star rating filter (exact match to keep behavior close to API-side filtering)
+      if (selectedStarRating !== null) {
+        if (getStarRating(hotel) !== selectedStarRating) {
+          return false;
+        }
+      }
+
+      // Price range filter (based on minRate / displayed rate)
+      const rate = getHotelRateValue(hotel, "min");
+      if (rate < minPrice || rate > maxPrice) {
+        return false;
+      }
+
+      // Property type filter (accommodation codes) – applied when we have codes selected
+      if (selectedAccommodationCodes.length > 0) {
+        const accommodationCode =
+          "accommodationTypeCode" in hotel
+            ? (hotel as FavoriteHotel).accommodationTypeCode
+            : null;
+
+        if (
+          !accommodationCode ||
+          !selectedAccommodationCodes.includes(accommodationCode)
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
     // Filter logic for specific hotel (lodging)
     if (filters.location?.types?.includes('lodging') && filters.location.name) {
       const targetName = filters.location.name.toLowerCase();
@@ -238,6 +271,7 @@ const SearchResult = () => {
       }
     }
 
+    // 2) Apply client-side sorting
     switch (sortBy) {
       case "Price: Low to High":
         return [...sortable].sort((a, b) => {
@@ -259,7 +293,15 @@ const SearchResult = () => {
       default: // Recommended
         return sortable;
     }
-  }, [apiHotels, sortBy, filters.location]);
+  }, [
+    apiHotels,
+    sortBy,
+    filters.location,
+    selectedStarRating,
+    minPrice,
+    maxPrice,
+    selectedAccommodationCodes,
+  ]);
 
   // Hotels to display (lazy loaded)
   const visibleHotels = useMemo(
@@ -807,40 +849,12 @@ const SearchResult = () => {
     const newRating = selectedStarRating === star ? null : star;
 
     setSelectedStarRating(newRating);
-
-    // Update store and trigger search
-    useHotelSearchStore.getState().setStarRating(newRating);
-
-    // Only search if we have valid criteria
-    const storeFilters = useHotelSearchStore.getState().filters;
-    if (
-      storeFilters.checkIn &&
-      storeFilters.checkOut &&
-      storeFilters.latitude !== null &&
-      storeFilters.longitude !== null
-    ) {
-      useHotelSearchStore.getState().search();
-    }
   };
 
   // Handler for price range changes
   const handlePriceRangeChange = (min: number, max: number) => {
     setMinPrice(min);
     setMaxPrice(max);
-
-    // Update store and trigger search
-    useHotelSearchStore.getState().setPriceRange(min, max);
-
-    // Only search if we have valid criteria
-    const storeFilters = useHotelSearchStore.getState().filters;
-    if (
-      storeFilters.checkIn &&
-      storeFilters.checkOut &&
-      storeFilters.latitude !== null &&
-      storeFilters.longitude !== null
-    ) {
-      useHotelSearchStore.getState().search();
-    }
   };
 
   // Toggle accommodation selection (store sync happens in effect below)
@@ -851,24 +865,10 @@ const SearchResult = () => {
     });
   };
 
-  // Sync selected accommodation codes to store and trigger search
+  // Keep selected accommodation codes in local state only (client-side filtering)
   useEffect(() => {
-    const csv = selectedAccommodationCodes.join(",") || null;
-    useHotelSearchStore.getState().updateFilters({ accommodations: csv });
-
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      return;
-    }
-
-    const storeFilters = useHotelSearchStore.getState().filters;
-    if (
-      storeFilters.checkIn &&
-      storeFilters.checkOut &&
-      storeFilters.latitude !== null &&
-      storeFilters.longitude !== null
-    ) {
-      useHotelSearchStore.getState().search();
     }
   }, [selectedAccommodationCodes]);
 
@@ -878,22 +878,6 @@ const SearchResult = () => {
     setMinPrice(0);
     setMaxPrice(5000);
     setSelectedAccommodationCodes([]);
-
-    // Reset filters in store
-    useHotelSearchStore.getState().setStarRating(null);
-    useHotelSearchStore.getState().setPriceRange(null, null);
-    useHotelSearchStore.getState().updateFilters({ accommodations: null });
-
-    // Re-search with cleared filters
-    const storeFilters = useHotelSearchStore.getState().filters;
-    if (
-      storeFilters.checkIn &&
-      storeFilters.checkOut &&
-      storeFilters.latitude !== null &&
-      storeFilters.longitude !== null
-    ) {
-      useHotelSearchStore.getState().search();
-    }
   };
 
   // Price slider handlers
@@ -914,21 +898,9 @@ const SearchResult = () => {
   };
 
   const handlePriceSliderMouseUp = () => {
-    // Trigger search when slider is released
+    // No API call here – filters are applied client-side only
     if (minPrice > 0 || maxPrice < 5000) {
       handlePriceRangeChange(minPrice, maxPrice);
-    } else {
-      // If both are at default, clear the filter
-      useHotelSearchStore.getState().setPriceRange(null, null);
-      const storeFilters = useHotelSearchStore.getState().filters;
-      if (
-        storeFilters.checkIn &&
-        storeFilters.checkOut &&
-        storeFilters.latitude !== null &&
-        storeFilters.longitude !== null
-      ) {
-        useHotelSearchStore.getState().search();
-      }
     }
   };
 

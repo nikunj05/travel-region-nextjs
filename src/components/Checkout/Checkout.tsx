@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/bookingStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
+import { useCouponStore } from "@/store/couponStore";
 import { bookingService } from "@/services/bookingService";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -25,6 +26,7 @@ import { Input } from "@/components/core/Input/Input";
 import { Textarea } from "@/components/core/Textarea/Textarea";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 import { BookingDetailsResponse, BookingDetail, RoomDetailWithComments } from "@/types/booking";
+import Link from "next/link";
 
 function CheckoutComponent() {
   const router = useRouter();
@@ -34,6 +36,13 @@ function CheckoutComponent() {
   const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } = useBookingStore();
   const { filters: searchFilters } = useSearchFiltersStore();
   const { hotel: hotelData } = useHotelDetailsStore();
+  const { 
+    couponCode, 
+    setCouponCode, 
+    applyCoupon, 
+    loading: loadingCoupon, 
+    couponResponse 
+  } = useCouponStore();
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
@@ -284,6 +293,24 @@ function CheckoutComponent() {
       console.error("❌ Checkout Error:", error);
       toast.error("An error occurred during checkout. Please try again.");
     }
+  };
+
+  const handleApplyCoupon = async () => {
+    const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
+      ? bookingResponse.data.booking.order
+      : undefined;
+
+    if (!order || typeof order !== 'string') {
+      toast.error("Booking order not found");
+      return;
+    }
+
+    if (!couponCode) return;
+
+    await applyCoupon({
+      coupon_code: couponCode,
+      order: order
+    });
   };
 
   // Calculate total guests
@@ -931,7 +958,19 @@ function CheckoutComponent() {
                       }}
                       style={{ display: "inline-flex" }}
                     />{" "}
-                    {priceFormatter.format(priceBreakdown.totalPrice)}
+                    {(() => {
+                      // Use API total price if available (Gross amount)
+                      const apiTotalPrice = 
+                        couponResponse?.data?.booking?.total_price || 
+                        bookingDetails?.data?.booking?.total_price ||
+                        bookingResponse?.data?.booking?.total_price;
+                        
+                      if (apiTotalPrice) {
+                        return priceFormatter.format(Number(apiTotalPrice));
+                      }
+                      
+                      return priceFormatter.format(priceBreakdown.totalPrice);
+                    })()}
                   </div>
                 </div>
                 {/* <div className="booking-price-item d-flex align-items-center">
@@ -971,6 +1010,23 @@ function CheckoutComponent() {
                   <div className="booking-pricing discount">-$51</div>
                 </div> */}
                 <div className="booking-review-separetor"></div>
+                {couponResponse?.status && couponResponse?.data?.booking?.discount_amount && (
+                  <div className="booking-tital-price d-flex align-items-center justify-content-between mb-2" style={{ fontSize: '1.1rem' }}>
+                    <span className="text-success">{t("summary.discount")}</span>
+                    <span className="checkout-total-price">
+                      -
+                      <span
+                        className="currency-icon"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{
+                          __html: buildCurrencySvgMarkup("#09090b"),
+                        }}
+                        style={{ display: "inline-flex" }}
+                      />{" "}
+                      {priceFormatter.format(Number(couponResponse.data.booking.discount_amount))}
+                    </span>
+                  </div>
+                )}
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>{t("summary.totalPrice")}</span>
                   <span className="checkout-total-price">
@@ -982,12 +1038,54 @@ function CheckoutComponent() {
                       }}
                       style={{ display: "inline-flex" }}
                     />{" "}
-                    {priceFormatter.format(priceBreakdown.totalPrice)}
+                    {(() => {
+                      const discountAmount = couponResponse?.status && couponResponse?.data?.booking?.discount_amount
+                        ? Number(couponResponse.data.booking.discount_amount)
+                        : 0;
+
+                      // Use API total price if available (Gross amount)
+                      const apiTotalPrice = 
+                        couponResponse?.data?.booking?.total_price || 
+                        bookingDetails?.data?.booking?.total_price ||
+                        bookingResponse?.data?.booking?.total_price;
+
+                      const basePrice = apiTotalPrice ? Number(apiTotalPrice) : priceBreakdown.totalPrice;
+
+                      const finalPrice = Math.max(0, basePrice - discountAmount);
+                      return priceFormatter.format(finalPrice);
+                    })()}
                   </span>
                 </div>
                 <div className="booking-price-tax">
                   {t("summary.includedAllTaxes")}
                 </div>
+                <div className="booking-review-separetor"></div>
+              </div>
+              <div className="coupon-section mb-4">
+                <label className="form-label">{t("coupon.label") || "Coupon Code"}</label>
+                <div className="d-flex gap-2">
+                  <input
+                    type="text"
+                    className="form-control form-input"
+                    placeholder={t("coupon.placeholder") || "Enter coupon code"}
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    disabled={loadingCoupon}
+                  />
+                  <button
+                    className="button-primary"
+                    style={{ whiteSpace: 'nowrap', padding: '0 20px', height: 'auto', minHeight: '48px' }}
+                    onClick={handleApplyCoupon}
+                    disabled={loadingCoupon || !couponCode}
+                  >
+                    {loadingCoupon ? (t("coupon.applying") || "Applying...") : (t("coupon.apply") || "Apply")}
+                  </button>
+                </div>
+                {couponResponse && (
+                  <div className={`mt-2 ${couponResponse.status ? 'text-success' : 'text-danger'}`} style={{ fontSize: '14px' }}>
+                    {couponResponse.message}
+                  </div>
+                )}
               </div>
               <div className="chekout-agree-terms-box">
                 <div className="form-check">
@@ -1004,8 +1102,8 @@ function CheckoutComponent() {
                     }}
                   />
                   <label className="form-check-label" htmlFor="agreeToTerms">
-                    {t("agreeToTerms.label")} <a href="#">{t("agreeToTerms.terms")}</a> {t("agreeToTerms.and")}{" "}
-                    <a href="#">{t("agreeToTerms.privacyPolicy")}</a>
+                    {t("agreeToTerms.label")} <Link href="/terms-conditions">{t("agreeToTerms.terms")}</Link> {t("agreeToTerms.and")}{" "}
+                    <Link href="/privacy-policy">{t("agreeToTerms.privacyPolicy")}</Link>
                   </label>
                 </div>
                 {agreeToTermsError && (

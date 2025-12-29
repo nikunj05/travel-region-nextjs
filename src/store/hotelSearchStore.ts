@@ -123,19 +123,10 @@ export const useHotelSearchStore = create<HotelSearchState>()(
             longitude: filters.longitude,
           }
 
-          // Add optional filters only if they have values
-          if (filters.starRating !== null && filters.starRating !== undefined) {
-            payload.star_rating = filters.starRating
-          }
-          if (filters.minPrice !== null && filters.minPrice !== undefined) {
-            payload.min_price = filters.minPrice
-          }
-          if (filters.maxPrice !== null && filters.maxPrice !== undefined) {
-            payload.max_price = filters.maxPrice
-          }
-          if (filters.accommodations) {
-            payload.accommodations = filters.accommodations
-          }
+          // NOTE: Left sidebar filters (star rating, price range, property type)
+          // are now applied on the client side only. We intentionally do NOT
+          // send these extra filters to the listing API here so that the
+          // full result-set can be filtered in the UI.
 
           console.log('Hotel search API payload:', payload)
 

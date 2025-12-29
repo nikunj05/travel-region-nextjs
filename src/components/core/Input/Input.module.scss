@@ -76,6 +76,9 @@
   font-size: 14px;
   color: #dc2626;
   display: block;
+  // Always keep error messages in LTR / left-aligned even inside RTL layouts
+  direction: ltr;
+  text-align: left;
 }
 
 // Label with additional content (like forgot password link)
