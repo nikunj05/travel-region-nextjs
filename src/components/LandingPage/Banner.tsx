@@ -29,7 +29,7 @@ const Banner = () => {
 
   // App settings store (hydrated from server) for dynamic hero content
   const setting = useSettingsStore((s) => s.setting);
-  console.log('setting from store', setting);
+  // console.log('setting from store', setting);
 
   // Use the search filters store
   const {
@@ -145,6 +145,15 @@ const Banner = () => {
       return;
     }
 
+    // Validate that location has coordinates
+    const coords = filters.location?.coordinates;
+    if (!coords || coords.lat == null || coords.lng == null) {
+      e.preventDefault();
+      setLocationError("Please select a valid location with coordinates");
+      console.error("Location missing coordinates:", filters.location);
+      return;
+    }
+
     // Clear any existing error if location is selected
     setLocationError("");
 
@@ -176,9 +185,10 @@ const Banner = () => {
     // setIsSearching(true); // This will be handled by the search result page
 
     try {
-      const coords = filters.location?.coordinates;
-      const latitude = coords?.lat ?? null;
-      const longitude = coords?.lng ?? null;
+      const latitude = coords.lat;
+      const longitude = coords.lng;
+
+      console.log("Search with coordinates:", { latitude, longitude, location: filters.location.name });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
