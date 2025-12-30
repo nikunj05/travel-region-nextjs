@@ -684,9 +684,18 @@
                 width: 100%;
                 text-align: end;
                 gap: 0px;
-                margin-bottom: 34px;
+                // margin-bottom: 34px; // Remove fixed margin-bottom if possible, or keep it. 
+                // But definitely add margin-top: auto.
+                margin-top: auto;
 
-                .price-amount {
+                .hotel-price {
+                  display: flex;
+                  justify-content: flex-end;
+                  flex-direction: column;
+                  width: 100%;
+                  text-align: end;
+                  gap: 0px;
+                  margin-bottom: 34px;
                   font-size: 30px;
                   font-weight: $font-weight600;
                   color: $color-black-zinc-950;
