@@ -24,6 +24,7 @@ const Footer = () => {
   const dynamicFooterLogo = useSettingsStore((s) => s.setting?.footer_logo)
   // const socialMediaLinks = useSettingsStore((s) => s.setting?.social_media_links) || []
   const { pages, fetchPages } = useCmsStore()
+  console.log(pages)
   useEffect(() => {
     fetchPages()
   }, [fetchPages])

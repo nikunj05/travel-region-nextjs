@@ -685,7 +685,9 @@
       "label": "Coupon Code",
       "placeholder": "Enter coupon code",
       "apply": "Apply",
-      "applying": "Applying..."
+      "applying": "Applying...",
+      "success": "Coupon code is valid",
+      "error": "Invalid coupon code"
     }
   },
   "BookingConfirmation": {

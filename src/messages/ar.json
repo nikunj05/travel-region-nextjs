@@ -673,7 +673,7 @@
       "errorMessage": "يرجى قبول الشروط وسياسة الخصوصية."
     },
     "rateComments": {
-      "title": "تعليقات السعر",
+      "title": "معلومات اخرى",
       "forRoom": "تعليق السعر لـ - {roomName}",
       "room": "غرفة {number}",
       "roomWithName": "غرفة {number} - {roomName}"
@@ -685,7 +685,9 @@
       "label": "رمز القسيمة",
       "placeholder": "أدخل رمز القسيمة",
       "apply": "تطبيق",
-      "applying": "جاري التطبيق..."
+      "applying": "جاري التطبيق...",
+      "success": "تم تطبيق كود الخصم بنجاح",
+      "error": "كود الخصم غير صالح"
     }
   },
   "BookingConfirmation": {

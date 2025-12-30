@@ -50,6 +50,7 @@ function CheckoutComponent() {
   const [agreeToTermsError, setAgreeToTermsError] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<BookingDetailsResponse | null>(null);
   const [roomDetails, setRoomDetails] = useState<Array<{ room_name: string; rate_comments: string }>>([]);
+  const [translatedTexts, setTranslatedTexts] = useState<Map<string, string>>(new Map());
 
   
 
@@ -307,11 +308,77 @@ function CheckoutComponent() {
 
     if (!couponCode) return;
 
-    await applyCoupon({
+    const response = await applyCoupon({
       coupon_code: couponCode,
       order: order
     });
+
+    if (response) {
+      if (response.status) {
+        toast.success(t("coupon.success"));
+      } else {
+        toast.error(t("coupon.error"));
+      }
+    }
   };
+
+  // Translate texts using Google Translate when locale is Arabic
+  useEffect(() => {
+    if (locale !== 'ar' || roomDetails.length === 0) {
+      return;
+    }
+
+    const translateTexts = async () => {
+      const translations = new Map<string, string>();
+      
+      const translatePromises = roomDetails.flatMap((room) => {
+        const textsToTranslate = [room.room_name, room.rate_comments].filter(text => {
+           // Only translate English text that hasn't been translated yet
+           return text && 
+                  !translatedTexts.has(text) && 
+                  !text.match(/[\u0600-\u06FF]/) && 
+                  text.match(/[a-zA-Z]/);
+        });
+
+        return textsToTranslate.map(async (text) => {
+          try {
+             // Use Google Translate API
+             const response = await fetch(
+              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(text)}`
+            );
+            
+            if (response.ok) {
+              const data = await response.json();
+               // Google translate API returns an array of sentences. We need to join them.
+              if (data && data[0]) {
+                 const translated = data[0].map((item: any) => item[0]).join('');
+                 if (translated && translated !== text) {
+                   translations.set(text, translated);
+                 }
+              }
+            }
+          } catch (error) {
+             console.warn(`Translation failed for "${text}":`, error);
+          }
+        });
+      });
+
+      await Promise.all(translatePromises);
+      
+      if (translations.size > 0) {
+        setTranslatedTexts((prev) => {
+          const updated = new Map(prev);
+          translations.forEach((value, key) => {
+            updated.set(key, value);
+          });
+          return updated;
+        });
+      }
+    };
+
+    translateTexts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, roomDetails]);
 
   // Calculate total guests
   const totalGuests = useMemo(() => {
@@ -721,17 +788,20 @@ function CheckoutComponent() {
                     <div key={`room-detail-${index}`} className="rate-comment-item">
                       <h4 className="room-label">
                         {(() => {
+                          const roomName =  room.room_name;
                           try {
                             return t("rateComments.roomWithName", { 
                               number: index + 1, 
-                              roomName: room.room_name 
+                              roomName: roomName 
                             });
                           } catch {
-                            return `Room ${index + 1} - ${room.room_name}`;
+                            return `Room ${index + 1} - ${roomName}`;
                           }
                         })()}
                       </h4>
-                      <p className="rate-comment-text">{room.rate_comments}</p>
+                      <p className="rate-comment-text">
+                        {translatedTexts.get(room.rate_comments) || room.rate_comments}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -1083,7 +1153,7 @@ function CheckoutComponent() {
                 </div>
                 {couponResponse && (
                   <div className={`mt-2 ${couponResponse.status ? 'text-success' : 'text-danger'}`} style={{ fontSize: '14px' }}>
-                    {couponResponse.message}
+                    {couponResponse.status ? t("coupon.success") : t("coupon.error")}
                   </div>
                 )}
               </div>

@@ -11,7 +11,7 @@ interface CouponState {
     error: string | null;
 
     setCouponCode: (code: string) => void;
-    applyCoupon: (payload: ApplyCouponRequest) => Promise<void>;
+    applyCoupon: (payload: ApplyCouponRequest) => Promise<ApplyCouponResponse | undefined>;
     reset: () => void;
 }
 
@@ -30,12 +30,7 @@ export const useCouponStore = create<CouponState>((set) => ({
             console.log('Coupon Response:', response);
 
             set({ couponResponse: response, loading: false });
-
-            if (response.status) {
-                toast.success(response.message || 'Coupon applied successfully');
-            } else {
-                toast.error(response.message || 'Failed to apply coupon');
-            }
+            return response;
         } catch (error: unknown) {
             console.error('Error applying coupon:', error);
             const errorMessage = formatApiErrorMessage(error);

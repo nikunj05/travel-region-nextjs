@@ -219,9 +219,10 @@ export default function AboutUs({ page, loading = false }: AboutUsProps) {
                 <h2 className="about-us-section-title">
                   {storyTitle}
                 </h2>
-                <p className="about-our-story-description">
-                  {storyDescription}
-                </p>
+                <p 
+                  className="about-our-story-description"
+                  dangerouslySetInnerHTML={{ __html: storyDescription }}
+                ></p>
                 <div className="about-self-info">
                   <h4 className="about-self-name">{founderName}</h4>
                   <p className="about-self-title">{founderDesignation}</p>
