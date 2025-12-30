@@ -1280,6 +1280,7 @@ function CheckoutComponent() {
                   <input
                     type="text"
                     className="form-control form-input"
+                    maxLength={20}
                     placeholder={t("coupon.placeholder") || "Enter coupon code"}
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
