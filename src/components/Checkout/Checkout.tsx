@@ -18,14 +18,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { Select } from "@/components/core/Select/Select";
-import { COUNTRY_CODES, buildHotelbedsImageUrl, buildCurrencySvgMarkup } from "@/constants";
+import {
+  COUNTRY_CODES,
+  buildHotelbedsImageUrl,
+  buildCurrencySvgMarkup,
+} from "@/constants";
 import { useLocale, useTranslations } from "next-intl";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
 import { Textarea } from "@/components/core/Textarea/Textarea";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
-import { BookingDetailsResponse, BookingDetail, RoomDetailWithComments } from "@/types/booking";
+import {
+  BookingDetailsResponse,
+  BookingDetail,
+  RoomDetailWithComments,
+} from "@/types/booking";
 import Link from "next/link";
 
 function CheckoutComponent() {
@@ -33,37 +41,45 @@ function CheckoutComponent() {
   const locale = useLocale();
   const t = useTranslations("Checkout");
   const tv = useTranslations("Auth.validation");
-  const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } = useBookingStore();
+  const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } =
+    useBookingStore();
   const { filters: searchFilters } = useSearchFiltersStore();
   const { hotel: hotelData } = useHotelDetailsStore();
-  const { 
-    couponCode, 
-    setCouponCode, 
-    applyCoupon, 
-    loading: loadingCoupon, 
-    couponResponse 
+  const {
+    couponCode,
+    setCouponCode,
+    applyCoupon,
+    loading: loadingCoupon,
+    couponResponse,
   } = useCouponStore();
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [agreeToTermsError, setAgreeToTermsError] = useState(false);
-  const [bookingDetails, setBookingDetails] = useState<BookingDetailsResponse | null>(null);
-  const [roomDetails, setRoomDetails] = useState<Array<{ room_name: string; rate_comments: string }>>([]);
-  const [translatedTexts, setTranslatedTexts] = useState<Map<string, string>>(new Map());
-
-  
+  const [bookingDetails, setBookingDetails] =
+    useState<BookingDetailsResponse | null>(null);
+  const [roomDetails, setRoomDetails] = useState<
+    Array<{ room_name: string; rate_comments: string }>
+  >([]);
+  const [translatedTexts, setTranslatedTexts] = useState<Map<string, string>>(
+    new Map()
+  );
 
   // Generate default values for the form - load from store if available, otherwise from booking details
   const defaultValues = useMemo(() => {
     if (travelerDetails) {
       return travelerDetails;
     }
-    
+
     // Try to populate from booking details API response
-    if (bookingDetails?.data?.booking?.details && Array.isArray(bookingDetails.data.booking.details)) {
-      const primaryGuest = bookingDetails.data.booking.details.find((detail: BookingDetail) => 
-        detail.is_primary === 1 || detail.is_primary === true
+    if (
+      bookingDetails?.data?.booking?.details &&
+      Array.isArray(bookingDetails.data.booking.details)
+    ) {
+      const primaryGuest = bookingDetails.data.booking.details.find(
+        (detail: BookingDetail) =>
+          detail.is_primary === 1 || detail.is_primary === true
       );
       if (primaryGuest) {
         return {
@@ -79,7 +95,7 @@ function CheckoutComponent() {
         };
       }
     }
-    
+
     return {
       primaryGuest: {
         firstName: "",
@@ -96,26 +112,30 @@ function CheckoutComponent() {
   // Create validation schema with translations
   const bookingSchema = useMemo(() => {
     return createBookingSchema((key, params) => {
-      if (key === 'firstNameMinLength' && params?.min) {
-        return tv('firstNameMinLength', { min: params.min });
+      if (key === "firstNameMinLength" && params?.min) {
+        return tv("firstNameMinLength", { min: params.min });
       }
-      if (key === 'lastNameMinLength' && params?.min) {
-        return tv('lastNameMinLength', { min: params.min });
+      if (key === "lastNameMinLength" && params?.min) {
+        return tv("lastNameMinLength", { min: params.min });
       }
-      if (key === 'specialRequestsMaxLength' && params?.max) {
-        return tv('specialRequestsMaxLength', { max: params.max });
+      if (key === "specialRequestsMaxLength" && params?.max) {
+        return tv("specialRequestsMaxLength", { max: params.max });
       }
       return tv(key);
     });
   }, [tv]);
-
 
   // Watch form values and save to store when they change
   useEffect(() => {
     if (!formMethodsRef.current || watchSetupRef.current) return;
 
     const subscription = formMethodsRef.current.watch((value) => {
-      if (value?.primaryGuest && (value.primaryGuest.firstName || value.primaryGuest.lastName || value.primaryGuest.email)) {
+      if (
+        value?.primaryGuest &&
+        (value.primaryGuest.firstName ||
+          value.primaryGuest.lastName ||
+          value.primaryGuest.email)
+      ) {
         setTravelerDetails(value as BookingFormData);
       }
     });
@@ -123,7 +143,7 @@ function CheckoutComponent() {
     watchSetupRef.current = true;
 
     return () => {
-      if (subscription && typeof subscription.unsubscribe === 'function') {
+      if (subscription && typeof subscription.unsubscribe === "function") {
         subscription.unsubscribe();
         watchSetupRef.current = false;
       }
@@ -134,9 +154,13 @@ function CheckoutComponent() {
   useEffect(() => {
     if (!bookingDetails || !formMethodsRef.current || travelerDetails) return;
 
-    if (bookingDetails?.data?.booking?.details && Array.isArray(bookingDetails.data.booking.details)) {
-      const primaryGuest = bookingDetails.data.booking.details.find((detail: BookingDetail) => 
-        detail.is_primary === 1 || detail.is_primary === true
+    if (
+      bookingDetails?.data?.booking?.details &&
+      Array.isArray(bookingDetails.data.booking.details)
+    ) {
+      const primaryGuest = bookingDetails.data.booking.details.find(
+        (detail: BookingDetail) =>
+          detail.is_primary === 1 || detail.is_primary === true
       );
       if (primaryGuest) {
         const formData: BookingFormData = {
@@ -162,45 +186,61 @@ function CheckoutComponent() {
   useEffect(() => {
     const fetchBookingDetails = async () => {
       // Get order from booking response
-      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
-        ? bookingResponse.data.booking.order
-        : undefined;
+      const order =
+        bookingResponse?.data?.booking &&
+        "order" in bookingResponse.data.booking
+          ? bookingResponse.data.booking.order
+          : undefined;
 
-      if (!order || typeof order !== 'string') {
+      if (!order || typeof order !== "string") {
         return;
       }
 
       try {
         const response = await bookingService.getBookingDetails(order);
         console.log("📋 Booking Details Response:", response);
-        
+
         // Store booking details
         setBookingDetails(response);
-        
+
         // Extract room details with room names and rate comments
-        if (response?.data?.booking?.room_details && Array.isArray(response.data.booking.room_details)) {
+        if (
+          response?.data?.booking?.room_details &&
+          Array.isArray(response.data.booking.room_details)
+        ) {
           // Get unique rooms based on room_name and rate_key combination, keeping only those with rate_comments
-          const roomMap = new Map<string, { room_name: string; rate_comments: string }>();
-          
-          response.data.booking.room_details.forEach((room: RoomDetailWithComments) => {
-            if (room.rate_comments && room.rate_comments.trim() !== "") {
-              const key = `${room.room_name}_${room.rate_key}`;
-              // Only add if not already in map (to avoid duplicates)
-              if (!roomMap.has(key)) {
-                roomMap.set(key, {
-                  room_name: room.room_name || "Room",
-                  rate_comments: room.rate_comments
-                });
+          const roomMap = new Map<
+            string,
+            { room_name: string; rate_comments: string }
+          >();
+
+          response.data.booking.room_details.forEach(
+            (room: RoomDetailWithComments) => {
+              if (room.rate_comments && room.rate_comments.trim() !== "") {
+                const key = `${room.room_name}_${room.rate_key}`;
+                // Only add if not already in map (to avoid duplicates)
+                if (!roomMap.has(key)) {
+                  roomMap.set(key, {
+                    room_name: room.room_name || "Room",
+                    rate_comments: room.rate_comments,
+                  });
+                }
               }
             }
-          });
-          
+          );
+
           setRoomDetails(Array.from(roomMap.values()));
         }
-        
+
         // Populate form if travelerDetails is not available
-        if (!travelerDetails && response?.data?.booking?.details && Array.isArray(response.data.booking.details)) {
-          const primaryGuest = response.data.booking.details.find((detail: BookingDetail) => detail.is_primary === 1);
+        if (
+          !travelerDetails &&
+          response?.data?.booking?.details &&
+          Array.isArray(response.data.booking.details)
+        ) {
+          const primaryGuest = response.data.booking.details.find(
+            (detail: BookingDetail) => detail.is_primary === 1
+          );
           if (primaryGuest) {
             const formData: BookingFormData = {
               primaryGuest: {
@@ -208,7 +248,8 @@ function CheckoutComponent() {
                 lastName: primaryGuest.last_name || "",
                 email: primaryGuest.email || "",
                 country: primaryGuest.country || "",
-                countryCode: primaryGuest.country_code?.replace("+", "") || "966",
+                countryCode:
+                  primaryGuest.country_code?.replace("+", "") || "966",
                 phone: primaryGuest.phone || "",
               },
               specialRequests: "",
@@ -249,11 +290,13 @@ function CheckoutComponent() {
       setAgreeToTermsError(false);
 
       // Get order from booking response
-      const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
-        ? bookingResponse.data.booking.order
-        : undefined;
+      const order =
+        bookingResponse?.data?.booking &&
+        "order" in bookingResponse.data.booking
+          ? bookingResponse.data.booking.order
+          : undefined;
 
-      if (!order || typeof order !== 'string') {
+      if (!order || typeof order !== "string") {
         console.error("Order not found. Please complete booking first.");
         toast.error("Order not found. Please complete booking first.");
         return;
@@ -288,7 +331,9 @@ function CheckoutComponent() {
           router.push(`/${locale}/booking-confirmation`);
         }
       } else {
-        toast.error(checkoutResponse.message || "Checkout failed. Please try again.");
+        toast.error(
+          checkoutResponse.message || "Checkout failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("❌ Checkout Error:", error);
@@ -297,11 +342,12 @@ function CheckoutComponent() {
   };
 
   const handleApplyCoupon = async () => {
-    const order = bookingResponse?.data?.booking && 'order' in bookingResponse.data.booking
-      ? bookingResponse.data.booking.order
-      : undefined;
+    const order =
+      bookingResponse?.data?.booking && "order" in bookingResponse.data.booking
+        ? bookingResponse.data.booking.order
+        : undefined;
 
-    if (!order || typeof order !== 'string') {
+    if (!order || typeof order !== "string") {
       toast.error("Booking order not found");
       return;
     }
@@ -310,7 +356,7 @@ function CheckoutComponent() {
 
     const response = await applyCoupon({
       coupon_code: couponCode,
-      order: order
+      order: order,
     });
 
     if (response) {
@@ -324,47 +370,55 @@ function CheckoutComponent() {
 
   // Translate texts using Google Translate when locale is Arabic
   useEffect(() => {
-    if (locale !== 'ar' || roomDetails.length === 0) {
+    if (locale !== "ar" || roomDetails.length === 0) {
       return;
     }
 
     const translateTexts = async () => {
       const translations = new Map<string, string>();
-      
+
       const translatePromises = roomDetails.flatMap((room) => {
-        const textsToTranslate = [room.room_name, room.rate_comments].filter(text => {
-           // Only translate English text that hasn't been translated yet
-           return text && 
-                  !translatedTexts.has(text) && 
-                  !text.match(/[\u0600-\u06FF]/) && 
-                  text.match(/[a-zA-Z]/);
-        });
+        const textsToTranslate = [room.room_name, room.rate_comments].filter(
+          (text) => {
+            // Only translate English text that hasn't been translated yet
+            return (
+              text &&
+              !translatedTexts.has(text) &&
+              !text.match(/[\u0600-\u06FF]/) &&
+              text.match(/[a-zA-Z]/)
+            );
+          }
+        );
 
         return textsToTranslate.map(async (text) => {
           try {
-             // Use Google Translate API
-             const response = await fetch(
-              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(text)}`
+            // Use Google Translate API
+            const response = await fetch(
+              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(
+                text
+              )}`
             );
-            
+
             if (response.ok) {
               const data = await response.json();
-               // Google translate API returns an array of sentences. We need to join them.
+              // Google translate API returns an array of sentences. We need to join them.
               if (data && data[0]) {
-                 const translated = data[0].map((item: string) => item[0]).join('');
-                 if (translated && translated !== text) {
-                   translations.set(text, translated);
-                 }
+                const translated = data[0]
+                  .map((item: string) => item[0])
+                  .join("");
+                if (translated && translated !== text) {
+                  translations.set(text, translated);
+                }
               }
             }
           } catch (error) {
-             console.warn(`Translation failed for "${text}":`, error);
+            console.warn(`Translation failed for "${text}":`, error);
           }
         });
       });
 
       await Promise.all(translatePromises);
-      
+
       if (translations.size > 0) {
         setTranslatedTexts((prev) => {
           const updated = new Map(prev);
@@ -382,8 +436,10 @@ function CheckoutComponent() {
 
   // Calculate total guests
   const totalGuests = useMemo(() => {
-    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
-    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+    const adults =
+      searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const children =
+      searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
     return adults + children;
   }, [searchFilters.rooms]);
 
@@ -409,11 +465,12 @@ function CheckoutComponent() {
     }
   };
 
-  const totalNights = calculateNights(searchFilters.checkInDate, searchFilters.checkOutDate);
+  const totalNights = calculateNights(
+    searchFilters.checkInDate,
+    searchFilters.checkOutDate
+  );
 
-  const formatDate = (
-    date: string | Date | null | undefined
-  ): string => {
+  const formatDate = (date: string | Date | null | undefined): string => {
     if (!date) return t("notSelected");
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
@@ -455,7 +512,10 @@ function CheckoutComponent() {
     return mainPath ? buildHotelbedsImageUrl(mainPath) : BookingHotelInfoImage;
   };
 
-  const hotelName = hotelData?.name?.content || bookingData?.hotelName || t("placeholders.hotelName");
+  const hotelName =
+    hotelData?.name?.content ||
+    bookingData?.hotelName ||
+    t("placeholders.hotelName");
 
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
@@ -526,7 +586,9 @@ function CheckoutComponent() {
               </svg>
               <span className="mobile-progress-line d-md-none"></span>
             </span>
-            <span className="step-label">{t("progressSteps.hotelSelection")}</span>
+            <span className="step-label">
+              {t("progressSteps.hotelSelection")}
+            </span>
           </div>
 
           <div className="step-line"></div>
@@ -583,15 +645,15 @@ function CheckoutComponent() {
 
         <div className="review-booking-heading">
           <h1 className="review-booking-title">{t("title")}</h1>
-          <p className="review-booking-desc">
-            {t("description")}
-          </p>
+          <p className="review-booking-desc">{t("description")}</p>
         </div>
 
         <div className="booking-review-details">
           <div className="review-booking-details-left">
             <div className="booking-detail-box booking-stays-summary">
-              <h3 className="booking-details-sub-title">{t("stayDetails.title")}</h3>
+              <h3 className="booking-details-sub-title">
+                {t("stayDetails.title")}
+              </h3>
               <ul className="booking-listing-info">
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
@@ -614,8 +676,14 @@ function CheckoutComponent() {
                     {t("stayDetails.guestsAndRooms")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
-                    {totalGuests} {totalGuests === 1 ? t("stayDetails.guest") : t("stayDetails.guests")} •{" "}
-                    {totalRooms} {totalRooms === 1 ? t("stayDetails.room") : t("stayDetails.rooms")}
+                    {totalGuests}{" "}
+                    {totalGuests === 1
+                      ? t("stayDetails.guest")
+                      : t("stayDetails.guests")}{" "}
+                    • {totalRooms}{" "}
+                    {totalRooms === 1
+                      ? t("stayDetails.room")
+                      : t("stayDetails.rooms")}
                   </div>
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
@@ -650,19 +718,26 @@ function CheckoutComponent() {
 
                 return (
                   <>
-                    <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
+                    <h3 className="booking-details-sub-title">
+                      {t("travelerDetails.title")}
+                    </h3>
 
                     {/* Primary Guest - Mandatory */}
                     <div className="booking-details-form mandatory-field">
                       <h3 className="booking-form-title">
-                        {t("travelerDetails.primaryGuest")} <span className="text-red">({t("travelerDetails.mandatory")})</span>
+                        {t("travelerDetails.primaryGuest")}{" "}
+                        <span className="text-red">
+                          ({t("travelerDetails.mandatory")})
+                        </span>
                       </h3>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
                           <Input
                             name="primaryGuest.firstName"
                             label={t("travelerDetails.firstName")}
-                            labelWithContent={<span className="required">*</span>}
+                            labelWithContent={
+                              <span className="required">*</span>
+                            }
                             type="text"
                             disabled
                             // Keep placeholder text always in English
@@ -672,7 +747,9 @@ function CheckoutComponent() {
                           <Input
                             name="primaryGuest.lastName"
                             label={t("travelerDetails.lastName")}
-                            labelWithContent={<span className="required">*</span>}
+                            labelWithContent={
+                              <span className="required">*</span>
+                            }
                             type="text"
                             disabled
                             // Keep placeholder text always in English
@@ -685,7 +762,9 @@ function CheckoutComponent() {
                           <Input
                             name="primaryGuest.email"
                             label={t("travelerDetails.email")}
-                            labelWithContent={<span className="required">*</span>}
+                            labelWithContent={
+                              <span className="required">*</span>
+                            }
                             type="email"
                             disabled
                             // Keep placeholder text always in English
@@ -695,7 +774,9 @@ function CheckoutComponent() {
                           <Input
                             name="primaryGuest.country"
                             label={t("travelerDetails.country")}
-                            labelWithContent={<span className="required">*</span>}
+                            labelWithContent={
+                              <span className="required">*</span>
+                            }
                             type="text"
                             disabled
                             // Keep placeholder text always in English
@@ -707,7 +788,8 @@ function CheckoutComponent() {
                         <div className="form-row">
                           <div className="form-group select-with-input-field">
                             <label className="form-label">
-                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
+                              {t("travelerDetails.phoneNumber")}{" "}
+                              <span className="required">*</span>
                             </label>
                             <div className="select-with-input">
                               <div className="country-code-input">
@@ -747,7 +829,9 @@ function CheckoutComponent() {
 
                     {/* Special Requests */}
                     <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
+                      <h3 className="booking-form-title">
+                        {t("travelerDetails.specialRequest")}
+                      </h3>
                       <p className="booking-form-desc">
                         {t("travelerDetails.specialRequestDescription")}
                       </p>
@@ -785,14 +869,17 @@ function CheckoutComponent() {
                 </h3>
                 <div className="rate-comments-content">
                   {roomDetails.map((room, index) => (
-                    <div key={`room-detail-${index}`} className="rate-comment-item">
+                    <div
+                      key={`room-detail-${index}`}
+                      className="rate-comment-item"
+                    >
                       <h4 className="room-label">
                         {(() => {
-                          const roomName =  room.room_name;
+                          const roomName = room.room_name;
                           try {
-                            return t("rateComments.roomWithName", { 
-                              number: index + 1, 
-                              roomName: roomName 
+                            return t("rateComments.roomWithName", {
+                              number: index + 1,
+                              roomName: roomName,
                             });
                           } catch {
                             return `Room ${index + 1} - ${roomName}`;
@@ -800,7 +887,8 @@ function CheckoutComponent() {
                         })()}
                       </h4>
                       <p className="rate-comment-text">
-                        {translatedTexts.get(room.rate_comments) || room.rate_comments}
+                        {translatedTexts.get(room.rate_comments) ||
+                          room.rate_comments}
                       </p>
                     </div>
                   ))}
@@ -977,7 +1065,14 @@ function CheckoutComponent() {
                 <div className="booking-hotel-content">
                   <h3 className="hotel-name">{hotelName}</h3>
                   <span className="booking-guest-info">
-                    {totalGuests} {totalGuests === 1 ? t("summary.guest") : t("summary.guests")} • {totalNights} {totalNights === 1 ? t("summary.night") : t("summary.nights")}
+                    {totalGuests}{" "}
+                    {totalGuests === 1
+                      ? t("summary.guest")
+                      : t("summary.guests")}{" "}
+                    • {totalNights}{" "}
+                    {totalNights === 1
+                      ? t("summary.night")
+                      : t("summary.nights")}
                   </span>
                 </div>
               </div>
@@ -1030,15 +1125,15 @@ function CheckoutComponent() {
                     />{" "}
                     {(() => {
                       // Use API total price if available (Gross amount)
-                      const apiTotalPrice = 
-                        couponResponse?.data?.booking?.total_price || 
+                      const apiTotalPrice =
+                        couponResponse?.data?.booking?.total_price ||
                         bookingDetails?.data?.booking?.total_price ||
                         bookingResponse?.data?.booking?.total_price;
-                        
+
                       if (apiTotalPrice) {
                         return priceFormatter.format(Number(apiTotalPrice));
                       }
-                      
+
                       return priceFormatter.format(priceBreakdown.totalPrice);
                     })()}
                   </div>
@@ -1079,24 +1174,63 @@ function CheckoutComponent() {
                   </div>
                   <div className="booking-pricing discount">-$51</div>
                 </div> */}
+
+                {couponResponse?.status &&
+                  couponResponse?.data?.booking?.discount_amount && (
+                    <div className="booking-price-item d-flex align-items-center">
+                      <div className="booking-iocn-with-text d-flex align-items-center">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="1.5"
+                            cy="1.5"
+                            r="1.5"
+                            transform="matrix(1 0 0 -1 16 8)"
+                            stroke="#09090B"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z"
+                            stroke="#09090B"
+                            stroke-width="1.5"
+                          />
+                          <path
+                            d="M7 14L10 17"
+                            stroke="#09090B"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+
+                        {t("summary.discount")}
+                      </div>
+                      {/* <span className="text-success"></span> */}
+
+                      <div className="booking-pricing discount discount_price">
+                        -
+                        <span
+                          className="currency-icon"
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{
+                            __html: buildCurrencySvgMarkup("#FB2C36"),
+                          }}
+                          style={{ display: "inline-flex" }}
+                        />{" "}
+                        {priceFormatter.format(
+                          Number(couponResponse.data.booking.discount_amount)
+                        )}
+                      </div>
+                    </div>
+                  )}
                 <div className="booking-review-separetor"></div>
-                {couponResponse?.status && couponResponse?.data?.booking?.discount_amount && (
-                  <div className="booking-tital-price d-flex align-items-center justify-content-between mb-2" style={{ fontSize: '1.1rem' }}>
-                    <span className="text-success">{t("summary.discount")}</span>
-                    <span className="checkout-total-price">
-                      -
-                      <span
-                        className="currency-icon"
-                        aria-hidden="true"
-                        dangerouslySetInnerHTML={{
-                          __html: buildCurrencySvgMarkup("#09090b"),
-                        }}
-                        style={{ display: "inline-flex" }}
-                      />{" "}
-                      {priceFormatter.format(Number(couponResponse.data.booking.discount_amount))}
-                    </span>
-                  </div>
-                )}
                 <div className="booking-tital-price d-flex align-items-center justify-content-between">
                   <span>{t("summary.totalPrice")}</span>
                   <span className="checkout-total-price">
@@ -1109,19 +1243,26 @@ function CheckoutComponent() {
                       style={{ display: "inline-flex" }}
                     />{" "}
                     {(() => {
-                      const discountAmount = couponResponse?.status && couponResponse?.data?.booking?.discount_amount
-                        ? Number(couponResponse.data.booking.discount_amount)
-                        : 0;
+                      const discountAmount =
+                        couponResponse?.status &&
+                        couponResponse?.data?.booking?.discount_amount
+                          ? Number(couponResponse.data.booking.discount_amount)
+                          : 0;
 
                       // Use API total price if available (Gross amount)
-                      const apiTotalPrice = 
-                        couponResponse?.data?.booking?.total_price || 
+                      const apiTotalPrice =
+                        couponResponse?.data?.booking?.total_price ||
                         bookingDetails?.data?.booking?.total_price ||
                         bookingResponse?.data?.booking?.total_price;
 
-                      const basePrice = apiTotalPrice ? Number(apiTotalPrice) : priceBreakdown.totalPrice;
+                      const basePrice = apiTotalPrice
+                        ? Number(apiTotalPrice)
+                        : priceBreakdown.totalPrice;
 
-                      const finalPrice = Math.max(0, basePrice - discountAmount);
+                      const finalPrice = Math.max(
+                        0,
+                        basePrice - discountAmount
+                      );
                       return priceFormatter.format(finalPrice);
                     })()}
                   </span>
@@ -1131,9 +1272,11 @@ function CheckoutComponent() {
                 </div>
                 <div className="booking-review-separetor"></div>
               </div>
-              <div className="coupon-section mb-4">
-                <label className="form-label">{t("coupon.label") || "Coupon Code"}</label>
-                <div className="d-flex gap-2">
+              <div className="coupon-section">
+                <label className="form-label">
+                  {t("coupon.label") || "Coupon Code"}
+                </label>
+                <div className="coupon-input-with-btn">
                   <input
                     type="text"
                     className="form-control form-input"
@@ -1143,17 +1286,25 @@ function CheckoutComponent() {
                     disabled={loadingCoupon}
                   />
                   <button
-                    className="button-primary"
-                    style={{ whiteSpace: 'nowrap', padding: '0 20px', height: 'auto', minHeight: '48px' }}
+                    className="button-primary coupon-apply-btn"
                     onClick={handleApplyCoupon}
                     disabled={loadingCoupon || !couponCode}
                   >
-                    {loadingCoupon ? (t("coupon.applying") || "Applying...") : (t("coupon.apply") || "Apply")}
+                    {loadingCoupon
+                      ? t("coupon.applying") || "Applying.."
+                      : t("coupon.apply") || "Apply"}
                   </button>
                 </div>
                 {couponResponse && (
-                  <div className={`mt-2 ${couponResponse.status ? 'text-success' : 'text-danger'}`} style={{ fontSize: '14px' }}>
-                    {couponResponse.status ? t("coupon.success") : t("coupon.error")}
+                  <div
+                    className={`mt-1 ${
+                      couponResponse.status ? "text-success" : "text-danger"
+                    }`}
+                    style={{ fontSize: "12px" }}
+                  >
+                    {couponResponse.status
+                      ? t("coupon.success")
+                      : t("coupon.error")}
                   </div>
                 )}
               </div>
@@ -1172,8 +1323,14 @@ function CheckoutComponent() {
                     }}
                   />
                   <label className="form-check-label" htmlFor="agreeToTerms">
-                    {t("agreeToTerms.label")} <Link href="/terms-conditions">{t("agreeToTerms.terms")}</Link> {t("agreeToTerms.and")}{" "}
-                    <Link href="/privacy-policy">{t("agreeToTerms.privacyPolicy")}</Link>
+                    {t("agreeToTerms.label")}{" "}
+                    <Link href="/terms-conditions">
+                      {t("agreeToTerms.terms")}
+                    </Link>{" "}
+                    {t("agreeToTerms.and")}{" "}
+                    <Link href="/privacy-policy">
+                      {t("agreeToTerms.privacyPolicy")}
+                    </Link>
                   </label>
                 </div>
                 {agreeToTermsError && (
@@ -1183,7 +1340,10 @@ function CheckoutComponent() {
                 )}
               </div>
               <div className="check-availability-action">
-                <button className="button-primary check-availability-btn" onClick={handleCheckout}>
+                <button
+                  className="button-primary check-availability-btn"
+                  onClick={handleCheckout}
+                >
                   {t("payButton")}
                 </button>
               </div>

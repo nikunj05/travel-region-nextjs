@@ -3,7 +3,7 @@
 
 .checkout-page {
   .required {
-    color: #FB2C36;
+    color: #fb2c36;
   }
 
   .progress-steps {
@@ -35,7 +35,7 @@
     .step-line {
       flex: 1;
       height: 2px;
-      border-bottom: 2px solid #D1D5DB;
+      border-bottom: 2px solid #d1d5db;
     }
   }
 
@@ -129,7 +129,6 @@
         .booking-details-sub-title {
           margin-bottom: 24px;
         }
-
 
         .booking-form-title {
           font-size: 20px;
@@ -313,17 +312,17 @@
               }
             }
 
-            input:checked+.payment-card-content {
+            input:checked + .payment-card-content {
               border-color: $color-blue;
               outline-color: $color-blue;
-              background: #8EC5FF;
+              background: #8ec5ff;
             }
 
             &:hover {
               .payment-card-content {
                 border-color: $color-blue;
                 outline-color: $color-blue;
-                background: #8EC5FF;
+                background: #8ec5ff;
               }
             }
           }
@@ -356,7 +355,6 @@
               &:focus {
                 border-color: $brand-color !important;
               }
-
             }
 
             .form-check-label {
@@ -379,7 +377,7 @@
       .hotel-info-header {
         padding: 12px;
         border-radius: 4px;
-        background-color: #F9FAFB;
+        background-color: #f9fafb;
 
         .booking-hotel-content {
           display: flex;
@@ -434,7 +432,10 @@
             }
 
             .discount {
-              color: #FB2C36;
+              color: #fb2c36;
+              .cls-1 {
+                fill: #fb2c36;
+              }
             }
           }
 
@@ -468,6 +469,34 @@
             gap: 4px;
           }
         }
+        .coupon-section {
+          margin-bottom: 24px;
+          .form-label {
+            font-size: 15px;
+            margin-bottom: 6px;
+          }
+          .coupon-input-with-btn {
+            position: relative;
+            .form-control {
+              border: 1px solid #e5e7eb;
+              padding: 6px 95px 6px 12px;
+              border-radius: 6px;
+              border: 1px solid #e5e7eb;
+              height: 42px;
+            }
+            .coupon-apply-btn {
+              white-space: nowrap;
+              padding: 3px 10px;
+              height: 100%;
+              font-size: 14px;
+              border-radius: 0 6px 6px 0;
+              min-height: auto;
+              position: absolute;
+              right: 0;
+              top: 0;
+            }
+          }
+        }
 
         .chekout-agree-terms-box {
           margin: 24px 0;
@@ -496,7 +525,6 @@
               &:focus {
                 border-color: $color-blue !important;
               }
-
             }
 
             .form-check-label {
@@ -538,7 +566,6 @@
   }
 }
 
-
 @media (max-width: 1199.55px) {
   .checkout-page {
     .booking-review-details {
@@ -555,7 +582,6 @@
     }
   }
 }
-
 
 @media (max-width: 991.95px) {
   .checkout-page {
@@ -601,7 +627,7 @@
               .payment-card-content {
                 img {
                   width: 48px;
-                  height: 48px
+                  height: 48px;
                 }
               }
             }
@@ -615,7 +641,6 @@
     }
   }
 }
-
 
 @media (max-width: 767.55px) {
   .checkout-page {
@@ -649,15 +674,12 @@
         &:last-child {
           text-align: end;
 
-
           .step-circle {
             .mobile-progress-line {
               right: 40px;
               left: auto;
             }
           }
-
-
         }
 
         .mobile-progress-line {
@@ -707,7 +729,7 @@
             }
 
             &::before {
-              content: '';
+              content: "";
               position: absolute;
               top: 50%;
               left: 50%;
@@ -719,7 +741,6 @@
             }
           }
         }
-
       }
     }
 
@@ -791,6 +812,7 @@
                 flex: 1;
 
                 .form-label {
+                  font-size: 14px;
                   margin-bottom: 8px;
                 }
               }
@@ -872,7 +894,6 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-                ;
               }
             }
 
@@ -883,6 +904,16 @@
             .booking-guest-info {
               font-size: 16px;
               color: $color-black-zinc-500;
+            }
+          }
+          .coupon-section {
+            .coupon-input-with-btn {
+              .form-control {
+                font-size: 14px;
+              }
+              .coupon-apply-btn {
+                font-size: 13px;
+              }
             }
           }
 
@@ -905,7 +936,6 @@
   }
 }
 
-
 // RTL Layout
 
 [dir="rtl"] {
@@ -919,7 +949,6 @@
                 padding-left: 0px;
                 padding-right: 10px;
               }
-
             }
           }
         }
@@ -928,7 +957,6 @@
           .booking-details-form {
             .booking-form-content {
               .select-with-input-field {
-
                 .select-with-input {
                   .country-code-input {
                     right: 3px;
@@ -949,6 +977,18 @@
 
       .review-booking-details-right {
         .hotel-info-header {
+          .coupon-section {
+            .coupon-input-with-btn {
+              .form-control {
+                padding: 6px 12px 6px 95px;
+              }
+              .coupon-apply-btn {
+                right: auto;
+                left: 0;
+                border-radius: 6px 0px 0px 6px;
+              }
+            }
+          }
           .chekout-agree-terms-box {
             .form-check {
               .form-check-label {
