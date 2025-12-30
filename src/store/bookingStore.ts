@@ -2,6 +2,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { HotelRateCancellationPolicy } from '@/types/hotel'
+import { bookingService } from '@/services/bookingService'
+import { CreateBookingRequest, CreateBookingResponse } from '@/types/booking'
+import { toast } from 'react-toastify'
+import { formatApiErrorMessage } from '@/lib/formatApiError'
 
 // Selected room interface
 export interface SelectedRoom {
@@ -32,18 +36,30 @@ export interface BookingData {
 interface BookingState {
   bookingData: BookingData | null
   
+  // API state
+  loading: boolean
+  error: string | null
+  bookingResponse: CreateBookingResponse | null
+  
   // Actions
   setBookingData: (data: BookingData) => void
   clearBookingData: () => void
   addSelectedRoom: (room: SelectedRoom) => void
   removeSelectedRoom: (roomCode: string) => void
   updateRoomCount: (roomCode: string, count: number) => void
+  
+  // API actions
+  createBooking: (payload: CreateBookingRequest) => Promise<CreateBookingResponse | null>
+  clearBookingResponse: () => void
 }
 
 export const useBookingStore = create<BookingState>()(
   persist(
     (set, get) => ({
       bookingData: null,
+      loading: false,
+      error: null,
+      bookingResponse: null,
 
       setBookingData: (data) => {
         set({ 
@@ -124,6 +140,50 @@ export const useBookingStore = create<BookingState>()(
             timestamp: Date.now()
           }
         })
+      },
+
+      createBooking: async (payload: CreateBookingRequest) => {
+        set({ loading: true, error: null, bookingResponse: null })
+        try {
+          console.log('🚀 Creating booking with payload:', payload)
+          
+          const response = await bookingService.createBooking(payload)
+          
+          console.log('✅ Booking API Response:', response)
+          console.log('📋 Response Status:', response.status)
+          console.log('📋 Response Message:', response.message)
+          if (response.data) {
+            console.log('📋 Response Data:', response.data)
+          }
+          
+          set({ 
+            bookingResponse: response, 
+            loading: false,
+            error: null
+          })
+          
+          if (response.status) {
+            toast.success(response.message || 'Booking created successfully!')
+          } else {
+            toast.error(response.message || 'Booking failed')
+          }
+          
+          return response
+        } catch (err: unknown) {
+          console.error('❌ Booking creation error:', err)
+          const errorMessage = formatApiErrorMessage(err)
+          set({ 
+            error: errorMessage, 
+            loading: false,
+            bookingResponse: null
+          })
+          toast.error(errorMessage)
+          return null
+        }
+      },
+
+      clearBookingResponse: () => {
+        set({ bookingResponse: null, error: null })
       },
     }),
     {
