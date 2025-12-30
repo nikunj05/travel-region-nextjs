@@ -68,7 +68,8 @@
     "apartment": "شقة",
     "villa": "فيلا",
     "nearBeach": "بالقرب من الشاطئ",
-    "cityCenter": "مركز المدينة"
+    "cityCenter": "مركز المدينة",
+    "featured": "مميز"
   },
   "NearbyHotels": {
     "placeholderTitle": "فندق قريب",

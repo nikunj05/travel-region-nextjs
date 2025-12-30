@@ -555,107 +555,129 @@
           }
 
           .hotel-info-with-action-card {
+            display: flex;
+            // justify-content: space-between; // Handled by d-flex and child width
             gap: 32px;
             height: 100%;
-            justify-content: space-between;
             width: 100%;
-          }
 
-          .hotel-info {
-            padding: 0px;
-
-            .hotel-name {
-              font-size: 20px;
-              font-weight: $font-weight600;
-              color: $color-black;
-              margin: 0 0 12px 0;
-              display: flex;
-              text-decoration: none;
-              // cursor: pointer;
-              transition: $transition;
-
-              // &:hover {
-              //   color: $brand-color;
-              // }
-            }
-
-            .hotel-rating {
+            .featured-tag {
               display: flex;
               align-items: center;
-              gap: 8px;
-              margin-bottom: 12px;
-              font-size: 12px;
-              color: $color-black-zinc-500;
-
-              .rating-stars {
-                gap: 2px;
-              }
-
-              .rating-reviews {
-                gap: 4px;
-                color: $color-black-zinc-500;
-
-                .rating-score {
-                  font-weight: $font-weight500;
-                  font-size: 16px;
-                  color: $color-black;
-                }
-              }
-            }
-
-
-            .hotel-location {
-              display: flex;
-              align-items: flex-start;
-              gap: 8px;
-              margin-bottom: 24px;
-              font-size: 12px;
-              color: $color-black-zinc-800;
+              gap: 4px;
+              background-color: #FF6900; // Updated color
+              color: $color-white;
+              padding: 4px 12px;
+              border-radius: 50px; // Pill shape
+              font-size: 11px;
+              font-weight: 600;
+              text-transform: capitalize;
+              letter-spacing: 0.3px;
+              line-height: 1;
+              box-shadow: none;
+              width: fit-content;
+              margin-bottom: 8px;
 
               svg {
-                min-width: 16px;
-                min-height: 16px;
+                margin-bottom: 1px;
               }
             }
 
-            .hotel-amenities {
-              display: flex;
-              gap: 24px;
-              margin-bottom: 12px;
-              flex-wrap: wrap;
+            .hotel-info {
+              flex: 1;
+              padding: 0px;
 
-              .amenity-tag {
+              .hotel-name {
+                font-size: 20px;
+                font-weight: $font-weight600;
+                color: $color-black;
+                margin: 0 0 12px 0;
+                display: flex;
+                text-decoration: none;
+                // cursor: pointer;
+                transition: $transition;
+
+                // &:hover {
+                //   color: $brand-color;
+                // }
+              }
+
+              .hotel-rating {
+                display: flex;
+                align-items: center;
                 gap: 8px;
+                margin-bottom: 12px;
+                font-size: 12px;
+                color: $color-black-zinc-500;
 
-                .amenity-tag-name {
-                  color: #2B7FFF;
-                  font-size: 12px;
+                .rating-stars {
+                  gap: 2px;
+                }
+
+                .rating-reviews {
+                  gap: 4px;
+                  color: $color-black-zinc-500;
+
+                  .rating-score {
+                    font-weight: $font-weight500;
+                    font-size: 16px;
+                    color: $color-black;
+                  }
                 }
               }
 
+
+              .hotel-location {
+                display: flex;
+                align-items: flex-start;
+                gap: 8px;
+                margin-bottom: 24px;
+                font-size: 12px;
+                color: $color-black-zinc-800;
+
+                svg {
+                  min-width: 16px;
+                  min-height: 16px;
+                }
+              }
+
+              .hotel-amenities {
+                display: flex;
+                gap: 24px;
+                margin-bottom: 12px;
+                flex-wrap: wrap;
+
+                .amenity-tag {
+                  gap: 8px;
+
+                  .amenity-tag-name {
+                    color: #2B7FFF;
+                    font-size: 12px;
+                  }
+                }
+
+              }
+
+              .hotel-description {
+                font-size: 12px;
+                color: $color-black-zinc-500;
+                margin-bottom: 0px;
+              }
+
+
             }
 
-            .hotel-description {
-              font-size: 12px;
-              color: $color-black-zinc-500;
-              margin-bottom: 0px;
-            }
-
-
-          }
-
-          .property-card-action {
-            margin-top: auto;
-
-            .hotel-footer {
+            .property-card-action {
               display: flex;
-              justify-content: space-between;
-              align-items: center;
               flex-direction: column;
-              height: 100%;
+              justify-content: space-between;
               min-width: 173px;
 
-              .hotel-price {
+              .featured-tag {
+                align-self: flex-end;
+              }
+
+              .hotel-footer {
                 display: flex;
                 justify-content: flex-end;
                 flex-direction: column;
@@ -815,8 +837,10 @@
             }
 
             .property-card-action {
+              min-width: 120px;
+
               .hotel-footer {
-                min-width: 120px;
+                // min-width: 120px; // handled by parent
 
                 .hotel-price {
                   margin-bottom: 24px;
@@ -1644,12 +1668,12 @@
       .price-range-input {
         // Inputs use direction: rtl (handled inline)
         // This reverses the slider behavior naturally
-        
+
         // Ensure thumbs are visible and work correctly in RTL
         &::-webkit-slider-thumb {
           // Thumb positioning is handled by browser in RTL
         }
-        
+
         &::-moz-range-thumb {
           // Thumb positioning is handled by browser in RTL
         }

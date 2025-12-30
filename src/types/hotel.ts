@@ -90,6 +90,7 @@ export interface HotelItem {
   maxRate: string;
   currency: string; // e.g., "EUR"
   images?: HotelImage[];
+  featured?: boolean;
 }
 
 export interface GetHotelsResponse {

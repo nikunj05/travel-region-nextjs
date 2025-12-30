@@ -1664,6 +1664,27 @@ const SearchResult = () => {
                             </div>
                             <div className="hotel-info-with-action-card d-flex">
                               <div className="hotel-info">
+                                {hotel.featured && (
+                                  <div className="featured-tag d-flex d-lg-none">
+                                    <svg
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                      <circle cx="7" cy="7" r="2" fill="currentColor" />
+                                    </svg>
+                                    {tSearch("featured")}
+                                  </div>
+                                )}
                                 <p className="hotel-name">
                                   {getHotelName(hotel)}
                                 </p>
@@ -1747,6 +1768,27 @@ const SearchResult = () => {
                                 </p> */}
                               </div>
                               <div className="property-card-action">
+                                {hotel.featured && (
+                                  <div className="featured-tag d-none d-lg-flex">
+                                    <svg
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                      <circle cx="7" cy="7" r="2" fill="currentColor" />
+                                    </svg>
+                                    {tSearch("featured")}
+                                  </div>
+                                )}
                                 <div className="hotel-footer">
                                   <div className="hotel-price">
                                     <span className="price-amount">

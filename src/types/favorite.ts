@@ -162,6 +162,7 @@ export interface FavoriteHotel {
   lastUpdate: string;
   S2C: string;
   ranking: number;
+  featured?: boolean;
 }
 
 export interface FavoriteHotelsData {

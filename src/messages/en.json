@@ -68,7 +68,8 @@
     "apartment": "Apartment",
     "villa": "Villa",
     "nearBeach": "Near Beach",
-    "cityCenter": "City Center"
+    "cityCenter": "City Center",
+    "featured": "Featured"
   },
   "NearbyHotels": {
     "placeholderTitle": "Nearby Hotel",
