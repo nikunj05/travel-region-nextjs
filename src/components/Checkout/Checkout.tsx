@@ -351,7 +351,7 @@ function CheckoutComponent() {
               const data = await response.json();
                // Google translate API returns an array of sentences. We need to join them.
               if (data && data[0]) {
-                 const translated = data[0].map((item: any) => item[0]).join('');
+                 const translated = data[0].map((item: string) => item[0]).join('');
                  if (translated && translated !== text) {
                    translations.set(text, translated);
                  }
