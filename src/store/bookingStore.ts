@@ -36,26 +36,26 @@ export interface BookingData {
 
 interface BookingState {
   bookingData: BookingData | null
-  
+
   // Traveler details
   travelerDetails: BookingFormData | null
-  
+
   // API state
   loading: boolean
   error: string | null
   bookingResponse: CreateBookingResponse | null
-  
+
   // Actions
   setBookingData: (data: BookingData) => void
   clearBookingData: () => void
   addSelectedRoom: (room: SelectedRoom) => void
   removeSelectedRoom: (roomCode: string) => void
   updateRoomCount: (roomCode: string, count: number) => void
-  
+
   // Traveler details actions
   setTravelerDetails: (details: BookingFormData) => void
   clearTravelerDetails: () => void
-  
+
   // API actions
   createBooking: (payload: CreateBookingRequest) => Promise<CreateBookingResponse | null>
   clearBookingResponse: () => void
@@ -71,7 +71,7 @@ export const useBookingStore = create<BookingState>()(
       bookingResponse: null,
 
       setBookingData: (data) => {
-        set({ 
+        set({
           bookingData: {
             ...data,
             timestamp: Date.now()
@@ -163,34 +163,34 @@ export const useBookingStore = create<BookingState>()(
         set({ loading: true, error: null, bookingResponse: null })
         try {
           console.log('🚀 Creating booking with payload:', payload)
-          
+
           const response = await bookingService.createBooking(payload)
-          
+
           console.log('✅ Booking API Response:', response)
           console.log('📋 Response Status:', response.status)
           console.log('📋 Response Message:', response.message)
           if (response.data) {
             console.log('📋 Response Data:', response.data)
           }
-          
-          set({ 
-            bookingResponse: response, 
+
+          set({
+            bookingResponse: response,
             loading: false,
             error: null
           })
-          
+
           if (response.status) {
             toast.success(response.message || 'Booking created successfully!')
           } else {
             toast.error(response.message || 'Booking failed')
           }
-          
+
           return response
         } catch (err: unknown) {
           console.error('❌ Booking creation error:', err)
           const errorMessage = formatApiErrorMessage(err)
-          set({ 
-            error: errorMessage, 
+          set({
+            error: errorMessage,
             loading: false,
             bookingResponse: null
           })
