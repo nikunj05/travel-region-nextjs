@@ -1664,7 +1664,7 @@ const SearchResult = () => {
                             </div>
                             <div className="hotel-info-with-action-card d-flex">
                               <div className="hotel-info">
-                                {hotel.featured && (
+                                {hotel.show_tag && (
                                   <div className="featured-tag d-flex d-lg-none">
                                     <svg
                                       width="14"
@@ -1768,7 +1768,7 @@ const SearchResult = () => {
                                 </p> */}
                               </div>
                               <div className="property-card-action">
-                                {hotel.featured && (
+                                {hotel.show_tag && (
                                   <div className="featured-tag d-none d-lg-flex">
                                     <svg
                                       width="14"

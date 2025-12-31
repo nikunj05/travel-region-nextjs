@@ -92,9 +92,16 @@ const Popular = () => {
       region: item.state,
       coordinates: { lat: latitude, lng: longitude },
     });
+    
+    useHotelSearchStore.getState().clearResults();
+    // useHotelSearchStore.getState().setDates(today, tomorrow);
+    
+    // Also update the UI search filters store
+    // useSearchFiltersStore.getState().setCheckInDate(today);
+    // useSearchFiltersStore.getState().setCheckOutDate(tomorrow);
+    // useSearchFiltersStore.getState().setRooms([{ adults: 2, children: 0, childrenAges: [] }]);
 
-    useHotelSearchStore.getState().setDates(today, tomorrow);
-    useHotelSearchStore.getState().setRooms([{ adults: 2, children: 0 }]);
+    // useHotelSearchStore.getState().setRooms([{ adults: 2, children: 0 }]);
     useHotelSearchStore.getState().setLanguage("eng");
     useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 

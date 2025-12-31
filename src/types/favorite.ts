@@ -163,6 +163,7 @@ export interface FavoriteHotel {
   S2C: string;
   ranking: number;
   featured?: boolean;
+  show_tag?: boolean;
 }
 
 export interface FavoriteHotelsData {

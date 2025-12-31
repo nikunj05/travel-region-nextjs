@@ -91,6 +91,7 @@ export interface HotelItem {
   currency: string; // e.g., "EUR"
   images?: HotelImage[];
   featured?: boolean;
+  show_tag?: boolean;
 }
 
 export interface GetHotelsResponse {

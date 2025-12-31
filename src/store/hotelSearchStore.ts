@@ -46,6 +46,7 @@ interface HotelSearchState {
   resetFilters: () => void
 
   // Actions - search
+  clearResults: () => void
   search: () => Promise<void>
 }
 
@@ -102,6 +103,8 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
       resetFilters: () => set({ filters: defaultFilters }),
 
+      clearResults: () => set({ hotels: [], total: null, error: null, currency: null }),
+
       search: async () => {
         const { filters } = get()
         // Validate minimal required params
@@ -132,14 +135,14 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
           const res = await hotelService.getHotels(payload)
           console.log('Hotel search API response:', res)
-          
+
           // Safely extract hotels array
           const hotelsData = res?.data?.hotels
           const hotels = Array.isArray(hotelsData) ? hotelsData : []
           const currency = hotels.length > 0 && 'currency' in hotels[0] ? (hotels[0] as HotelItem).currency : null
 
           console.log('Processed hotels:', { count: hotels.length, currency })
-          
+
           set({ hotels, currency, total: hotels.length, loading: false })
         } catch (err: unknown) {
           console.error('Hotel search error details:', err)
