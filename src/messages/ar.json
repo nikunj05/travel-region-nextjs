@@ -200,7 +200,9 @@
     "refund": {
       "fullyRefundable": "قابل للاسترداد بالكامل",
       "notFullyRefundable": "غير قابل للاسترداد بالكامل",
-      "beforeDate": "قبل {date}"
+      "beforeDate": "قبل {date}",
+      "freeCancellationBefore": "إلغاء مجاني قبل {date}",
+      "nonRefundable": "غير قابل للاسترداد"
     },
     "alts": {
       "thumbnail": "صورة مصغرة {index}",

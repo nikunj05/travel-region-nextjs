@@ -200,7 +200,9 @@
     "refund": {
       "fullyRefundable": "Fully refundable",
       "notFullyRefundable": "Not fully refundable",
-      "beforeDate": "Before {date}"
+      "beforeDate": "Before {date}",
+      "freeCancellationBefore": "Free cancellation before {date}",
+      "nonRefundable": "Non-refundable"
     },
     "alts": {
       "thumbnail": "Thumbnail {index}",
