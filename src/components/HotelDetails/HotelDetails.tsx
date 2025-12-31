@@ -834,7 +834,16 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
   const formatCancellationDate = useCallback(
     (dateString: string) => {
-      const date = new Date(dateString);
+      // Split to get just the date part (YYYY-MM-DD) to avoid timezone shifts
+      const datePart = dateString.includes("T")
+        ? dateString.split("T")[0]
+        : dateString;
+      const [year, month, day] = datePart.split("-").map(Number);
+
+      // Create date locally using the components
+      // Note: month is 0-indexed in Date constructor
+      const date = new Date(year, month - 1, day);
+
       if (Number.isNaN(date.getTime())) {
         return null;
       }
