@@ -40,6 +40,7 @@ import { buildHotelSlug } from "@/lib/hotelSlug";
 import { buildCurrencySvgMarkup } from "@/constants";
 import { useInactivity } from "@/hooks/useInactivity";
 import SessionTimeoutModal from "../common/SessionTimeoutModal/SessionTimeoutModal";
+import Pagination from "../common/Pagination/Pagination";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
@@ -81,8 +82,9 @@ const SearchResult = () => {
   const [sortBy, setSortBy] = useState("Recommended");
   // const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
-  const [visibleItemsCount, setVisibleItemsCount] = useState(10); // Initial number of hotels to show
-  const ITEMS_PER_LOAD = 10; // Number of hotels to load per scroll
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 12; // Number of hotels to load per page
   const [translatedNames, setTranslatedNames] = useState<Map<string, string>>(new Map());
 
   // Filter states
@@ -308,14 +310,13 @@ const SearchResult = () => {
     selectedAccommodationCodes,
   ]);
 
-  // Hotels to display (lazy loaded)
-  const visibleHotels = useMemo(
-    () => sortedHotels.slice(0, visibleItemsCount),
-    [sortedHotels, visibleItemsCount]
-  );
+  // Hotels to display (paginated)
+  const visibleHotels = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sortedHotels.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [sortedHotels, currentPage]);
 
-  // Check if there are more hotels to load
-  const hasMoreHotels = visibleItemsCount < sortedHotels.length;
+  const totalPages = Math.ceil(sortedHotels.length / ITEMS_PER_PAGE);
 
   // Refs for click outside detection
   const locationPickerRef = useRef<HTMLDivElement>(null);
@@ -324,10 +325,10 @@ const SearchResult = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
 
-  // Reset visible items count when sort criteria or hotels list changes
+  // Reset page when sort criteria or hotels list changes
   useEffect(() => {
-    setVisibleItemsCount(10);
-  }, [sortBy, sortedHotels.length]);
+    setCurrentPage(1);
+  }, [sortBy, sortedHotels.length, filters]);
 
   // Translate hotel names using Google Translate when locale is Arabic
   useEffect(() => {
@@ -428,39 +429,7 @@ const SearchResult = () => {
     })();
   }, []);
 
-  // Ref for the last hotel card to observe
-  const lastHotelRef = useRef<HTMLDivElement | null>(null);
 
-  // Infinite scroll handler using Intersection Observer
-  useEffect(() => {
-    if (!hasMoreHotels || loading) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const lastEntry = entries[0];
-        // When the last hotel card becomes visible, load more
-        if (lastEntry.isIntersecting) {
-          setVisibleItemsCount((prev) => prev + ITEMS_PER_LOAD);
-        }
-      },
-      {
-        root: null, // viewport
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the element is visible
-      }
-    );
-
-    const currentLastRef = lastHotelRef.current;
-    if (currentLastRef) {
-      observer.observe(currentLastRef);
-    }
-
-    return () => {
-      if (currentLastRef) {
-        observer.unobserve(currentLastRef);
-      }
-    };
-  }, [hasMoreHotels, loading, visibleHotels.length]);
 
   // Close modals when clicking outside
   useEffect(() => {
@@ -1610,7 +1579,6 @@ const SearchResult = () => {
                           <div 
                             key={getHotelId(hotel)} 
                             className="hotel-card"
-                            ref={isLastHotel && hasMoreHotels ? lastHotelRef : null}
                           >
                             <div className="hotel-images">
                               {(() => {
@@ -1629,35 +1597,7 @@ const SearchResult = () => {
                                         className="property-main-img"
                                       />
                                     </div>
-                                    <div className="thumbnail-images">
-                                      {(images.thumbs.length > 0
-                                        ? images.thumbs
-                                        : ([
-                                          thumbnailImages1,
-                                          thumbnailImages2,
-                                          thumbnailImages3,
-                                          thumbnailImages4,
-                                        ] as unknown as string[])
-                                      )
-                                        .slice(0, 4)
-                                        .map((imgSrc, index) => (
-                                          <div
-                                            key={`${getHotelId(
-                                              hotel
-                                            )}-thumb-${index}`}
-                                            className="thumbnail-image"
-                                          >
-                                            <Image
-                                              width={66}
-                                              height={52}
-                                              src={imgSrc}
-                                              alt={`${getHotelName(hotel)} ${index + 1
-                                                }`}
-                                              className="property-thumb-img"
-                                            />
-                                          </div>
-                                        ))}
-                                    </div>
+
                                   </>
                                 );
                               })()}
@@ -1853,20 +1793,14 @@ const SearchResult = () => {
                       </div>
                     )}
                   </div>
-                  {hasMoreHotels && (
-                    <div className="loading-more-hotels" style={{ 
-                      textAlign: 'center', 
-                      padding: '20px',
-                      marginTop: '20px'
-                    }}>
-                      <div className="view-details-spinner" style={{ 
-                        margin: '0 auto',
-                        width: '24px',
-                        height: '24px'
-                      }}></div>
-                      <p style={{ marginTop: '10px', color: '#6B7280' }}>
-                        {tSearch("loadingMore")}
-                      </p>
+
+                  {sortedHotels.length > ITEMS_PER_PAGE && (
+                    <div className="d-flex justify-content-center mt-4">
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onChange={setCurrentPage}
+                      />
                     </div>
                   )}
                 </>

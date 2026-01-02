@@ -197,11 +197,52 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   console.log("processedRooms", processedRooms);
   const router = useRouter();
   const pathname = usePathname();
+  const [currentMainImageIndex, setCurrentMainImageIndex] = useState(0);
+
   const sliderRefs = useRef<(Slider | null)[]>([]);
   const modalSliderRef = useRef<Slider>(null);
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
   const hasRequestedNearbySearch = useRef(false);
   const hasInitializedRoomCount = useRef(false);
+
+  // Helper functions for hotel images
+  const getOrderedHotelImages = useCallback(() => {
+    if (!hotelData?.images) return [];
+    const images = hotelData.images.filter((img) => !!img?.path);
+    // Prioritize GEN images first; within each group, sort by 'order' then 'visualOrder'
+    const getOrderValue = (img: HotelImage) => {
+      if (typeof img.order === "number") return img.order;
+      if (typeof img.visualOrder === "number") return img.visualOrder;
+      return Number.MAX_SAFE_INTEGER;
+    };
+    const genImages = images
+      .filter((img) => img.type?.code === "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    const otherImages = images
+      .filter((img) => img.type?.code !== "GEN")
+      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    // Return prioritized list (GEN first, then others)
+    return [...genImages, ...otherImages];
+  }, [hotelData?.images]);
+
+  const sortedImages = useMemo(() => getOrderedHotelImages(), [getOrderedHotelImages]);
+
+  const handleMainImagePrev = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentMainImageIndex((prev) => 
+      prev === 0 ? sortedImages.length - 1 : prev - 1
+    );
+  };
+
+  const handleMainImageNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentMainImageIndex((prev) => 
+      prev === sortedImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
 
   const authContext = useContext(AuthContext);
 
@@ -752,42 +793,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   ]);
 
   // Helper functions for hotel images
-  const getOrderedHotelImages = () => {
-    if (!hotelData?.images) return [];
-    const images = hotelData.images.filter((img) => !!img?.path);
-    // Prioritize GEN images first; within each group, sort by 'order' then 'visualOrder'
-    const getOrderValue = (img: HotelImage) => {
-      if (typeof img.order === "number") return img.order;
-      if (typeof img.visualOrder === "number") return img.visualOrder;
-      return Number.MAX_SAFE_INTEGER;
-    };
-    const genImages = images
-      .filter((img) => img.type?.code === "GEN")
-      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
-    const otherImages = images
-      .filter((img) => img.type?.code !== "GEN")
-      .sort((a, b) => getOrderValue(a) - getOrderValue(b));
-    // Return prioritized list (GEN first, then others)
-    return [...genImages, ...otherImages];
-  };
 
-  const getMainAndThumbImages = () => {
-    const sorted = getOrderedHotelImages();
-    if (sorted.length === 0) {
-      return {
-        main: null as string | null,
-        thumbs: [] as string[],
-        totalCount: 0,
-      };
-    }
-    const mainPath = sorted[0]?.path;
-    const thumbPaths = sorted.slice(1, 5).map((img) => img.path);
-    return {
-      main: mainPath ? buildHotelbedsImageUrl(mainPath) : null,
-      thumbs: thumbPaths.map(buildHotelbedsImageUrl),
-      totalCount: sorted.length,
-    };
-  };
+
+
 
   const handleTabClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -847,7 +855,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       if (Number.isNaN(date.getTime())) {
         return null;
       }
-      return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+      return new Intl.DateTimeFormat("en-US", {
         day: "numeric",
         month: "short",
       }).format(date);
@@ -1434,61 +1442,61 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               <div className="hotel-details-left">
                 {/* Image Gallery */}
                 <div className="image-gallery-section">
-                  {(() => {
-                    const images = getMainAndThumbImages();
-                    return (
-                      <>
-                        <div className="main-image">
-                          {images.main && (
-                            <Image
-                              src={images.main}
-                              width={892}
-                              height={260}
-                              alt={hotelName}
-                              className="hotel-details-main-image"
-                            />
+                  {sortedImages.length > 0 ? (
+                    <div className="main-image">
+                       <div className="slider-image-wrapper">
+                        <Image
+                          src={buildHotelbedsImageUrl(
+                            sortedImages[currentMainImageIndex].path
                           )}
-                        </div>
-                        {images.thumbs.length > 0 && (
-                          <div className="thumbnail-images">
-                            {images.thumbs
-                              .slice(0, 4)
-                              .map((imgSrc, index, arr) => (
-                                <div
-                                  key={`thumb-${index}`}
-                                  className="thambnail-image-item"
-                                >
-                                  <Image
-                                    src={imgSrc}
-                                    alt={t("alts.thumbnail", {
-                                      index: index + 1,
-                                    })}
-                                    width={66}
-                                    height={52}
-                                  />
-                                  {images.totalCount > 0 &&
-                                    (index === 3 ||
-                                      index === arr.length - 1) && (
-                                      <Link
-                                        href="#"
-                                        className="show-all-photos"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          handleOpenImageModal();
-                                        }}
-                                      >
-                                        {`${t("showAllPhotos")} (${
-                                          images.totalCount
-                                        })`}
-                                      </Link>
-                                    )}
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                          width={892}
+                          height={260}
+                          alt={hotelName}
+                          className="hotel-details-main-image"
+                          key={sortedImages[currentMainImageIndex].path}
+                        />
+                      </div>
+                      
+                      <button
+                        className="slider-nav-btn prev"
+                        onClick={handleMainImagePrev}
+                      >
+                        <Image
+                          src={HotelImgPrevIcon}
+                          alt="Previous"
+                          width={24}
+                          height={24}
+                        />
+                      </button>
+
+                      <button
+                        className="slider-nav-btn next"
+                        onClick={handleMainImageNext}
+                      >
+                        <Image
+                          src={HotelImgNextIcon}
+                          alt="Next"
+                          width={24}
+                          height={24}
+                        />
+                      </button>
+
+                      <button
+                        className="show-all-photos-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleOpenImageModal();
+                        }}
+                      >
+                         {t("showAllPhotos")} ({sortedImages.length})
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="main-image">
+                       {/* Fallback or skeleton if no images yet, though sortedImages check usually handles it. 
+                           If empty, maybe show placeholder or nothing. */}
+                    </div>
+                  )}
                 </div>
 
                 <div className="tabbing-conetnt">
@@ -2303,9 +2311,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                               <div className="rooms-card-refund">
                                                 <div className="refund-item d-flex align-items-center">
                                                   <div className="refund-status-list">
-                                                    {(!rate.cancellationPolicies ||
-                                                      rate.cancellationPolicies
-                                                        .length === 0) ? (
+                                                    {rate.rateClass === "NRF" ||
+                                                    !rate.cancellationPolicies ||
+                                                    rate.cancellationPolicies.length === 0 ? (
                                                       <span className="refund-status-text show-refund-status">
                                                         {t(
                                                           "refund.nonRefundable"

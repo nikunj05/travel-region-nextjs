@@ -80,18 +80,111 @@
 
         .main-image {
           overflow: hidden;
+          position: relative;
+          border-radius: 8px;
 
-          img {
+          .slider-image-wrapper {
+            width: 100%;
+            height: 100%;
+
+            img {
+              width: 100%;
+              height: 100%;
+              max-height: 424px;
+              min-height: 424px;
+              object-fit: cover;
+              border-radius: 8px;
+              transition: $transition;
+
+              &:hover {
+                transform: scale(1.05);
+              }
+            }
+          }
+
+          // Legacy support or direct children if any
+          >img {
             width: 100%;
             height: 100%;
             max-height: 424px;
             min-height: 424px;
             object-fit: cover;
-            border-radius: 0px;
+            border-radius: 8px;
             transition: $transition;
 
             &:hover {
               transform: scale(1.05);
+            }
+          }
+
+          .slider-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+            img {
+              width: 18px;
+              height: 18px;
+              min-height: unset;
+              max-height: unset;
+              object-fit: contain;
+              transform: none !important;
+            }
+
+            &:hover {
+              background-color: #fff;
+              transform: translateY(-50%) scale(1.1);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            &.prev {
+              left: 16px;
+
+              img {
+                margin-right: 2px; // Visual centering fix for arrow
+              }
+            }
+
+            &.next {
+              right: 16px;
+
+              img {
+                margin-left: 2px; // Visual centering fix for arrow
+              }
+            }
+          }
+
+          .show-all-photos-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            z-index: 5;
+            background-color: #fff;
+            color: $color-black;
+            font-size: 14px;
+            font-weight: $font-weight600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: $transition;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
           }
         }
@@ -1110,8 +1203,7 @@
                 padding: 10px 36px 10px 12px;
                 border: 1px solid #d1d5dc;
                 border-radius: 4px;
-                background: #fff url("../../assets/images/arrow-down-icon.svg")
-                  calc(100% - 10px) center no-repeat;
+                background: #fff url("../../assets/images/arrow-down-icon.svg") calc(100% - 10px) center no-repeat;
                 font-size: 14px;
                 cursor: pointer;
               }
@@ -1335,9 +1427,7 @@
                       padding: 8px 36px 8px 12px;
                       border: 1px solid #d1d5dc;
                       border-radius: 4px;
-                      background: #fff
-                        url("../../assets/images/arrow-down-icon.svg")
-                        calc(100% - 10px) center no-repeat;
+                      background: #fff url("../../assets/images/arrow-down-icon.svg") calc(100% - 10px) center no-repeat;
                       font-size: 14px;
                       cursor: pointer;
 
@@ -1671,11 +1761,9 @@
         .hotel-location-map__marker-inner {
           width: 14px;
           height: 14px;
-          background: radial-gradient(
-            circle at center,
-            #ffffff 0%,
-            #f4f6fb 100%
-          );
+          background: radial-gradient(circle at center,
+              #ffffff 0%,
+              #f4f6fb 100%);
           border-radius: 50%;
           box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
           transform: rotate(45deg);
@@ -2564,6 +2652,7 @@
 @media (max-width: 1199.55px) {
   .hotel-details-page {
     .rooms-filter-section {
+
       // .room-list {
       //   gap: 24px;
       // }
@@ -2656,6 +2745,7 @@
 
             .room-card-amenities-list,
             .room-card-specs {
+
               .amenities-item,
               .card-specs-item {
                 li {
@@ -2866,6 +2956,7 @@
               }
             }
           }
+
           .room-card-more-details {
             .room-card-more-hotel {
               .room-right {
@@ -2874,6 +2965,7 @@
                     background: #f3f4f6;
                     display: block;
                   }
+
                   .mobile-room-book-button {
                     width: 100%;
                     margin-top: 12px;
@@ -2887,6 +2979,7 @@
           }
         }
       }
+
       .hotel-detail-room-booking {
         .room-book-button {
           margin-top: 12px;
@@ -3857,12 +3950,14 @@
         transform: translateY(15px) translate(-44%);
       }
     }
+
     .refund-status-list {
       .refund-status-wrapper {
         &:hover {
           .cancellation-popover {
             transform: translateY(0px) translate(-44%);
           }
+
           .info-icon-wrapper {
             .cancellation-popover {
               transform: translateY(0px) translate(-44%);
@@ -4019,6 +4114,7 @@
                       }
                     }
                   }
+
                   .mobile-room-booking-summary {
                     .mobile-summary-item {
                       .mobile-summary-label {
@@ -4108,7 +4204,9 @@
           }
         }
       }
+
       .refund-status-wrapper {
+
         .cancellation-popover,
         .info-icon-wrapper {
           .cancellation-popover {
@@ -4124,6 +4222,7 @@
   [dir="rtl"] {
     .hotel-details-page {
       .rooms-filter-section {
+
         // .room-list {
         //   .room-card {
         //     .room-card-details {

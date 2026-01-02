@@ -143,7 +143,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, hotelImages = 
             ITC Maurya, a Luxury Collection Hotel, New Delhi
           </h2>
           <div className="header-actions">
-            <button className="reserve-btn button-primary">Reserve now</button>
+            {/* <button className="reserve-btn button-primary">Reserve now</button> */}
             <button className="close-btn" onClick={onClose}>
               <svg
                 width="24"

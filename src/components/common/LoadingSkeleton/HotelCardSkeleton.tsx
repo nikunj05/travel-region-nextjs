@@ -6,11 +6,7 @@ const HotelCardSkeleton = () => {
     <div className="hotel-card-skeleton">
       <div className="hotel-images-skeleton">
         <div className="main-image-skeleton"></div>
-        <div className="thumbnail-images-skeleton">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="thumbnail-image-skeleton"></div>
-          ))}
-        </div>
+
       </div>
       <div className="hotel-info-with-action-card">
         <div className="hotel-info-skeleton">

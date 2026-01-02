@@ -391,12 +391,16 @@ const Banner = () => {
                 )}
               </div>
               <div className="choose-location-items">
-                <h4 className="choose-location-items-title">
+                <h4 className="choose-location-items-title d-none d-md-block">
                   {t("checkInDate")}
                 </h4>
+                <h4 className="choose-location-items-title d-md-none">
+                  {t("dates")}
+                </h4>
                 <div className="dropdown" ref={datePickerRef}>
+                  {/* Desktop Button */}
                   <button
-                    className="filter-dropdown w-100 d-flex align-items-center justify-content-between"
+                    className="filter-dropdown w-100 d-none d-md-flex align-items-center justify-content-between"
                     onClick={toggleDatePicker}
                     type="button"
                   >
@@ -417,6 +421,52 @@ const Banner = () => {
                       className="arrow-and-plus-icon"
                     />
                   </button>
+
+                  {/* Mobile Button */}
+                  <button
+                    className="filter-dropdown w-100 d-flex d-md-none align-items-center justify-content-between"
+                    onClick={toggleDatePicker}
+                    type="button"
+                  >
+                    <div className="filter-dropdown-inner d-flex align-items-center">
+                      <Image
+                        src={calendarIcon}
+                        width="20"
+                        height="20"
+                        alt="calendar icon"
+                      />
+                      {(() => {
+                        const startDate = filters.checkInDate;
+                        const endDate = filters.checkOutDate;
+                        
+                        if (!startDate) return t("addDate");
+                        
+                        const startStr = startDate.toLocaleDateString("en-US", {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        });
+
+                        if (!endDate) return `${startStr} - ${t("checkOutDate")}`;
+
+                        const endStr = endDate.toLocaleDateString("en-US", {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        });
+
+                        return `${startStr} - ${endStr}`;
+                      })()}
+                    </div>
+                    <Image
+                      src={plusIcon}
+                      width="24"
+                      height="24"
+                      alt="plus icon"
+                      className="arrow-and-plus-icon"
+                    />
+                  </button>
+
                   <DatePicker
                     isOpen={isDatePickerOpen}
                     onDateSelect={handleDateSelect}
@@ -429,7 +479,7 @@ const Banner = () => {
                   <div className="location-error-message">{checkInError}</div>
                 )}
               </div>
-              <div className="choose-location-items">
+              <div className="choose-location-items d-none d-md-block">
                 <h4 className="choose-location-items-title">
                   {t("checkOutDate")}
                 </h4>

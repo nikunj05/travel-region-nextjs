@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./DatePicker.scss";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
+import { useTranslations, useLocale } from "next-intl";
 
 interface DatePickerProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   selectedEndDate,
   minDate,
 }) => {
+  const t = useTranslations("DatePicker");
+  const locale = useLocale();
   const [isClient, setIsClient] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
   // const [selectingCheckout, setSelectingCheckout] = useState(false);
@@ -239,7 +242,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <div className="datepicker-dropdown">
       <div className="datepicker-header">
-        <h3>Select Date</h3>
+        <h3>{t("selectDate")}</h3>
         {/* <div className="datepicker-navigation">
           <button
             className="nav-button prev"

@@ -7,6 +7,7 @@
     "findLocation": "Find your next destination",
     "checkInDate": "Check-in Date",
     "checkOutDate": "Check-out Date",
+    "dates": "Dates",
     "addDate": "Add Date",
     "guestsAndRooms": "Guests & Rooms",
     "addGuests": "Add Guests",
@@ -603,7 +604,8 @@
       "phonePlaceholder": "Your phone number",
       "specialRequest": "Special Request",
       "specialRequestDescription": "Please write your request in English.",
-      "specialRequestPlaceholder": "Late checkin, Honeymoon etc"
+      "specialRequestPlaceholder": "Late checkin, Honeymoon etc",
+      "enterTextInEnglishOnly": "Enter text in English only."
     },
     "summary": {
       "hotelFare": "Hotel Fare",
@@ -710,6 +712,19 @@
     "confirmationEmailSent": "A confirmation email has been sent to",
     "printConfirmation": "Print Confirmation",
     "viewMyBooking": "View my Booking"
+  },
+  "GuestsPicker": {
+    "room": "Room {index}",
+    "removeRoom": "Remove room",
+    "addAnotherRoom": "Add another Room",
+    "adults": "Adults",
+    "children": "Children",
+    "childrenAges": "Children Ages",
+    "childAge": "Child {index} Age",
+    "age": "Age"
+  },
+  "DatePicker": {
+    "selectDate": "Select Date"
   },
   "SessionTimeout": {
     "title": "Session Expired",

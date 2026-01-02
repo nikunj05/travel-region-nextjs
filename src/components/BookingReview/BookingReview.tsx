@@ -959,6 +959,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       <h3 className="booking-form-title">
                         {t("travelerDetails.primaryGuest")} <span className="text-red">({t("travelerDetails.mandatory")})</span>
                       </h3>
+                      <p className="english-only-text">{t("travelerDetails.enterTextInEnglishOnly")}</p>
                       <div className="booking-form-content form-field">
                         <div className="form-row">
                           <Controller
@@ -1098,7 +1099,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                               name="specialRequests"
                               rows={5}
                               // Keep placeholder text always in English (per requirements)
-                              placeholder="Write your special requests here"
+                              placeholder="Please inform the hotel if you will be arriving late, or if you have any special requests such as honeymoon arrangements, high floor preference, or an accessible room."
                               className="w-100 text-field"
                             />
                           </div>
@@ -1230,9 +1231,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     {priceFormatter.format(priceBreakdown.totalPrice)}
                   </span>
                 </div>
-                <div className="booking-price-tax">
+                <p className="booking-price-tax">
                   {t("summary.includedAllTaxes")}
-                </div>
+                </p>
               </div>
               <div className="check-availability-action">
                 <button

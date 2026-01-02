@@ -7,6 +7,7 @@
     "findLocation": "ابحث عن وجهتك التالية",
     "checkInDate": "تاريخ تسجيل الوصول",
     "checkOutDate": "تاريخ تسجيل المغادرة",
+    "dates": "التواريخ",
     "addDate": "أضف تاريخًا",
     "guestsAndRooms": "الضيوف والغرف",
     "addGuests": "أضف ضيوف",
@@ -603,7 +604,8 @@
       "phonePlaceholder": "رقم هاتفك",
       "specialRequest": "طلب خاص",
       "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية.",
-      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
+      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ",
+      "enterTextInEnglishOnly": "Enter text in English only."
     },
     "summary": {
       "hotelFare": "أجرة الفندق",
@@ -710,6 +712,19 @@
     "confirmationEmailSent": "تم إرسال بريد تأكيد إلى",
     "printConfirmation": "طباعة التأكيد",
     "viewMyBooking": "عرض حجزي"
+  },
+  "DatePicker": {
+    "selectDate": "اختر التاريخ"
+  },
+  "GuestsPicker": {
+    "room": "غرفة {index}",
+    "removeRoom": "إزالة الغرفة",
+    "addAnotherRoom": "إضافة غرفة أخرى",
+    "adults": "البالغين",
+    "children": "الأطفال",
+    "childrenAges": "أعمار الأطفال",
+    "childAge": "عمر الطفل {index}",
+    "age": "العمر"
   },
   "SessionTimeout": {
     "title": "انتهت الجلسة",

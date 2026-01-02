@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import minusRoundIcon from "@/assets/images/minus-round-icon.svg";
 import plusRoundIcon from "@/assets/images/plus-round-icon.svg";
@@ -17,6 +18,8 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
   onRoomsChange,
   rooms,
 }) => {
+  const t = useTranslations("GuestsPicker");
+
   // Ensure all rooms have childrenAges array initialized
   useEffect(() => {
     const needsUpdate = rooms.some(room => {
@@ -155,7 +158,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
           <div className="guestspicker-section" key={index}>
             <div className="guestspicker-room-title-wrapper">
               <div className="guestspicker-room-title">
-                Room {index + 1}
+                {t("room", { index: index + 1 })}
               </div>
               {rooms.length > 1 && (
                 <button
@@ -163,7 +166,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
                   onClick={() => removeRoom(index)}
                   type="button"
                 >
-                  Remove room
+                  {t("removeRoom")}
                 </button>
               )}
             </div>
@@ -171,7 +174,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
             <div className="guestspicker-item">
               <div className="guestspicker-icon-with-text">
                 {renderGuestIcon("adults")}
-                <span className="guestspicker-label">Adults</span>
+                <span className="guestspicker-label">{t("adults")}</span>
               </div>
               <div className="guestspicker-counter">
                 <button
@@ -203,7 +206,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
             <div className="guestspicker-item">
               <div className="guestspicker-icon-with-text">
                 {renderGuestIcon("children")}
-                <span className="guestspicker-label">Children</span>
+                <span className="guestspicker-label">{t("children")}</span>
               </div>
               <div className="guestspicker-counter">
                 <button
@@ -236,7 +239,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
             {room.children > 0 && (
               <div className="guestspicker-children-ages">
                 <div className="guestspicker-children-ages-label">
-                  Children Ages
+                  {t("childrenAges")}
                 </div>
                 <div className="guestspicker-children-ages-inputs">
                   {Array.from({ length: room.children }).map((_, childIndex) => {
@@ -245,7 +248,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
                     return (
                       <div key={childIndex} className="guestspicker-age-input-wrapper">
                         <label className="guestspicker-age-label">
-                          Child {childIndex + 1} Age
+                          {t("childAge", { index: childIndex + 1 })}
                         </label>
                         <input
                           type="number"
@@ -257,7 +260,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
                             updateChildAge(index, childIndex, newAge);
                           }}
                           className="guestspicker-age-input"
-                          placeholder="Age"
+                          placeholder={t("age")}
                         />
                       </div>
                     );
@@ -287,7 +290,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
               strokeLinejoin="round"
             />
           </svg>
-          Add another Room
+          {t("addAnotherRoom")}
         </button>
       </div>
     </div>
