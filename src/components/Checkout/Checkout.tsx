@@ -842,7 +842,7 @@ function CheckoutComponent() {
                               name="specialRequests"
                               rows={5}
                               // Keep placeholder text always in English (same as BookingReview)
-                              placeholder="Write your special requests here"
+                              placeholder="Please inform the hotel if you will be arriving late, or if you have any special requests such as honeymoon arrangements, high floor preference, or an accessible room."
                               className="w-100 text-field"
                               disabled
                             />

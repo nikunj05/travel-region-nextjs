@@ -580,8 +580,10 @@ img {
 
 // banner section css start
 .home-banner-section {
-  // background: url("../assets/images/home-banner-image.jpg") no-repeat center center/cover;
-  // height: 100vh;
+  background-image: var(--hero-bg, url("../assets/images/home-banner-image.jpg"));
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   height: 100%;
   min-height: 750px;
   position: relative;

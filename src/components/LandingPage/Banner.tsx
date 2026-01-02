@@ -295,12 +295,9 @@ const Banner = () => {
       className="home-banner-section"
       style={
         heroImage
-          ? {
-            backgroundImage: `url(${heroImage})`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }
+          ? ({
+              "--hero-bg": `url(${heroImage})`,
+            } as React.CSSProperties)
           : undefined
       }
     >
