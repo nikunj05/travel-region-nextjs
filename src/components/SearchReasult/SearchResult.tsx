@@ -85,7 +85,9 @@ const SearchResult = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 12; // Number of hotels to load per page
-  const [translatedNames, setTranslatedNames] = useState<Map<string, string>>(new Map());
+  const [translatedNames, setTranslatedNames] = useState<Map<string, string>>(
+    new Map()
+  );
 
   // Filter states
   const [selectedStarRating, setSelectedStarRating] = useState<number | null>(
@@ -137,25 +139,31 @@ const SearchResult = () => {
   const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
     "code" in hotel ? hotel.code : (hotel as HotelItem).id;
   const getHotelName = (hotel: HotelItem | FavoriteHotel) => {
-    const hotelId = ("code" in hotel && hotel.code) 
-      ? hotel.code.toString() 
-      : getHotelId(hotel).toString();
-    
+    const hotelId =
+      "code" in hotel && hotel.code
+        ? hotel.code.toString()
+        : getHotelId(hotel).toString();
+
     // Handle both HotelItem (name: string) and FavoriteHotel (name: {content: string})
     let originalName: string;
     if ("name" in hotel && typeof hotel.name === "string") {
       originalName = hotel.name;
-    } else if ("name" in hotel && hotel.name && typeof hotel.name === "object" && "content" in hotel.name) {
+    } else if (
+      "name" in hotel &&
+      hotel.name &&
+      typeof hotel.name === "object" &&
+      "content" in hotel.name
+    ) {
       originalName = (hotel.name as { content: string }).content || "Hotel";
     } else {
       originalName = (hotel as FavoriteHotel).name?.content || "Hotel";
     }
-    
+
     // Return translated name if available
-    if (locale === 'ar' && translatedNames.has(hotelId)) {
+    if (locale === "ar" && translatedNames.has(hotelId)) {
       return translatedNames.get(hotelId)!;
     }
-    
+
     return originalName;
   };
   const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
@@ -182,23 +190,23 @@ const SearchResult = () => {
   ) => {
     if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
-      
+
       // Parse rate string to number, handling empty strings and invalid values
       const parseRate = (rate: string | undefined): number | null => {
         if (!rate || rate.trim() === "") return null;
         const parsed = parseFloat(String(rate));
         return isNaN(parsed) ? null : parsed;
       };
-      
+
       // Always use minRate for sorting since that's what's displayed in the UI
       // Both "Low to High" and "High to Low" should sort by minRate
       const minRate = parseRate(item.minRate);
-      
+
       // Return minRate if available, otherwise fallback to maxRate, or 0 as last resort
       if (minRate !== null) {
         return minRate;
       }
-      
+
       // Fallback to maxRate if minRate is not available
       const maxRate = parseRate(item.maxRate);
       return maxRate !== null ? maxRate : 0;
@@ -243,17 +251,22 @@ const SearchResult = () => {
     });
 
     // Filter logic for specific hotel (lodging)
-    if (filters.location?.types?.includes('lodging') && filters.location.name) {
+    if (filters.location?.types?.includes("lodging") && filters.location.name) {
       const targetName = filters.location.name.toLowerCase();
       // console.log("targetName", targetName);
       const filtered = sortable.filter((hotel) => {
         const hotelName = getHotelName(hotel).toLowerCase();
         // console.log("hotelName", hotelName);
         // 1. Direct inclusion (fastest)
-        if (hotelName.includes(targetName) || targetName.includes(hotelName)) return true;
+        if (hotelName.includes(targetName) || targetName.includes(hotelName))
+          return true;
 
         // 2. Word token matching
-        const cleanString = (str: string) => str.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 0);
+        const cleanString = (str: string) =>
+          str
+            .replace(/[^\w\s]/g, "")
+            .split(/\s+/)
+            .filter((w) => w.length > 0);
 
         const tWords = cleanString(targetName);
         const hWords = cleanString(hotelName);
@@ -261,11 +274,11 @@ const SearchResult = () => {
         if (tWords.length === 0 || hWords.length === 0) return false;
 
         // Check if all significant target words appear in hotel name
-        const allTargetInHotel = tWords.every(tw => hotelName.includes(tw));
+        const allTargetInHotel = tWords.every((tw) => hotelName.includes(tw));
         if (allTargetInHotel) return true;
 
         // Check if all significant hotel words appear in target name (handle "Sheraton" vs "Sheraton Hotel")
-        const allHotelInTarget = hWords.every(hw => targetName.includes(hw));
+        const allHotelInTarget = hWords.every((hw) => targetName.includes(hw));
         if (allHotelInTarget) return true;
 
         return false;
@@ -332,37 +345,41 @@ const SearchResult = () => {
 
   // Translate hotel names using Google Translate when locale is Arabic
   useEffect(() => {
-    if (locale !== 'ar' || sortedHotels.length === 0) {
+    if (locale !== "ar" || sortedHotels.length === 0) {
       return;
     }
 
     const translateHotels = async () => {
       const translations = new Map<string, string>();
-      
+
       const translatePromises = sortedHotels.map(async (hotel) => {
-        const hotelId = ("code" in hotel && hotel.code) 
-          ? hotel.code.toString() 
-          : getHotelId(hotel).toString();
-        
+        const hotelId =
+          "code" in hotel && hotel.code
+            ? hotel.code.toString()
+            : getHotelId(hotel).toString();
+
         const originalName = getHotelName(hotel);
-        
+
         // Skip if already translated
         if (translatedNames.has(hotelId)) {
           return;
         }
-        
+
         // Only translate English text
-        const isEnglish = originalName && 
-          !originalName.match(/[\u0600-\u06FF]/) && 
+        const isEnglish =
+          originalName &&
+          !originalName.match(/[\u0600-\u06FF]/) &&
           originalName.match(/[a-zA-Z]/);
-        
+
         if (isEnglish && originalName !== "Hotel") {
           try {
             // Use Google Translate API
             const response = await fetch(
-              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(originalName)}`
+              `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(
+                originalName
+              )}`
             );
-            
+
             if (response.ok) {
               const data = await response.json();
               if (data && data[0] && data[0][0] && data[0][0][0]) {
@@ -379,7 +396,7 @@ const SearchResult = () => {
       });
 
       await Promise.all(translatePromises);
-      
+
       if (translations.size > 0) {
         setTranslatedNames((prev) => {
           const updated = new Map(prev);
@@ -429,8 +446,6 @@ const SearchResult = () => {
     })();
   }, []);
 
-
-
   // Close modals when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -473,7 +488,7 @@ const SearchResult = () => {
     ) {
       hasTriggeredInitialSearch.current = true;
       handleSearchClick({
-        preventDefault: () => { },
+        preventDefault: () => {},
       } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
@@ -718,7 +733,11 @@ const SearchResult = () => {
       const latitude = coords.lat;
       const longitude = coords.lng;
 
-      console.log("Search with coordinates:", { latitude, longitude, location: filters.location.name });
+      console.log("Search with coordinates:", {
+        latitude,
+        longitude,
+        location: filters.location.name,
+      });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
@@ -773,10 +792,12 @@ const SearchResult = () => {
 
     if (totalGuests === 0) return t("addGuests");
 
-    const guestsText = `${totalGuests} ${totalGuests > 1 ? t("guests") : t("guest")
-      }`;
-    const roomsText = `${rooms.length} ${rooms.length > 1 ? t("rooms") : t("room")
-      }`;
+    const guestsText = `${totalGuests} ${
+      totalGuests > 1 ? t("guests") : t("guest")
+    }`;
+    const roomsText = `${rooms.length} ${
+      rooms.length > 1 ? t("rooms") : t("room")
+    }`;
 
     return `${guestsText} • ${roomsText}`;
   };
@@ -806,7 +827,7 @@ const SearchResult = () => {
     try {
       // Open hotel details page in a new tab
       const url = `/${locale}/hotel-details/${hotelSlug}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
+      window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("Navigation error:", error);
     } finally {
@@ -993,7 +1014,9 @@ const SearchResult = () => {
               )}
             </div>
             <div
-              className={`price-slider-container ${locale === "ar" ? "rtl-slider" : ""}`}
+              className={`price-slider-container ${
+                locale === "ar" ? "rtl-slider" : ""
+              }`}
               style={{
                 position: "relative",
                 height: "40px",
@@ -1574,103 +1597,105 @@ const SearchResult = () => {
                       // Show actual hotel results
                       visibleHotels.map(
                         (hotel: HotelItem | FavoriteHotel, index: number) => {
-                          const isLastHotel = index === visibleHotels.length - 1;
+                          const isLastHotel =
+                            index === visibleHotels.length - 1;
                           return (
-                          <div 
-                            key={getHotelId(hotel)} 
-                            className="hotel-card"
-                          >
-                            <div className="hotel-images">
-                              {(() => {
-                                const images = getMainAndThumbImages(hotel);
-                                return (
-                                  <>
-                                    <div className="main-image">
-                                      <Image
-                                        src={
-                                          images.main ||
-                                          (mainImage1 as unknown as string)
-                                        }
-                                        alt={getHotelName(hotel) || "Hotel"}
-                                        width={276}
-                                        height={146}
-                                        className="property-main-img"
-                                      />
+                            <div key={getHotelId(hotel)} className="hotel-card">
+                              <div className="hotel-images">
+                                {(() => {
+                                  const images = getMainAndThumbImages(hotel);
+                                  return (
+                                    <>
+                                      <div className="main-image">
+                                        <Image
+                                          src={
+                                            images.main ||
+                                            (mainImage1 as unknown as string)
+                                          }
+                                          alt={getHotelName(hotel) || "Hotel"}
+                                          width={276}
+                                          height={146}
+                                          className="property-main-img"
+                                        />
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                              <div className="hotel-info-with-action-card d-flex">
+                                <div className="hotel-info">
+                                  {hotel.show_tag && (
+                                    <div className="featured-tag d-flex d-lg-none">
+                                      <svg
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        />
+                                        <circle
+                                          cx="7"
+                                          cy="7"
+                                          r="2"
+                                          fill="currentColor"
+                                        />
+                                      </svg>
+                                      {tSearch("featured")}
                                     </div>
+                                  )}
+                                  <p className="hotel-name">
+                                    {getHotelName(hotel)}
+                                  </p>
+                                  <div className="hotel-rating">
+                                    <div className="rating-stars d-flex align-items-center">
+                                      {Array.from(
+                                        { length: getStarRating(hotel) },
+                                        (_, index) => (
+                                          <Image
+                                            key={`${getHotelId(
+                                              hotel
+                                            )}-star-${index}`}
+                                            src={ReviewStarFill}
+                                            alt="star icon"
+                                            width="16"
+                                            height="16"
+                                          />
+                                        )
+                                      )}
+                                    </div>
+                                    <span className="rating-reviews d-flex align-items-center">
+                                      <span className="rating-score">
+                                        {getStarRating(hotel)}
+                                      </span>
+                                      {/* ({120} {tSearch('reviews')}) */}
+                                    </span>
+                                  </div>
 
-                                  </>
-                                );
-                              })()}
-                            </div>
-                            <div className="hotel-info-with-action-card d-flex">
-                              <div className="hotel-info">
-                                {hotel.show_tag && (
-                                  <div className="featured-tag d-flex d-lg-none">
+                                  <div className="hotel-location">
                                     <svg
-                                      width="14"
-                                      height="14"
-                                      viewBox="0 0 24 24"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 16 16"
                                       fill="none"
                                       xmlns="http://www.w3.org/2000/svg"
                                     >
                                       <path
-                                        d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
+                                        d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
+                                        fill="#6F8DC1"
                                       />
-                                      <circle cx="7" cy="7" r="2" fill="currentColor" />
                                     </svg>
-                                    {tSearch("featured")}
+
+                                    <span>{getHotelLocation(hotel)}</span>
                                   </div>
-                                )}
-                                <p className="hotel-name">
-                                  {getHotelName(hotel)}
-                                </p>
-                                <div className="hotel-rating">
-                                  <div className="rating-stars d-flex align-items-center">
-                                    {Array.from(
-                                      { length: getStarRating(hotel) },
-                                      (_, index) => (
-                                        <Image
-                                          key={`${getHotelId(
-                                            hotel
-                                          )}-star-${index}`}
-                                          src={ReviewStarFill}
-                                          alt="star icon"
-                                          width="16"
-                                          height="16"
-                                        />
-                                      )
-                                    )}
-                                  </div>
-                                  <span className="rating-reviews d-flex align-items-center">
-                                    <span className="rating-score">
-                                      {getStarRating(hotel)}
-                                    </span>
-                                    {/* ({120} {tSearch('reviews')}) */}
-                                  </span>
-                                </div>
 
-                                <div className="hotel-location">
-                                  <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M8.00098 0.833984C10.5517 0.833984 12.9853 2.34261 14.0039 4.72363C14.9507 6.93686 14.4393 8.82495 13.3721 10.4414C12.4869 11.7821 11.1916 12.9762 10.0264 14.0498C9.81947 14.2404 9.61655 14.4271 9.4209 14.6104C9.03755 14.9693 8.5279 15.167 8.00098 15.167C7.47407 15.167 6.96439 14.9693 6.58105 14.6104L6.58008 14.6094C6.37306 14.4144 6.15823 14.2149 5.93848 14.0117C4.78578 12.9458 3.50787 11.7643 2.63184 10.4404C1.56334 8.82562 1.05008 6.93961 1.99805 4.72363C3.01668 2.34261 5.45026 0.834004 8.00098 0.833984ZM8 4.66699C6.52724 4.66699 5.33301 5.86123 5.33301 7.33398C5.3331 8.80667 6.52729 10.001 8 10.001C9.47271 10.001 10.6669 8.80667 10.667 7.33398C10.667 5.86123 9.47276 4.66699 8 4.66699Z"
-                                      fill="#6F8DC1"
-                                    />
-                                  </svg>
-
-                                  <span>{getHotelLocation(hotel)}</span>
-                                </div>
-
-                                {/* <div className="hotel-amenities">
+                                  {/* <div className="hotel-amenities">
                                   {[
                                     { name: 'Breakfast', icon: BreaFastIcon },
                                     { name: 'Parking', icon: ParkingIcon },
@@ -1683,7 +1708,7 @@ const SearchResult = () => {
                                   ))}
                                 </div> */}
 
-                                {/* <p className="hotel-description">
+                                  {/* <p className="hotel-description">
                                   {(() => {
                                     const hotelId = getHotelId(hotel).toString();
                                     const description = ('description' in hotel && (hotel as FavoriteHotel).description?.content) || 'Contemporary design meets comfort. Rooftop pool with panoramic city views.';
@@ -1706,33 +1731,38 @@ const SearchResult = () => {
                                     );
                                   })()}
                                 </p> */}
-                              </div>
-                              <div className="property-card-action">
-                                {hotel.show_tag && (
-                                  <div className="featured-tag d-none d-lg-flex">
-                                    <svg
-                                      width="14"
-                                      height="14"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                      <circle cx="7" cy="7" r="2" fill="currentColor" />
-                                    </svg>
-                                    {tSearch("featured")}
-                                  </div>
-                                )}
-                                <div className="hotel-footer">
-                                  <div className="hotel-price">
-                                    <span className="price-amount">
-                                      {/* <span>
+                                </div>
+                                <div className="property-card-action">
+                                  {hotel.show_tag && (
+                                    <div className="featured-tag d-none d-lg-flex">
+                                      <svg
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        />
+                                        <circle
+                                          cx="7"
+                                          cy="7"
+                                          r="2"
+                                          fill="currentColor"
+                                        />
+                                      </svg>
+                                      {tSearch("featured")}
+                                    </div>
+                                  )}
+                                  <div className="hotel-footer">
+                                    <div className="hotel-price">
+                                      <span className="price-amount">
+                                        {/* <span>
                                         {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""} 
                                         <Image
                                           src={currencyImage}
@@ -1741,48 +1771,48 @@ const SearchResult = () => {
                                           alt="currency icon"
                                         />
                                       </span>*/}
-                                      <span
-                                        className="currency-icon"
-                                        aria-hidden="true"
-                                        dangerouslySetInnerHTML={{
-                                          __html:
-                                            buildCurrencySvgMarkup("#09090b"),
-                                        }}
-                                        style={{ display: "inline-flex" }}
-                                      />{" "}
-                                      {("maxRate" in hotel &&
-                                        (hotel as HotelItem).minRate) ||
-                                        179}
-                                    </span>
-                                    {/* <span className="price-period">{tSearch('perNight')}</span> */}
-                                  </div>
-                                  <button
-                                    className="view-details-button button-primary w-100"
-                                    onClick={() =>
-                                      handleViewDetailsClick(
-                                        getHotelCode(hotel),
-                                        getHotelName(hotel)
-                                      )
-                                    }
-                                    disabled={
-                                      loadingHotelId ===
-                                      getHotelCode(hotel)?.toString()
-                                    }
-                                  >
-                                    {loadingHotelId ===
+                                        <span
+                                          className="currency-icon"
+                                          aria-hidden="true"
+                                          dangerouslySetInnerHTML={{
+                                            __html:
+                                              buildCurrencySvgMarkup("#09090b"),
+                                          }}
+                                          style={{ display: "inline-flex" }}
+                                        />{" "}
+                                        {("maxRate" in hotel &&
+                                          (hotel as HotelItem).minRate) ||
+                                          179}
+                                      </span>
+                                      {/* <span className="price-period">{tSearch('perNight')}</span> */}
+                                    </div>
+                                    <button
+                                      className="view-details-button button-primary w-100"
+                                      onClick={() =>
+                                        handleViewDetailsClick(
+                                          getHotelCode(hotel),
+                                          getHotelName(hotel)
+                                        )
+                                      }
+                                      disabled={
+                                        loadingHotelId ===
+                                        getHotelCode(hotel)?.toString()
+                                      }
+                                    >
+                                      {loadingHotelId ===
                                       getHotelCode(hotel)?.toString() ? (
-                                      <>
-                                        <div className="view-details-spinner"></div>
-                                        {tSearch("loading")}
-                                      </>
-                                    ) : (
-                                      tSearch("viewDetails")
-                                    )}
-                                  </button>
+                                        <>
+                                          <div className="view-details-spinner"></div>
+                                          {tSearch("loading")}
+                                        </>
+                                      ) : (
+                                        tSearch("viewDetails")
+                                      )}
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
                           );
                         }
                       )
@@ -1795,13 +1825,11 @@ const SearchResult = () => {
                   </div>
 
                   {sortedHotels.length > ITEMS_PER_PAGE && (
-                    <div className="d-flex justify-content-center mt-4">
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onChange={setCurrentPage}
-                      />
-                    </div>
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onChange={setCurrentPage}
+                    />
                   )}
                 </>
               </div>

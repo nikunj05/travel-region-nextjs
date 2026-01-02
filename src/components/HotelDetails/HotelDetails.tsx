@@ -225,12 +225,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     return [...genImages, ...otherImages];
   }, [hotelData?.images]);
 
-  const sortedImages = useMemo(() => getOrderedHotelImages(), [getOrderedHotelImages]);
+  const sortedImages = useMemo(
+    () => getOrderedHotelImages(),
+    [getOrderedHotelImages]
+  );
 
   const handleMainImagePrev = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentMainImageIndex((prev) => 
+    setCurrentMainImageIndex((prev) =>
       prev === 0 ? sortedImages.length - 1 : prev - 1
     );
   };
@@ -238,11 +241,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const handleMainImageNext = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentMainImageIndex((prev) => 
+    setCurrentMainImageIndex((prev) =>
       prev === sortedImages.length - 1 ? 0 : prev + 1
     );
   };
-
 
   const authContext = useContext(AuthContext);
 
@@ -793,9 +795,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   ]);
 
   // Helper functions for hotel images
-
-
-
 
   const handleTabClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -1444,7 +1443,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 <div className="image-gallery-section">
                   {sortedImages.length > 0 ? (
                     <div className="main-image">
-                       <div className="slider-image-wrapper">
+                      <div className="slider-image-wrapper">
                         <Image
                           src={buildHotelbedsImageUrl(
                             sortedImages[currentMainImageIndex].path
@@ -1456,29 +1455,43 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           key={sortedImages[currentMainImageIndex].path}
                         />
                       </div>
-                      
+
                       <button
                         className="slider-nav-btn prev"
                         onClick={handleMainImagePrev}
                       >
-                        <Image
-                          src={HotelImgPrevIcon}
-                          alt="Previous"
-                          width={24}
-                          height={24}
-                        />
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 12L20 12M4 12L8.99996 17M4 12L9 7"
+                            stroke="#1B2236"
+                            stroke-width="1.5"
+                          ></path>
+                        </svg>
                       </button>
 
                       <button
                         className="slider-nav-btn next"
                         onClick={handleMainImageNext}
                       >
-                        <Image
-                          src={HotelImgNextIcon}
-                          alt="Next"
-                          width={24}
-                          height={24}
-                        />
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M20 12L4 12M20 12L15.0001 17M20 12L15 7"
+                            stroke="#1B2236"
+                            stroke-width="1.5"
+                          ></path>
+                        </svg>
                       </button>
 
                       <button
@@ -1488,12 +1501,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           handleOpenImageModal();
                         }}
                       >
-                         {t("showAllPhotos")} ({sortedImages.length})
+                        {t("showAllPhotos")} ({sortedImages.length})
                       </button>
                     </div>
                   ) : (
                     <div className="main-image">
-                       {/* Fallback or skeleton if no images yet, though sortedImages check usually handles it. 
+                      {/* Fallback or skeleton if no images yet, though sortedImages check usually handles it. 
                            If empty, maybe show placeholder or nothing. */}
                     </div>
                   )}
@@ -2313,7 +2326,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   <div className="refund-status-list">
                                                     {rate.rateClass === "NRF" ||
                                                     !rate.cancellationPolicies ||
-                                                    rate.cancellationPolicies.length === 0 ? (
+                                                    rate.cancellationPolicies
+                                                      .length === 0 ? (
                                                       <span className="refund-status-text show-refund-status">
                                                         {t(
                                                           "refund.nonRefundable"
@@ -2331,7 +2345,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                             `Free cancellation before ${rateCancellationDetails.refundDate}`
                                                           : t(
                                                               "refund.nonRefundable"
-                                                            ) || "Non-refundable"}
+                                                            ) ||
+                                                            "Non-refundable"}
                                                       </span>
                                                     )}
                                                   </div>
@@ -2432,7 +2447,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                     <div className="mobile-summary-item">
                                                       <span className="mobile-summary-label">
                                                         {totalSelectedRooms}{" "}
-                                                        {totalSelectedRooms === 1
+                                                        {totalSelectedRooms ===
+                                                        1
                                                           ? t("labels.room")
                                                           : t(
                                                               "labels.rooms"
