@@ -73,7 +73,6 @@
 
           .nav-link {
             margin-left: 0;
-
           }
         }
       }
@@ -240,7 +239,6 @@
 
     .testimonial-actions {
       .testimonial-arrows {
-
         .slick-prev,
         .slick-next {
           svg {
@@ -354,7 +352,6 @@
     .Toastify__close-button--light {
       right: auto;
       left: 10px;
-
     }
 
     .Toastify__toast-container {
@@ -363,7 +360,6 @@
       left: 15px;
       align-items: start;
     }
-
   }
 }
 
@@ -451,7 +447,6 @@
 
       .header-language-dropdown {
         .language-btn {
-
           font-size: 17px;
 
           .flag-icon {
@@ -475,7 +470,7 @@
       .mobile_side_menu {
         left: auto;
         right: -100%;
-        transition: right .3s;
+        transition: right 0.3s;
       }
 
       .mobile-menu-close-button {
@@ -504,7 +499,6 @@
     }
   }
 }
-
 
 @media (max-width: 767.55px) {
   [dir="rtl"] {
@@ -535,10 +529,32 @@
 
     .page-footer {
       .footer-copy-right {
-
         .copy-right-text,
         .copy-right-links {
           text-align: right;
+        }
+      }
+    }
+    .home-banner-section {
+      .banner-content {
+        .banner-property-filter {
+          .choose-location-and-date {
+            .choose-location-items {
+              .choose-location-items-title {
+                padding-left: 0px;
+                padding-right: 42px;
+              }
+              .filter-dropdown {
+                padding: 3.5px 42px 8px 14px;
+                .filter-dropdown-inner {
+                  img {
+                    left: auto;
+                    right: 14px;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
