@@ -26,6 +26,8 @@ export interface AppSetting {
   social_media_links: SocialMediaLink[];
   // Optional homepage hero fields provided by backend
   home_hero_image?: string | null;
+  home_hero_image_tablet?: string | null;
+  home_hero_image_mobile?: string | null;
   home_title?: string | null;
   home_subtitle?: string | null;
   faq_background_color?: FaqBackgroundColor | null;

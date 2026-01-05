@@ -274,6 +274,7 @@
   }
 
   .home-banner-section {
+    background-image: var(--hero-bg-tablet);
     min-height: auto;
     padding: 90px 0 60px 0;
 
@@ -779,7 +780,7 @@
 
     .banner-content {
       .heading_section {
-        background-image: var(--hero-bg);
+        background-image: var(--hero-bg-mobile);
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;

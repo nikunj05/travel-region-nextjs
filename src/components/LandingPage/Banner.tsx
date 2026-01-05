@@ -29,7 +29,7 @@ const Banner = () => {
 
   // App settings store (hydrated from server) for dynamic hero content
   const setting = useSettingsStore((s) => s.setting);
-  // console.log('setting from store', setting);
+  console.log('setting from store', setting);
 
   // Use the search filters store
   const {
@@ -85,6 +85,14 @@ const Banner = () => {
   const heroImage = setting?.home_hero_image && setting.home_hero_image.trim()
     ? setting.home_hero_image
     : null;
+
+  const heroImageTablet = (setting?.home_hero_image_tablet && setting.home_hero_image_tablet.trim())
+    ? setting.home_hero_image_tablet
+    : heroImage;
+
+  const heroImageMobile = (setting?.home_hero_image_mobile && setting.home_hero_image_mobile.trim())
+    ? setting.home_hero_image_mobile
+    : (heroImageTablet || heroImage);
   const heroTitle = (setting?.home_title && setting.home_title.trim());
   const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim());
 
@@ -293,11 +301,11 @@ const Banner = () => {
     <section
       className="home-banner-section"
       style={
-        heroImage
-          ? ({
-            "--hero-bg": `url(${heroImage})`,
-          } as React.CSSProperties)
-          : undefined
+        {
+          "--hero-bg": heroImage ? `url(${heroImage})` : undefined,
+          "--hero-bg-tablet": heroImageTablet ? `url(${heroImageTablet})` : undefined,
+          "--hero-bg-mobile": heroImageMobile ? `url(${heroImageMobile})` : undefined,
+        } as React.CSSProperties
       }
     >
       <div className="container">
