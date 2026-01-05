@@ -198,6 +198,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const [currentMainImageIndex, setCurrentMainImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const sliderRefs = useRef<(Slider | null)[]>([]);
   const mainImageSliderRef = useRef<Slider>(null);
@@ -507,6 +508,30 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
   }, [hotelId, locale, fetchHotel]);
 
+  // Handle active tab on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["overview", "amenities", "rooms", "map"];
+      const scrollPosition = window.scrollY + 220; // Offset for header trigger
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveTab(section);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Ensure nearby hotels data is available for the details page
   useEffect(() => {
     if (hasRequestedNearbySearch.current) {
@@ -619,9 +644,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         const rates: ProcessedRate[] = ratesSource.map((rate) => {
           const taxes: HotelRateTaxes = rate.taxes
             ? {
-                allIncluded: rate.taxes.allIncluded ?? false,
-                taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
-              }
+              allIncluded: rate.taxes.allIncluded ?? false,
+              taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
+            }
             : { allIncluded: false, taxes: [] };
 
           return {
@@ -800,7 +825,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     e.preventDefault();
     const element = document.getElementById(tab);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      const headerOffset = 140;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+      setActiveTab(tab);
     }
   };
 
@@ -819,11 +852,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     selectedRoom?.facilities.filter((facility) => facility.description) || [];
   const selectedRoomBedDescription = selectedRoom
     ? selectedRoom.roomStays
-        .flatMap((stay) => stay.facilities)
-        .map((facility) => facility.description)
-        .find((description) => description) ||
-      selectedRoom.characteristicDescription ||
-      null
+      .flatMap((stay) => stay.facilities)
+      .map((facility) => facility.description)
+      .find((description) => description) ||
+    selectedRoom.characteristicDescription ||
+    null
     : null;
 
   const priceFormatter = useMemo(
@@ -1158,8 +1191,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     : t("placeholders.refundPolicyUnavailable");
   const selectedRoomRefundDateLabel = selectedRoomRateDetails?.refundDate
     ? t("refund.beforeDate", {
-        date: selectedRoomRateDetails.refundDate,
-      })
+      date: selectedRoomRateDetails.refundDate,
+    })
     : t("placeholders.refundDateUnavailable");
   const hotelLatitude = hotelData?.coordinates?.latitude;
   const hotelLongitude = hotelData?.coordinates?.longitude;
@@ -1456,15 +1489,15 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         >
                           {sortedImages.map((image, index) => (
                             <div key={`main-slider-img-${image.path}`} className="slider-item">
-                                <Image
-                                  src={buildHotelbedsImageUrl(image.path)}
-                                  width={892}
-                                  height={260}
-                                  alt={hotelName}
-                                  className="hotel-details-main-image"
-                                  priority={index < 5}
-                                  unoptimized
-                                />
+                              <Image
+                                src={buildHotelbedsImageUrl(image.path)}
+                                width={892}
+                                height={260}
+                                alt={hotelName}
+                                className="hotel-details-main-image"
+                                priority={index < 5}
+                                unoptimized
+                              />
                             </div>
                           ))}
                         </Slider>
@@ -1532,29 +1565,37 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <div className="hotel-tabs">
                       <a
                         href="#overview"
+                        className={activeTab === "overview" ? "active" : ""}
                         onClick={(e) => handleTabClick(e, "overview")}
                       >
                         {t("tabs.overview")}
                       </a>
                       <a
                         href="#amenities"
+                        className={activeTab === "amenities" ? "active" : ""}
                         onClick={(e) => handleTabClick(e, "amenities")}
                       >
                         {t("tabs.amenities")}
                       </a>
                       <a
                         href="#rooms"
+                        className={activeTab === "rooms" ? "active" : ""}
                         onClick={(e) => handleTabClick(e, "rooms")}
                       >
                         {t("tabs.rooms")}
                       </a>
                       {/* <a
                         href="#reviews"
+                        className={activeTab === "reviews" ? "active" : ""}
                         onClick={(e) => handleTabClick(e, "reviews")}
                       >
                         {t("tabs.reviews")}
                       </a> */}
-                      <a href="#map" onClick={(e) => handleTabClick(e, "map")}>
+                      <a
+                        href="#map"
+                        className={activeTab === "map" ? "active" : ""}
+                        onClick={(e) => handleTabClick(e, "map")}
+                      >
                         {t("tabs.map")}
                       </a>
                     </div>
@@ -1887,8 +1928,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         : t("placeholders.refundPolicyUnavailable");
                       const refundDateLabel = displayRateDetails?.refundDate
                         ? t("refund.beforeDate", {
-                            date: displayRateDetails.refundDate,
-                          })
+                          date: displayRateDetails.refundDate,
+                        })
                         : t("placeholders.refundDateUnavailable");
 
                       return (
@@ -1907,9 +1948,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 >
                                   {room.images.map((image, imgIndex) => (
                                     <div
-                                      key={`room-${
-                                        room.roomCode || roomIndex
-                                      }-image-${image.path || imgIndex}`}
+                                      key={`room-${room.roomCode || roomIndex
+                                        }-image-${image.path || imgIndex}`}
                                     >
                                       <Image
                                         src={image.fullUrl}
@@ -2244,7 +2284,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                       style={{
                                         transform:
                                           openRoomTypeAccordion ===
-                                          room.roomCode
+                                            room.roomCode
                                             ? "rotate(180deg)"
                                             : "rotate(0deg)",
                                         transition: "transform 0.3s ease",
@@ -2339,9 +2379,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                 <div className="refund-item d-flex align-items-center">
                                                   <div className="refund-status-list">
                                                     {rate.rateClass === "NRF" ||
-                                                    !rate.cancellationPolicies ||
-                                                    rate.cancellationPolicies
-                                                      .length === 0 ? (
+                                                      !rate.cancellationPolicies ||
+                                                      rate.cancellationPolicies
+                                                        .length === 0 ? (
                                                       <span className="refund-status-text show-refund-status">
                                                         {t(
                                                           "refund.nonRefundable"
@@ -2351,16 +2391,16 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                       <span className="refund-status-text show-refund-status">
                                                         {rateCancellationDetails.refundDate
                                                           ? t(
-                                                              "refund.freeCancellationBefore",
-                                                              {
-                                                                date: rateCancellationDetails.refundDate,
-                                                              }
-                                                            ) ||
-                                                            `Free cancellation before ${rateCancellationDetails.refundDate}`
+                                                            "refund.freeCancellationBefore",
+                                                            {
+                                                              date: rateCancellationDetails.refundDate,
+                                                            }
+                                                          ) ||
+                                                          `Free cancellation before ${rateCancellationDetails.refundDate}`
                                                           : t(
-                                                              "refund.nonRefundable"
-                                                            ) ||
-                                                            "Non-refundable"}
+                                                            "refund.nonRefundable"
+                                                          ) ||
+                                                          "Non-refundable"}
                                                       </span>
                                                     )}
                                                   </div>
@@ -2399,13 +2439,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                   const rateKey = `${room.roomCode}_${rate.rateKey}`;
                                                   const selectedCount =
                                                     selectedRoomCounts[
-                                                      rateKey
+                                                    rateKey
                                                     ] || 1;
                                                   handleOpenPriceDetailsModal(
                                                     rate,
                                                     room.name ||
-                                                      room.description ||
-                                                      "Room",
+                                                    room.description ||
+                                                    "Room",
                                                     selectedCount
                                                   );
                                                 }}
@@ -2462,11 +2502,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                       <span className="mobile-summary-label">
                                                         {totalSelectedRooms}{" "}
                                                         {totalSelectedRooms ===
-                                                        1
+                                                          1
                                                           ? t("labels.room")
                                                           : t(
-                                                              "labels.rooms"
-                                                            )}{" "}
+                                                            "labels.rooms"
+                                                          )}{" "}
                                                         {t("labels.for")}{" "}
                                                         {(() => {
                                                           if (
@@ -2487,20 +2527,19 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                                             Math.ceil(
                                                               (checkOut.getTime() -
                                                                 checkIn.getTime()) /
-                                                                (1000 *
-                                                                  60 *
-                                                                  60 *
-                                                                  24)
+                                                              (1000 *
+                                                                60 *
+                                                                60 *
+                                                                24)
                                                             );
-                                                          return `${nights} ${
-                                                            nights === 1
-                                                              ? t(
-                                                                  "labels.night"
-                                                                )
-                                                              : t(
-                                                                  "labels.nights"
-                                                                )
-                                                          }`;
+                                                          return `${nights} ${nights === 1
+                                                            ? t(
+                                                              "labels.night"
+                                                            )
+                                                            : t(
+                                                              "labels.nights"
+                                                            )
+                                                            }`;
                                                         })()}
                                                       </span>
                                                       <span className="mobile-summary-value">
@@ -2608,13 +2647,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               );
                               const nights = Math.ceil(
                                 (checkOut.getTime() - checkIn.getTime()) /
-                                  (1000 * 60 * 60 * 24)
+                                (1000 * 60 * 60 * 24)
                               );
-                              return `${nights} ${
-                                nights === 1
-                                  ? t("labels.night")
-                                  : t("labels.nights")
-                              }`;
+                              return `${nights} ${nights === 1
+                                ? t("labels.night")
+                                : t("labels.nights")
+                                }`;
                             })()}
                           </span>
                           <span className="value">
