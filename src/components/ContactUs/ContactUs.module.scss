@@ -1,31 +1,27 @@
 @import "../../styles/variables";
 
 .contactContainer {
-    padding: 180px 0 80px 0;
+    padding: 120px 0 80px 0;
     // background-color: #f8fafc; // Prefer white or light bg consistent with site
     background-color: $color-white;
     min-height: 80vh;
 }
 
 .gridWrapper {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px; // Increase gap for better separation
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
     padding: 0 20px;
-
-    @media (max-width: 991px) {
-        grid-template-columns: 1fr;
-        gap: 40px;
-    }
 }
 
 .leftSide {
     display: flex;
     flex-direction: column;
-    gap: 32px;
-    padding-top: 20px; // Align slightly with form top if form has shadow
+    gap: 24px;
+    padding-top: 0;
+    width: 100%;
 
     h1 {
         font-family: $font-family-Tajawal;
@@ -48,6 +44,7 @@
     background: $color-white;
     padding: 40px;
     border-radius: 16px;
+    width: 100%;
     // border: 1px solid #e5e7eb; // Add subtle border
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); // Softer, larger shadow
 
@@ -111,15 +108,20 @@
 
 // Support Card Styles
 .cardsGrid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
+    width: 100%;
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .card {
     background: #F8FAFC;
     border-radius: 12px;
-    padding: 24px;
+    padding: 16px 20px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -136,9 +138,10 @@
 
 .cardLeft {
     display: flex;
-    gap: 16px; // Reduced gap
+    gap: 16px;
     width: 100%;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     height: 100%;
 }
 
@@ -217,6 +220,7 @@
 
     .leftSide h1 {
         font-size: 28px;
+        text-align: center;
     }
 
     .rightSide {
@@ -224,7 +228,7 @@
     }
 
     .gridWrapper {
-        gap: 40px;
+        gap: 32px;
     }
 }
 

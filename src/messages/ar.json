@@ -442,7 +442,25 @@
   "Contact": {
     "title": "اتصل بنا للحصول على المساعدة أو المعلومات",
     "description": "لديك أسئلة أو تحتاج مساعدة؟ نحن على بعد رسالة واحدة فقط.",
-    "searchHotel": "ابحث عن فندق"
+    "searchHotel": "ابحث عن فندق",
+    "validation": {
+      "nameRequired": "الاسم مطلوب",
+      "emailRequired": "البريد الإلكتروني مطلوب",
+      "emailInvalid": "البريد الإلكتروني غير صالح",
+      "messageRequired": "الرسالة مطلوبة"
+    },
+    "form": {
+      "nameLabel": "الاسم",
+      "namePlaceholder": "أدخل اسمك",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "messageLabel": "الرسالة",
+      "messagePlaceholder": "كيف يمكننا مساعدتك؟",
+      "submitButton": "إرسال الرسالة",
+      "sending": "جاري الإرسال...",
+      "successMessage": "تم إرسال الرسالة بنجاح!",
+      "errorMessage": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى."
+    }
   },
   "Auth": {
     "login": {
