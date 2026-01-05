@@ -1,7 +1,7 @@
 @import "../../styles/variables";
 
 .contactContainer {
-    padding: 120px 0 80px 0;
+    padding: 132px 0 80px 0;
     // background-color: #f8fafc; // Prefer white or light bg consistent with site
     background-color: $color-white;
     min-height: 80vh;
@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    padding: 0 20px;
+    padding: 0px;
 }
 
 .leftSide {
@@ -24,7 +24,7 @@
     width: 100%;
 
     h1 {
-        font-family: $font-family-Tajawal;
+
         font-size: 32px;
         font-weight: $font-weight700;
         color: $color-black-zinc-950;
@@ -42,19 +42,18 @@
 
 .rightSide {
     background: $color-white;
-    padding: 40px;
+    padding: 24px;
     border-radius: 16px;
     width: 100%;
-    // border: 1px solid #e5e7eb; // Add subtle border
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); // Softer, larger shadow
+    border: 1px solid #e5e7eb;
 
     .header {
         text-align: center;
         margin-bottom: 32px;
 
         h2 {
-            font-family: $font-family-Tajawal;
-            font-size: 24px; // Slightly smaller for form header
+
+            font-size: 28px; // Slightly smaller for form header
             font-weight: $font-weight700;
             color: $text-primary;
             margin-bottom: 8px;
@@ -63,7 +62,7 @@
         p {
             font-family: $font-family-Inter;
             color: $color-black-zinc-500;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.5;
         }
     }
@@ -71,17 +70,18 @@
     form {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 0px;
 
         .submitButton {
             background-color: $brand-color;
             color: $color-white;
-            border: none;
+
             padding: 14px 28px;
             border-radius: 8px;
             font-family: $font-family-Inter;
             font-weight: $font-weight600;
             font-size: 16px;
+            border: 1px solid #3e5b96;
             cursor: pointer;
             transition: $transition;
             display: flex;
@@ -91,9 +91,8 @@
             width: 100%; // Full width button looks better in card
 
             &:hover {
-                opacity: 0.9;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(62, 91, 150, 0.2);
+                color: #3e5b96;
+                background-color: rgba(0, 0, 0, 0);
             }
 
             &:disabled {
@@ -121,17 +120,17 @@
 .card {
     background: #F8FAFC;
     border-radius: 12px;
+    border: 1px solid $brand-color;
     padding: 16px 20px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     transition: $transition;
-    border: 1px solid transparent;
 
     &:hover {
         transform: translateY(-2px);
         background: $color-white;
-        border-color: #e5e7eb;
+
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 }
@@ -146,11 +145,15 @@
 }
 
 .iconWrap {
-    width: 24px;
-    height: 24px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    svg {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .cardContent {
@@ -161,11 +164,11 @@
 }
 
 .cardTitle {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: $font-weight600;
     color: $color-black-zinc-900;
     margin-bottom: 8px;
-    font-family: $font-family-Tajawal;
+
 }
 
 .numberRow {
@@ -213,40 +216,94 @@
 }
 
 // Responsive
-@media (max-width: 767px) {
+@media (max-width: 991.55px) {
     .contactContainer {
-        padding: 120px 0 40px 0;
+        padding: 60px 0 60px 0;
+
+    }
+}
+
+@media (max-width: 767.55px) {
+    .contactContainer {
+        padding: 40px 0 40px 0;
     }
 
-    .leftSide h1 {
-        font-size: 28px;
-        text-align: center;
+    .leftSide {
+        gap: 20px;
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+        }
     }
 
     .rightSide {
-        padding: 24px;
+        padding: 15px;
+        border-radius: 8px;
     }
 
     .gridWrapper {
         gap: 32px;
     }
+
+    .cardsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        border-radius: 8px;
+        padding: 15px;
+    }
+
+    .iconWrap {
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .cardTitle {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+
+    .rightSide {
+        .header {
+            h2 {
+                font-size: 21px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+        }
+
+        .form {
+            .submitButton {
+                padding: 10px 15px;
+                border-radius: 6px;
+                font-weight: 500;
+            }
+        }
+    }
+
 }
 
 // RTL support
 [dir="rtl"] {
     .leftSide {
         h1 {
-            font-family: "Tajawal", sans-serif;
+
             text-align: right;
         }
 
     }
 
-    .rightSide {
-        .header h2 {
-            font-family: "Tajawal", sans-serif;
-        }
-    }
+    // .rightSide {
+    //     .header h2 {
+    //         // font-family: "Tajawal", sans-serif;
+    //     }
+    // }
 
     .numberLink {
         svg {

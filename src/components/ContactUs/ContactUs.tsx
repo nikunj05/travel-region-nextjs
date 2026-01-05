@@ -44,7 +44,7 @@ export const ContactUs = () => {
   };
 
   return (
-    <div className={styles.contactContainer}>
+    <div className={`${styles.contactContainer} container`}>
       <div className={styles.gridWrapper}>
 
         {/* Left Side - Support Info */}
@@ -170,7 +170,7 @@ export const ContactUs = () => {
           </div>
 
           <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
+            <form onSubmit={methods.handleSubmit(onSubmit)} className={`${styles.form} form-field`}>
               <Input
                 name="name"
                 label={t('form.nameLabel')}
