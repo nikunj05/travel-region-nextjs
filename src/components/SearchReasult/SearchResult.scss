@@ -355,7 +355,7 @@
               border-radius: 50%;
             }
 
-            input[type="checkbox"]:checked + .checkmark {
+            input[type="checkbox"]:checked+.checkmark {
               background: $brand-color;
               border-color: $brand-color;
 
@@ -371,7 +371,7 @@
               }
             }
 
-            input[type="radio"]:checked + .radio-mark {
+            input[type="radio"]:checked+.radio-mark {
               background: $brand-color;
               border-color: $brand-color;
 
@@ -586,6 +586,11 @@
                 margin: 0 0 12px 0;
                 display: flex;
                 text-decoration: none;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                /* number of lines */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
                 // cursor: pointer;
                 transition: $transition;
 
@@ -622,7 +627,7 @@
                 display: flex;
                 align-items: flex-start;
                 gap: 8px;
-                margin-bottom: 24px;
+                margin-bottom: 0px;
                 font-size: 12px;
                 color: $color-black-zinc-800;
 
@@ -683,7 +688,7 @@
                   width: 100%;
                   text-align: end;
                   gap: 0px;
-                  margin-bottom: 34px;
+                  margin-bottom: 24px;
                   font-size: 30px;
                   font-weight: $font-weight600;
                   color: $color-black-zinc-950;
@@ -823,6 +828,14 @@
 
             .hotel-info-with-action-card {
               gap: 15px;
+
+              .property-card-action {
+                .hotel-footer {
+                  .hotel-price {
+                    align-items: end;
+                  }
+                }
+              }
             }
 
             .hotel-images {
@@ -872,6 +885,7 @@
           display: flex !important;
 
           .search-field {
+
             &:nth-child(1),
             &:nth-child(4) {
               width: 100%;
@@ -1120,7 +1134,7 @@
               border-radius: 50%;
             }
 
-            input[type="checkbox"]:checked + .checkmark {
+            input[type="checkbox"]:checked+.checkmark {
               background: $brand-color;
               border-color: $brand-color;
 
@@ -1136,7 +1150,7 @@
               }
             }
 
-            input[type="radio"]:checked + .radio-mark {
+            input[type="radio"]:checked+.radio-mark {
               background: $brand-color;
               border-color: $brand-color;
 
@@ -1217,6 +1231,7 @@
           gap: 12px;
 
           .search-field {
+
             &:nth-child(2),
             &:nth-child(3) {
               width: calc(50% - 6px);
@@ -1304,7 +1319,7 @@
             align-items: flex-start;
 
             .hotel-info-with-action-card {
-              gap: 15px;
+              gap: 12px;
               flex-direction: column;
             }
 
@@ -1317,9 +1332,9 @@
 
               .main-image {
                 img {
-                  height: 95px;
-                  min-height: 95px;
-                  max-height: 95px;
+                  height: 160px;
+                  min-height: 160px;
+                  max-height: 160px;
                 }
               }
 
@@ -1333,83 +1348,89 @@
               }
             }
 
-            .hotel-info {
-              .hotel-name {
-                margin: 0 0 6px;
-                font-size: 16px;
-              }
+            .hotel-info-with-action-card {
+              .hotel-info {
 
-              .hotel-rating {
-                margin-bottom: 6px;
+                .hotel-name {
+                  margin: 0 0 6px;
+                  font-size: 16px;
+                  line-height: normal;
+                }
 
-                .rating-stars {
-                  gap: 1px;
+                .hotel-rating {
+                  margin-bottom: 6px;
 
-                  img {
-                    width: 12px;
-                    height: 12px;
+                  .rating-stars {
+                    gap: 1px;
+
+                    img {
+                      width: 12px;
+                      height: 12px;
+                    }
+                  }
+
+                  .rating-reviews {
+                    .rating-score {
+                      font-size: 13px;
+                    }
                   }
                 }
 
-                .rating-reviews {
-                  .rating-score {
-                    font-size: 13px;
+
+
+                .hotel-amenities {
+                  gap: 10px;
+                  margin-bottom: 6px;
+
+                  .amenity-tag {
+                    gap: 5px;
                   }
                 }
-              }
 
-              .hotel-location {
-                margin-bottom: 6px;
-              }
-
-              .hotel-amenities {
-                gap: 10px;
-                margin-bottom: 6px;
-
-                .amenity-tag {
-                  gap: 5px;
+                .hotel-description {
+                  font-size: 10px;
                 }
               }
 
-              .hotel-description {
-                font-size: 10px;
-              }
-            }
+              .property-card-action {
+                .hotel-footer {
+                  min-width: auto;
+                  flex-direction: row-reverse;
+                  gap: 10px;
 
-            .property-card-action {
-              .hotel-footer {
-                min-width: auto;
-                flex-direction: row-reverse;
-                gap: 8px;
+                  .hotel-price {
+                    align-items: start;
+                    margin-bottom: 0px;
 
-                .hotel-price {
-                  margin-bottom: 0px;
+                    .price-amount {
+                      font-size: 18px;
+                      line-height: normal;
 
-                  .price-amount {
-                    font-size: 20px;
-                    line-height: normal;
+                      .currency-icon {
+                        svg {
+                          width: 12px;
+                          height: 12px;
+                        }
+                      }
 
-                    .currency-icon {
-                      svg {
-                        width: 12px;
-                        height: 12px;
+                      .property-currency {
+                        font-size: 12px;
                       }
                     }
-
-                    .property-currency {
-                      font-size: 12px;
-                    }
                   }
-                }
 
-                .view-details-button {
-                  padding: 6.2px 8px;
-                  font-size: 12px;
-                  margin-right: auto;
-                  margin-left: 0px;
+                  .view-details-button {
+                    padding: 6.2px 8px;
+                    font-size: 12px;
+                    margin-right: auto;
+                    margin-left: 0px;
+                  }
                 }
               }
             }
+
+
+
           }
         }
       }
@@ -1577,13 +1598,11 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        $brand-color 0%,
-        $brand-color 40%,
-        $color-white 40%,
-        $color-white 100%
-      );
+      background: radial-gradient(circle,
+          $brand-color 0%,
+          $brand-color 40%,
+          $color-white 40%,
+          $color-white 100%);
       cursor: pointer;
       border: none;
       box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
@@ -1596,13 +1615,11 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        $brand-color 0%,
-        $brand-color 40%,
-        $color-white 40%,
-        $color-white 100%
-      );
+      background: radial-gradient(circle,
+          $brand-color 0%,
+          $brand-color 40%,
+          $color-white 40%,
+          $color-white 100%);
       cursor: pointer;
       border: none;
       box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);

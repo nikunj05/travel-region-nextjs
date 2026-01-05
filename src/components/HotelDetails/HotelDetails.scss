@@ -2690,9 +2690,11 @@
       .hotel-details-left {
         .image-gallery-section {
           .main-image {
-            img {
-              min-height: 395px;
-              max-height: 395px;
+            .slider-image-wrapper {
+              img {
+                min-height: 395px;
+                max-height: 395px;
+              }
             }
           }
 
@@ -3026,9 +3028,11 @@
           gap: 8px;
 
           .main-image {
-            img {
-              min-height: 220px;
-              max-height: 220px;
+            .slider-image-wrapper {
+              img {
+                min-height: 220px;
+                max-height: 220px;
+              }
             }
           }
 
