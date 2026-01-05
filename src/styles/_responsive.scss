@@ -19,6 +19,7 @@
 }
 
 @media (min-width: 1200px) {
+
   .container-xl,
   .container-lg,
   .container-md,
@@ -78,6 +79,7 @@
 }
 
 @media (max-width: 991.55px) {
+
   // Global css start
   .section-space-tb {
     padding-top: 60px;
@@ -646,6 +648,7 @@
 }
 
 @media (max-width: 767.55px) {
+
   // Global css start
   .section-space-tb {
     padding-top: 40px;
@@ -776,10 +779,7 @@
 
     .banner-content {
       .heading_section {
-        background-image: var(
-          --hero-bg,
-          url("../assets/images/home-banner-image-mobile.jpg")
-        );
+        background-image: var(--hero-bg);
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -824,6 +824,7 @@
           .choose-location-items {
             border: 1px solid #d1d5dc;
             border-radius: 4px;
+
             .choose-location-items-title {
               margin-bottom: 2px;
               font-size: 12px;
@@ -1427,6 +1428,7 @@
       .banner-property-filter {
         .choose-location-and-date {
           .choose-location-items {
+
             &:nth-child(2),
             &:nth-child(3) {
               width: 100%;

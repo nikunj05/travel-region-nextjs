@@ -1,6 +1,6 @@
 declare module 'react-slick' {
   import { Component, ReactNode } from 'react';
-  
+
   interface Settings {
     slidesToShow?: number;
     slidesToScroll?: number;
@@ -19,6 +19,9 @@ declare module 'react-slick' {
     className?: string;
     onInit?: () => void;
     onReInit?: () => void;
+    speed?: number;
+    beforeChange?: (current: number, next: number) => void;
+    afterChange?: (current: number) => void;
   }
 
   interface SliderProps extends Settings {

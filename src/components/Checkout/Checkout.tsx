@@ -35,11 +35,15 @@ import {
   RoomDetailWithComments,
 } from "@/types/booking";
 import Link from "next/link";
+import { SelectWithFlag, SelectWithFlagOption } from "@/components/core/SelectWithFlag/SelectWithFlag";
+import { countryService } from "@/services/countryService";
 
 function CheckoutComponent() {
   const router = useRouter();
   const locale = useLocale();
+  // console.log("Current locale:", locale);
   const t = useTranslations("Checkout");
+  const tBooking = useTranslations("BookingReview");
   const tv = useTranslations("Auth.validation");
   const { travelerDetails, bookingData, setTravelerDetails, bookingResponse } =
     useBookingStore();
@@ -65,6 +69,8 @@ function CheckoutComponent() {
   const [translatedTexts, setTranslatedTexts] = useState<Map<string, string>>(
     new Map()
   );
+  const [countryOptions, setCountryOptions] = useState<SelectWithFlagOption[]>([]);
+
 
   // Generate default values for the form - load from store if available, otherwise from booking details
   const defaultValues = useMemo(() => {
@@ -101,7 +107,7 @@ function CheckoutComponent() {
         firstName: "",
         lastName: "",
         email: "",
-        country: "",
+        country: "Saudi Arabia",
         countryCode: "966",
         phone: "",
       },
@@ -433,6 +439,38 @@ function CheckoutComponent() {
     translateTexts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale, roomDetails]);
+
+  // Fetch countries list
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await countryService.getCountries();
+        
+        if (response.data && response.data.countries) {
+          // Transform countries data to match SelectWithFlagOption format
+          const options: SelectWithFlagOption[] = response.data.countries.map((country: { name: string; flag: string; code: string }) => {
+            const option: SelectWithFlagOption = {
+              value: country.name,
+              label: country.name,
+            };
+            
+            // Only include flag if country has a flag and code
+            if (country.flag && country.code) {
+              option.flag = `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
+            }
+            
+            return option;
+          });
+          
+          setCountryOptions(options);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   // Calculate total guests
   const totalGuests = useMemo(() => {
@@ -771,18 +809,24 @@ function CheckoutComponent() {
                             placeholder="Email"
                             className="form-input"
                           />
-                          <Input
-                            name="primaryGuest.country"
-                            label={t("travelerDetails.country")}
-                            labelWithContent={
-                              <span className="required">*</span>
-                            }
-                            type="text"
-                            disabled
-                            // Keep placeholder text always in English
-                            placeholder="Country"
-                            className="form-input"
-                          />
+                          <div className="form-group" style={{ marginBottom: 0}}>
+                             <label className="form-label">
+                              {t("travelerDetails.country")} <span className="required">*</span>
+                            </label>
+                            <Controller
+                              name="primaryGuest.country"
+                              control={methods.control}
+                              render={({ field }) => (
+                                <SelectWithFlag
+                                  options={countryOptions}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  placeholder="Country"
+                                  disabled
+                                />
+                              )}
+                            />
+                          </div>
                         </div>
 
                         <div className="form-row">
@@ -842,7 +886,7 @@ function CheckoutComponent() {
                               name="specialRequests"
                               rows={5}
                               // Keep placeholder text always in English (same as BookingReview)
-                              placeholder="Please inform the hotel if you will be arriving late, or if you have any special requests such as honeymoon arrangements, high floor preference, or an accessible room."
+                              placeholder={tBooking("travelerDetails.specialRequestPlaceholderLong")}
                               className="w-100 text-field"
                               disabled
                             />

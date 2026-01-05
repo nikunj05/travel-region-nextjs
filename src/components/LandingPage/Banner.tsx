@@ -38,7 +38,6 @@ const Banner = () => {
     setCheckInDate,
     setCheckOutDate,
     setRooms,
-    setFreeCancellation,
   } = useSearchFiltersStore();
 
   // Local UI state
@@ -46,7 +45,7 @@ const Banner = () => {
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
   const [isGuestsDropdownOpen, setIsGuestsDropdownOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [freeCancellation, setFreeCancellationLocal] = useState(false);
+  // const [freeCancellation, setFreeCancellationLocal] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [checkInError, setCheckInError] = useState("");
   const [checkOutError, setCheckOutError] = useState("");
@@ -296,8 +295,8 @@ const Banner = () => {
       style={
         heroImage
           ? ({
-              "--hero-bg": `url(${heroImage})`,
-            } as React.CSSProperties)
+            "--hero-bg": `url(${heroImage})`,
+          } as React.CSSProperties)
           : undefined
       }
     >
@@ -435,9 +434,9 @@ const Banner = () => {
                       {(() => {
                         const startDate = filters.checkInDate;
                         const endDate = filters.checkOutDate;
-                        
+
                         if (!startDate) return t("addDate");
-                        
+
                         const startStr = startDate.toLocaleDateString("en-US", {
                           weekday: 'short',
                           month: 'short',

@@ -200,6 +200,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [currentMainImageIndex, setCurrentMainImageIndex] = useState(0);
 
   const sliderRefs = useRef<(Slider | null)[]>([]);
+  const mainImageSliderRef = useRef<Slider>(null);
   const modalSliderRef = useRef<Slider>(null);
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_KEY;
   const hasRequestedNearbySearch = useRef(false);
@@ -233,17 +234,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const handleMainImagePrev = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentMainImageIndex((prev) =>
-      prev === 0 ? sortedImages.length - 1 : prev - 1
-    );
+    mainImageSliderRef.current?.slickPrev();
   };
 
   const handleMainImageNext = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentMainImageIndex((prev) =>
-      prev === sortedImages.length - 1 ? 0 : prev + 1
-    );
+    mainImageSliderRef.current?.slickNext();
   };
 
   const authContext = useContext(AuthContext);
@@ -1444,16 +1441,33 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   {sortedImages.length > 0 ? (
                     <div className="main-image">
                       <div className="slider-image-wrapper">
-                        <Image
-                          src={buildHotelbedsImageUrl(
-                            sortedImages[currentMainImageIndex].path
-                          )}
-                          width={892}
-                          height={260}
-                          alt={hotelName}
-                          className="hotel-details-main-image"
-                          key={sortedImages[currentMainImageIndex].path}
-                        />
+                        <Slider
+                          ref={mainImageSliderRef}
+                          dots={false}
+                          infinite={sortedImages.length > 1}
+                          speed={500}
+                          slidesToShow={1}
+                          slidesToScroll={1}
+                          arrows={false}
+                          className="main-image-slider"
+                          beforeChange={(_: number, next: number) =>
+                            setCurrentMainImageIndex(next)
+                          }
+                        >
+                          {sortedImages.map((image, index) => (
+                            <div key={`main-slider-img-${image.path}`} className="slider-item">
+                                <Image
+                                  src={buildHotelbedsImageUrl(image.path)}
+                                  width={892}
+                                  height={260}
+                                  alt={hotelName}
+                                  className="hotel-details-main-image"
+                                  priority={index < 5}
+                                  unoptimized
+                                />
+                            </div>
+                          ))}
+                        </Slider>
                       </div>
 
                       <button
@@ -1470,7 +1484,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <path
                             d="M4 12L20 12M4 12L8.99996 17M4 12L9 7"
                             stroke="#1B2236"
-                            stroke-width="1.5"
+                            strokeWidth="1.5"
                           ></path>
                         </svg>
                       </button>
@@ -1489,7 +1503,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <path
                             d="M20 12L4 12M20 12L15.0001 17M20 12L15 7"
                             stroke="#1B2236"
-                            stroke-width="1.5"
+                            strokeWidth="1.5"
                           ></path>
                         </svg>
                       </button>
@@ -1534,12 +1548,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       >
                         {t("tabs.rooms")}
                       </a>
-                      <a
+                      {/* <a
                         href="#reviews"
                         onClick={(e) => handleTabClick(e, "reviews")}
                       >
                         {t("tabs.reviews")}
-                      </a>
+                      </a> */}
                       <a href="#map" onClick={(e) => handleTabClick(e, "map")}>
                         {t("tabs.map")}
                       </a>
