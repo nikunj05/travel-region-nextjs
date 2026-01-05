@@ -179,11 +179,11 @@ export const useBookingStore = create<BookingState>()(
             error: null
           })
 
-          if (response.status) {
-            toast.success(response.message || 'Booking created successfully!')
-          } else {
-            toast.error(response.message || 'Booking failed')
-          }
+          // if (response.status) {
+          //   toast.success(response.message || 'Booking created successfully!')
+          // } else {
+          //   toast.error(response.message || 'Booking failed')
+          // }
 
           return response
         } catch (err: unknown) {

@@ -605,7 +605,8 @@
       "specialRequest": "طلب خاص",
       "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية.",
       "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ",
-      "enterTextInEnglishOnly": "Enter text in English only."
+      "specialRequestPlaceholderLong": "يرجى إبلاغ الفندق بموعد الوصول إذا كنت ستصل متأخراً، أو إذا كان لديك أي طلبات خاصة مثل ترتيبات شهر العسل، أو تفضيل الأدوار العليا، أو غرفة لذوي الاحتياجات الخاصة.",
+      "enterTextInEnglishOnly": "البيانات باللغة الإنجليزية فقط"
     },
     "summary": {
       "hotelFare": "أجرة الفندق",
@@ -619,7 +620,8 @@
     "placeholders": {
       "hotelName": "اسم الفندق",
       "hotelAddress": "عنوان الفندق"
-    }
+    },
+    "processing": "جاري المعالجة..."
   },
   "Checkout": {
     "title": "إكمال حجزك",
@@ -658,7 +660,8 @@
       "phonePlaceholder": "رقم هاتفك",
       "specialRequest": "طلب خاص",
       "specialRequestDescription": "يرجى كتابة طلبك باللغة الإنجليزية.",
-      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ"
+      "specialRequestPlaceholder": "تسجيل وصول متأخر، شهر العسل، إلخ",
+      "specialRequestPlaceholderLong": "يرجى إبلاغ الفندق بموعد الوصول إذا كنت ستصل متأخراً، أو إذا كان لديك أي طلبات خاصة مثل ترتيبات شهر العسل، أو تفضيل الأدوار العليا، أو غرفة لذوي الاحتياجات الخاصة."
     },
     "summary": {
       "hotelFare": "أجرة الفندق",

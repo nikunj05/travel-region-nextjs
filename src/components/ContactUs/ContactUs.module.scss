@@ -1,0 +1,261 @@
+@import "../../styles/variables";
+
+.contactContainer {
+    padding: 180px 0 80px 0;
+    // background-color: #f8fafc; // Prefer white or light bg consistent with site
+    background-color: $color-white;
+    min-height: 80vh;
+}
+
+.gridWrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px; // Increase gap for better separation
+    padding: 0 20px;
+
+    @media (max-width: 991px) {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}
+
+.leftSide {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 20px; // Align slightly with form top if form has shadow
+
+    h1 {
+        font-family: $font-family-Tajawal;
+        font-size: 32px;
+        font-weight: $font-weight700;
+        color: $color-black-zinc-950;
+        margin: 0 0 8px 0;
+        // Ensure visible
+    }
+
+    .subtitle {
+        font-family: $font-family-Inter;
+        color: $color-black-zinc-500;
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
+}
+
+.rightSide {
+    background: $color-white;
+    padding: 40px;
+    border-radius: 16px;
+    // border: 1px solid #e5e7eb; // Add subtle border
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); // Softer, larger shadow
+
+    .header {
+        text-align: center;
+        margin-bottom: 32px;
+
+        h2 {
+            font-family: $font-family-Tajawal;
+            font-size: 24px; // Slightly smaller for form header
+            font-weight: $font-weight700;
+            color: $text-primary;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-family: $font-family-Inter;
+            color: $color-black-zinc-500;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .submitButton {
+            background-color: $brand-color;
+            color: $color-white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-family: $font-family-Inter;
+            font-weight: $font-weight600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: $transition;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            width: 100%; // Full width button looks better in card
+
+            &:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(62, 91, 150, 0.2);
+            }
+
+            &:disabled {
+                background-color: $color-black-zinc-300;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+// Support Card Styles
+.cardsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background: #F8FAFC;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    transition: $transition;
+    border: 1px solid transparent;
+
+    &:hover {
+        transform: translateY(-2px);
+        background: $color-white;
+        border-color: #e5e7eb;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.cardLeft {
+    display: flex;
+    gap: 16px; // Reduced gap
+    width: 100%;
+    flex-direction: column;
+    height: 100%;
+}
+
+.iconWrap {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.cardTitle {
+    font-size: 18px;
+    font-weight: $font-weight600;
+    color: $color-black-zinc-900;
+    margin-bottom: 8px;
+    font-family: $font-family-Tajawal;
+}
+
+.numberRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.numberLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    font-size: 16px;
+    color: $brand-color; // Make number brand color
+    font-weight: $font-weight500;
+    text-decoration: none;
+    font-family: $font-family-Inter;
+    width: 100%;
+
+    &:hover {
+        color: darken($brand-color, 10%);
+
+        .chevron svg path {
+            stroke: darken($brand-color, 10%);
+        }
+    }
+}
+
+.chevron {
+    margin-left: auto;
+
+    svg path {
+        stroke: $color-black-zinc-400; // Softer chevron
+        transition: $transition;
+    }
+}
+
+.hintText {
+    color: $color-black-zinc-500;
+    font-size: 13px;
+    font-family: $font-family-Inter;
+    margin-top: 4px;
+}
+
+// Responsive
+@media (max-width: 767px) {
+    .contactContainer {
+        padding: 120px 0 40px 0;
+    }
+
+    .leftSide h1 {
+        font-size: 28px;
+    }
+
+    .rightSide {
+        padding: 24px;
+    }
+
+    .gridWrapper {
+        gap: 40px;
+    }
+}
+
+// RTL support
+[dir="rtl"] {
+    .leftSide {
+        h1 {
+            font-family: "Tajawal", sans-serif;
+            text-align: right;
+        }
+
+    }
+
+    .rightSide {
+        .header h2 {
+            font-family: "Tajawal", sans-serif;
+        }
+    }
+
+    .numberLink {
+        svg {
+            transform: rotate(180deg); // Flip chevron for RTL
+        }
+    }
+
+    .chevron {
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    .cardsGrid {
+        align-items: flex-start;
+    }
+}

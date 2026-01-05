@@ -66,7 +66,7 @@ const Footer = () => {
               <ul className="footer-link">
                 <li><a href="#">{t("helpCenter")}</a></li>
                 <li><Link href="/faqs">{t("faqs")}</Link></li>
-                <li><a href="#">{t("contactUs")}</a></li>
+                <li><Link href="/contact-us">{t("contactUs")}</Link></li>
                 <li><a href="#">{t("bookingPolicy")}</a></li>
               </ul>
             </div>

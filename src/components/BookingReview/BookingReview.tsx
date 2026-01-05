@@ -27,6 +27,8 @@ import { Select } from "@/components/core/Select/Select";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 import { CreateBookingRequest } from "@/types/booking";
 import { formatDateForAPI } from "@/lib/dateUtils";
+import { SelectWithFlag, SelectWithFlagOption } from "@/components/core/SelectWithFlag/SelectWithFlag";
+import { countryService } from "@/services/countryService";
 
 interface BookingReviewPageProps {
   hotelId: string;
@@ -40,11 +42,13 @@ const getLanguageCode = (currentLocale: string): string => {
 const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const router = useRouter();
   const locale = useLocale();
+  // console.log("Current locale:", locale);
   const t = useTranslations("BookingReview");
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
   const lastLanguageRef = useRef<string | null>(null);
+  const [countryOptions, setCountryOptions] = React.useState<SelectWithFlagOption[]>([]);
 
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
@@ -84,6 +88,38 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     }
   }, [hotelId, hotelData, locale, fetchHotel]);
 
+  // Fetch countries list
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await countryService.getCountries();
+        
+        if (response.data && response.data.countries) {
+          // Transform countries data to match SelectWithFlagOption format
+          const options: SelectWithFlagOption[] = response.data.countries.map((country: { name: string; flag: string; code: string }) => {
+            const option: SelectWithFlagOption = {
+              value: country.name,
+              label: country.name,
+            };
+            
+            // Only include flag if country has a flag and code
+            if (country.flag && country.code) {
+              option.flag = `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
+            }
+            
+            return option;
+          });
+          
+          setCountryOptions(options);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
   // Calculate total guests for display purposes
   const totalGuests = useMemo(() => {
     const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
@@ -101,7 +137,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
         firstName: "",
         lastName: "",
         email: "",
-        country: "",
+        country: "Saudi Arabia",
         countryCode: "966",
         phone: "",
       },
@@ -1029,14 +1065,28 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             placeholder="Email"
                             className="form-input"
                           />
-                          <Input
-                            name="primaryGuest.country"
-                            label={t("travelerDetails.country")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Country"
-                            className="form-input"
-                          />
+                          <div className="form-group">
+                            <label className="form-label">
+                              {t("travelerDetails.country")} <span className="required">*</span>
+                            </label>
+                            <Controller
+                              name="primaryGuest.country"
+                              control={methods.control}
+                              render={({ field }) => (
+                                <SelectWithFlag
+                                  options={countryOptions}
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  placeholder="Country"
+                                />
+                              )}
+                            />
+                            {methods.formState.errors.primaryGuest?.country && (
+                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
+                                {methods.formState.errors.primaryGuest.country.message}
+                              </p>
+                            )}
+                          </div>
                         </div>
 
                         <div className="form-row">
@@ -1098,8 +1148,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                             <Textarea
                               name="specialRequests"
                               rows={5}
-                              // Keep placeholder text always in English (per requirements)
-                              placeholder="Please inform the hotel if you will be arriving late, or if you have any special requests such as honeymoon arrangements, high floor preference, or an accessible room."
+                              placeholder={t("travelerDetails.specialRequestPlaceholderLong")}
                               className="w-100 text-field"
                             />
                           </div>
@@ -1239,6 +1288,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <button
                   type="button"
                   className="button-primary check-availability-btn"
+                  disabled={bookingLoading}
                   onClick={() => {
                     // Trigger form submission
                     if (formRef.current) {
@@ -1246,7 +1296,18 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     }
                   }}
                 >
-                  {t("proceedToPayment")}
+                  {bookingLoading ? (
+                    <div className="d-flex align-items-center justify-content-center gap-2">
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      {t("processing")}
+                    </div>
+                  ) : (
+                    t("proceedToPayment")
+                  )}
                 </button>
               </div>
             </div>
