@@ -836,20 +836,25 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       setActiveTab(tab);
     }
   };
+  console.log("hotel total amenities", hotelData?.facilities);
 
   const amenities =
     hotelData?.facilities?.filter(
       (f) =>
-        [70, 71, 72, 73, 85, 90].includes(f.facilityGroupCode) &&
-        f.indLogic !== false &&
         f.indYesOrNo !== false
-    ) || [];
-
+    )
+      ?.sort((a, b) => {
+        const aPaid = a.indFee === true ? 1 : 0;
+        const bPaid = b.indFee === true ? 1 : 0;
+        return aPaid - bPaid;
+      }) || [];
+  console.log("amenities", amenities);
   const displayedAmenities = showAllAmenities
     ? amenities
-    : amenities.slice(0, 8);
+    : amenities.filter((f) => !f.indFee).slice(0, 8);
   const selectedRoomFacilities =
     selectedRoom?.facilities.filter((facility) => facility.description) || [];
+
   const selectedRoomBedDescription = selectedRoom
     ? selectedRoom.roomStays
       .flatMap((stay) => stay.facilities)
@@ -1731,21 +1736,91 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     <h2 className="tabbing-sub-title">
                       {t("sections.amenitiesTitle")}
                     </h2>
-                    <div className="amenities-info d-grid">
-                      {displayedAmenities.map((facility) => (
-                        <div
-                          key={`${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
-                          className="amenities-item d-flex align-items-center"
-                        >
-                          <AmenityIcon facilityCode={facility.facilityCode} />
-                          {facility.description.content}
-                        </div>
-                      ))}
-                    </div>
+
+                    {!showAllAmenities ? (
+                      // Collapsed View: Show mixed/sorted list (top 8)
+                      <div className="amenities-info d-grid">
+                        {displayedAmenities.map((facility) => (
+                          <div
+                            key={`${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
+                            className="amenities-item d-flex align-items-center"
+                          >
+                            <AmenityIcon facilityCode={facility.facilityCode} />
+                            {facility.description.content}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      // Expanded View: Split into Free and Paid sections
+                      <div className="amenities-expanded-view">
+                        {/* Free Amenities Section */}
+                        {amenities.some((f) => !f.indFee) && (
+                          <div className="amenities-group mb-4">
+                            <h3
+                              className="amenities-group-title mb-3"
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "600",
+                                color: "#1B2236",
+                              }}
+                            >
+                              {t("sections.freeAmenities")}
+                            </h3>
+                            <div className="amenities-info d-grid">
+                              {amenities
+                                .filter((f) => !f.indFee)
+                                .map((facility) => (
+                                  <div
+                                    key={`free-${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
+                                    className="amenities-item d-flex align-items-center"
+                                  >
+                                    <AmenityIcon
+                                      facilityCode={facility.facilityCode}
+                                    />
+                                    {facility.description.content}
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Paid Amenities Section */}
+                        {amenities.some((f) => f.indFee) && (
+                          <div className="amenities-group mb-0">
+                            <h3
+                              className="amenities-group-title mb-3"
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "600",
+                                color: "#1B2236",
+                              }}
+                            >
+                              {t("sections.paidAmenities")}
+                            </h3>
+                            <div className="amenities-info d-grid">
+                              {amenities
+                                .filter((f) => f.indFee)
+                                .map((facility) => (
+                                  <div
+                                    key={`paid-${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
+                                    className="amenities-item d-flex align-items-center"
+                                  >
+                                    <AmenityIcon
+                                      facilityCode={facility.facilityCode}
+                                    />
+                                    {facility.description.content}
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {amenities.length > 8 && (
                       <button
                         onClick={() => setShowAllAmenities(!showAllAmenities)}
-                        className="button-primary show-all-amenities-btn"
+                        className="button-primary show-all-amenities-btn mt-3"
                       >
                         {showAllAmenities ? t("showLess") : t("showAll")}
                       </button>
@@ -1911,8 +1986,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         room.facilities.filter(
                           (facility) => facility.description
                         );
+                      console.log("roomFacilitiesWithDescriptions", roomFacilitiesWithDescriptions);
                       const displayedFacilities =
-                        roomFacilitiesWithDescriptions.slice(0, 4);
+                        roomFacilitiesWithDescriptions
+                          .filter((f) => !f.hasFee)
+                          .slice(0, 4);
+                      // console.log("displayedFacilities", displayedFacilities);
                       const bedDescription =
                         room.roomStays
                           .flatMap((stay) => stay.facilities)
@@ -2878,19 +2957,69 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 </div>
                 <div className="modal-room-facility-list">
                   {selectedRoomFacilities.length > 0 ? (
-                    <ul className="facility-item d-grid">
-                      {selectedRoomFacilities.map((facility) => (
-                        <li
-                          key={`${selectedRoom.roomCode}-${facility.groupCode}-${facility.code}`}
-                        >
-                          <AmenityIcon facilityCode={facility.code} />
-                          {facility.description ||
-                            t("placeholders.facilityFallback", {
-                              code: facility.code,
-                            })}
-                        </li>
-                      ))}
-                    </ul>
+                    <>
+                      {/* Free Amenities */}
+                      {selectedRoomFacilities.some((f) => !f.hasFee) && (
+                        <div className="amenities-group mb-4">
+                          <h3
+                            className="amenities-group-title mb-3"
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: "600",
+                              color: "#1B2236",
+                            }}
+                          >
+                            {t("sections.freeAmenities")}
+                          </h3>
+                          <ul className="facility-item d-grid">
+                            {selectedRoomFacilities
+                              .filter((f) => !f.hasFee)
+                              .map((facility) => (
+                                <li
+                                  key={`${selectedRoom.roomCode}-${facility.groupCode}-${facility.code}`}
+                                >
+                                  <AmenityIcon facilityCode={facility.code} />
+                                  {facility.description ||
+                                    t("placeholders.facilityFallback", {
+                                      code: facility.code,
+                                    })}
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Paid Amenities */}
+                      {selectedRoomFacilities.some((f) => f.hasFee) && (
+                        <div className="amenities-group mb-0">
+                          <h3
+                            className="amenities-group-title mb-3"
+                            style={{
+                              fontSize: "16px",
+                              fontWeight: "600",
+                              color: "#1B2236",
+                            }}
+                          >
+                            {t("sections.paidAmenities")}
+                          </h3>
+                          <ul className="facility-item d-grid">
+                            {selectedRoomFacilities
+                              .filter((f) => f.hasFee)
+                              .map((facility) => (
+                                <li
+                                  key={`${selectedRoom.roomCode}-${facility.groupCode}-${facility.code}`}
+                                >
+                                  <AmenityIcon facilityCode={facility.code} />
+                                  {facility.description ||
+                                    t("placeholders.facilityFallback", {
+                                      code: facility.code,
+                                    })}
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <p className="facility-item no-facilities">
                       {t("placeholders.noFacilityInfo")}
