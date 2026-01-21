@@ -1729,7 +1729,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     </div>
                   </section>
                   {/* Amenities */}
-                  <section
+                  {/* <section
                     id="amenities"
                     className="hotel-tab-section amenities-tab-content"
                   >
@@ -1738,7 +1738,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                     </h2>
 
                     {!showAllAmenities ? (
-                      // Collapsed View: Show mixed/sorted list (top 8)
+                     
                       <div className="amenities-info d-grid">
                         {displayedAmenities.map((facility) => (
                           <div
@@ -1751,9 +1751,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         ))}
                       </div>
                     ) : (
-                      // Expanded View: Split into Free and Paid sections
+                    
                       <div className="amenities-expanded-view">
-                        {/* Free Amenities Section */}
+                      
                         {amenities.some((f) => !f.indFee) && (
                           <div className="amenities-group mb-4">
                             <h3
@@ -1784,7 +1784,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           </div>
                         )}
 
-                        {/* Paid Amenities Section */}
+                      
                         {amenities.some((f) => f.indFee) && (
                           <div className="amenities-group mb-0">
                             <h3
@@ -1825,7 +1825,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         {showAllAmenities ? t("showLess") : t("showAll")}
                       </button>
                     )}
-                  </section>
+                  </section> */}
+
                 </div>
               </div>
               <div className="hotel-details-right">
@@ -1935,6 +1936,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 </div>
               </div>
             </div>
+
+
 
             {/* Rooms */}
             <section id="rooms" className="rooms-filter-section">
@@ -2776,11 +2779,231 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               </div>
             </section>
 
+            {/* Amenities Section */}
+            <section id="amenities" className="hotel-tab-section amenities-tab-content">
+              <h2 className="hotel-section-title">Hotel &amp; Room Amenities</h2>
+              <div className="amenity-groups-container">
+
+                <div className="amenity-row">
+                  <div className="amenity-group-card">
+                    <h3 className="amenity-group-header">
+                      <span className="title-text">Room Facilities <span className="group-id-inline">(Group 60)</span></span>
+                    </h3>
+                    <div className="amenity-list-grid">
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
+                        <span className="facility-name">Air conditioning</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 4 8 6" /><path d="M17 19v2" /><path d="M2 12h20" /><path d="M7 19v2" /><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" /></svg>
+                        <span className="facility-name">Balcony</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.62 1.96V20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5.42a2 2 0 0 0-1.62-1.96Z" /><path d="M12 2v20" /><path d="M2 12h20" /><path d="M7 7h10" /><path d="M7 17h10" /></svg>
+                        <span className="facility-name">Towels and bed linen</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h8" /><path d="M10 22h4" /><path d="M3 10V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5" /><path d="M3 10c0 1.1.9 2 2 2h14a2 2 0 0 1 2-2" /><path d="M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6" /></svg>
+                        <span className="facility-name">Room service <span className="extra-charge-badge">Extra Charge</span></span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                        <span className="facility-name">Safe</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" /></svg>
+                        <span className="facility-name">Photocopier</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="amenity-group-card">
+                    <h3 className="amenity-group-header">
+                      <span className="title-text">Hotel Facilities <span className="group-id-inline">(Group 70)</span></span>
+                    </h3>
+                    <div className="amenity-list-grid" >
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>
+                        <span className="facility-name">Non-smoking establishment</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /><path d="M2 18c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /></svg>
+                        <span className="facility-name">Outdoor freshwater pool</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 16 4 4 4-4" /><path d="M7 20V4" /><path d="m21 8-4-4-4 4" /><path d="M17 4v16" /></svg>
+                        <span className="facility-name">Lifts</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                        <span className="facility-name">Indoor freshwater pool</span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="5"></circle><path d="M12 8V5"></path><rect x="3" y="5" width="18" height="16" rx="2"></rect></svg>
+                        <span className="facility-name">Laundry service <span className="extra-charge-badge">Extra Charge</span></span>
+                      </div>
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 18V9c0-1.7 1.3-3 3-3h10c1.7 0 3 1.3 3 3v9" /><path d="M2 18h20" /><path d="M12 9v9" /></svg>
+                        <span className="facility-name">Sun loungers <span className="extra-charge-badge">Extra Charge</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 2: Catering (Left) & Health/Family Stack (Right) */}
+                <div className="amenity-row">
+                  <div className="amenity-group-card">
+                    <h3 className="amenity-group-header">
+                      <span className="title-text">Catering / Dining <span className="group-id-inline">(Group 10)</span></span>
+                    </h3>
+                    <div className="amenity-list-grid" >
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" /></svg>
+                        <span className="facility-name">Breakfast buffet</span>
+                      </div>
+
+                      <div className="amenity-item-box d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1" /><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" /><line x1="6" y1="2" x2="6" y2="4" /><line x1="10" y1="2" x2="10" y2="4" /><line x1="14" y1="2" x2="14" y2="4" /></svg>
+                        <span className="facility-name">Coffee shop</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="amenity-row" >
+                    <div className="amenity-group-card">
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Health &amp; Beauty <span className="group-id-inline">(Group 20)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5" /><path d="M12 13v8" /><path d="M12 13a5 5 0 0 1 5 5" /><path d="M12 13a5 5 0 0 0-5 5" /></svg>
+                          <span className="facility-name">Babysitting service <span className="extra-charge-badge">Extra Charge</span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="amenity-group-card" style={{ width: '100%' }}>
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Family &amp; Children <span className="group-id-inline">(Group 50)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /><path d="M2 18c.6.5 1.2 1 2.5 1s2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1 1.2 1 2.5 1 2.5-.5 2.5-1 1.2-1 2.5-1 2.5.5 2.5 1" /></svg>
+                          <span className="facility-name">Children's pool</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="amenity-row">
+                  <div className="amenity-row">
+                    <div className="amenity-group-card">
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Technology <span className="group-id-inline">(Group 130)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
+                          <span className="facility-name">Wired internet <span className="extra-charge-badge">Extra Charge</span></span>
+                        </div>
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="16" cy="4" r="1" /><path d="m18 19 1-7-6 1" /><path d="m5 8 3-3 5.5 2-2.36 1.89" /><path d="M9 17c0 1.1.9 2 2 2s2-.9 2-2" /><path d="M13 13c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4" /></svg>
+                          <span className="facility-name">Wheelchair accessible</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="amenity-group-card">
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Accessibility <span className="group-id-inline">(Group 120)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
+                          <span className="facility-name">Wi-Fi <span className="extra-charge-badge">Extra Charge</span></span>
+                        </div>
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 13v-3.5a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5V13" /><path d="M12 8v5" /></svg>
+                          <span className="facility-name">Accessible parking</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="amenity-row">
+
+
+                    <div className="amenity-group-card">
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Business <span className="group-id-inline">(Group 40)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                          <span className="facility-name">Business centre <span className="extra-charge-badge">Extra Charge</span></span>
+                        </div>
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                          <span className="facility-name">Conference hostess</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="amenity-group-card">
+                      <h3 className="amenity-group-header">
+                        <span className="title-text">Extra Services <span className="group-id-inline">(Group 190)</span></span>
+                      </h3>
+                      <div className="amenity-list-grid">
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v7h2" /><circle cx="7" cy="17" r="3" /><circle cx="17" cy="17" r="3" /></svg>
+                          <span className="facility-name">Car park</span>
+                        </div>
+                        <div className="amenity-item-box d-flex align-items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3e5b96" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v7h2" /><circle cx="7" cy="17" r="3" /><circle cx="17" cy="17" r="3" /></svg>
+                          <span className="facility-name">Transfer service <span className="extra-charge-badge">Extra Charge</span></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Reviews */}
             {/* <section id="reviews" className="hotel-review-section">
               <h2 className="hotel-section-title">Reviews</h2>
               <ReviewSlider slidesToShowDesktop={2} />
             </section> */}
+
+            {/* Other Information & Policies Section */}
+            <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
+              <div className="policies-container">
+                <div className="policies-header">
+                  Other Information &amp; Policies (Essential Trip Information)
+                </div>
+                <div className="policies-body">
+                  <div className="policy-column">
+                    <h4 className="column-title">Timing &amp; Fees Policies</h4>
+                    <ul className="policy-list">
+                      <li>Check in hour 15:00 - Check-out hour 12:00 PM.</li>
+                      <li>Deposit on arrival is required.</li>
+                      <li>Tourism Tax (MYR10 per room/night) payable at hotel.</li>
+                      <li>Estimated taxes &amp; fees: $2.00 MYR.</li>
+                    </ul>
+                  </div>
+                  <div className="policy-column">
+                    <h4 className="column-title">Room Rules &amp; Notes</h4>
+                    <ul className="policy-list">
+                      <li>Upper bunk bed weight limit 80kg.</li>
+                      <li>Do not move mattress.</li>
+                    </ul>
+                  </div>
+                  <div className="policy-column">
+                    <h4 className="column-title">General Hotel Policies</h4>
+                    <ul className="policy-list">
+                      <li>Non-smoking establishment.</li>
+                      <li>Pets are not allowed.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
 
             {/* Map */}
             <section id="map" className="hotel-map-section">

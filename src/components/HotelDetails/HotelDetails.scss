@@ -2658,6 +2658,173 @@
       }
     }
   }
+
+  #amenities {
+    margin-top: 44px;
+
+    .amenity-groups-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .amenity-row {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+
+        .amenity-group-card {
+          width: calc(50% - 8px);
+        }
+
+        .amenity-row {
+          width: calc(50% - 8px);
+
+          .amenity-list-grid {
+            grid-template-columns: repeat(1, 1fr);
+          }
+        }
+      }
+
+      .amenity-group-card {
+        background: #ffffff;
+        border: 1.5px solid $brand-color;
+        border-radius: 8px;
+        padding: 12px;
+        height: auto;
+        flex: 1;
+        transition: $transition;
+
+
+        .amenity-list-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(62, 91, 150, 0.05);
+        }
+
+        .amenity-group-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 15px;
+
+          .title-text {
+            font-size: 20px;
+            font-weight: $font-weight600;
+            color: $color-black;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            .group-id-inline {
+              font-size: 16px;
+              color: $color-black-zinc-900;
+              font-weight: $font-weight500;
+            }
+          }
+        }
+
+        .amenity-item-box {
+          gap: 8px;
+          font-size: 15px;
+          color: $color-black-zinc-900;
+          font-weight: $font-weight500;
+
+          svg {
+            min-width: 20px;
+            max-width: 20px;
+            height: 20px;
+            color: $brand-color !important;
+            stroke: $brand-color !important;
+          }
+
+          .facility-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+
+            .extra-charge-badge {
+              font-size: 12px;
+              font-weight: $font-weight500;
+              background: $brand-color;
+              color: #ffffff;
+              padding: 2px 6px;
+              border-radius: 3px;
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #hotel-policies {
+    margin-top: 32px;
+
+    .policies-container {
+      border: 1.5px solid $brand-color;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+
+      .policies-header {
+        background: $brand-color;
+        color: #ffffff;
+        padding: 10px 15px;
+        font-weight: $font-weight600;
+        font-size: 18px;
+      }
+
+      .policies-body {
+        display: flex;
+        padding: 15px;
+        gap: 15px;
+
+        .policy-column {
+          flex: 1;
+
+          .column-title {
+            font-weight: $font-weight700;
+            color: $color-black-zinc-900;
+            margin-bottom: 12px;
+            font-size: 17px;
+          }
+
+          .policy-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+              font-size: 14px;
+              color: $color-black-zinc-900;
+              margin-bottom: 5px;
+              position: relative;
+              font-weight: $font-weight500;
+              padding-left: 20px;
+              line-height: 1.5;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              &::before {
+                content: "•";
+                position: absolute;
+                left: 5px;
+                color: $color-black-zinc-900;
+                font-size: 16px;
+                line-height: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 1199.55px) {
@@ -2668,6 +2835,173 @@
       //   gap: 24px;
       // }
       .room-list-vertical {
+        #amenities {
+          margin-top: 44px;
+
+          .amenity-groups-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .amenity-row {
+              display: flex;
+              gap: 16px;
+              width: 100%;
+
+              .amenity-group-card {
+                width: calc(50% - 8px);
+              }
+
+              .amenity-row {
+                width: calc(50% - 8px);
+
+                .amenity-list-grid {
+                  grid-template-columns: repeat(1, 1fr);
+                }
+              }
+            }
+
+            .amenity-group-card {
+              background: #ffffff;
+              border: 1.5px solid $brand-color;
+              border-radius: 8px;
+              padding: 12px;
+              height: auto;
+              flex: 1;
+              transition: $transition;
+
+
+              .amenity-list-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+              }
+
+              &:hover {
+                box-shadow: 0 4px 12px rgba(62, 91, 150, 0.05);
+              }
+
+              .amenity-group-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+
+                .title-text {
+                  font-size: 20px;
+                  font-weight: $font-weight600;
+                  color: $color-black;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+
+                  .group-id-inline {
+                    font-size: 16px;
+                    color: $color-black-zinc-900;
+                    font-weight: $font-weight500;
+                  }
+                }
+              }
+
+              .amenity-item-box {
+                gap: 8px;
+                font-size: 15px;
+                color: $color-black-zinc-900;
+                font-weight: $font-weight500;
+
+                svg {
+                  min-width: 20px;
+                  max-width: 20px;
+                  height: 20px;
+                  color: $brand-color !important;
+                  stroke: $brand-color !important;
+                }
+
+                .facility-name {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+
+
+                  .extra-charge-badge {
+                    font-size: 12px;
+                    font-weight: $font-weight500;
+                    background: $brand-color;
+                    color: #ffffff;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    white-space: nowrap;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        #hotel-policies {
+          margin-top: 32px;
+
+          .policies-container {
+            border: 1.5px solid $brand-color;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+
+            .policies-header {
+              background: $brand-color;
+              color: #ffffff;
+              padding: 10px 15px;
+              font-weight: $font-weight600;
+              font-size: 18px;
+            }
+
+            .policies-body {
+              display: flex;
+              padding: 15px;
+              gap: 15px;
+
+              .policy-column {
+                flex: 1;
+
+                .column-title {
+                  font-weight: $font-weight700;
+                  color: $color-black-zinc-900;
+                  margin-bottom: 12px;
+                  font-size: 17px;
+                }
+
+                .policy-list {
+                  list-style: none;
+                  padding: 0;
+                  margin: 0;
+
+                  li {
+                    font-size: 14px;
+                    color: $color-black-zinc-900;
+                    margin-bottom: 5px;
+                    position: relative;
+                    font-weight: $font-weight500;
+                    padding-left: 20px;
+                    line-height: 1.5;
+
+                    &:last-child {
+                      margin-bottom: 0;
+                    }
+
+                    &::before {
+                      content: "•";
+                      position: absolute;
+                      left: 5px;
+                      color: $color-black-zinc-900;
+                      font-size: 16px;
+                      line-height: 1;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
         gap: 24px;
       }
 
@@ -2704,6 +3038,18 @@
                 min-height: 105px;
                 max-height: 105px;
               }
+            }
+          }
+        }
+      }
+    }
+
+    #amenities {
+      .amenity-groups-container {
+        .amenity-group-card {
+          .amenity-group-header {
+            .title-text {
+              font-size: 18px;
             }
           }
         }
@@ -3011,6 +3357,24 @@
             li {
               padding: 0 6px;
             }
+          }
+        }
+      }
+    }
+
+    #amenities {
+      .amenity-groups-container {
+        .amenity-row {
+          gap: 16px;
+          flex-direction: column;
+
+          .amenity-row {
+            width: 100%;
+            flex-direction: row;
+          }
+
+          .amenity-group-card {
+            width: 100%;
           }
         }
       }
@@ -3981,6 +4345,103 @@
         }
       }
     }
+
+    #amenities {
+      margin-top: 32px;
+
+      .amenity-groups-container {
+        gap: 12px;
+
+        .amenity-row {
+          gap: 12px;
+
+          .amenity-row {
+            width: 100%;
+            flex-direction: column;
+          }
+        }
+
+        .amenity-group-card {
+          border-radius: 6px;
+
+          .amenity-list-grid {
+            grid-template-columns: repeat(1, 1fr);
+            gap: 8px;
+          }
+
+          .amenity-group-header {
+            margin-bottom: 10px;
+
+            .title-text {
+              font-size: 16px;
+              gap: 4px;
+
+              .group-id-inline {
+                font-size: 14px;
+              }
+            }
+          }
+
+          .amenity-item-box {
+            font-size: 14px;
+
+            svg {
+              min-width: 18px;
+              max-width: 18px;
+              height: 18px;
+            }
+
+            .facility-name {
+              gap: 10px;
+
+              .extra-charge-badge {
+                font-size: 11px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    #hotel-policies {
+      margin-top: 24px;
+
+      .policies-container {
+        border-radius: 6px;
+
+        .policies-header {
+          padding: 8px 10px;
+          font-size: 15px;
+        }
+
+        .policies-body {
+          flex-direction: column;
+          padding: 10px;
+
+          .policy-column {
+            .column-title {
+              margin-bottom: 8px;
+              font-size: 15px;
+            }
+
+            .policy-list {
+
+              li {
+                font-size: 13px;
+                margin-bottom: 3px;
+                padding-left: 15px;
+
+                &::before {
+                  left: 3px;
+                  font-size: 14px;
+                  line-height: 1.2;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -4231,6 +4692,8 @@
       }
     }
   }
+
+
 }
 
 @media (max-width: 575.55px) {

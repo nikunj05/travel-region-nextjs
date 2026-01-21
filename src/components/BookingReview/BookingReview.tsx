@@ -78,9 +78,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   // Fetch hotel details if not available (on page refresh) or when locale changes
   useEffect(() => {
     if (!hotelId) return;
-    
+
     const languageCode = getLanguageCode(locale);
-    
+
     // Fetch if hotel data doesn't exist or if language has changed
     if (!hotelData || lastLanguageRef.current !== languageCode) {
       lastLanguageRef.current = languageCode;
@@ -93,7 +93,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     const fetchCountries = async () => {
       try {
         const response = await countryService.getCountries();
-        
+
         if (response.data && response.data.countries) {
           // Transform countries data to match SelectWithFlagOption format
           const options: SelectWithFlagOption[] = response.data.countries.map((country: { name: string; flag: string; code: string }) => {
@@ -101,15 +101,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               value: country.name,
               label: country.name,
             };
-            
+
             // Only include flag if country has a flag and code
             if (country.flag && country.code) {
               option.flag = `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
             }
-            
+
             return option;
           });
-          
+
           setCountryOptions(options);
         }
       } catch (error: unknown) {
@@ -705,40 +705,40 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     <span>
                       {totalNights} {totalNights === 1 ? t("staysDetails.night") : t("staysDetails.nights")}
                     </span>
-                    
+
                   </div>
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
-                  <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                          stroke="#09090B"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
-                          stroke="#09090B"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     {t("staysDetails.totalNumberOfGuests")}
                   </div>
                   <div className="booking-list-right d-flex flex-column align-items-end">
                     <span>
-                        {totalGuests} {totalGuests === 1 ? t("staysDetails.guest") : t("staysDetails.guests")}
-                      </span>
-                    
+                      {totalGuests} {totalGuests === 1 ? t("staysDetails.guest") : t("staysDetails.guests")}
+                    </span>
+
                   </div>
                 </li>
 
@@ -1155,10 +1155,44 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         </div>
                       </div>
                     </div>
+
                   </>
                 );
               }}
             </Form>
+            {/* Other Information & Policies Section */}
+            <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
+              <div className="policies-container">
+                <div className="policies-header">
+                  Other Information &amp; Policies (Essential Trip Information)
+                </div>
+                <div className="policies-body">
+                  <div className="policy-column">
+                    <h4 className="column-title">Timing &amp; Fees Policies</h4>
+                    <ul className="policy-list">
+                      <li>Check in hour 15:00 - Check-out hour 12:00 PM.</li>
+                      <li>Deposit on arrival is required.</li>
+                      <li>Tourism Tax (MYR10 per room/night) payable at hotel.</li>
+                      <li>Estimated taxes &amp; fees: $2.00 MYR.</li>
+                    </ul>
+                  </div>
+                  <div className="policy-column">
+                    <h4 className="column-title">Room Rules &amp; Notes</h4>
+                    <ul className="policy-list">
+                      <li>Upper bunk bed weight limit 80kg.</li>
+                      <li>Do not move mattress.</li>
+                    </ul>
+                  </div>
+                  <div className="policy-column">
+                    <h4 className="column-title">General Hotel Policies</h4>
+                    <ul className="policy-list">
+                      <li>Non-smoking establishment.</li>
+                      <li>Pets are not allowed.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
           <div className="review-booking-details-right">
             <div className="hotel-info-header">
