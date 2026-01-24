@@ -1161,7 +1161,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               }}
             </Form>
             {/* Other Information & Policies Section */}
-            <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
+            {/* <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
               <div className="policies-container">
                 <div className="policies-header">
                   Other Information &amp; Policies (Essential Trip Information)
@@ -1192,7 +1192,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   </div>
                 </div>
               </div>
-            </section>
+            </section> */}
           </div>
           <div className="review-booking-details-right">
             <div className="hotel-info-header">

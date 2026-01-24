@@ -16,7 +16,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
+import { buildHotelbedsImageUrl } from "@/constants";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import mapImage from "@/assets/images/map-image.jpg";
 // import BreadcrumbArrow from "@/assets/images/breadcrumb-arrow-icon.svg";
@@ -34,7 +34,6 @@ import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import ImageModal from "../common/ImageModal/ImageModal";
 import LoginModal from "../common/LoginModal/LoginModal";
 import { AuthContext } from "@/context/AuthContext";
-import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
@@ -168,8 +167,9 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       roomName: string;
       count?: number;
     } | null>(null);
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [showAllAmenities, setShowAllAmenities] = useState(false);
+  const [showAllAmenities] = useState(false);
   const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const [selectedRoomCounts, setSelectedRoomCounts] = useState<{
     [key: string]: number;
@@ -849,9 +849,49 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         return aPaid - bPaid;
       }) || [];
   console.log("amenities", amenities);
-  const displayedAmenities = showAllAmenities
-    ? amenities
-    : amenities.filter((f) => !f.indFee).slice(0, 8);
+  // const displayedAmenities = showAllAmenities
+  //   ? amenities
+  //   : amenities.filter((f) => !f.indFee).slice(0, 8);
+
+  const FACILITY_GROUP_TITLES: Record<number, string> = {
+    10: t("sections.facilityGroups.10"),
+    20: t("sections.facilityGroups.20"),
+    40: t("sections.facilityGroups.40"),
+    50: t("sections.facilityGroups.50"),
+    60: t("sections.facilityGroups.60"),
+    70: t("sections.facilityGroups.70"),
+    71: t("sections.facilityGroups.71"),
+    72: t("sections.facilityGroups.72"),
+    73: t("sections.facilityGroups.73"),
+    74: t("sections.facilityGroups.74"),
+    80: t("sections.facilityGroups.80"),
+    85: t("sections.facilityGroups.85"),
+    90: t("sections.facilityGroups.90"),
+    120: t("sections.facilityGroups.120"),
+    130: t("sections.facilityGroups.130"),
+    190: t("sections.facilityGroups.190"),
+  };
+
+  const groupedAmenities = amenities.reduce((acc, amenity) => {
+    const code = amenity.facilityGroupCode;
+    if (!acc[code]) acc[code] = [];
+    acc[code].push(amenity);
+    return acc;
+  }, {} as Record<number, typeof amenities>);
+
+  const sortedGroupCodes = Object.keys(groupedAmenities)
+    .map(Number)
+    .sort((a, b) => {
+      const order = [
+        60, 70, 80, 10, 20, 50, 130, 120, 40, 190, 71, 72, 73, 74, 85, 90,
+      ];
+      const indexA = order.indexOf(a);
+      const indexB = order.indexOf(b);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a - b;
+    });
   const selectedRoomFacilities =
     selectedRoom?.facilities.filter((facility) => facility.description) || [];
 
@@ -894,7 +934,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         month: "short",
       }).format(date);
     },
-    [locale]
+    [] // Removed locale dependency
   );
 
   const findPrimaryRate = useCallback(
@@ -1728,104 +1768,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </div>
                     </div>
                   </section>
-                  {/* Amenities */}
-                  {/* <section
-                    id="amenities"
-                    className="hotel-tab-section amenities-tab-content"
-                  >
-                    <h2 className="tabbing-sub-title">
-                      {t("sections.amenitiesTitle")}
-                    </h2>
 
-                    {!showAllAmenities ? (
-                     
-                      <div className="amenities-info d-grid">
-                        {displayedAmenities.map((facility) => (
-                          <div
-                            key={`${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
-                            className="amenities-item d-flex align-items-center"
-                          >
-                            <AmenityIcon facilityCode={facility.facilityCode} />
-                            {facility.description.content}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                    
-                      <div className="amenities-expanded-view">
-                      
-                        {amenities.some((f) => !f.indFee) && (
-                          <div className="amenities-group mb-4">
-                            <h3
-                              className="amenities-group-title mb-3"
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                color: "#1B2236",
-                              }}
-                            >
-                              {t("sections.freeAmenities")}
-                            </h3>
-                            <div className="amenities-info d-grid">
-                              {amenities
-                                .filter((f) => !f.indFee)
-                                .map((facility) => (
-                                  <div
-                                    key={`free-${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
-                                    className="amenities-item d-flex align-items-center"
-                                  >
-                                    <AmenityIcon
-                                      facilityCode={facility.facilityCode}
-                                    />
-                                    {facility.description.content}
-                                  </div>
-                                ))}
-                            </div>
-                          </div>
-                        )}
-
-                      
-                        {amenities.some((f) => f.indFee) && (
-                          <div className="amenities-group mb-0">
-                            <h3
-                              className="amenities-group-title mb-3"
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "600",
-                                color: "#1B2236",
-                              }}
-                            >
-                              {t("sections.paidAmenities")}
-                            </h3>
-                            <div className="amenities-info d-grid">
-                              {amenities
-                                .filter((f) => f.indFee)
-                                .map((facility) => (
-                                  <div
-                                    key={`paid-${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
-                                    className="amenities-item d-flex align-items-center"
-                                  >
-                                    <AmenityIcon
-                                      facilityCode={facility.facilityCode}
-                                    />
-                                    {facility.description.content}
-                                  </div>
-                                ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {amenities.length > 8 && (
-                      <button
-                        onClick={() => setShowAllAmenities(!showAllAmenities)}
-                        className="button-primary show-all-amenities-btn mt-3"
-                      >
-                        {showAllAmenities ? t("showLess") : t("showAll")}
-                      </button>
-                    )}
-                  </section> */}
 
                 </div>
               </div>
@@ -2003,16 +1946,16 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         room.characteristicDescription ||
                         null;
                       const displayRateDetails = getDisplayRate(room);
-                      const refundStatusLabel = displayRateDetails
-                        ? displayRateDetails.isFullyRefundable
-                          ? t("refund.fullyRefundable")
-                          : t("refund.notFullyRefundable")
-                        : t("placeholders.refundPolicyUnavailable");
-                      const refundDateLabel = displayRateDetails?.refundDate
-                        ? t("refund.beforeDate", {
-                          date: displayRateDetails.refundDate,
-                        })
-                        : t("placeholders.refundDateUnavailable");
+                      // const refundStatusLabel = displayRateDetails
+                      //   ? displayRateDetails.isFullyRefundable
+                      //     ? t("refund.fullyRefundable")
+                      //     : t("refund.notFullyRefundable")
+                      //   : t("placeholders.refundPolicyUnavailable");
+                      // const refundDateLabel = displayRateDetails?.refundDate
+                      //   ? t("refund.beforeDate", {
+                      //     date: displayRateDetails.refundDate,
+                      //   })
+                      //   : t("placeholders.refundDateUnavailable");
 
                       return (
                         <div
@@ -2424,10 +2367,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     // Get cancellation details for this specific rate
                                     const rateCancellationDetails =
                                       getRateCancellationDetails(rate);
-                                    const rateRefundStatusLabel =
-                                      rateCancellationDetails.isFullyRefundable
-                                        ? t("refund.fullyRefundable")
-                                        : t("refund.notFullyRefundable");
+                                    // const rateRefundStatusLabel =
+                                    //   rateCancellationDetails.isFullyRefundable
+                                    //     ? t("refund.fullyRefundable")
+                                    //     : t("refund.notFullyRefundable");
                                     // const rateRefundDateLabel =
                                     //   rateCancellationDetails.refundDate
                                     //     ? t("refund.beforeDate", {
@@ -2779,8 +2722,215 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               </div>
             </section>
 
+            {/* Amenities */}
+            <section
+              id="amenities"
+              className="hotel-tab-section amenities-tab-content"
+            >
+              <h2 className="hotel-section-title">
+                {t("sections.amenitiesTitle")}
+              </h2>
+              <div className="amenity-groups-container">
+                <div
+                  className="amenity-masonry-container"
+                  style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}
+                >
+                  {(() => {
+                    // 1. Build Data Chunks with approximate weights
+                    type ChunkData = { codes: number[]; weight: number };
+                    const chunks: ChunkData[] = [];
+                    let i = 0;
+
+                    while (i < sortedGroupCodes.length) {
+                      const groupCode = sortedGroupCodes[i];
+                      const amenitiesInGroup = groupedAmenities[groupCode];
+                      const isSmallGroup = amenitiesInGroup.length < 2;
+
+                      if (isSmallGroup && i + 1 < sortedGroupCodes.length) {
+                        const nextGroupCode = sortedGroupCodes[i + 1];
+                        const nextAmenities = groupedAmenities[nextGroupCode];
+                        const nextIsSmall = nextAmenities.length < 2;
+
+                        if (nextIsSmall) {
+                          // Pair
+                          const weight =
+                            4 +
+                            Math.max(
+                              amenitiesInGroup.length,
+                              nextAmenities.length
+                            );
+                          chunks.push({
+                            codes: [groupCode, nextGroupCode],
+                            weight,
+                          });
+                          i += 2;
+                          continue;
+                        }
+                      }
+
+                      // Single
+                      const weight = 4 + amenitiesInGroup.length;
+                      chunks.push({ codes: [groupCode], weight });
+                      i++;
+                    }
+
+                    // 2. Distribute chunks to balance column heights
+                    const leftCol: ChunkData[] = [];
+                    const rightCol: ChunkData[] = [];
+                    let leftDistHeight = 0;
+                    let rightDistHeight = 0;
+
+                    chunks.forEach((chunk) => {
+                      if (leftDistHeight <= rightDistHeight) {
+                        leftCol.push(chunk);
+                        leftDistHeight += chunk.weight;
+                      } else {
+                        rightCol.push(chunk);
+                        rightDistHeight += chunk.weight;
+                      }
+                    });
+
+                    // 3. Render Helper
+                    const renderChunk = (chunk: ChunkData) => {
+                      const isPair = chunk.codes.length > 1;
+
+                      if (isPair) {
+                        return (
+                          <div
+                            key={`pair-${chunk.codes.join("-")}`}
+                            style={{ display: "flex", gap: "10px" }}
+                          >
+                            {chunk.codes.map((code) => (
+                              <div
+                                key={code}
+                                className="amenity-group-card"
+                                style={{ flex: "1 1 0", minWidth: 0 }}
+                              >
+                                <h3 className="amenity-group-header">
+                                  <span className="title-text">
+                                    {FACILITY_GROUP_TITLES[code] ||
+                                      t("sections.groupLabel", { code })}
+                                    <span className="group-id-inline">
+                                      {" "}
+                                      ({t("sections.groupLabel", { code })})
+                                    </span>
+                                  </span>
+                                </h3>
+                                <div
+                                  className="amenity-list-grid"
+                                  style={{ gridTemplateColumns: "1fr" }}
+                                >
+                                  {groupedAmenities[code].map((facility) => (
+                                    <div
+                                      key={`${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
+                                      className="amenity-item-box d-flex align-items-center"
+                                    >
+                                      <AmenityIcon
+                                        facilityCode={facility.facilityCode}
+                                      />
+                                      <span className="facility-name">
+                                        {facility.description.content}
+                                        {(facility.indFee ||
+                                          (facility as { hasFee?: boolean }).hasFee) && (
+                                            <span className="extra-charge-badge">
+                                              Extra Charge
+                                            </span>
+                                          )}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+
+                      // Single Rendering
+                      const groupCode = chunk.codes[0];
+                      const amenitiesInGroup = groupedAmenities[groupCode];
+                      const isSmallGroup = amenitiesInGroup.length < 2;
+
+                      return (
+                        <div
+                          key={groupCode}
+                          className="amenity-group-card"
+                          style={{ width: "100%" }}
+                        >
+                          <h3 className="amenity-group-header">
+                            <span className="title-text">
+                              {FACILITY_GROUP_TITLES[groupCode] ||
+                                t("sections.groupLabel", { code: groupCode })}
+                              <span className="group-id-inline">
+                                {" "}
+                                ({t("sections.groupLabel", { code: groupCode })})
+                              </span>
+                            </span>
+                          </h3>
+                          <div
+                            className="amenity-list-grid"
+                            style={
+                              isSmallGroup
+                                ? { gridTemplateColumns: "1fr" }
+                                : undefined
+                            }
+                          >
+                            {amenitiesInGroup.map((facility) => (
+                              <div
+                                key={`${facility.facilityGroupCode}-${facility.facilityCode}-${facility.description.content}`}
+                                className="amenity-item-box d-flex align-items-center"
+                              >
+                                <AmenityIcon
+                                  facilityCode={facility.facilityCode}
+                                />
+                                <span className="facility-name">
+                                  {facility.description.content}
+                                  {(facility.indFee ||
+                                    (facility as { hasFee?: boolean })
+                                      .hasFee) && (
+                                      <span className="extra-charge-badge">
+                                        Extra Charge
+                                      </span>
+                                    )}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <>
+                        <div
+                          style={{
+                            flex: "1",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "20px",
+                          }}
+                        >
+                          {leftCol.map(renderChunk)}
+                        </div>
+                        <div
+                          style={{
+                            flex: "1",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "20px",
+                          }}
+                        >
+                          {rightCol.map(renderChunk)}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            </section>
+
             {/* Amenities Section */}
-            <section id="amenities" className="hotel-tab-section amenities-tab-content">
+            {/* <section id="amenities" className="hotel-tab-section amenities-tab-content">
               <h2 className="hotel-section-title">Hotel &amp; Room Amenities</h2>
               <div className="amenity-groups-container">
 
@@ -2849,7 +2999,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                 </div>
 
-                {/* Row 2: Catering (Left) & Health/Family Stack (Right) */}
                 <div className="amenity-row">
                   <div className="amenity-group-card">
                     <h3 className="amenity-group-header">
@@ -2963,7 +3112,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                 </div>
               </div>
-            </section>
+            </section> */}
 
             {/* Reviews */}
             {/* <section id="reviews" className="hotel-review-section">
@@ -2972,7 +3121,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             </section> */}
 
             {/* Other Information & Policies Section */}
-            <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
+            {/* <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
               <div className="policies-container">
                 <div className="policies-header">
                   Other Information &amp; Policies (Essential Trip Information)
@@ -3003,7 +3152,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   </div>
                 </div>
               </div>
-            </section>
+            </section> */}
 
             {/* Map */}
             <section id="map" className="hotel-map-section">

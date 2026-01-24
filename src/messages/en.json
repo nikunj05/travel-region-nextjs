@@ -146,8 +146,27 @@
       "roomsTitle": "Rooms",
       "mapTitle": "Map",
       "similarHotelsTitle": "Similar Hotels Nearby",
+      "groupLabel": "Group {code}",
       "freeAmenities": "Free Amenities",
-      "paidAmenities": "Paid Amenities"
+      "paidAmenities": "Paid Amenities",
+      "facilityGroups": {
+        "10": "Catering / Dining",
+        "20": "Health & Beauty",
+        "40": "Business",
+        "50": "Family & Children",
+        "60": "Room Facilities",
+        "70": "Hotel Facilities",
+        "71": "Entertainment",
+        "72": "Sports",
+        "73": "Wellness",
+        "74": "Miscellaneous",
+        "80": "General",
+        "85": "Additional Services",
+        "90": "Sports & Leisure",
+        "120": "Accessibility",
+        "130": "Technology",
+        "190": "Extra Services"
+      }
     },
     "description": {
       "fallback": "Hotel description not available."
@@ -705,7 +724,8 @@
       "title": "Other Information",
       "forRoom": "Rate Comment for - {roomName}",
       "room": "Room {number}",
-      "roomWithName": "Room {number} - {roomName}"
+      "roomWithName": "Room {number} - {roomName}",
+      "policiesHeader": "Other Information & Policies (Essential Trip Information)"
     },
     "placeholders": {
       "hotelName": "Hotel Name"

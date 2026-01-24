@@ -312,7 +312,7 @@
               }
             }
 
-            input:checked + .payment-card-content {
+            input:checked+.payment-card-content {
               border-color: $color-blue;
               outline-color: $color-blue;
               background: #8ec5ff;
@@ -433,6 +433,7 @@
 
             .discount {
               color: #fb2c36;
+
               .cls-1 {
                 fill: #fb2c36;
               }
@@ -469,14 +470,18 @@
             gap: 4px;
           }
         }
+
         .coupon-section {
           margin-bottom: 24px;
+
           .form-label {
             font-size: 15px;
             margin-bottom: 6px;
           }
+
           .coupon-input-with-btn {
             position: relative;
+
             .form-control {
               border: 1px solid #e5e7eb;
               padding: 6px 95px 6px 12px;
@@ -484,6 +489,7 @@
               border: 1px solid #e5e7eb;
               height: 42px;
             }
+
             .coupon-apply-btn {
               white-space: nowrap;
               padding: 3px 10px;
@@ -559,6 +565,71 @@
             width: 100%;
             padding: 6.7px 15px;
             cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
+
+#hotel-policies {
+  margin-top: 24px;
+
+  .policies-container {
+    border: 1.5px solid $brand-color;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+
+    .policies-header {
+      background: $brand-color;
+      color: #ffffff;
+      padding: 10px 15px;
+      font-weight: $font-weight600;
+      font-size: 18px;
+    }
+
+    .policies-body {
+      display: flex;
+      padding: 15px;
+      gap: 15px;
+
+      .policy-column {
+        flex: 1;
+
+        .column-title {
+          font-weight: $font-weight700;
+          color: $color-black-zinc-900;
+          margin-bottom: 12px;
+          font-size: 17px;
+        }
+
+        .policy-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            font-size: 14px;
+            color: $color-black-zinc-900;
+            margin-bottom: 5px;
+            position: relative;
+            font-weight: $font-weight500;
+            padding-left: 20px;
+            line-height: 1.5;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            &::before {
+              content: "•";
+              position: absolute;
+              left: 5px;
+              color: $color-black-zinc-900;
+              font-size: 16px;
+              line-height: 1;
+            }
           }
         }
       }
@@ -906,11 +977,13 @@
               color: $color-black-zinc-500;
             }
           }
+
           .coupon-section {
             .coupon-input-with-btn {
               .form-control {
                 font-size: 14px;
               }
+
               .coupon-apply-btn {
                 font-size: 13px;
               }
@@ -928,6 +1001,46 @@
             .check-availability-btn {
               font-size: 16px;
               padding: 9.2px 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #hotel-policies {
+    margin-top: 24px;
+
+    .policies-container {
+      border-radius: 6px;
+
+      .policies-header {
+        padding: 8px 10px;
+        font-size: 15px;
+      }
+
+      .policies-body {
+        flex-direction: column;
+        padding: 10px;
+
+        .policy-column {
+          .column-title {
+            margin-bottom: 8px;
+            font-size: 15px;
+          }
+
+          .policy-list {
+
+            li {
+              font-size: 13px;
+              margin-bottom: 3px;
+              padding-left: 15px;
+
+              &::before {
+                left: 3px;
+                font-size: 14px;
+                line-height: 1.2;
+              }
             }
           }
         }
@@ -982,6 +1095,7 @@
               .form-control {
                 padding: 6px 12px 6px 95px;
               }
+
               .coupon-apply-btn {
                 right: auto;
                 left: 0;
@@ -989,6 +1103,7 @@
               }
             }
           }
+
           .chekout-agree-terms-box {
             .form-check {
               .form-check-label {

@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import "./Checkout.scss";
+import "../BookingReview/BookingReview.scss";
+
 // import MsaterCardIcon from "@/assets/images/master-card-icon.svg";
 // import PaypalCardIcon from "@/assets/images/paypal-card-icon.svg";
 // import StripeCardIcon from "@/assets/images/stripe-card-icon.svg";
@@ -194,7 +196,7 @@ function CheckoutComponent() {
       // Get order from booking response
       const order =
         bookingResponse?.data?.booking &&
-        "order" in bookingResponse.data.booking
+          "order" in bookingResponse.data.booking
           ? bookingResponse.data.booking.order
           : undefined;
 
@@ -298,7 +300,7 @@ function CheckoutComponent() {
       // Get order from booking response
       const order =
         bookingResponse?.data?.booking &&
-        "order" in bookingResponse.data.booking
+          "order" in bookingResponse.data.booking
           ? bookingResponse.data.booking.order
           : undefined;
 
@@ -445,7 +447,7 @@ function CheckoutComponent() {
     const fetchCountries = async () => {
       try {
         const response = await countryService.getCountries();
-        
+
         if (response.data && response.data.countries) {
           // Transform countries data to match SelectWithFlagOption format
           const options: SelectWithFlagOption[] = response.data.countries.map((country: { name: string; flag: string; code: string }) => {
@@ -453,15 +455,15 @@ function CheckoutComponent() {
               value: country.name,
               label: country.name,
             };
-            
+
             // Only include flag if country has a flag and code
             if (country.flag && country.code) {
               option.flag = `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`;
             }
-            
+
             return option;
           });
-          
+
           setCountryOptions(options);
         }
       } catch (error: unknown) {
@@ -809,8 +811,8 @@ function CheckoutComponent() {
                             placeholder="Email"
                             className="form-input"
                           />
-                          <div className="form-group" style={{ marginBottom: 0}}>
-                             <label className="form-label">
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label className="form-label">
                               {t("travelerDetails.country")} <span className="required">*</span>
                             </label>
                             <Controller
@@ -898,47 +900,64 @@ function CheckoutComponent() {
                 );
               }}
             </Form>
-
+            {/* Other Information & Policies Section */}
             {/* Rate Comments Card */}
             {roomDetails.length > 0 && (
-              <div className="booking-detail-box booking-rate-comments">
-                <h3 className="booking-details-sub-title">
-                  {(() => {
-                    try {
-                      return t("rateComments.title");
-                    } catch {
-                      return "Rate Comments";
-                    }
-                  })()}
-                </h3>
-                <div className="rate-comments-content">
-                  {roomDetails.map((room, index) => (
-                    <div
-                      key={`room-detail-${index}`}
-                      className="rate-comment-item"
-                    >
-                      <h4 className="room-label">
-                        {(() => {
-                          const roomName = room.room_name;
-                          try {
-                            return t("rateComments.roomWithName", {
-                              number: index + 1,
-                              roomName: roomName,
-                            });
-                          } catch {
-                            return `Room ${index + 1} - ${roomName}`;
-                          }
-                        })()}
-                      </h4>
-                      <p className="rate-comment-text">
-                        {translatedTexts.get(room.rate_comments) ||
-                          room.rate_comments}
-                      </p>
-                    </div>
-                  ))}
+              <section
+                id="hotel-policies"
+                className="hotel-tab-section policies-tab-content"
+              >
+                <div className="policies-container">
+                  <div className="policies-header">
+                    {t("rateComments.policiesHeader")}
+                  </div>
+                  <div className="policies-body">
+                    {roomDetails.map((room, index) => (
+                      <div
+                        className="policy-column"
+                        key={`room-policy-${index}`}
+                      >
+                        <h4 className="column-title">
+                          {(() => {
+                            const roomName = room.room_name;
+                            try {
+                              return t("rateComments.roomWithName", {
+                                number: index + 1,
+                                roomName: roomName,
+                              });
+                            } catch {
+                              return `Room ${index + 1} - ${roomName}`;
+                            }
+                          })()}
+                        </h4>
+                        <ul className="policy-list">
+                          <li>
+                            {translatedTexts.get(room.rate_comments) ||
+                              room.rate_comments}
+                          </li>
+                        </ul>
+                      </div>
+                    ))}
+                    {/* <div className="policy-column">
+                    <h4 className="column-title">Room Rules &amp; Notes</h4>
+                    <ul className="policy-list">
+                      <li>Upper bunk bed weight limit 80kg.</li>
+                      <li>Do not move mattress.</li>
+                    </ul>
+                  </div>
+                  <div className="policy-column">
+                    <h4 className="column-title">General Hotel Policies</h4>
+                    <ul className="policy-list">
+                      <li>Non-smoking establishment.</li>
+                      <li>Pets are not allowed.</li>
+                    </ul>
+                  </div> */}
+                  </div>
                 </div>
-              </div>
+              </section>
             )}
+
+
             {/* <div className="booking-detail-box booking-traveler-details choose-payment-option">
               <h3 className="booking-details-sub-title">
                 Choose Payment Option
@@ -1093,7 +1112,9 @@ function CheckoutComponent() {
                 </form>
               </div>
             </div> */}
+
           </div>
+
           <div className="review-booking-details-right">
             <div className="hotel-info-header">
               <div className="booking-hotel-info d-flex align-items-start">
@@ -1289,7 +1310,7 @@ function CheckoutComponent() {
                     {(() => {
                       const discountAmount =
                         couponResponse?.status &&
-                        couponResponse?.data?.booking?.discount_amount
+                          couponResponse?.data?.booking?.discount_amount
                           ? Number(couponResponse.data.booking.discount_amount)
                           : 0;
 
@@ -1342,9 +1363,8 @@ function CheckoutComponent() {
                 </div>
                 {couponResponse && (
                   <div
-                    className={`mt-1 ${
-                      couponResponse.status ? "text-success" : "text-danger"
-                    }`}
+                    className={`mt-1 ${couponResponse.status ? "text-success" : "text-danger"
+                      }`}
                     style={{ fontSize: "12px" }}
                   >
                     {couponResponse.status
