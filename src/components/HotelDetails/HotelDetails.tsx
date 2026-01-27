@@ -2891,7 +2891,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                     (facility as { hasFee?: boolean })
                                       .hasFee) && (
                                       <span className="extra-charge-badge">
-                                        Extra Charge
+                                        {t("labels.extraCharge")}
                                       </span>
                                     )}
                                 </span>

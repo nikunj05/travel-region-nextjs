@@ -13,10 +13,6 @@ import plusIcon from "@/assets/images/plus-icon.svg";
 import guestsIcon from "@/assets/images/guests-icon.svg";
 import StarFill from "@/assets/images/star-fill-icon.svg";
 import mainImage1 from "@/assets/images/property-image.jpg";
-import thumbnailImages1 from "@/assets/images/property-thumb-img1.jpg";
-import thumbnailImages2 from "@/assets/images/property-thumb-img2.jpg";
-import thumbnailImages3 from "@/assets/images/property-thumb-img3.jpg";
-import thumbnailImages4 from "@/assets/images/property-thumb-img4.jpg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 // import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
 // import ParkingIcon from "@/assets/images/parking-icon.svg";
@@ -488,7 +484,7 @@ const SearchResult = () => {
     ) {
       hasTriggeredInitialSearch.current = true;
       handleSearchClick({
-        preventDefault: () => {},
+        preventDefault: () => { },
       } as React.MouseEvent<HTMLButtonElement>);
     }
   }, [filters.location, apiHotels, loading]);
@@ -792,12 +788,10 @@ const SearchResult = () => {
 
     if (totalGuests === 0) return t("addGuests");
 
-    const guestsText = `${totalGuests} ${
-      totalGuests > 1 ? t("guests") : t("guest")
-    }`;
-    const roomsText = `${rooms.length} ${
-      rooms.length > 1 ? t("rooms") : t("room")
-    }`;
+    const guestsText = `${totalGuests} ${totalGuests > 1 ? t("guests") : t("guest")
+      }`;
+    const roomsText = `${rooms.length} ${rooms.length > 1 ? t("rooms") : t("room")
+      }`;
 
     return `${guestsText} • ${roomsText}`;
   };
@@ -1014,9 +1008,8 @@ const SearchResult = () => {
               )}
             </div>
             <div
-              className={`price-slider-container ${
-                locale === "ar" ? "rtl-slider" : ""
-              }`}
+              className={`price-slider-container ${locale === "ar" ? "rtl-slider" : ""
+                }`}
               style={{
                 position: "relative",
                 height: "40px",
@@ -1046,16 +1039,16 @@ const SearchResult = () => {
                     background: "#3E5B96",
                     ...(locale === "ar"
                       ? {
-                          // RTL: calculate from right side
-                          right: `${(minPrice / 5000) * 100}%`,
-                          left: "auto",
-                          width: `${((maxPrice - minPrice) / 5000) * 100}%`,
-                        }
+                        // RTL: calculate from right side
+                        right: `${(minPrice / 5000) * 100}%`,
+                        left: "auto",
+                        width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                      }
                       : {
-                          // LTR: calculate from left side
-                          left: `${(minPrice / 5000) * 100}%`,
-                          width: `${((maxPrice - minPrice) / 5000) * 100}%`,
-                        }),
+                        // LTR: calculate from left side
+                        left: `${(minPrice / 5000) * 100}%`,
+                        width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                      }),
                     borderRadius: "10px",
                   }}
                 />
@@ -1800,7 +1793,7 @@ const SearchResult = () => {
                                       }
                                     >
                                       {loadingHotelId ===
-                                      getHotelCode(hotel)?.toString() ? (
+                                        getHotelCode(hotel)?.toString() ? (
                                         <>
                                           <div className="view-details-spinner"></div>
                                           {tSearch("loading")}
