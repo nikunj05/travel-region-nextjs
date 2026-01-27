@@ -2663,9 +2663,15 @@
     margin-top: 44px;
 
     .amenity-groups-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      .amenity-masonry-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+
+        >div {
+          gap: 16px !important;
+        }
+      }
 
       .amenity-row {
         display: flex;
@@ -4350,7 +4356,16 @@
       margin-top: 32px;
 
       .amenity-groups-container {
-        gap: 12px;
+
+        .amenity-masonry-container {
+          gap: 12px;
+          flex-direction: column;
+
+          >div {
+            gap: 12px !important;
+            width: 100%;
+          }
+        }
 
         .amenity-row {
           gap: 12px;

@@ -2736,7 +2736,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               <div className="amenity-groups-container">
                 <div
                   className="amenity-masonry-container"
-                  style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}
                 >
                   {(() => {
                     // 1. Build Data Chunks with approximate weights
@@ -2801,7 +2800,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         return (
                           <div
                             key={`pair-${chunk.codes.join("-")}`}
-                            style={{ display: "flex", gap: "10px" }}
+                            className="amenity-row"
                           >
                             {chunk.codes.map((code) => (
                               <div
