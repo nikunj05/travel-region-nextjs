@@ -210,7 +210,8 @@
       "for": "for",
       "roomOnly": "Room Only",
       "seeAllRooms": "See All Rooms",
-      "paidService": "Paid Service"
+      "paidService": "Paid Service",
+      "extraCharge": "Extra Charge"
     },
     "actions": {
       "favorite": "Favorite",

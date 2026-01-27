@@ -210,7 +210,8 @@
       "for": "لـ",
       "roomOnly": "غرفة فقط",
       "seeAllRooms": "عرض جميع الغرف",
-      "paidService": "خدمة مدفوعة"
+      "paidService": "خدمة مدفوعة",
+      "extraCharge": "رسوم إضافية"
     },
     "actions": {
       "favorite": "المفضلة",
