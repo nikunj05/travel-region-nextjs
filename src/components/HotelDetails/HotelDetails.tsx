@@ -856,6 +856,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const FACILITY_GROUP_TITLES: Record<number, string> = {
     10: t("sections.facilityGroups.10"),
     20: t("sections.facilityGroups.20"),
+    30: t("sections.facilityGroups.30"),
     40: t("sections.facilityGroups.40"),
     50: t("sections.facilityGroups.50"),
     60: t("sections.facilityGroups.60"),
@@ -867,6 +868,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     80: t("sections.facilityGroups.80"),
     85: t("sections.facilityGroups.85"),
     90: t("sections.facilityGroups.90"),
+    91: t("sections.facilityGroups.91"),
     120: t("sections.facilityGroups.120"),
     130: t("sections.facilityGroups.130"),
     190: t("sections.facilityGroups.190"),
@@ -883,7 +885,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     .map(Number)
     .sort((a, b) => {
       const order = [
-        60, 70, 80, 10, 20, 50, 130, 120, 40, 190, 71, 72, 73, 74, 85, 90,
+        60, 70, 80, 10, 20, 50, 130, 120, 40, 190, 71, 72, 73, 74, 85, 90, 30, 91,
       ];
       const indexA = order.indexOf(a);
       const indexB = order.indexOf(b);
@@ -1616,19 +1618,20 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         {t("tabs.overview")}
                       </a>
                       <a
-                        href="#amenities"
-                        className={activeTab === "amenities" ? "active" : ""}
-                        onClick={(e) => handleTabClick(e, "amenities")}
-                      >
-                        {t("tabs.amenities")}
-                      </a>
-                      <a
                         href="#rooms"
                         className={activeTab === "rooms" ? "active" : ""}
                         onClick={(e) => handleTabClick(e, "rooms")}
                       >
                         {t("tabs.rooms")}
                       </a>
+                      <a
+                        href="#amenities"
+                        className={activeTab === "amenities" ? "active" : ""}
+                        onClick={(e) => handleTabClick(e, "amenities")}
+                      >
+                        {t("tabs.amenities")}
+                      </a>
+
                       {/* <a
                         href="#reviews"
                         className={activeTab === "reviews" ? "active" : ""}
@@ -2809,11 +2812,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                 <h3 className="amenity-group-header">
                                   <span className="title-text">
                                     {FACILITY_GROUP_TITLES[code] ||
-                                      t("sections.groupLabel", { code })}
-                                    <span className="group-id-inline">
+                                      t("sections.facilityGroups.others")}
+                                    {/* <span className="group-id-inline">
                                       {" "}
                                       ({t("sections.groupLabel", { code })})
-                                    </span>
+                                    </span> */}
                                   </span>
                                 </h3>
                                 <div
@@ -2860,11 +2863,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                           <h3 className="amenity-group-header">
                             <span className="title-text">
                               {FACILITY_GROUP_TITLES[groupCode] ||
-                                t("sections.groupLabel", { code: groupCode })}
-                              <span className="group-id-inline">
+                                t("sections.facilityGroups.others")}
+                              {/* <span className="group-id-inline">
                                 {" "}
                                 ({t("sections.groupLabel", { code: groupCode })})
-                              </span>
+                              </span> */}
                             </span>
                           </h3>
                           <div

@@ -152,6 +152,7 @@
       "facilityGroups": {
         "10": "Catering / Dining",
         "20": "Health & Beauty",
+        "30": "Payment Methods",
         "40": "Business",
         "50": "Family & Children",
         "60": "Room Facilities",
@@ -163,9 +164,11 @@
         "80": "General",
         "85": "Additional Services",
         "90": "Sports & Leisure",
+        "91": "Supplier Guidelines",
         "120": "Accessibility",
         "130": "Technology",
-        "190": "Extra Services"
+        "190": "Extra Services",
+        "others": "Others"
       }
     },
     "description": {
@@ -471,7 +474,7 @@
       "emailInvalid": "Email is invalid",
       "messageRequired": "Message is required"
     },
-     "form": {
+    "form": {
       "nameLabel": "Name",
       "namePlaceholder": "Enter your name",
       "emailLabel": "Email",
