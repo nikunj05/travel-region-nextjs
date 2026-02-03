@@ -377,7 +377,7 @@
         }
 
         .booking-details-form {
-          margin-bottom: 28px;
+          margin-bottom: 0px;
 
           &:last-child {
             margin-bottom: 0px;
@@ -474,6 +474,12 @@
           .text-field {
             font-size: 14px;
             border-radius: 4px;
+          }
+        }
+
+        &.room-form-details {
+          .room-age-field {
+            margin-bottom: 8px;
           }
         }
       }
@@ -674,7 +680,7 @@
 
         .booking-traveler-details {
           .booking-details-form {
-            margin-bottom: 12px;
+            margin-bottom: 0px;
           }
         }
       }
