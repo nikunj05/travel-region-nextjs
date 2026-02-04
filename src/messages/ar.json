@@ -641,6 +641,7 @@
     "travelerDetails": {
       "title": "تفاصيل المسافر",
       "primaryGuest": "الضيف الرئيسي",
+      "guest": "ضيف",
       "mandatory": "إلزامي",
       "firstName": "الاسم الأول",
       "firstNamePlaceholder": "اسمك الأول",

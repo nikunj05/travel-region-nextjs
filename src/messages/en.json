@@ -641,6 +641,7 @@
     "travelerDetails": {
       "title": "Traveler Details",
       "primaryGuest": "Primary Guest",
+      "guest": "Guest",
       "mandatory": "Mandatory",
       "firstName": "First Name",
       "firstNamePlaceholder": "Your First Name",
