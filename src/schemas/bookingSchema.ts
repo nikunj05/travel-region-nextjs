@@ -10,7 +10,7 @@ export interface GuestFormData {
 }
 
 export interface BookingFormData {
-  primaryGuest: GuestFormData;
+  guests: GuestFormData[];
   specialRequests?: string;
 }
 
@@ -19,8 +19,8 @@ const phoneRegex = /^[0-9]{7,15}$/;
 const englishNameRegex = /^[A-Za-z\s]+$/;
 
 export const createBookingSchema = (t: (key: string, params?: Record<string, string | number>) => string) => {
-  // Primary guest schema - all fields are required
-  const primaryGuestSchema = yup.object().shape({
+  // Guest schema - all fields are required
+  const guestSchema = yup.object().shape({
     firstName: yup.string()
       .required(t('firstNameRequired'))
       .matches(englishNameRegex, t('firstNameEnglishOnly'))
@@ -42,7 +42,7 @@ export const createBookingSchema = (t: (key: string, params?: Record<string, str
   });
 
   return yup.object().shape({
-    primaryGuest: primaryGuestSchema,
+    guests: yup.array().of(guestSchema).required(),
     specialRequests: yup.string().max(500, t('specialRequestsMaxLength', { max: 500 })),
   });
 };

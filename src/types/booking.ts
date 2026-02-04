@@ -21,6 +21,11 @@ export interface BookingDetail {
   [key: string]: unknown;
 }
 
+export interface ChildData {
+  count: number;
+  ages: number[];
+}
+
 export interface CreateBookingRequest {
   hotel_code: number;
   check_in: string; // YYYY-MM-DD format
@@ -37,6 +42,7 @@ export interface CreateBookingRequest {
   special_requests?: string;
   room_details: RoomDetail[];
   details: BookingDetail[];
+  child_age_data?: number[];
 }
 
 export interface CreateBookingResponse {

@@ -620,7 +620,13 @@
       "room": "Room",
       "roomOnly": "Room Only",
       "freeAmenities": "Free Amenities",
-      "amenity": "Amenity"
+      "amenity": "Amenity",
+      "adult": "Adult",
+      "adults": "Adults",
+      "child": "Child",
+      "children": "Children",
+      "age": "Age",
+      "years": "years"
     },
     "priceDetails": {
       "title": "Price Details",

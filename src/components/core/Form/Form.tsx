@@ -12,18 +12,24 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AnyObjectSchema } from "yup";
 
-interface FormProps<TFormValues extends FieldValues> {
-  id?: string;
+interface FormProps<TFormValues extends FieldValues>
+  extends Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit" | "children"> {
   defaultValues: DefaultValues<TFormValues>;
   children: React.ReactNode | ((methods: UseFormReturn<TFormValues>) => React.ReactNode);
   onSubmit: SubmitHandler<TFormValues>;
   schema: AnyObjectSchema;
-  className?: string;
   mode?: keyof ValidationMode;
 }
 
 function FormComponent<TFormValues extends FieldValues = FieldValues>(
-  { id, defaultValues, children, onSubmit, schema, className = "", mode = "onChange" }: FormProps<TFormValues>,
+  {
+    defaultValues,
+    children,
+    onSubmit,
+    schema,
+    mode = "onChange",
+    ...props
+  }: FormProps<TFormValues>,
   ref: React.ForwardedRef<HTMLFormElement>
 ) {
   const methods = useForm<TFormValues>({
@@ -34,12 +40,7 @@ function FormComponent<TFormValues extends FieldValues = FieldValues>(
 
   return (
     <FormProvider {...methods}>
-      <form
-        ref={ref}
-        id={id}
-        onSubmit={methods.handleSubmit(onSubmit)}
-        className={className}
-      >
+      <form ref={ref} onSubmit={methods.handleSubmit(onSubmit)} {...props}>
         {typeof children === "function" ? children(methods) : children}
       </form>
     </FormProvider>

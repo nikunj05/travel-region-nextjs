@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Controller, UseFormReturn } from "react-hook-form";
@@ -71,7 +72,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     if (!formMethodsRef.current || watchSetupRef.current) return;
 
     const subscription = formMethodsRef.current.watch((value) => {
-      if (value?.primaryGuest && (value.primaryGuest.firstName || value.primaryGuest.lastName || value.primaryGuest.email)) {
+      if (value?.guests?.[0] && (value.guests[0].firstName || value.guests[0].lastName || value.guests[0].email)) {
         setTravelerDetails(value as BookingFormData);
       }
     });
@@ -132,29 +133,71 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   }, []);
 
   // Calculate total guests for display purposes
-  const totalGuests = useMemo(() => {
+  // Calculate total guests for display purposes
+  const { totalGuests, totalAdults, totalChildren, childAges } = useMemo(() => {
     const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
     const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
-    return adults + children;
+
+    // Collect all child ages
+    const ages: number[] = [];
+    if (searchFilters.rooms) {
+      searchFilters.rooms.forEach(room => {
+        if (Array.isArray(room.childrenAges)) {
+          // Filter out valid ages if necessary, or take all
+          ages.push(...room.childrenAges);
+        }
+      });
+    }
+
+    return {
+      totalGuests: adults + children,
+      totalAdults: adults,
+      totalChildren: children,
+      childAges: ages
+    };
   }, [searchFilters.rooms]);
 
   // Generate default values for the form - load from store if available
+  // Get selected rooms info from booking data
+  const selectedRoomsInfo = bookingData?.selectedRooms || [];
+
+  // Filter out duplicate rooms based on roomCode + rateKey combination
+  const uniqueRooms = useMemo(() => {
+    const processedKeys = new Set<string>();
+    return selectedRoomsInfo.filter((room) => {
+      const key = `${room.roomCode}_${room.rateKey}`;
+      if (processedKeys.has(key)) {
+        return false; // Skip duplicate
+      }
+      processedKeys.add(key);
+      return true; // Keep unique room
+    });
+  }, [selectedRoomsInfo]);
+
+  // Expand rooms based on count
+  const expandedRooms = useMemo(() => {
+    return uniqueRooms.flatMap(room => Array(room.count).fill(room));
+  }, [uniqueRooms]);
+
+  // Generate default values for the form - load from store if available
   const defaultValues = useMemo(() => {
-    if (travelerDetails) {
+    if (travelerDetails && travelerDetails.guests && travelerDetails.guests.length > 0) {
       return travelerDetails;
     }
+    // Create default guests array based on expandedRooms
     return {
-      primaryGuest: {
+      guests: expandedRooms.map(() => ({
         firstName: "",
         lastName: "",
         email: "",
         country: "Saudi Arabia",
         countryCode: "966",
         phone: "",
-      },
+      })),
       specialRequests: "",
     };
-  }, [travelerDetails]);
+  }, [travelerDetails, expandedRooms]);
+
 
   // Create validation schema with English-only messages
   const bookingSchema = useMemo(() => {
@@ -181,7 +224,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
   // Handle form submission
   const handleSubmit = async (data: BookingFormData) => {
-    // console.log("=== BOOKING FORM SUBMISSION ===");
+    console.log("=== BOOKING FORM SUBMISSION ===");
+    console.log("Form Data:", data);
 
     // Prepare room details - create one object per room (based on count)
     const roomDetails = uniqueRooms.flatMap(room => {
@@ -194,29 +238,45 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       }));
     });
 
-    // Prepare booking details (guest information) - only primary guest
-    // Add "+" prefix to country code if not already present
-    const countryCode = data.primaryGuest.countryCode.startsWith('+')
-      ? data.primaryGuest.countryCode
-      : `+${data.primaryGuest.countryCode}`;
+    // Prepare booking details (guest information)
+    const bookingDetails = data.guests.map((guest, index) => {
+      // Add "+" prefix to country code if not already present
+      const countryCode = guest.countryCode.startsWith('+')
+        ? guest.countryCode
+        : `+${guest.countryCode}`;
 
-    const bookingDetails = [
-      {
-        price_per_night: uniqueRooms[0]?.pricePerRoom || 0,
-        first_name: data.primaryGuest.firstName,
-        last_name: data.primaryGuest.lastName,
-        email: data.primaryGuest.email,
-        country: data.primaryGuest.country,
+      const room = expandedRooms[index];
+
+      return {
+        price_per_night: room?.pricePerRoom || 0,
+        first_name: guest.firstName,
+        last_name: guest.lastName,
+        email: guest.email,
+        country: guest.country,
         country_code: countryCode,
-        phone: data.primaryGuest.phone,
-        is_primary: true,
-      },
-    ];
+        phone: guest.phone,
+        is_primary: index === 0, // First guest is primary
+
+        // Add room details for this guest
+        room_code: room?.roomCode || "",
+        room_name: room?.roomName || "",
+        rate_key: room?.rateKey || "",
+        board_name: room?.boardName || "",
+      };
+    });
 
     // Calculate totals
     const totalRooms = searchFilters.rooms?.length || 0;
     const totalAdults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
     const totalChildren = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+
+    // Prepare child age data (flat array of all children ages)
+    const childAgeData = searchFilters.rooms?.reduce((ages, room) => {
+      if (room.childrenAges && Array.isArray(room.childrenAges)) {
+        return [...ages, ...room.childrenAges];
+      }
+      return ages;
+    }, [] as number[]) || [];
 
     // Prepare the complete booking request
     const bookingRequest: CreateBookingRequest = {
@@ -234,7 +294,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
       hotel_images: hotelImageForBooking,
       special_requests: data.specialRequests || "",
       room_details: roomDetails,
-      details: bookingDetails,
+      details: bookingDetails, // Send all guests
+      child_age_data: childAgeData,
     };
 
     // console.log("Booking Request Payload:");
@@ -339,21 +400,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const checkOutDate = searchFilters.checkOutDate;
   const totalNights = calculateNights(checkInDate, checkOutDate);
 
-  // Get selected rooms info from booking data
-  const selectedRoomsInfo = bookingData?.selectedRooms || [];
 
-  // Filter out duplicate rooms based on roomCode + rateKey combination
-  const uniqueRooms = useMemo(() => {
-    const processedKeys = new Set<string>();
-    return selectedRoomsInfo.filter((room) => {
-      const key = `${room.roomCode}_${room.rateKey}`;
-      if (processedKeys.has(key)) {
-        return false; // Skip duplicate
-      }
-      processedKeys.add(key);
-      return true; // Keep unique room
-    });
-  }, [selectedRoomsInfo]);
 
   // const firstSelectedRoom = uniqueRooms[0];
 
@@ -719,8 +766,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
                   </div>
                 </li>
-                <li className="booking-listing-item d-flex align-items-center justify-content-between">
-                  <div className="booking-list-left d-flex align-items-center">
+                <li className="booking-listing-item d-flex align-items-start justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center pt-1">
                     <svg
                       width="16"
                       height="16"
@@ -745,13 +792,63 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     </svg>
                     {t("staysDetails.totalNumberOfGuests")}
                   </div>
-                  <div className="booking-list-right d-flex flex-column align-items-end">
-                    <span>
-                      {totalGuests} {totalGuests === 1 ? t("staysDetails.guest") : t("staysDetails.guests")}
-                    </span>
-
+                  <div className="booking-list-right">
+                    <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
+                          <td className="text-end py-1 fw-bold align-middle">{totalAdults}</td>
+                        </tr>
+                        {totalChildren > 0 && (
+                          <tr>
+                            <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.children")}</td>
+                            <td className="text-end py-1 fw-bold align-middle">{totalChildren}</td>
+                          </tr>
+                        )}
+                        {totalChildren > 0 && childAges.map((age, index) => (
+                          <tr key={`child-${index}`}>
+                            <td className="text-end py-0 pe-3 text-secondary small align-middle">
+                              {t("staysDetails.child")} {index + 1} {t("staysDetails.age")}
+                            </td>
+                            <td className="text-end py-0 text-secondary small align-middle">
+                              {age} {t("staysDetails.years")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </li>
+
+                {/* <li className="booking-listing-item d-flex align-items-start justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center pt-1">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Guest details
+                  </div>
+                  adult 6
+                  child 4
+                </li> */}
 
                 {/* <span className="d-flex align-items-center gap-1">
                       <svg
@@ -992,6 +1089,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
               onSubmit={handleSubmit}
               schema={bookingSchema}
               className="booking-detail-box booking-traveler-details"
+              noValidate
             >
               {(methods) => {
                 // Store form methods in ref for useEffect access
@@ -1001,153 +1099,151 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   <>
                     <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
 
-                    {/* Primary Guest - Mandatory */}
-                    <div className="booking-details-form mandatory-field">
-                      <h3 className="booking-form-title">
-                        {t("travelerDetails.primaryGuest")} <span className="text-red">({t("travelerDetails.mandatory")})</span>
-                      </h3>
-                      <p className="english-only-text">{t("travelerDetails.enterTextInEnglishOnly")}</p>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Controller
-                            name="primaryGuest.firstName"
-                            control={methods.control}
-                            render={({ field }) => (
-                              <Input
-                                {...field}
-                                name="primaryGuest.firstName"
-                                label={t("travelerDetails.firstName")}
-                                labelWithContent={<span className="required">*</span>}
-                                type="text"
-                                placeholder="First Name"
-                                className="form-input"
-                                pattern="[A-Za-z\s]+"
-                                onKeyPress={(e) => {
-                                  // Only allow English letters (A-Z, a-z) and spaces
-                                  const char = String.fromCharCode(e.which || e.keyCode);
-                                  if (!/^[A-Za-z\s]$/.test(char)) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                onChange={(e) => {
-                                  // Filter out any invalid characters that might have been pasted
-                                  const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-                                  field.onChange(value);
-                                }}
-                              />
-                            )}
-                          />
-                          <Controller
-                            name="primaryGuest.lastName"
-                            control={methods.control}
-                            render={({ field }) => (
-                              <Input
-                                {...field}
-                                name="primaryGuest.lastName"
-                                label={t("travelerDetails.lastName")}
-                                labelWithContent={<span className="required">*</span>}
-                                type="text"
-                                placeholder="Last Name"
-                                className="form-input"
-                                pattern="[A-Za-z\s]+"
-                                onKeyPress={(e) => {
-                                  // Only allow English letters (A-Z, a-z) and spaces
-                                  const char = String.fromCharCode(e.which || e.keyCode);
-                                  if (!/^[A-Za-z\s]$/.test(char)) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                onChange={(e) => {
-                                  // Filter out any invalid characters that might have been pasted
-                                  const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-                                  field.onChange(value);
-                                }}
-                              />
-                            )}
-                          />
-                        </div>
+                    {expandedRooms.map((room, index) => (
+                      <div key={index} className="booking-details-form mandatory-field mb-4">
+                        <h3 className="booking-form-title">
+                          {room.roomName || t("staysDetails.room")} {index + 1}
+                          {index === 0 && <span className="text-red"> ({t("travelerDetails.mandatory")})</span>}
+                        </h3>
+                        {index === 0 && <p className="english-only-text">{t("travelerDetails.enterTextInEnglishOnly")}</p>}
 
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.email"
-                            label={t("travelerDetails.email")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="email"
-                            placeholder="Email"
-                            className="form-input"
-                          />
-                          <div className="form-group">
-                            <label className="form-label">
-                              {t("travelerDetails.country")} <span className="required">*</span>
-                            </label>
+                        <div className="booking-form-content form-field">
+                          <div className="form-row">
                             <Controller
-                              name="primaryGuest.country"
+                              name={`guests.${index}.firstName`}
                               control={methods.control}
                               render={({ field }) => (
-                                <SelectWithFlag
-                                  options={countryOptions}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Country"
+                                <Input
+                                  {...field}
+                                  label={t("travelerDetails.firstName")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="text"
+                                  placeholder="First Name"
+                                  className="form-input"
+                                  pattern="[A-Za-z\s]+"
+                                  onKeyPress={(e) => {
+                                    const char = String.fromCharCode(e.which || e.keyCode);
+                                    if (!/^[A-Za-z\s]$/.test(char)) e.preventDefault();
+                                  }}
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                                    field.onChange(value);
+                                  }}
                                 />
                               )}
                             />
-                            {methods.formState.errors.primaryGuest?.country && (
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.country.message}
-                              </p>
-                            )}
-                          </div>
-                        </div>
 
-                        <div className="form-row">
-                          <div className="form-group select-with-input-field">
-                            <label className="form-label">
-                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
-                            </label>
-                            <div className="select-with-input">
-                              <div className="country-code-input">
-                                <Controller
-                                  name="primaryGuest.countryCode"
-                                  control={methods.control}
-                                  render={({ field }) => (
-                                    <Select
-                                      options={COUNTRY_CODES.map((c) => ({
-                                        value: c.value,
-                                        label: `+${c.label}`,
-                                      }))}
-                                      value={field.value}
-                                      onChange={field.onChange}
-                                      placeholder="+966"
-                                    />
-                                  )}
-                                />
-                              </div>
-                              <div className="phone-number-input">
+                            <Controller
+                              name={`guests.${index}.lastName`}
+                              control={methods.control}
+                              render={({ field }) => (
                                 <Input
-                                  name="primaryGuest.phone"
-                                  type="tel"
-                                  inputMode="numeric"
-                                  pattern="\d*"
-                                  placeholder="Phone Number"
-                                  className="form-input form-control"
-                                  maxLength={15}
+                                  {...field}
+                                  label={t("travelerDetails.lastName")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="text"
+                                  placeholder="Last Name"
+                                  className="form-input"
+                                  pattern="[A-Za-z\s]+"
+                                  onKeyPress={(e) => {
+                                    const char = String.fromCharCode(e.which || e.keyCode);
+                                    if (!/^[A-Za-z\s]$/.test(char)) e.preventDefault();
+                                  }}
+                                  onChange={(e) => {
+                                    const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                                    field.onChange(value);
+                                  }}
                                 />
-                              </div>
-                            </div>
-                            {methods.formState.errors.primaryGuest?.countryCode && (
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.countryCode.message}
-                              </p>
-                            )}
+                              )}
+                            />
                           </div>
-                          <div className="form-group"></div>
+
+                          <div className="form-row">
+                            <Controller
+                              name={`guests.${index}.email`}
+                              control={methods.control}
+                              render={({ field }) => (
+                                <Input
+                                  {...field}
+                                  label={t("travelerDetails.email")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="email"
+                                  placeholder="Email"
+                                  className="form-input"
+                                />
+                              )}
+                            />
+
+                            <div className="form-group">
+                              <label className="form-label">
+                                {t("travelerDetails.country")} <span className="required">*</span>
+                              </label>
+                              <Controller
+                                name={`guests.${index}.country`}
+                                control={methods.control}
+                                render={({ field }) => (
+                                  <SelectWithFlag
+                                    options={countryOptions}
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    placeholder="Country"
+                                  />
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-row">
+                            <div className="form-group select-with-input-field">
+                              <label className="form-label">
+                                {t("travelerDetails.phoneNumber")} <span className="required">*</span>
+                              </label>
+                              <div className="select-with-input">
+                                <div className="country-code-input">
+                                  <Controller
+                                    name={`guests.${index}.countryCode`}
+                                    control={methods.control}
+                                    render={({ field }) => (
+                                      <Select
+                                        options={COUNTRY_CODES.map((c) => ({
+                                          value: c.value,
+                                          label: `+${c.label}`,
+                                        }))}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        placeholder="+966"
+                                      />
+                                    )}
+                                  />
+                                </div>
+                                <div className="phone-number-input">
+                                  <Controller
+                                    name={`guests.${index}.phone`}
+                                    control={methods.control}
+                                    render={({ field }) => (
+                                      <Input
+                                        {...field}
+                                        type="tel"
+                                        inputMode="numeric"
+                                        placeholder="Phone Number"
+                                        className="form-input form-control"
+                                        maxLength={15}
+                                      />
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                              {methods.formState.errors.guests?.[index]?.phone && (
+                                <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
+                                  {methods.formState.errors.guests[index]?.phone?.message}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
 
-
-                    {/* Special Requests */}
                     <div className="booking-details-form special-request-field">
                       <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
                       <p className="booking-form-desc">
@@ -1166,554 +1262,12 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         </div>
                       </div>
                     </div>
-
                   </>
                 );
               }}
             </Form>
-            {/* Room 1 details */}
-            <Form<BookingFormData>
-              ref={formRef}
-              defaultValues={defaultValues}
-              onSubmit={handleSubmit}
-              schema={bookingSchema}
-              className="booking-detail-box booking-traveler-details room-form-details"
-            >
-              {(methods) => {
-                // Store form methods in ref for useEffect access
-                formMethodsRef.current = methods;
-
-                return (
-                  <>
-                    {/* <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3> */}
-
-                    {/* Primary Guest - Mandatory */}
-                    <div className="booking-details-form mandatory-field">
-                      <h3 className="booking-form-title">
-                        Classic Room Details
-                      </h3>
-
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.firstName"
-                            label={t("travelerDetails.firstName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="First Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                            onChange={(e) => {
-                              // Filter out any invalid characters that might have been pasted
-                              const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-                              methods.setValue('primaryGuest.firstName', value);
-                            }}
-                          />
-
-                          <Input
-                            name="primaryGuest.lastName"
-                            label={t("travelerDetails.lastName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Last Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                          />
-
-                        </div>
-
-                        <div className="form-row form-group">
-                          <div className="form-group mb-0">
-                            <label htmlFor="primaryGuest.email" className="form-label booking-email-field">Email Address <span className="required">*</span></label>
-                            <div className="Input-module-scss-module__czGHXW__inputWrapper ">
-                              <input id="primaryGuest.email" placeholder="Email" className="form-input form-control  form-input" type="email" name="primaryGuest.email" />
-                            </div>
-                          </div>
-                          <div className="form-group mb-0 booking-age-field">
-                            <div className="room-age-field-wrapper form-group">
-                              {/* Quantity Selectors */}
-                              <div className="room-age-field d-flex justify-content-between align-items-center">
-                                <label className="form-label w-auto mb-0">Age</label>
-                              </div>
-                              <input
-                                type="number"
-                                className="form-control form-input"
-                                placeholder="Age"
-                                min="1"
-                                max="120"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-row">
-                          <div className="form-group">
-                            <label className="form-label">
-                              {t("travelerDetails.country")} <span className="required">*</span>
-                            </label>
-                            <Controller
-                              name="primaryGuest.country"
-                              control={methods.control}
-                              render={({ field }) => (
-                                <SelectWithFlag
-                                  options={countryOptions}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Country"
-                                />
-                              )}
-                            />
-                            {methods.formState.errors.primaryGuest?.country && (
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.country.message}
-                              </p>
-                            )}
-                          </div>
-                          <div className="form-group select-with-input-field">
-                            <label className="form-label">
-                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
-                            </label>
-                            <div className="select-with-input">
-                              <div className="country-code-input">
-                                <Controller
-                                  name="primaryGuest.countryCode"
-                                  control={methods.control}
-                                  render={({ field }) => (
-                                    <Select
-                                      options={COUNTRY_CODES.map((c) => ({
-                                        value: c.value,
-                                        label: `+${c.label}`,
-                                      }))}
-                                      value={field.value}
-                                      onChange={field.onChange}
-                                      placeholder="+966"
-                                    />
-                                  )}
-                                />
-                              </div>
-                              <div className="phone-number-input">
-                                <Input
-                                  name="primaryGuest.phone"
-                                  type="tel"
-                                  inputMode="numeric"
-                                  pattern="\d*"
-                                  placeholder="Phone Number"
-                                  className="form-input form-control"
-                                  maxLength={15}
-                                />
-                              </div>
-                            </div>
-                            {methods.formState.errors.primaryGuest?.countryCode && (
-
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.countryCode.message}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
 
 
-                    {/* Special Requests */}
-                    <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
-                      <p className="booking-form-desc">
-                        {t("travelerDetails.specialRequestDescription")}
-                      </p>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <div className="form-group d-flex w-100">
-                            <Textarea
-                              name="specialRequests"
-                              rows={5}
-                              placeholder={t("travelerDetails.specialRequestPlaceholderLong")}
-                              className="w-100 text-field"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                );
-              }}
-            </Form >
-            {/* Room 2 details */}
-            <Form<BookingFormData>
-              ref={formRef}
-              defaultValues={defaultValues}
-              onSubmit={handleSubmit}
-              schema={bookingSchema}
-              className="booking-detail-box booking-traveler-details room-form-details"
-            >
-              {(methods) => {
-                // Store form methods in ref for useEffect access
-                formMethodsRef.current = methods;
-
-                return (
-                  <>
-                    {/* <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3> */}
-
-                    {/* Primary Guest - Mandatory */}
-                    <div className="booking-details-form mandatory-field">
-                      <h3 className="booking-form-title">
-                        Premium Room Details
-                      </h3>
-
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.firstName"
-                            label={t("travelerDetails.firstName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="First Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                            onChange={(e) => {
-                              // Filter out any invalid characters that might have been pasted
-                              const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-                              methods.setValue('primaryGuest.firstName', value);
-                            }}
-                          />
-
-                          <Input
-                            name="primaryGuest.lastName"
-                            label={t("travelerDetails.lastName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Last Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                          />
-
-                        </div>
-
-                        <div className="form-row form-group">
-                          <div className="form-group mb-0">
-                            <label htmlFor="primaryGuest.email" className="form-label booking-email-field">Email Address <span className="required">*</span></label>
-                            <div className="Input-module-scss-module__czGHXW__inputWrapper ">
-                              <input id="primaryGuest.email" placeholder="Email" className="form-input form-control  form-input" type="email" name="primaryGuest.email" />
-                            </div>
-                          </div>
-                          <div className="form-group mb-0 booking-age-field">
-                            <div className="room-age-field-wrapper form-group">
-                              {/* Quantity Selectors */}
-                              <div className="room-age-field d-flex justify-content-between align-items-center">
-                                <label className="form-label w-auto mb-0">Age</label>
-                              </div>
-                              <input
-                                type="number"
-                                className="form-control form-input"
-                                placeholder="Age"
-                                min="1"
-                                max="120"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-row">
-                          <div className="form-group">
-                            <label className="form-label">
-                              {t("travelerDetails.country")} <span className="required">*</span>
-                            </label>
-                            <Controller
-                              name="primaryGuest.country"
-                              control={methods.control}
-                              render={({ field }) => (
-                                <SelectWithFlag
-                                  options={countryOptions}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Country"
-                                />
-                              )}
-                            />
-                            {methods.formState.errors.primaryGuest?.country && (
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.country.message}
-                              </p>
-                            )}
-                          </div>
-                          <div className="form-group select-with-input-field">
-                            <label className="form-label">
-                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
-                            </label>
-                            <div className="select-with-input">
-                              <div className="country-code-input">
-                                <Controller
-                                  name="primaryGuest.countryCode"
-                                  control={methods.control}
-                                  render={({ field }) => (
-                                    <Select
-                                      options={COUNTRY_CODES.map((c) => ({
-                                        value: c.value,
-                                        label: `+${c.label}`,
-                                      }))}
-                                      value={field.value}
-                                      onChange={field.onChange}
-                                      placeholder="+966"
-                                    />
-                                  )}
-                                />
-                              </div>
-                              <div className="phone-number-input">
-                                <Input
-                                  name="primaryGuest.phone"
-                                  type="tel"
-                                  inputMode="numeric"
-                                  pattern="\d*"
-                                  placeholder="Phone Number"
-                                  className="form-input form-control"
-                                  maxLength={15}
-                                />
-                              </div>
-                            </div>
-                            {methods.formState.errors.primaryGuest?.countryCode && (
-
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.countryCode.message}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-
-                    {/* Special Requests */}
-                    <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
-                      <p className="booking-form-desc">
-                        {t("travelerDetails.specialRequestDescription")}
-                      </p>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <div className="form-group d-flex w-100">
-                            <Textarea
-                              name="specialRequests"
-                              rows={5}
-                              placeholder={t("travelerDetails.specialRequestPlaceholderLong")}
-                              className="w-100 text-field"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                );
-              }}
-            </Form >
-            {/* Room 3 details */}
-            <Form<BookingFormData>
-              ref={formRef}
-              defaultValues={defaultValues}
-              onSubmit={handleSubmit}
-              schema={bookingSchema}
-              className="booking-detail-box booking-traveler-details room-form-details"
-            >
-              {(methods) => {
-                // Store form methods in ref for useEffect access
-                formMethodsRef.current = methods;
-
-                return (
-                  <>
-                    {/* <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3> */}
-
-                    {/* Primary Guest - Mandatory */}
-                    <div className="booking-details-form mandatory-field">
-                      <h3 className="booking-form-title">
-                        Deluxe King Room Details
-                      </h3>
-
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.firstName"
-                            label={t("travelerDetails.firstName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="First Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                            onChange={(e) => {
-                              // Filter out any invalid characters that might have been pasted
-                              const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
-                              methods.setValue('primaryGuest.firstName', value);
-                            }}
-                          />
-
-                          <Input
-                            name="primaryGuest.lastName"
-                            label={t("travelerDetails.lastName")}
-                            labelWithContent={<span className="required">*</span>}
-                            type="text"
-                            placeholder="Last Name"
-                            className="form-input"
-                            pattern="[A-Za-z\s]+"
-                            onKeyPress={(e) => {
-                              // Only allow English letters (A-Z, a-z) and spaces
-                              const char = String.fromCharCode(e.which || e.keyCode);
-                              if (!/^[A-Za-z\s]$/.test(char)) {
-                                e.preventDefault();
-                              }
-                            }}
-                          />
-
-                        </div>
-
-                        <div className="form-row form-group">
-                          <div className="form-group mb-0">
-                            <label htmlFor="primaryGuest.email" className="form-label booking-email-field">Email Address <span className="required">*</span></label>
-                            <div className="Input-module-scss-module__czGHXW__inputWrapper ">
-                              <input id="primaryGuest.email" placeholder="Email" className="form-input form-control  form-input" type="email" name="primaryGuest.email" />
-                            </div>
-                          </div>
-                          <div className="form-group mb-0 booking-age-field">
-                            <div className="room-age-field-wrapper form-group">
-                              {/* Quantity Selectors */}
-                              <div className="room-age-field d-flex justify-content-between align-items-center">
-                                <label className="form-label w-auto mb-0">Age</label>
-                              </div>
-                              <input
-                                type="number"
-                                className="form-control form-input"
-                                placeholder="Age"
-                                min="1"
-                                max="120"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="form-row">
-                          <div className="form-group">
-                            <label className="form-label">
-                              {t("travelerDetails.country")} <span className="required">*</span>
-                            </label>
-                            <Controller
-                              name="primaryGuest.country"
-                              control={methods.control}
-                              render={({ field }) => (
-                                <SelectWithFlag
-                                  options={countryOptions}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Country"
-                                />
-                              )}
-                            />
-                            {methods.formState.errors.primaryGuest?.country && (
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.country.message}
-                              </p>
-                            )}
-                          </div>
-                          <div className="form-group select-with-input-field">
-                            <label className="form-label">
-                              {t("travelerDetails.phoneNumber")} <span className="required">*</span>
-                            </label>
-                            <div className="select-with-input">
-                              <div className="country-code-input">
-                                <Controller
-                                  name="primaryGuest.countryCode"
-                                  control={methods.control}
-                                  render={({ field }) => (
-                                    <Select
-                                      options={COUNTRY_CODES.map((c) => ({
-                                        value: c.value,
-                                        label: `+${c.label}`,
-                                      }))}
-                                      value={field.value}
-                                      onChange={field.onChange}
-                                      placeholder="+966"
-                                    />
-                                  )}
-                                />
-                              </div>
-                              <div className="phone-number-input">
-                                <Input
-                                  name="primaryGuest.phone"
-                                  type="tel"
-                                  inputMode="numeric"
-                                  pattern="\d*"
-                                  placeholder="Phone Number"
-                                  className="form-input form-control"
-                                  maxLength={15}
-                                />
-                              </div>
-                            </div>
-                            {methods.formState.errors.primaryGuest?.countryCode && (
-
-                              <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                {methods.formState.errors.primaryGuest.countryCode.message}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-
-                    {/* Special Requests */}
-                    <div className="booking-details-form special-request-field">
-                      <h3 className="booking-form-title">{t("travelerDetails.specialRequest")}</h3>
-                      <p className="booking-form-desc">
-                        {t("travelerDetails.specialRequestDescription")}
-                      </p>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <div className="form-group d-flex w-100">
-                            <Textarea
-                              name="specialRequests"
-                              rows={5}
-                              placeholder={t("travelerDetails.specialRequestPlaceholderLong")}
-                              className="w-100 text-field"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                );
-              }}
-            </Form >
             {/* Other Information & Policies Section */}
             {/* <section id="hotel-policies" className="hotel-tab-section policies-tab-content">
               <div className="policies-container">
@@ -1878,9 +1432,25 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   className="button-primary check-availability-btn"
                   disabled={bookingLoading}
                   onClick={() => {
+                    console.log("Submit button clicked");
                     // Trigger form submission
                     if (formRef.current) {
                       formRef.current.requestSubmit();
+
+                      // Debug errors if submission doesn't happen
+                      setTimeout(() => {
+                        if (formMethodsRef.current) {
+                          const errors = formMethodsRef.current.formState.errors;
+                          if (Object.keys(errors).length > 0) {
+                            console.error("❌ Form Validation Errors:", JSON.stringify(errors, null, 2));
+                            toast.error("Please fix the errors in the form before proceeding.");
+                          } else {
+                            console.log("✅ No validation errors detected immediately after submit request.");
+                          }
+                        }
+                      }, 500);
+                    } else {
+                      console.error("❌ Form reference is null");
                     }
                   }}
                 >

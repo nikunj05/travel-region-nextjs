@@ -74,45 +74,43 @@ function CheckoutComponent() {
   const [countryOptions, setCountryOptions] = useState<SelectWithFlagOption[]>([]);
 
 
-  // Generate default values for the form - load from store if available, otherwise from booking details
+  // Generate default values for the form - load from booking details (API) first, then store
   const defaultValues = useMemo(() => {
+    // Priority 1: Populate from booking details API response as it's the source of truth from server
+    if (
+      bookingDetails?.data?.booking?.details &&
+      Array.isArray(bookingDetails.data.booking.details) &&
+      bookingDetails.data.booking.details.length > 0
+    ) {
+      const guests = bookingDetails.data.booking.details.map((detail: BookingDetail) => ({
+        firstName: detail.first_name || "",
+        lastName: detail.last_name || "",
+        email: detail.email || "",
+        country: detail.country || "",
+        countryCode: detail.country_code?.replace("+", "") || "966",
+        phone: detail.phone || "",
+      }));
+
+      return {
+        guests,
+        specialRequests: "", // Special requests might need to be fetched if available in API
+      };
+    }
+
+    // Priority 2: Use travelerDetails from store
     if (travelerDetails) {
       return travelerDetails;
     }
 
-    // Try to populate from booking details API response
-    if (
-      bookingDetails?.data?.booking?.details &&
-      Array.isArray(bookingDetails.data.booking.details)
-    ) {
-      const primaryGuest = bookingDetails.data.booking.details.find(
-        (detail: BookingDetail) =>
-          detail.is_primary === 1 || detail.is_primary === true
-      );
-      if (primaryGuest) {
-        return {
-          primaryGuest: {
-            firstName: primaryGuest.first_name || "",
-            lastName: primaryGuest.last_name || "",
-            email: primaryGuest.email || "",
-            country: primaryGuest.country || "",
-            countryCode: primaryGuest.country_code?.replace("+", "") || "966",
-            phone: primaryGuest.phone || "",
-          },
-          specialRequests: "",
-        };
-      }
-    }
-
     return {
-      primaryGuest: {
+      guests: [{
         firstName: "",
         lastName: "",
         email: "",
         country: "Saudi Arabia",
         countryCode: "966",
         phone: "",
-      },
+      }],
       specialRequests: "",
     };
   }, [travelerDetails, bookingDetails]);
@@ -138,12 +136,7 @@ function CheckoutComponent() {
     if (!formMethodsRef.current || watchSetupRef.current) return;
 
     const subscription = formMethodsRef.current.watch((value) => {
-      if (
-        value?.primaryGuest &&
-        (value.primaryGuest.firstName ||
-          value.primaryGuest.lastName ||
-          value.primaryGuest.email)
-      ) {
+      if (value?.guests?.[0] && (value.guests[0].firstName || value.guests[0].lastName || value.guests[0].email)) {
         setTravelerDetails(value as BookingFormData);
       }
     });
@@ -160,35 +153,36 @@ function CheckoutComponent() {
 
   // Reset form when booking details are loaded and form is ready
   useEffect(() => {
-    if (!bookingDetails || !formMethodsRef.current || travelerDetails) return;
+    if (!bookingDetails || !formMethodsRef.current) return;
 
     if (
       bookingDetails?.data?.booking?.details &&
-      Array.isArray(bookingDetails.data.booking.details)
+      Array.isArray(bookingDetails.data.booking.details) &&
+      bookingDetails.data.booking.details.length > 0
     ) {
-      const primaryGuest = bookingDetails.data.booking.details.find(
-        (detail: BookingDetail) =>
-          detail.is_primary === 1 || detail.is_primary === true
-      );
-      if (primaryGuest) {
+      const guests = bookingDetails.data.booking.details.map((detail: BookingDetail) => ({
+        firstName: detail.first_name || "",
+        lastName: detail.last_name || "",
+        email: detail.email || "",
+        country: detail.country || "",
+        countryCode: detail.country_code?.replace("+", "") || "966",
+        phone: detail.phone || "",
+      }));
+
+      // Only update if we have guests
+      if (guests.length > 0) {
         const formData: BookingFormData = {
-          primaryGuest: {
-            firstName: primaryGuest.first_name || "",
-            lastName: primaryGuest.last_name || "",
-            email: primaryGuest.email || "",
-            country: primaryGuest.country || "",
-            countryCode: primaryGuest.country_code?.replace("+", "") || "966",
-            phone: primaryGuest.phone || "",
-          },
+          guests,
           specialRequests: "",
         };
+
         // Reset form with new values
         formMethodsRef.current.reset(formData);
-        // Save to store
+        // Save to store to keep in sync
         setTravelerDetails(formData);
       }
     }
-  }, [bookingDetails, travelerDetails, setTravelerDetails]);
+  }, [bookingDetails, setTravelerDetails]);
 
   // Call getBookingDetails API and populate form data
   useEffect(() => {
@@ -240,29 +234,27 @@ function CheckoutComponent() {
           setRoomDetails(Array.from(roomMap.values()));
         }
 
-        // Populate form if travelerDetails is not available
+        // Always try to populate form from API response, regardless of current local state
         if (
-          !travelerDetails &&
           response?.data?.booking?.details &&
-          Array.isArray(response.data.booking.details)
+          Array.isArray(response.data.booking.details) &&
+          response.data.booking.details.length > 0
         ) {
-          const primaryGuest = response.data.booking.details.find(
-            (detail: BookingDetail) => detail.is_primary === 1
-          );
-          if (primaryGuest) {
+          const guests = response.data.booking.details.map((detail: BookingDetail) => ({
+            firstName: detail.first_name || "",
+            lastName: detail.last_name || "",
+            email: detail.email || "",
+            country: detail.country || "",
+            countryCode: detail.country_code?.replace("+", "") || "966",
+            phone: detail.phone || "",
+          }));
+
+          if (guests.length > 0) {
             const formData: BookingFormData = {
-              primaryGuest: {
-                firstName: primaryGuest.first_name || "",
-                lastName: primaryGuest.last_name || "",
-                email: primaryGuest.email || "",
-                country: primaryGuest.country || "",
-                countryCode:
-                  primaryGuest.country_code?.replace("+", "") || "966",
-                phone: primaryGuest.phone || "",
-              },
+              guests,
               specialRequests: "",
             };
-            // Save to store first
+            // Save to store
             setTravelerDetails(formData);
             // Reset form with new values if form is ready
             if (formMethodsRef.current) {
@@ -276,7 +268,7 @@ function CheckoutComponent() {
     };
 
     fetchBookingDetails();
-  }, [bookingResponse, travelerDetails, setTravelerDetails]);
+  }, [bookingResponse, setTravelerDetails]);
 
   // Handle form submission (if needed for checkout)
   const handleSubmit = async (data: BookingFormData) => {
@@ -557,6 +549,27 @@ function CheckoutComponent() {
     bookingData?.hotelName ||
     t("placeholders.hotelName");
 
+  // Get selected rooms info from booking data
+  const selectedRoomsInfo = bookingData?.selectedRooms || [];
+
+  // Filter out duplicate rooms based on roomCode + rateKey combination
+  const uniqueRooms = useMemo(() => {
+    const processedKeys = new Set<string>();
+    return selectedRoomsInfo.filter((room) => {
+      const key = `${room.roomCode}_${room.rateKey}`;
+      if (processedKeys.has(key)) {
+        return false; // Skip duplicate
+      }
+      processedKeys.add(key);
+      return true; // Keep unique room
+    });
+  }, [selectedRoomsInfo]);
+
+  // Expand rooms based on count
+  const expandedRooms = useMemo(() => {
+    return uniqueRooms.flatMap(room => Array(room.count).fill(room));
+  }, [uniqueRooms]);
+
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
     if (!bookingData?.selectedRooms || bookingData.selectedRooms.length === 0) {
@@ -755,123 +768,130 @@ function CheckoutComponent() {
               {(methods) => {
                 // Store form methods in ref for useEffect access
                 formMethodsRef.current = methods;
+                const guests: BookingFormData['guests'] = methods.watch('guests');
+                const specialRequests = methods.watch('specialRequests');
 
                 return (
                   <>
-                    <h3 className="booking-details-sub-title">
-                      {t("travelerDetails.title")}
-                    </h3>
+                    <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
 
-                    {/* Primary Guest - Mandatory */}
-                    <div className="booking-details-form mandatory-field">
-                      <h3 className="booking-form-title">
-                        {t("travelerDetails.primaryGuest")}{" "}
-                        <span className="text-red">
-                          ({t("travelerDetails.mandatory")})
-                        </span>
-                      </h3>
-                      <div className="booking-form-content form-field">
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.firstName"
-                            label={t("travelerDetails.firstName")}
-                            labelWithContent={
-                              <span className="required">*</span>
-                            }
-                            type="text"
-                            disabled
-                            // Keep placeholder text always in English
-                            placeholder="First Name"
-                            className="form-input"
-                          />
-                          <Input
-                            name="primaryGuest.lastName"
-                            label={t("travelerDetails.lastName")}
-                            labelWithContent={
-                              <span className="required">*</span>
-                            }
-                            type="text"
-                            disabled
-                            // Keep placeholder text always in English
-                            placeholder="Last Name"
-                            className="form-input"
-                          />
-                        </div>
+                    {/* Guests List */}
+                    {(() => {
+                      const renderList = expandedRooms.length > 0 && expandedRooms.length === guests?.length
+                        ? expandedRooms
+                        : guests || [];
 
-                        <div className="form-row">
-                          <Input
-                            name="primaryGuest.email"
-                            label={t("travelerDetails.email")}
-                            labelWithContent={
-                              <span className="required">*</span>
-                            }
-                            type="email"
-                            disabled
-                            // Keep placeholder text always in English
-                            placeholder="Email"
-                            className="form-input"
-                          />
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label">
-                              {t("travelerDetails.country")} <span className="required">*</span>
-                            </label>
-                            <Controller
-                              name="primaryGuest.country"
-                              control={methods.control}
-                              render={({ field }) => (
-                                <SelectWithFlag
-                                  options={countryOptions}
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  placeholder="Country"
+                      return renderList.map((item: any, index: number) => {
+                        const guest = guests?.[index];
+                        // If item is from expandedRooms, it has roomName. Else use generic.
+                        const title = item.roomName
+                          ? `${item.roomName} ${index + 1}`
+                          : `${tBooking("travelerDetails.guest")} ${index + 1}`;
+
+                        return (
+                          <div key={index} className="booking-details-form mandatory-field mb-4">
+                            <h3 className="booking-form-title">
+                              {title}
+                              {index === 0 && <span className="text-red"> ({t("travelerDetails.mandatory")})</span>}
+                            </h3>
+                            <div className="booking-form-content form-field">
+                              <div className="form-row">
+                                <Input
+                                  name={`guests.${index}.firstName`}
+                                  label={t("travelerDetails.firstName")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="text"
                                   disabled
+                                  value={guest.firstName || ''}
+                                  placeholder="First Name"
+                                  className="form-input"
                                 />
-                              )}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="form-row">
-                          <div className="form-group select-with-input-field">
-                            <label className="form-label">
-                              {t("travelerDetails.phoneNumber")}{" "}
-                              <span className="required">*</span>
-                            </label>
-                            <div className="select-with-input">
-                              <div className="country-code-input">
-                                <Controller
-                                  name="primaryGuest.countryCode"
-                                  control={methods.control}
-                                  render={({ field }) => (
-                                    <Select
-                                      options={COUNTRY_CODES.map((c) => ({
-                                        value: c.value,
-                                        label: `+${c.label}`,
-                                      }))}
-                                      value={field.value}
-                                      onChange={field.onChange}
-                                      placeholder="+966"
-                                      disabled
-                                    />
-                                  )}
+                                <Input
+                                  name={`guests.${index}.lastName`}
+                                  label={t("travelerDetails.lastName")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="text"
+                                  disabled
+                                  value={guest.lastName || ''}
+                                  placeholder="Last Name"
+                                  className="form-input"
                                 />
                               </div>
-                              <div className="phone-number-input">
+
+                              <div className="form-row">
                                 <Input
-                                  name="primaryGuest.phone"
-                                  type="tel"
-                                  // Keep placeholder text always in English
-                                  placeholder="Phone Number"
-                                  className="form-input form-control"
+                                  name={`guests.${index}.email`}
+                                  label={t("travelerDetails.email")}
+                                  labelWithContent={<span className="required">*</span>}
+                                  type="email"
                                   disabled
+                                  value={guest.email || ''}
+                                  placeholder="Email"
+                                  className="form-input"
                                 />
+                                <div className="form-group">
+                                  <label className="form-label">
+                                    {t("travelerDetails.country")} <span className="required">*</span>
+                                  </label>
+                                  <Controller
+                                    name={`guests.${index}.country`}
+                                    control={methods.control}
+                                    render={({ field }) => (
+                                      <SelectWithFlag
+                                        options={countryOptions}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        placeholder="Country"
+                                        disabled
+                                      />
+                                    )}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="form-row">
+                                <div className="form-group select-with-input-field">
+                                  <label className="form-label">
+                                    {t("travelerDetails.phoneNumber")} <span className="required">*</span>
+                                  </label>
+                                  <div className="select-with-input">
+                                    <div className="country-code-input">
+                                      <Controller
+                                        name={`guests.${index}.countryCode`}
+                                        control={methods.control}
+                                        render={({ field }) => (
+                                          <Select
+                                            options={COUNTRY_CODES.map((c) => ({
+                                              value: c.value,
+                                              label: `+${c.label}`,
+                                            }))}
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="+966"
+                                            disabled
+                                          />
+                                        )}
+                                      />
+                                    </div>
+                                    <div className="phone-number-input">
+                                      <Input
+                                        name={`guests.${index}.phone`}
+                                        type="tel"
+                                        disabled
+                                        value={guest.phone || ''}
+                                        placeholder="Phone Number"
+                                        className="form-input form-control"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="form-group"></div>
                               </div>
                             </div>
                           </div>
-                          <div className="form-group"></div>
-                        </div>
-                      </div>
-                    </div>
+                        );
+                      })
+                    })()}
 
                     {/* Special Requests */}
                     <div className="booking-details-form special-request-field">
@@ -891,6 +911,7 @@ function CheckoutComponent() {
                               placeholder={tBooking("travelerDetails.specialRequestPlaceholderLong")}
                               className="w-100 text-field"
                               disabled
+                              value={specialRequests || ''}
                             />
                           </div>
                         </div>
@@ -899,46 +920,47 @@ function CheckoutComponent() {
                   </>
                 );
               }}
-            </Form>
+            </Form >
             {/* Other Information & Policies Section */}
             {/* Rate Comments Card */}
-            {roomDetails.length > 0 && (
-              <section
-                id="hotel-policies"
-                className="hotel-tab-section policies-tab-content"
-              >
-                <div className="policies-container">
-                  <div className="policies-header">
-                    {t("rateComments.policiesHeader")}
-                  </div>
-                  <div className="policies-body">
-                    {roomDetails.map((room, index) => (
-                      <div
-                        className="policy-column"
-                        key={`room-policy-${index}`}
-                      >
-                        <h4 className="column-title">
-                          {(() => {
-                            const roomName = room.room_name;
-                            try {
-                              return t("rateComments.roomWithName", {
-                                number: index + 1,
-                                roomName: roomName,
-                              });
-                            } catch {
-                              return `Room ${index + 1} - ${roomName}`;
-                            }
-                          })()}
-                        </h4>
-                        <ul className="policy-list">
-                          <li>
-                            {translatedTexts.get(room.rate_comments) ||
-                              room.rate_comments}
-                          </li>
-                        </ul>
-                      </div>
-                    ))}
-                    {/* <div className="policy-column">
+            {
+              roomDetails.length > 0 && (
+                <section
+                  id="hotel-policies"
+                  className="hotel-tab-section policies-tab-content"
+                >
+                  <div className="policies-container">
+                    <div className="policies-header">
+                      {t("rateComments.policiesHeader")}
+                    </div>
+                    <div className="policies-body">
+                      {roomDetails.map((room, index) => (
+                        <div
+                          className="policy-column"
+                          key={`room-policy-${index}`}
+                        >
+                          <h4 className="column-title">
+                            {(() => {
+                              const roomName = room.room_name;
+                              try {
+                                return t("rateComments.roomWithName", {
+                                  number: index + 1,
+                                  roomName: roomName,
+                                });
+                              } catch {
+                                return `Room ${index + 1} - ${roomName}`;
+                              }
+                            })()}
+                          </h4>
+                          <ul className="policy-list">
+                            <li>
+                              {translatedTexts.get(room.rate_comments) ||
+                                room.rate_comments}
+                            </li>
+                          </ul>
+                        </div>
+                      ))}
+                      {/* <div className="policy-column">
                     <h4 className="column-title">Room Rules &amp; Notes</h4>
                     <ul className="policy-list">
                       <li>Upper bunk bed weight limit 80kg.</li>
@@ -952,10 +974,11 @@ function CheckoutComponent() {
                       <li>Pets are not allowed.</li>
                     </ul>
                   </div> */}
+                    </div>
                   </div>
-                </div>
-              </section>
-            )}
+                </section>
+              )
+            }
 
 
             {/* <div className="booking-detail-box booking-traveler-details choose-payment-option">
