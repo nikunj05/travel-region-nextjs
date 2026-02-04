@@ -66,6 +66,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
   const { filters: searchFilters } = useSearchFiltersStore();
   const { bookingData, createBooking, loading: bookingLoading, travelerDetails, setTravelerDetails } = useBookingStore();
+  const [isChildAgePopoverOpen, setIsChildAgePopoverOpen] = useState(false);
 
   // Watch form values and save to store when they change
   useEffect(() => {
@@ -791,53 +792,47 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    Guest Details
+                    {t("travelerDetails.title")}
                   </div>
-                  <div className="booking-list-right booking-list-guest d-flex flex-column align-items-center">
-                    <ul className="list-unstyled mb-0 ">
-                      <li>
-                        <span>Adults : </span>
-                        <span> 6 </span>
-                      </li>
-                      <li>
-                        <span>Children : </span>
-                        <span> 4 </span>
-                        <div className="booking-list-child-age">
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#141B34" stroke-width="1.25" />
-                            <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#141B34" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9.99398 6.66797H10.0015" stroke="#141B34" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
-                        </div>
-                      </li>
-                    </ul>
-                    {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
-                      <tbody>
-                        <tr>
-                          <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
-                          <td className="text-end py-1 fw-bold align-middle">{totalAdults}</td>
-                        </tr>
+                  <div className="booking-list-right booking-list-guest">
+                    <div className="d-flex align-items-center gap-2 text-nowrap">
+                      <span>
+                        {t("staysDetails.adults")} : <strong>{totalAdults}</strong>
+                      </span>
+                      <span className="text-muted">|</span>
+                      <span className="d-flex align-items-center gap-1">
+                        {t("staysDetails.children")} : <strong>{totalChildren}</strong>
                         {totalChildren > 0 && (
-                          <tr>
-                            <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.children")}</td>
-                            <td className="text-end py-1 fw-bold align-middle">{totalChildren}</td>
-                          </tr>
+                          <div
+                            className="booking-list-child-age position-relative ms-1"
+                            onClick={() => setIsChildAgePopoverOpen(!isChildAgePopoverOpen)}
+                            role="button"
+                          >
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="cursor-pointer">
+                              <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#6b7280" strokeWidth="1.25" />
+                              <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#6b7280" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M9.99398 6.66797H10.0015" stroke="#6b7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+
+                            {isChildAgePopoverOpen && (
+                              <div className="child-age-popover">
+                                <div className="popover-content">
+                                  {childAges.map((age, index) => (
+                                    <div key={index} className="child-age-item">
+                                      <span className="label text-muted">{t("staysDetails.child")} {index + 1}</span>
+                                      <span className="value fw-bold">{age} {t("staysDetails.years")}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         )}
-                        {totalChildren > 0 && childAges.map((age, index) => (
-                          <tr key={`child-${index}`}>
-                            <td className="text-end py-0 pe-3 text-secondary small align-middle">
-                              {t("staysDetails.child")} {index + 1} {t("staysDetails.age")}
-                            </td>
-                            <td className="text-end py-0 text-secondary small align-middle">
-                              {age} {t("staysDetails.years")}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody> 
-                  </table>*/}
+                      </span>
+                    </div>
                   </div>
                 </li>
-                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                {/* <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     <svg
                       width="16"
@@ -864,33 +859,9 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     {t("staysDetails.totalNumberOfGuests")}
                   </div>
                   <div className="booking-list-right d-flex flex-column align-items-end">
-                    {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
-                      <tbody>
-                        <tr>
-                          <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
-                          <td className="text-end py-1 fw-bold align-middle">{totalAdults}</td>
-                        </tr>
-                        {totalChildren > 0 && (
-                          <tr>
-                            <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.children")}</td>
-                            <td className="text-end py-1 fw-bold align-middle">{totalChildren}</td>
-                          </tr>
-                        )}
-                        {totalChildren > 0 && childAges.map((age, index) => (
-                          <tr key={`child-${index}`}>
-                            <td className="text-end py-0 pe-3 text-secondary small align-middle">
-                              {t("staysDetails.child")} {index + 1} {t("staysDetails.age")}
-                            </td>
-                            <td className="text-end py-0 text-secondary small align-middle">
-                              {age} {t("staysDetails.years")}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table> */}
                     10
                   </div>
-                </li>
+                </li> */}
 
 
                 {/* <li className="booking-listing-item d-flex align-items-center justify-content-between">
@@ -1175,7 +1146,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     {expandedRooms.map((room, index) => (
                       <div key={index} className="booking-details-form mandatory-field">
                         <h3 className="booking-form-title">
-                          {room.roomName || t("staysDetails.room")} {index + 1}
+                          {room.roomName || t("staysDetails.room")}
                           {index === 0 && <span className="text-red"> ({t("travelerDetails.mandatory")})</span>}
                         </h3>
                         {index === 0 && <p className="english-only-text">{t("travelerDetails.enterTextInEnglishOnly")}</p>}
@@ -1306,11 +1277,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                   />
                                 </div>
                               </div>
-                              {methods.formState.errors.guests?.[index]?.phone && (
-                                <p className="error-message" style={{ marginTop: '8px', marginBottom: '0px', fontSize: '14px', color: '#dc2626', display: 'block' }}>
-                                  {methods.formState.errors.guests[index]?.phone?.message}
-                                </p>
-                              )}
+
                             </div>
                             <div className="form-group mb-0"></div>
                           </div>
@@ -1512,17 +1479,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       formRef.current.requestSubmit();
 
                       // Debug errors if submission doesn't happen
-                      setTimeout(() => {
-                        if (formMethodsRef.current) {
-                          const errors = formMethodsRef.current.formState.errors;
-                          if (Object.keys(errors).length > 0) {
-                            console.error("❌ Form Validation Errors:", JSON.stringify(errors, null, 2));
-                            toast.error("Please fix the errors in the form before proceeding.");
-                          } else {
-                            console.log("✅ No validation errors detected immediately after submit request.");
-                          }
-                        }
-                      }, 500);
+
                     } else {
                       console.error("❌ Form reference is null");
                     }

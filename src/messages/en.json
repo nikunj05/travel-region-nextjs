@@ -692,7 +692,11 @@
       "guest": "Guest",
       "guests": "Guests",
       "room": "Room",
-      "rooms": "Rooms"
+      "rooms": "Rooms",
+      "adults": "Adults",
+      "children": "Children",
+      "child": "Child",
+      "years": "years"
     },
     "travelerDetails": {
       "title": "Traveler Details",

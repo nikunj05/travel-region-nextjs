@@ -620,7 +620,13 @@
       "room": "غرفة",
       "roomOnly": "غرفة فقط",
       "freeAmenities": "وسائل الراحة المجانية",
-      "amenity": "وسيلة راحة"
+      "amenity": "وسيلة راحة",
+      "adult": "بالغ",
+      "adults": "بالغين",
+      "child": "طفل",
+      "children": "أطفال",
+      "age": "العمر",
+      "years": "سنوات"
     },
     "priceDetails": {
       "title": "تفاصيل السعر",
@@ -686,7 +692,11 @@
       "guest": "ضيف",
       "guests": "ضيوف",
       "room": "غرفة",
-      "rooms": "غرف"
+      "rooms": "غرف",
+      "adults": "بالغين",
+      "children": "أطفال",
+      "child": "طفل",
+      "years": "سنوات"
     },
     "travelerDetails": {
       "title": "تفاصيل المسافر",

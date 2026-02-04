@@ -11,7 +11,7 @@ import "../BookingReview/BookingReview.scss";
 // import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
 import { useRouter } from "next/navigation";
-import { useBookingStore } from "@/store/bookingStore";
+import { useBookingStore, SelectedRoom } from "@/store/bookingStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { useCouponStore } from "@/store/couponStore";
@@ -30,7 +30,7 @@ import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
 import { Textarea } from "@/components/core/Textarea/Textarea";
-import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
+import { createBookingSchema, BookingFormData, GuestFormData } from "@/schemas/bookingSchema";
 import {
   BookingDetailsResponse,
   BookingDetail,
@@ -58,6 +58,7 @@ function CheckoutComponent() {
     loading: loadingCoupon,
     couponResponse,
   } = useCouponStore();
+  const [isChildAgePopoverOpen, setIsChildAgePopoverOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const formMethodsRef = useRef<UseFormReturn<BookingFormData> | null>(null);
   const watchSetupRef = useRef(false);
@@ -130,6 +131,28 @@ function CheckoutComponent() {
       return tv(key);
     });
   }, [tv]);
+
+  // Calculate total guests and child ages for display
+  const { totalAdults, totalChildren, childAges } = useMemo(() => {
+    const adults = searchFilters.rooms?.reduce((sum, room) => sum + room.adults, 0) || 0;
+    const children = searchFilters.rooms?.reduce((sum, room) => sum + room.children, 0) || 0;
+
+    // Collect all child ages
+    const ages: number[] = [];
+    if (searchFilters.rooms) {
+      searchFilters.rooms.forEach(room => {
+        if (Array.isArray(room.childrenAges)) {
+          ages.push(...room.childrenAges);
+        }
+      });
+    }
+
+    return {
+      totalAdults: adults,
+      totalChildren: children,
+      childAges: ages
+    };
+  }, [searchFilters.rooms]);
 
   // Watch form values and save to store when they change
   useEffect(() => {
@@ -727,24 +750,43 @@ function CheckoutComponent() {
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
 
-                    Guest Details
+                    {t("travelerDetails.title")}
                   </div>
                   <div className="booking-list-right booking-list-guest d-flex flex-column align-items-center">
                     <ul className="list-unstyled mb-0 ">
                       <li>
-                        <span>Adults : </span>
-                        <span> 6 </span>
+                        <span>{t("stayDetails.adults")} : </span>
+                        <span> {totalAdults} </span>
                       </li>
                       <li>
-                        <span>Children : </span>
-                        <span> 4 </span>
-                        <div className="booking-list-child-age">
-                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#141B34" stroke-width="1.25" />
-                            <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#141B34" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9.99398 6.66797H10.0015" stroke="#141B34" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
-                        </div>
+                        <span>{t("stayDetails.children")} : </span>
+                        <span> {totalChildren} </span>
+                        {totalChildren > 0 && (
+                          <div
+                            className="booking-list-child-age"
+                            onClick={() => setIsChildAgePopoverOpen(!isChildAgePopoverOpen)}
+                            role="button"
+                          >
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#141B34" strokeWidth="1.25" />
+                              <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#141B34" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M9.99398 6.66797H10.0015" stroke="#141B34" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+
+                            {isChildAgePopoverOpen && (
+                              <div className="child-age-popover">
+                                <div className="popover-content">
+                                  {childAges.map((age, index) => (
+                                    <div key={index} className="child-age-item">
+                                      <span className="label">{t("stayDetails.child")} {index + 1}</span>
+                                      <span className="value">{age} {t("stayDetails.years")}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </li>
                     </ul>
                     {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
@@ -830,11 +872,11 @@ function CheckoutComponent() {
                         ? expandedRooms
                         : guests || [];
 
-                      return renderList.map((item: any, index: number) => {
+                      return renderList.map((item: SelectedRoom | GuestFormData, index: number) => {
                         const guest = guests?.[index];
-                        // If item is from expandedRooms, it has roomName. Else use generic.
-                        const title = item.roomName
-                          ? `${item.roomName} ${index + 1}`
+                        // If item is from expandedRooms (SelectedRoom), it has roomName. Else use generic.
+                        const title = 'roomName' in item
+                          ? `${item.roomName}`
                           : `${tBooking("travelerDetails.guest")} ${index + 1}`;
 
                         return (
