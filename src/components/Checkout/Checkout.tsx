@@ -726,6 +726,55 @@ function CheckoutComponent() {
                 </li>
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
+
+                    Guest Details
+                  </div>
+                  <div className="booking-list-right booking-list-guest d-flex flex-column align-items-center">
+                    <ul className="list-unstyled mb-0 ">
+                      <li>
+                        <span>Adults : </span>
+                        <span> 6 </span>
+                      </li>
+                      <li>
+                        <span>Children : </span>
+                        <span> 4 </span>
+                        <div className="booking-list-child-age">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#141B34" stroke-width="1.25" />
+                            <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#141B34" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M9.99398 6.66797H10.0015" stroke="#141B34" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </div>
+                      </li>
+                    </ul>
+                    {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
+                          <td className="text-end py-1 fw-bold align-middle">{totalAdults}</td>
+                        </tr>
+                        {totalChildren > 0 && (
+                          <tr>
+                            <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.children")}</td>
+                            <td className="text-end py-1 fw-bold align-middle">{totalChildren}</td>
+                          </tr>
+                        )}
+                        {totalChildren > 0 && childAges.map((age, index) => (
+                          <tr key={`child-${index}`}>
+                            <td className="text-end py-0 pe-3 text-secondary small align-middle">
+                              {t("staysDetails.child")} {index + 1} {t("staysDetails.age")}
+                            </td>
+                            <td className="text-end py-0 text-secondary small align-middle">
+                              {age} {t("staysDetails.years")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody> 
+                  </table>*/}
+                  </div>
+                </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
                     {t("stayDetails.guestsAndRooms")}
                   </div>
                   <div className="booking-list-right d-flex align-items-center">
@@ -789,7 +838,7 @@ function CheckoutComponent() {
                           : `${tBooking("travelerDetails.guest")} ${index + 1}`;
 
                         return (
-                          <div key={index} className="booking-details-form mandatory-field mb-4">
+                          <div key={index} className="booking-details-form mandatory-field">
                             <h3 className="booking-form-title">
                               {title}
                               {index === 0 && <span className="text-red"> ({t("travelerDetails.mandatory")})</span>}
@@ -850,7 +899,7 @@ function CheckoutComponent() {
                               </div>
 
                               <div className="form-row">
-                                <div className="form-group select-with-input-field">
+                                <div className="form-group select-with-input-field mb-0">
                                   <label className="form-label">
                                     {t("travelerDetails.phoneNumber")} <span className="required">*</span>
                                   </label>

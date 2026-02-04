@@ -103,6 +103,51 @@
               font-weight: 500;
               gap: 4px;
             }
+
+            .booking-list-guest {
+              ul {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin: 0px;
+                padding: 0px;
+
+                li {
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  padding-bottom: 0px;
+                  margin-bottom: 0px;
+                  border-bottom: none;
+                  position: relative;
+                  padding-right: 12px;
+
+                  &:after {
+                    content: "|";
+                    color: $color-black-zinc-500;
+                    position: absolute;
+                    right: 0px;
+                    top: 0;
+                  }
+
+                  &:last-child {
+                    padding-right: 0px;
+
+                    &:after {
+                      display: none;
+                    }
+                  }
+
+                  .booking-list-child-age {
+                    margin-left: 5px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -126,6 +171,20 @@
       }
 
       .booking-traveler-details {
+        border: none;
+        padding: 0px;
+
+        .booking-details-form {
+          border: 1px solid #d1d5dc;
+          border-radius: 8px;
+          margin-bottom: 24px !important;
+          padding: 12px;
+
+          &:last-child {
+            margin-bottom: 0px !important;
+          }
+        }
+
         .booking-details-sub-title {
           margin-bottom: 24px;
         }
@@ -591,6 +650,7 @@
 
     .policies-body {
       display: flex;
+      flex-direction: column;
       padding: 15px;
       gap: 15px;
 
@@ -857,6 +917,22 @@
                   height: 14px;
                 }
               }
+
+              .booking-list-guest {
+                ul {
+                  li {
+                    .booking-list-child-age {
+                      margin-left: 2px;
+
+                      svg {
+                        width: 16px;
+                        height: 16px;
+                        min-width: 16px;
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -872,6 +948,20 @@
           }
 
           .booking-details-form {
+            margin-bottom: 20px !important;
+
+            &:last-child {
+              margin-bottom: 0px;
+            }
+
+            .booking-form-content {
+              .form-row {
+                &:last-child {
+                  margin-bottom: 0px !important;
+                }
+              }
+            }
+
             .booking-form-content {
               .form-row {
                 column-gap: 20px;

@@ -743,6 +743,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     {/* (until 12:00 PM) */}
                   </div>
                 </li>
+
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     <svg
@@ -766,8 +767,78 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
                   </div>
                 </li>
-                <li className="booking-listing-item d-flex align-items-start justify-content-between">
-                  <div className="booking-list-left d-flex align-items-center pt-1">
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M6 19C6 16.7909 8.68629 15 12 15C15.3137 15 18 16.7909 18 19"
+                        stroke="#09090B"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Guest Details
+                  </div>
+                  <div className="booking-list-right booking-list-guest d-flex flex-column align-items-center">
+                    <ul className="list-unstyled mb-0 ">
+                      <li>
+                        <span>Adults : </span>
+                        <span> 6 </span>
+                      </li>
+                      <li>
+                        <span>Children : </span>
+                        <span> 4 </span>
+                        <div className="booking-list-child-age">
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#141B34" stroke-width="1.25" />
+                            <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#141B34" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M9.99398 6.66797H10.0015" stroke="#141B34" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </div>
+                      </li>
+                    </ul>
+                    {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
+                          <td className="text-end py-1 fw-bold align-middle">{totalAdults}</td>
+                        </tr>
+                        {totalChildren > 0 && (
+                          <tr>
+                            <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.children")}</td>
+                            <td className="text-end py-1 fw-bold align-middle">{totalChildren}</td>
+                          </tr>
+                        )}
+                        {totalChildren > 0 && childAges.map((age, index) => (
+                          <tr key={`child-${index}`}>
+                            <td className="text-end py-0 pe-3 text-secondary small align-middle">
+                              {t("staysDetails.child")} {index + 1} {t("staysDetails.age")}
+                            </td>
+                            <td className="text-end py-0 text-secondary small align-middle">
+                              {age} {t("staysDetails.years")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody> 
+                  </table>*/}
+                  </div>
+                </li>
+                <li className="booking-listing-item d-flex align-items-center justify-content-between">
+                  <div className="booking-list-left d-flex align-items-center">
                     <svg
                       width="16"
                       height="16"
@@ -792,8 +863,8 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     </svg>
                     {t("staysDetails.totalNumberOfGuests")}
                   </div>
-                  <div className="booking-list-right">
-                    <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
+                  <div className="booking-list-right d-flex flex-column align-items-end">
+                    {/* <table className="table table-borderless table-sm mb-0 w-auto ms-auto">
                       <tbody>
                         <tr>
                           <td className="text-end py-1 pe-3 align-middle text-muted">{t("staysDetails.adults")}</td>
@@ -816,11 +887,13 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table> */}
+                    10
                   </div>
                 </li>
 
-                {/* <li className="booking-listing-item d-flex align-items-start justify-content-between">
+
+                {/* <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center pt-1">
                     <svg
                       width="16"
@@ -1100,7 +1173,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     <h3 className="booking-details-sub-title">{t("travelerDetails.title")}</h3>
 
                     {expandedRooms.map((room, index) => (
-                      <div key={index} className="booking-details-form mandatory-field mb-4">
+                      <div key={index} className="booking-details-form mandatory-field">
                         <h3 className="booking-form-title">
                           {room.roomName || t("staysDetails.room")} {index + 1}
                           {index === 0 && <span className="text-red"> ({t("travelerDetails.mandatory")})</span>}
@@ -1194,7 +1267,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                           </div>
 
                           <div className="form-row">
-                            <div className="form-group select-with-input-field">
+                            <div className="form-group select-with-input-field mb-0">
                               <label className="form-label">
                                 {t("travelerDetails.phoneNumber")} <span className="required">*</span>
                               </label>
@@ -1239,6 +1312,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                 </p>
                               )}
                             </div>
+                            <div className="form-group mb-0"></div>
                           </div>
                         </div>
                       </div>
