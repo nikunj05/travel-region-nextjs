@@ -110,6 +110,7 @@ export interface BookingDetailsData {
     status?: string;
     details?: BookingDetail[];
     room_details?: RoomDetailWithComments[];
+    special_requests?: string;
     [key: string]: unknown;
   };
   [key: string]: unknown;

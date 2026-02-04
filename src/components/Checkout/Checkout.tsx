@@ -94,7 +94,7 @@ function CheckoutComponent() {
 
       return {
         guests,
-        specialRequests: "", // Special requests might need to be fetched if available in API
+        specialRequests: bookingDetails.data.booking.special_requests || "",
       };
     }
 
@@ -196,7 +196,7 @@ function CheckoutComponent() {
       if (guests.length > 0) {
         const formData: BookingFormData = {
           guests,
-          specialRequests: "",
+          specialRequests: bookingDetails.data.booking.special_requests || "",
         };
 
         // Reset form with new values
@@ -275,7 +275,7 @@ function CheckoutComponent() {
           if (guests.length > 0) {
             const formData: BookingFormData = {
               guests,
-              specialRequests: "",
+              specialRequests: response.data.booking?.special_requests || "",
             };
             // Save to store
             setTravelerDetails(formData);
@@ -861,6 +861,7 @@ function CheckoutComponent() {
                 formMethodsRef.current = methods;
                 const guests: BookingFormData['guests'] = methods.watch('guests');
                 const specialRequests = methods.watch('specialRequests');
+                console.log("🚀 ~ Checkout ~ specialRequests:", specialRequests)
 
                 return (
                   <>
