@@ -1176,6 +1176,41 @@
             }
           }
         }
+
+        .booking-stays-summary {
+          .booking-listing-info {
+            li {
+              .booking-list-guest {
+                ul {
+                  li {
+                    padding-right: 0px;
+                    padding-left: 12px;
+
+                    &:after {
+                      content: "|";
+                      right: auto;
+                      left: 0px;
+
+                    }
+
+                    &:last-child {
+                      padding-left: 0px;
+
+                      &:after {
+                        display: none;
+                      }
+                    }
+
+                    .booking-list-child-age {
+                      margin-right: 5px;
+                      margin-left: 0px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
 
       .review-booking-details-right {
@@ -1205,6 +1240,19 @@
         }
       }
     }
+
+    .booking-list-child-age {
+      .child-age-popover {
+        right: auto;
+        left: 0;
+
+        &:before {
+          right: auto;
+          left: 15px;
+        }
+
+      }
+    }
   }
 }
 
@@ -1222,6 +1270,24 @@
               .mobile-progress-line {
                 left: 40px;
                 right: auto;
+              }
+            }
+          }
+        }
+      }
+
+      .review-booking-details-left {
+        .booking-stays-summary {
+          .booking-listing-info {
+            li {
+              .booking-list-guest {
+                ul {
+                  li {
+                    .booking-list-child-age {
+                      margin-right: 2px !important;
+                    }
+                  }
+                }
               }
             }
           }

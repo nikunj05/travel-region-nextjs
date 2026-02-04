@@ -804,14 +804,14 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                         {t("staysDetails.children")} : <strong>{totalChildren}</strong>
                         {totalChildren > 0 && (
                           <div
-                            className="booking-list-child-age position-relative ms-1"
+                            className="booking-list-child-age position-relative"
                             onClick={() => setIsChildAgePopoverOpen(!isChildAgePopoverOpen)}
                             role="button"
                           >
                             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="cursor-pointer">
-                              <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#6b7280" strokeWidth="1.25" />
-                              <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#6b7280" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-                              <path d="M9.99398 6.66797H10.0015" stroke="#6b7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M18.3327 10.0007C18.3327 5.39828 14.6017 1.66732 9.99935 1.66732C5.39698 1.66732 1.66602 5.39828 1.66602 10.0007C1.66602 14.603 5.39698 18.334 9.99935 18.334C14.6017 18.334 18.3327 14.603 18.3327 10.0007Z" stroke="#09090b" strokeWidth="1.25" />
+                              <path d="M10.2025 14.168V10.0013C10.2025 9.60846 10.2025 9.41205 10.0804 9.29001C9.9584 9.16797 9.76198 9.16797 9.36914 9.16797" stroke="#09090b" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M9.99398 6.66797H10.0015" stroke="#09090b" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
 
                             {isChildAgePopoverOpen && (
@@ -819,7 +819,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                                 <div className="popover-content">
                                   {childAges.map((age, index) => (
                                     <div key={index} className="child-age-item">
-                                      <span className="label text-muted">{t("staysDetails.child")} {index + 1}</span>
+                                      <span className="label">{t("staysDetails.child")} {index + 1}</span>
                                       <span className="value fw-bold">{age} {t("staysDetails.years")}</span>
                                     </div>
                                   ))}
