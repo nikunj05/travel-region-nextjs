@@ -21,6 +21,7 @@ import {
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { useSettingsStore } from "@/store/settingsStore";
+import { hotelService } from "@/services/hotelService";
 
 const Banner = () => {
   const t = useTranslations("Banner");
@@ -152,12 +153,16 @@ const Banner = () => {
       return;
     }
 
-    // Validate that location has coordinates
+    // Validate that location has coordinates OR a valid code
     const coords = filters.location?.coordinates;
-    if (!coords || coords.lat == null || coords.lng == null) {
+    const hasCoordinates = coords && coords.lat != null && coords.lng != null;
+    const hasDestinationCode = !!filters.location?.destination_code;
+    const hasHotelCode = !!filters.location?.hotel_code;
+
+    if (!hasCoordinates && !hasDestinationCode && !hasHotelCode) {
       e.preventDefault();
       setLocationError("Please select a valid location with coordinates");
-      console.error("Location missing coordinates:", filters.location);
+      console.error("Location missing coordinates and codes:", filters.location);
       return;
     }
 
@@ -192,10 +197,18 @@ const Banner = () => {
     // setIsSearching(true); // This will be handled by the search result page
 
     try {
-      const latitude = coords.lat;
-      const longitude = coords.lng;
+      const latitude = hasCoordinates ? coords!.lat : null;
+      const longitude = hasCoordinates ? coords!.lng : null;
+      const destinationCode = filters.location?.destination_code || null;
+      const hotelCode = filters.location?.hotel_code || null;
 
-      console.log("Search with coordinates:", { latitude, longitude, location: filters.location.name });
+      console.log("Search parameters:", {
+        latitude,
+        longitude,
+        destinationCode,
+        hotelCode,
+        location: filters.location?.name
+      });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
@@ -204,6 +217,7 @@ const Banner = () => {
       useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 0, childrenAges: [] }]);
       useHotelSearchStore.getState().setLanguage("eng"); // Default to English initially
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+      useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
 
       // Don't execute search here; just navigate
       // await useHotelSearchStore.getState().search();

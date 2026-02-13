@@ -6,8 +6,10 @@ export interface GetHotelsRequest {
   check_out: string; // YYYY-MM-DD
   rooms: Room[];
   language: string; // e.g., "eng"
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
+  destination_code?: string;
+  hotel_code?: string;
   star_rating?: number; // Single star rating (1-5)
   min_price?: number;
   max_price?: number;
@@ -288,3 +290,38 @@ export interface GetHotelDetailsResponse {
 }
 
 
+
+export interface GetHotelLocationsRequest {
+  search: string;
+}
+
+export interface DestinationLocationItem {
+  id: number;
+  code: string;
+  name: string;
+  country_code: string;
+  iso_code: string;
+  latitude?: string;
+  longitude?: string;
+}
+
+export interface HotelLocationItem {
+  id: number;
+  code: string;
+  name: string;
+  latitude: string;
+  longitude: string;
+  city: string;
+  address?: string;
+  category_code?: string;
+  destination_code?: string;
+}
+
+export interface GetHotelLocationsResponse {
+  status: boolean;
+  message: string;
+  data: {
+    destinations: DestinationLocationItem[];
+    hotels: HotelLocationItem[];
+  };
+}

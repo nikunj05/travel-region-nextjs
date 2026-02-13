@@ -5,6 +5,8 @@ import {
   GetHotelDetailsRequest, 
   GetHotelDetailsResponse,
   GetAccommodationTypesResponse,
+  GetHotelLocationsRequest,
+  GetHotelLocationsResponse,
 } from '@/types/hotel';
 
 export const hotelService = {
@@ -34,6 +36,20 @@ export const hotelService = {
     try {
       const response = await api.get<GetAccommodationTypesResponse>(
         `/hotels/accommodation-types`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getHotelLocations: async (payload: GetHotelLocationsRequest): Promise<GetHotelLocationsResponse> => {
+    try {
+      const response = await api.get<GetHotelLocationsResponse>(
+        `/hotels/locations/destinations`,
+        {
+          params: { search: payload.search } // Pass search as query parameter
+        }
       );
       return response.data;
     } catch (error) {

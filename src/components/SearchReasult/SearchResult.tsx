@@ -246,8 +246,12 @@ const SearchResult = () => {
       return true;
     });
 
-    // Filter logic for specific hotel (lodging)
-    if (filters.location?.types?.includes("lodging") && filters.location.name) {
+    // Filter logic for specific hotel (lodging or hotel)
+    if (
+      (filters.location?.types?.includes("lodging") ||
+        filters.location?.types?.includes("hotel")) &&
+      filters.location.name
+    ) {
       const targetName = filters.location.name.toLowerCase();
       // console.log("targetName", targetName);
       const filtered = sortable.filter((hotel) => {
@@ -693,12 +697,16 @@ const SearchResult = () => {
     }
     setLocationError("");
 
-    // Validate that location has coordinates
+    // Validate that location has coordinates OR a valid code
     const coords = filters.location?.coordinates;
-    if (!coords || coords.lat == null || coords.lng == null) {
+    const hasCoordinates = coords && coords.lat != null && coords.lng != null;
+    const hasDestinationCode = !!filters.location?.destination_code;
+    const hasHotelCode = !!filters.location?.hotel_code;
+
+    if (!hasCoordinates && !hasDestinationCode && !hasHotelCode) {
       e.preventDefault();
       setLocationError("Please select a valid location with coordinates");
-      console.error("Location missing coordinates:", filters.location);
+      console.error("Location missing coordinates and codes:", filters.location);
       return;
     }
 
@@ -726,12 +734,16 @@ const SearchResult = () => {
 
     // Wire dynamic filters to hotel search store and call API
     try {
-      const latitude = coords.lat;
-      const longitude = coords.lng;
+      const latitude = hasCoordinates ? coords!.lat : null;
+      const longitude = hasCoordinates ? coords!.lng : null;
+      const destinationCode = filters.location?.destination_code || null;
+      const hotelCode = filters.location?.hotel_code || null;
 
-      console.log("Search with coordinates:", {
+      console.log("Search parameters:", {
         latitude,
         longitude,
+        destinationCode,
+        hotelCode,
         location: filters.location.name,
       });
 
@@ -744,6 +756,8 @@ const SearchResult = () => {
         .setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
       // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
       useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
+      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+      useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
 
       // Execute search and log the raw response data held in the store

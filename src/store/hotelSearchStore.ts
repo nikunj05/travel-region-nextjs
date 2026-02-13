@@ -16,6 +16,8 @@ export interface HotelSearchFilters {
   language: string // e.g., 'eng'
   latitude: number | null
   longitude: number | null
+  destinationCode?: string | null
+  hotelCode?: string | null
   starRating: number | null // Single selected star rating (1-5)
   minPrice: number | null
   maxPrice: number | null
@@ -40,6 +42,7 @@ interface HotelSearchState {
   setRooms: (rooms: Room[]) => void
   setLanguage: (language: string) => void
   setCoordinates: (latitude: number | null, longitude: number | null) => void
+  setCodes: (destinationCode: string | null, hotelCode: string | null) => void
   setStarRating: (starRating: number | null) => void
   setPriceRange: (minPrice: number | null, maxPrice: number | null) => void
   updateFilters: (patch: Partial<HotelSearchFilters>) => void
@@ -57,6 +60,8 @@ const defaultFilters: HotelSearchFilters = {
   language: 'eng',
   latitude: null,
   longitude: null,
+  destinationCode: null,
+  hotelCode: null,
   starRating: null,
   minPrice: null,
   maxPrice: null,
@@ -89,6 +94,10 @@ export const useHotelSearchStore = create<HotelSearchState>()(
         filters: { ...state.filters, latitude, longitude }
       })),
 
+      setCodes: (destinationCode, hotelCode) => set((state) => ({
+        filters: { ...state.filters, destinationCode, hotelCode }
+      })),
+
       setStarRating: (starRating) => set((state) => ({
         filters: { ...state.filters, starRating }
       })),
@@ -107,8 +116,15 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
       search: async () => {
         const { filters } = get()
-        // Validate minimal required params
-        if (!filters.checkIn || !filters.checkOut || filters.latitude == null || filters.longitude == null) {
+        // Validate minimal required params: Dates + (Location OR Codes)
+        // If we have codes (destination or hotel), we don't strictly need lat/long for the API call 
+        // (though we might still have them). If we don't have codes, we NEED lat/long.
+        const hasLocation = 
+          (filters.latitude != null && filters.longitude != null) || 
+          filters.destinationCode || 
+          filters.hotelCode;
+
+        if (!filters.checkIn || !filters.checkOut || !hasLocation) {
           const errorMessage = 'Missing required search parameters'
           set({ error: errorMessage, loading: false })
           toast.error(errorMessage)
@@ -122,8 +138,17 @@ export const useHotelSearchStore = create<HotelSearchState>()(
             check_out: formatDateForAPI(filters.checkOut),
             rooms: filters.rooms,
             language: filters.language,
-            latitude: filters.latitude,
-            longitude: filters.longitude,
+          }
+          
+          // Add codes if available
+          if (filters.destinationCode) {
+             payload.destination_code = filters.destinationCode;
+          } else if (filters.hotelCode) {
+             payload.hotel_code = filters.hotelCode;
+          } else {
+             // Fallback to coordinates
+             if(filters.latitude) payload.latitude = filters.latitude;
+             if(filters.longitude) payload.longitude = filters.longitude;
           }
 
           // NOTE: Left sidebar filters (star rating, price range, property type)
@@ -163,6 +188,8 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           language: state.filters.language,
           latitude: state.filters.latitude,
           longitude: state.filters.longitude,
+          destinationCode: state.filters.destinationCode,
+          hotelCode: state.filters.hotelCode,
           // Explicitly exclude filter values - they should reset on page refresh
           starRating: null,
           minPrice: null,

@@ -13,6 +13,8 @@ export interface Location {
     lng: number
   }
   types?: string[]
+  destination_code?: string
+  hotel_code?: string
 }
 
 // Room interface for guest counts
