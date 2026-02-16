@@ -12,7 +12,6 @@ import { destinationService } from "@/services/destinationService";
 import type { PopularDestinationItem } from "@/types/destination";
 import { useRouter } from "next/navigation";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
-import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { buildCurrencySvgMarkup } from "@/constants";
 
@@ -76,34 +75,28 @@ const Popular = () => {
     e.preventDefault();
     if (!item) return;
 
-    const latitude = parseFloat(item.latitude);
-    const longitude = parseFloat(item.longitude);
-    if (Number.isNaN(latitude) || Number.isNaN(longitude)) return;
+    // Use code for destination
+    const destinationCode = item.code;
 
-    const today = getTodayAtMidnight();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    // Set visible location (city) for header/search UI
+    // Set visible location for header/search UI
+    // Since we don't have coordinates or detailed address info from PopularDestinationItem anymore,
+    // we set what we have.
     setLocation({
       id: String(item.id),
-      name: item.city || item.location,
-      country: item.country || "",
-      region: item.state,
-      coordinates: { lat: latitude, lng: longitude },
+      name: item.location,
+      country: "", // Not available in new interface
+      region: "", // Not available in new interface
+      types: ["destination"],
+      destination_code: destinationCode,
+      coordinates: undefined, // Coordinates not available
     });
-    
-    useHotelSearchStore.getState().clearResults();
-    // useHotelSearchStore.getState().setDates(today, tomorrow);
-    
-    // Also update the UI search filters store
-    // useSearchFiltersStore.getState().setCheckInDate(today);
-    // useSearchFiltersStore.getState().setCheckOutDate(tomorrow);
-    // useSearchFiltersStore.getState().setRooms([{ adults: 2, children: 0, childrenAges: [] }]);
 
-    // useHotelSearchStore.getState().setRooms([{ adults: 2, children: 0 }]);
+    useHotelSearchStore.getState().clearResults();
+
     useHotelSearchStore.getState().setLanguage("eng");
-    useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+    // Clear coordinates and set destination code
+    useHotelSearchStore.getState().setCoordinates(null, null);
+    useHotelSearchStore.getState().setCodes(destinationCode, null);
 
     // We don't search here. Just set the state and navigate.
     // The search-result page will trigger the search.
