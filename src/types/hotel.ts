@@ -14,6 +14,7 @@ export interface GetHotelsRequest {
   min_price?: number;
   max_price?: number;
   accommodations?: string; // Comma-separated accommodation codes (e.g., "H,I")
+  boards?: string; // Comma-separated board codes (e.g., "RO,HB")
 }
 
 export interface HotelRateCancellationPolicy {
@@ -94,6 +95,20 @@ export interface HotelItem {
   images?: HotelImage[];
   featured?: boolean;
   show_tag?: boolean;
+  facilities?: Facility[];
+}
+
+export interface SearchFacility {
+  code: string;
+  facility_group_code: string;
+  name: string;
+  count: number;
+}
+
+export interface SearchZone {
+  code: number;
+  name: string;
+  count: number;
 }
 
 export interface GetHotelsResponse {
@@ -101,6 +116,9 @@ export interface GetHotelsResponse {
   message: string;
   data: {
     hotels: HotelItem[];
+    facilities: SearchFacility[];
+    zones: SearchZone[];
+    total: number;
   };
 }
 
@@ -167,8 +185,18 @@ export interface GetAccommodationTypesResponse {
 }
 
 export interface Board {
+  id: number;
   code: string;
-  description: Content;
+  name: string;
+  multi_lingual_code: string;
+}
+
+export interface GetBoardsResponse {
+  status: boolean;
+  message: string;
+  data: {
+    board_types: Board[];
+  };
 }
 
 export interface Segment {
@@ -184,6 +212,7 @@ export interface Address {
 
 export interface City {
   content: string;
+  phoneNumber?: string; // inferred
 }
 
 export interface Phone {
@@ -289,39 +318,42 @@ export interface GetHotelDetailsResponse {
   };
 }
 
-
-
-export interface GetHotelLocationsRequest {
-  search: string;
+export interface FavoriteHotelRequest {
+  hotelId: number;
 }
 
-export interface DestinationLocationItem {
+export interface FavoriteHotelResponse {
+  status: boolean;
+  message: string;
+}
+
+export interface LocationDestination {
   id: number;
   code: string;
   name: string;
   country_code: string;
-  iso_code: string;
-  latitude?: string;
-  longitude?: string;
+  latitude: string;
+  longitude: string;
 }
 
-export interface HotelLocationItem {
+export interface LocationHotel {
   id: number;
   code: string;
   name: string;
+  city: string;
   latitude: string;
   longitude: string;
-  city: string;
-  address?: string;
-  category_code?: string;
-  destination_code?: string;
+}
+
+export interface GetHotelLocationsRequest {
+  search: string;
 }
 
 export interface GetHotelLocationsResponse {
   status: boolean;
   message: string;
   data: {
-    destinations: DestinationLocationItem[];
-    hotels: HotelLocationItem[];
+    destinations: LocationDestination[];
+    hotels: LocationHotel[];
   };
 }

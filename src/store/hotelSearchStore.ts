@@ -2,7 +2,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { hotelService } from '@/services/hotelService'
-import { GetHotelsRequest, HotelItem } from '@/types/hotel'
+import { GetHotelsRequest, HotelItem, SearchFacility, SearchZone } from '@/types/hotel'
 import { FavoriteHotel } from '@/types/favorite'
 import { toast } from 'react-toastify'
 import { formatApiErrorMessage } from '@/lib/formatApiError'
@@ -22,6 +22,7 @@ export interface HotelSearchFilters {
   minPrice: number | null
   maxPrice: number | null
   accommodations: string | null // Comma-separated accommodation codes
+  boards?: string | null // Comma-separated board codes
 }
 
 interface HotelSearchState {
@@ -30,6 +31,8 @@ interface HotelSearchState {
 
   // Results
   hotels: (HotelItem | FavoriteHotel)[]
+  facilities: SearchFacility[]
+  zones: SearchZone[]
   currency: string | null
   total: number | null
 
@@ -66,6 +69,7 @@ const defaultFilters: HotelSearchFilters = {
   minPrice: null,
   maxPrice: null,
   accommodations: null,
+  boards: null,
 }
 
 export const useHotelSearchStore = create<HotelSearchState>()(
@@ -73,6 +77,8 @@ export const useHotelSearchStore = create<HotelSearchState>()(
     (set, get) => ({
       filters: defaultFilters,
       hotels: [],
+      facilities: [],
+      zones: [],
       currency: null,
       total: null,
       loading: false,
@@ -112,7 +118,7 @@ export const useHotelSearchStore = create<HotelSearchState>()(
 
       resetFilters: () => set({ filters: defaultFilters }),
 
-      clearResults: () => set({ hotels: [], total: null, error: null, currency: null }),
+      clearResults: () => set({ hotels: [], facilities: [], zones: [], total: null, error: null, currency: null }),
 
       search: async () => {
         const { filters } = get()
@@ -151,10 +157,14 @@ export const useHotelSearchStore = create<HotelSearchState>()(
              if(filters.longitude) payload.longitude = filters.longitude;
           }
 
-          // NOTE: Left sidebar filters (star rating, price range, property type)
+          // NOTE: Left sidebar filters (star rating, price range, property type, boards)
           // are now applied on the client side only. We intentionally do NOT
           // send these extra filters to the listing API here so that the
           // full result-set can be filtered in the UI.
+          // EXCEPTION: Boards and Accommodations might be needed if the dataset is large or server-side filtering is required.
+          // User requested boards to be passed to API.
+          if(filters.boards) payload.boards = filters.boards;
+          if(filters.accommodations) payload.accommodations = filters.accommodations;
 
           console.log('Hotel search API payload:', payload)
 
@@ -164,11 +174,13 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           // Safely extract hotels array
           const hotelsData = res?.data?.hotels
           const hotels = Array.isArray(hotelsData) ? hotelsData : []
+          const facilities = res?.data?.facilities || []
+          const zones = res?.data?.zones || []
           const currency = hotels.length > 0 && 'currency' in hotels[0] ? (hotels[0] as HotelItem).currency : null
 
           console.log('Processed hotels:', { count: hotels.length, currency })
 
-          set({ hotels, currency, total: hotels.length, loading: false })
+          set({ hotels, facilities, zones, currency, total: res?.data?.total || hotels.length, loading: false })
         } catch (err: unknown) {
           console.error('Hotel search error details:', err)
           const errorMessage = formatApiErrorMessage(err)

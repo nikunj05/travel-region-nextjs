@@ -21,7 +21,6 @@ import {
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { useSettingsStore } from "@/store/settingsStore";
-import { hotelService } from "@/services/hotelService";
 
 const Banner = () => {
   const t = useTranslations("Banner");

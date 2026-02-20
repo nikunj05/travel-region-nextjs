@@ -7,6 +7,7 @@ import {
   GetAccommodationTypesResponse,
   GetHotelLocationsRequest,
   GetHotelLocationsResponse,
+  GetBoardsResponse,
 } from '@/types/hotel';
 
 export const hotelService = {
@@ -51,6 +52,15 @@ export const hotelService = {
           params: { search: payload.search } // Pass search as query parameter
         }
       );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getBoards: async (): Promise<GetBoardsResponse> => {
+    try {
+      const response = await api.get<GetBoardsResponse>('/hotels/boards');
       return response.data;
     } catch (error) {
       throw error;

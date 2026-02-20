@@ -26,7 +26,7 @@ import {
   Room,
 } from "@/store/searchFiltersStore";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
-import { HotelItem, AccommodationType } from "@/types/hotel";
+import { HotelItem, AccommodationType, HotelRate, HotelAvailabilityRoom, Board } from "@/types/hotel";
 import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
 import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
@@ -63,6 +63,9 @@ const SearchResult = () => {
     filters: hotelFilters,
     total: apiTotal,
     loading,
+    zones,
+    search: triggerSearch,
+    updateFilters: updateHotelFilters,
   } = useHotelSearchStore();
   console.log("apiHotels", apiHotels);
 
@@ -76,6 +79,7 @@ const SearchResult = () => {
   const [isGuestsPickerOpen, setIsGuestsPickerOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Recommended");
+  const [hotelNameFilter, setHotelNameFilter] = useState("");
   // const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
   // Pagination state
@@ -112,6 +116,9 @@ const SearchResult = () => {
     // setIsGuestRatingOpen(true);
     // setIsAmenitiesOpen(true);
     setIsPropertyTypeOpen(true);
+    setIsZoneOpen(true);
+    setIsRoomFacilitiesOpen(true);
+    setIsHotelFacilitiesOpen(true);
     // setIsLocationTypeOpen(true);
   };
 
@@ -130,6 +137,134 @@ const SearchResult = () => {
   >([]);
   const [showAllAccommodationTypes, setShowAllAccommodationTypes] =
     useState<boolean>(false);
+
+  // Zone filter states
+  const [isZoneOpen, setIsZoneOpen] = useState(true);
+  const [selectedZoneCodes, setSelectedZoneCodes] = useState<number[]>([]);
+  const [showAllZones, setShowAllZones] = useState(false);
+
+  // Facility property filter states
+  const [isRoomFacilitiesOpen, setIsRoomFacilitiesOpen] = useState(true);
+  const [selectedRoomFacilityCodes, setSelectedRoomFacilityCodes] = useState<number[]>([]);
+
+  const [isHotelFacilitiesOpen, setIsHotelFacilitiesOpen] = useState(true);
+  const [selectedHotelFacilityCodes, setSelectedHotelFacilityCodes] = useState<number[]>([]);
+
+  // Boards filter state
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [isBoardsOpen, setIsBoardsOpen] = useState(true);
+  const [selectedBoards, setSelectedBoards] = useState<string[]>([]);
+
+  const [initialSearchDone, setInitialSearchDone] = useState(false);
+
+  // Cancellation Policy filter state
+  const [isCancellationPolicyOpen, setIsCancellationPolicyOpen] = useState(true);
+  const [isRefundable, setIsRefundable] = useState(false);
+  const [isNonRefundable, setIsNonRefundable] = useState(false);
+
+  const roomFacilitiesList = [
+    { code: 10, name: "Bathroom" },
+    { code: 20, name: "Shower" },
+    { code: 305, name: "Hot tub" },
+    { code: 326, name: "Private Pool" },
+    { code: 410, name: "Hot tub" },
+    { code: 55, name: "TV" },
+    { code: 56, name: "Connecting rooms" },
+  ];
+
+  const hotelFacilitiesList = [
+    { code: 100, name: "Internet access" },
+    { code: 120, name: "Minibar" },
+    { code: 200, name: "Restaurant" },
+    { code: 295, name: "Wheelchair-accessible" },
+    { code: 30, name: "24-hour reception" },
+    { code: 306, name: "Outdoor swimming pool" },
+    { code: 470, name: "Gym" },
+    { code: 560, name: "Valet parking" },
+    { code: 620, name: "Spa centre" },
+  ];
+
+  useEffect(() => {
+    const fetchBoards = async () => {
+      try {
+        const response = await hotelService.getBoards();
+        console.log("Boards Data:", response);
+        if (response.status && response.data && response.data.board_types) {
+          setBoards(response.data.board_types);
+        }
+      } catch (error) {
+        console.error("Error fetching boards:", error);
+      }
+    };
+
+    fetchBoards();
+  }, []);
+
+  const handleBoardToggle = (code: string) => {
+    setSelectedBoards((prev) => {
+      if (prev.includes(code)) {
+        return prev.filter((c) => c !== code);
+      } else {
+        return [...prev, code];
+      }
+    });
+  };
+
+  // Trigger search when boards selection changes, BUT skip the initial mount check
+  // because the initial search happens via the URL params in the store or main useEffect.
+  // Actually, to support API filtering, we need to pass these extra params to fetchHotels.
+  // The current fetchHotels in store primarily uses the store's filters.
+  // We can either update the store filters or pass overrides.
+  // The store's fetchHotels function builds payload from `filters`.
+  // Let's modify the useEffect that calls fetchHotels to include boards if they are selected,
+  // OR creates a new effect that calls fetchHotels when selectedBoards changes.
+
+  // NOTE: The main `useEffect` at the top (which call fetchHotels) depends on `filters` from store.
+  // If we want to add `boards` to the payload, we might need a way to pass it.
+  // The store's `fetchHotels` uses the *store state* `filters`.
+  // So we probably need to call a modified fetchHotels or pass extra args?
+  // Looking at useHotelSearchStore.ts, fetchHotels takes no args, it uses internal state `filters`.
+  // Wait, `filters` in `useHotelSearchStore` is passed to `getHotels` service.
+  // We should probably add `boards` to the `filters` state in the store or just pass it as an argument.
+  // But `fetchHotels` definition is `fetchHotels: (filters: HotelSearchFilters) => Promise<void>`.
+  // And `HotelSearchFilters` is defined in `hotelSearchStore.ts`.
+  // Let's check `hotelSearchStore.ts`. It imports `GetHotelsRequest`.
+  // We need to update `HotelSearchFilters` to include `boards`.
+  // However, I cannot easily change the store interface without seeing it fully.
+  // A simpler way: The `fetchHotels` function takes `filters` as argument!
+  // `fetchHotels: async (filters) => { ... }`
+  // So inside `SearchResult`, we can call `fetchHotels({ ...filters, boards: selectedBoards.join(',') })`.
+
+  // Trigger search when boards selection changes
+  // We use `updateFilters` (which updates hotel store filters) 
+  // and then `search` (aliased as triggerSearch) to refetch hotels.
+  useEffect(() => {
+    if (!initialSearchDone) {
+      setInitialSearchDone(true);
+      return;
+    }
+
+    const performSearchWithBoards = async () => {
+      // Avoid triggering multiple searches if already loading
+      if (loading) return;
+
+      // Update the hotel search store filters with the selected boards
+      updateHotelFilters({
+        boards: selectedBoards.length > 0 ? selectedBoards.join(',') : null
+      });
+
+      // Trigger the search (it uses the store's filters state)
+      await triggerSearch();
+    };
+
+    // Debounce the search trigger using a timeout
+    const timeoutId = setTimeout(() => {
+      performSearchWithBoards();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+
+  }, [selectedBoards]); // Only re-run when boards change.
 
   // Derived hotel lists
   const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
@@ -186,7 +321,7 @@ const SearchResult = () => {
   ) => {
     if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
-
+      console.log(item)
       // Parse rate string to number, handling empty strings and invalid values
       const parseRate = (rate: string | undefined): number | null => {
         if (!rate || rate.trim() === "") return null;
@@ -215,6 +350,14 @@ const SearchResult = () => {
 
     // 1) Apply client-side filters (star rating, price range, property type)
     sortable = sortable.filter((hotel) => {
+      // Hotel Name filter
+      if (hotelNameFilter.trim()) {
+        const name = getHotelName(hotel).toLowerCase();
+        if (!name.includes(hotelNameFilter.toLowerCase().trim())) {
+          return false;
+        }
+      }
+
       // Star rating filter (exact match to keep behavior close to API-side filtering)
       if (selectedStarRating !== null) {
         if (getStarRating(hotel) !== selectedStarRating) {
@@ -224,7 +367,10 @@ const SearchResult = () => {
 
       // Price range filter (based on minRate / displayed rate)
       const rate = getHotelRateValue(hotel, "min");
-      if (rate < minPrice || rate > maxPrice) {
+      if (rate < minPrice) {
+        return false;
+      }
+      if (maxPrice < 5000 && rate > maxPrice) {
         return false;
       }
 
@@ -243,6 +389,87 @@ const SearchResult = () => {
         }
       }
 
+      // Zone filter
+      if (selectedZoneCodes.length > 0) {
+        const hotelZoneCode =
+          "zoneCode" in hotel ? (hotel as HotelItem).zoneCode : null;
+
+        if (!hotelZoneCode || !selectedZoneCodes.includes(hotelZoneCode)) {
+          return false;
+        }
+      }
+
+      // Room Facility filter
+      if (selectedRoomFacilityCodes.length > 0) {
+        const hotelFacilities = "facilities" in hotel ? (hotel as HotelItem).facilities || [] : [];
+        // Check if hotel matches all selected room facilities
+        const hasAllSelectedResponse = selectedRoomFacilityCodes.every((code) => {
+          return hotelFacilities.some(f => f.facilityCode === code && f.facilityGroupCode === 60); // 60 is typically room facilities, but based on user request we are just matching codes. However, data structure has group codes.
+          // Wait, user provided specific codes. Let's just match the facilityCode regardless of group for now unless specified.
+          // Actually, the user separated them into "Hotel" and "Room" lists.
+          // Let's strict match the code.
+          return hotelFacilities.some(f => f.facilityCode === code);
+        });
+        if (!hasAllSelectedResponse) return false;
+      }
+
+      // Hotel Facility filter
+      if (selectedHotelFacilityCodes.length > 0) {
+        const hotelFacilities = "facilities" in hotel ? (hotel as HotelItem).facilities || [] : [];
+        const hasAllSelectedHotel = selectedHotelFacilityCodes.every((code) => {
+          return hotelFacilities.some(f => f.facilityCode === code);
+        });
+        if (!hasAllSelectedHotel) return false;
+      }
+
+      // Cancellation Policy filter
+      if (isRefundable || isNonRefundable) {
+        // If both are unchecked, show all (handled by if condition above, actually no, if both unchecked we skip this block).
+        // If one or both checked, we need to filter.
+
+        // Helper to check if a single rate is non-refundable based on user logic
+        const isRateNonRefundable = (rate: HotelRate) => {
+          return rate.rateClass === "NRF" || !rate.cancellationPolicies || rate.cancellationPolicies.length === 0;
+        };
+
+        const rooms: HotelAvailabilityRoom[] = "minRate" in hotel ? (hotel as HotelItem).rooms || [] : [];
+
+        let hasRefundableRate = false;
+        let hasNonRefundableRate = false;
+
+        if (rooms.length > 0) {
+          // Check all rates in all rooms
+          for (const room of rooms) {
+            if (room.rates && room.rates.length > 0) {
+              for (const rate of room.rates) {
+                console.log(`Hotel ${hotel.name} - Rate class: ${rate.rateClass}, Policies: ${rate.cancellationPolicies?.length}`, rate);
+                if (isRateNonRefundable(rate)) {
+                  hasNonRefundableRate = true;
+                } else {
+                  hasRefundableRate = true;
+                }
+              }
+            }
+          }
+        } else {
+          // Fallback if no rooms loaded
+          hasNonRefundableRate = true;
+        }
+
+        // Logic:
+        // If only Refundable checked: Show if hasRefundableRate is true.
+        // If only Non-refundable checked: Show if hasNonRefundableRate is true.
+        // If Both checked: Show if hasRefundableRate OR hasNonRefundableRate (which effectively means show all that have rates).
+
+        if (isRefundable && !isNonRefundable) {
+          if (!hasRefundableRate) return false;
+        } else if (!isRefundable && isNonRefundable) {
+          if (!hasNonRefundableRate) return false;
+        } else if (isRefundable && isNonRefundable) {
+          if (!hasRefundableRate && !hasNonRefundableRate) return false;
+        }
+      }
+
       return true;
     });
 
@@ -258,8 +485,9 @@ const SearchResult = () => {
         const hotelName = getHotelName(hotel).toLowerCase();
         // console.log("hotelName", hotelName);
         // 1. Direct inclusion (fastest)
-        if (hotelName.includes(targetName) || targetName.includes(hotelName))
+        if (hotelName.includes(targetName) || targetName.includes(hotelName)) {
           return true;
+        }
 
         // 2. Word token matching
         const cleanString = (str: string) =>
@@ -292,6 +520,7 @@ const SearchResult = () => {
     }
 
     // 2) Apply client-side sorting
+    // console.log("Applying sort:", sortBy);
     switch (sortBy) {
       case "Price: Low to High":
         return [...sortable].sort((a, b) => {
@@ -308,8 +537,6 @@ const SearchResult = () => {
           if (rateA === rateB) return 0;
           return rateB - rateA;
         });
-      // case 'Rating':
-      //   return sortable.sort((a, b) => getStarRating(b) - getStarRating(a));
       default: // Recommended
         return sortable;
     }
@@ -321,6 +548,12 @@ const SearchResult = () => {
     minPrice,
     maxPrice,
     selectedAccommodationCodes,
+    hotelNameFilter,
+    selectedZoneCodes,
+    selectedRoomFacilityCodes,
+    selectedHotelFacilityCodes,
+    isRefundable,
+    isNonRefundable,
   ]);
 
   // Hotels to display (paginated)
@@ -875,12 +1108,37 @@ const SearchResult = () => {
     }
   }, [selectedAccommodationCodes]);
 
+  const handleZoneToggle = (code: number) => {
+    setSelectedZoneCodes((prev) => {
+      const exists = prev.includes(code);
+      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+    });
+  };
+
+  const handleRoomFacilityToggle = (code: number) => {
+    setSelectedRoomFacilityCodes((prev) => {
+      const exists = prev.includes(code);
+      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+    });
+  };
+
+  const handleHotelFacilityToggle = (code: number) => {
+    setSelectedHotelFacilityCodes((prev) => {
+      const exists = prev.includes(code);
+      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+    });
+  };
+
   // Handler for clearing all filters
   const handleClearFilters = () => {
     setSelectedStarRating(null);
     setMinPrice(0);
     setMaxPrice(5000);
     setSelectedAccommodationCodes([]);
+    setSelectedZoneCodes([]);
+    setSelectedRoomFacilityCodes([]);
+    setSelectedHotelFacilityCodes([]);
+    setHotelNameFilter("");
   };
 
   // Price slider handlers
@@ -949,6 +1207,28 @@ const SearchResult = () => {
         <button className="clear-filters" onClick={handleClearFilters}>
           {tSearch("clear")}
         </button>
+      </div>
+
+      <div className="filter-section">
+        <div className="filter-title" style={{ cursor: "default" }}>
+          {tSearch("hotelName")}
+        </div>
+        <div style={{ marginTop: "15px" }}>
+          <input
+            type="text"
+            placeholder={tSearch("searchHotel")}
+            value={hotelNameFilter}
+            onChange={(e) => setHotelNameFilter(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              border: "1px solid #e5e7eb",
+              borderRadius: "8px",
+              fontSize: "14px",
+              outline: "none",
+            }}
+          />
+        </div>
       </div>
 
       <div className="filter-section">
@@ -1280,6 +1560,186 @@ const SearchResult = () => {
                 </a>
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      {zones.length > 0 && (
+        <div className="filter-section">
+          <div
+            className="filter-title"
+            onClick={() => setIsZoneOpen(!isZoneOpen)}
+          >
+            {tSearch("zone") || "Zone"}
+            <Image
+              src={downBlackArrowIcon}
+              width="20"
+              height="20"
+              alt="down arrow"
+              className={`dropdown-arrow ${isZoneOpen ? "open" : ""}`}
+            />
+          </div>
+          {isZoneOpen && (
+            <div className="filter-options">
+              {(showAllZones ? zones : zones.slice(0, 5)).map((zone) => (
+                <label key={zone.code} className="filter-option">
+                  <input
+                    type="checkbox"
+                    checked={selectedZoneCodes.includes(zone.code)}
+                    onChange={() => handleZoneToggle(zone.code)}
+                  />
+                  <span className="checkmark"></span>
+                  {zone.name}
+                </label>
+              ))}
+              {zones.length > 5 && (
+                <div style={{ marginTop: "8px" }}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowAllZones(!showAllZones);
+                    }}
+                    style={{ color: "#3E5B96", textDecoration: "none" }}
+                  >
+                    {showAllZones
+                      ? tSearch("showLess") || "View less"
+                      : tSearch("showMore") || "View more"}
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsHotelFacilitiesOpen(!isHotelFacilitiesOpen)}
+        >
+          {tSearch("hotelFacilities") || "Hotel Facilities"}
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${isHotelFacilitiesOpen ? "open" : ""}`}
+          />
+        </div>
+        {isHotelFacilitiesOpen && (
+          <div className="filter-options">
+            {hotelFacilitiesList.map((facility) => (
+              <label key={`hotel-${facility.code}`} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={selectedHotelFacilityCodes.includes(facility.code)}
+                  onChange={() => handleHotelFacilityToggle(facility.code)}
+                />
+                <span className="checkmark"></span>
+                {facility.name}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsRoomFacilitiesOpen(!isRoomFacilitiesOpen)}
+        >
+          {tSearch("roomFacilities") || "Room Facilities"}
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${isRoomFacilitiesOpen ? "open" : ""}`}
+          />
+        </div>
+        {isRoomFacilitiesOpen && (
+          <div className="filter-options">
+            {roomFacilitiesList.map((facility) => (
+              <label key={`room-${facility.code}`} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={selectedRoomFacilityCodes.includes(facility.code)}
+                  onChange={() => handleRoomFacilityToggle(facility.code)}
+                />
+                <span className="checkmark"></span>
+                {facility.name}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsBoardsOpen(!isBoardsOpen)}
+        >
+          {tSearch("availableMeals") || "Available Meals"}
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${isBoardsOpen ? "open" : ""}`}
+          />
+        </div>
+        {isBoardsOpen && (
+          <div className="filter-options">
+            {boards.map((board) => (
+              <label key={board.code} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={selectedBoards.includes(board.code)}
+                  onChange={() => handleBoardToggle(board.code)}
+                />
+                <span className="checkmark"></span>
+                {board.name}
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="filter-section">
+        <div
+          className="filter-title"
+          onClick={() => setIsCancellationPolicyOpen(!isCancellationPolicyOpen)}
+        >
+          {tSearch("cancellationPolicy") || "Cancellation Policy"}
+          <Image
+            src={downBlackArrowIcon}
+            width="20"
+            height="20"
+            alt="down arrow"
+            className={`dropdown-arrow ${isCancellationPolicyOpen ? "open" : ""}`}
+          />
+        </div>
+        {isCancellationPolicyOpen && (
+          <div className="filter-options">
+            <label className="filter-option">
+              <input
+                type="checkbox"
+                checked={isRefundable}
+                onChange={() => setIsRefundable(!isRefundable)}
+              />
+              <span className="checkmark"></span>
+              {tSearch("refundable") || "Refundable"}
+            </label>
+            <label className="filter-option">
+              <input
+                type="checkbox"
+                checked={isNonRefundable}
+                onChange={() => setIsNonRefundable(!isNonRefundable)}
+              />
+              <span className="checkmark"></span>
+              {tSearch("nonRefundable") || "Non-refundable"}
+            </label>
           </div>
         )}
       </div>
