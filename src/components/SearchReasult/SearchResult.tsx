@@ -140,7 +140,7 @@ const SearchResult = () => {
 
   // Zone filter states
   const [isZoneOpen, setIsZoneOpen] = useState(true);
-  const [selectedZoneCodes, setSelectedZoneCodes] = useState<number[]>([]);
+  const [selectedZoneCodes, setSelectedZoneCodes] = useState<(number | string)[]>([]);
   const [showAllZones, setShowAllZones] = useState(false);
 
   // Facility property filter states
@@ -1109,7 +1109,7 @@ const SearchResult = () => {
   }, [selectedAccommodationCodes]);
 
   const handleZoneToggle = (code: number | string) => {
-    setSelectedZoneCodes((prev: any[]) => {
+    setSelectedZoneCodes((prev) => {
       const exists = prev.some(c => String(c) === String(code));
       return exists
         ? prev.filter((c) => String(c) !== String(code))
