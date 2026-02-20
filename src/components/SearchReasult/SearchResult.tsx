@@ -394,7 +394,7 @@ const SearchResult = () => {
         const hotelZoneCode =
           "zoneCode" in hotel ? (hotel as HotelItem).zoneCode : null;
 
-        if (!hotelZoneCode || !selectedZoneCodes.includes(hotelZoneCode)) {
+        if (!hotelZoneCode || !selectedZoneCodes.some(code => String(code) === String(hotelZoneCode))) {
           return false;
         }
       }
@@ -1108,10 +1108,12 @@ const SearchResult = () => {
     }
   }, [selectedAccommodationCodes]);
 
-  const handleZoneToggle = (code: number) => {
-    setSelectedZoneCodes((prev) => {
-      const exists = prev.includes(code);
-      return exists ? prev.filter((c) => c !== code) : [...prev, code];
+  const handleZoneToggle = (code: number | string) => {
+    setSelectedZoneCodes((prev: any[]) => {
+      const exists = prev.some(c => String(c) === String(code));
+      return exists
+        ? prev.filter((c) => String(c) !== String(code))
+        : [...prev, code];
     });
   };
 
@@ -1139,6 +1141,18 @@ const SearchResult = () => {
     setSelectedRoomFacilityCodes([]);
     setSelectedHotelFacilityCodes([]);
     setHotelNameFilter("");
+    setSelectedBoards([]);
+    setIsRefundable(false);
+    setIsNonRefundable(false);
+
+    // Sync with store to ensure persistence is also cleared
+    updateHotelFilters({
+      starRating: null,
+      minPrice: null,
+      maxPrice: null,
+      accommodations: null,
+      boards: null,
+    });
   };
 
   // Price slider handlers
@@ -1585,7 +1599,7 @@ const SearchResult = () => {
                 <label key={zone.code} className="filter-option">
                   <input
                     type="checkbox"
-                    checked={selectedZoneCodes.includes(zone.code)}
+                    checked={selectedZoneCodes.some(c => String(c) === String(zone.code))}
                     onChange={() => handleZoneToggle(zone.code)}
                   />
                   <span className="checkmark"></span>
@@ -2060,7 +2074,7 @@ const SearchResult = () => {
                       [...Array(6)].map((_, index) => (
                         <HotelCardSkeleton key={`skeleton-${index}`} />
                       ))
-                    ) : apiHotels.length > 0 ? (
+                    ) : sortedHotels.length > 0 ? (
                       // Show actual hotel results
                       visibleHotels.map(
                         (hotel: HotelItem | FavoriteHotel, index: number) => {
