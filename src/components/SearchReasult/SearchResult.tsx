@@ -29,7 +29,7 @@ import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { HotelItem, AccommodationType, HotelRate, HotelAvailabilityRoom, Board } from "@/types/hotel";
 import { hotelService } from "@/services/hotelService";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
-import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
+import { buildHotelbedsImageUrl } from "@/constants";
 import HotelCardSkeleton from "../common/LoadingSkeleton/HotelCardSkeleton";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { buildHotelSlug } from "@/lib/hotelSlug";
@@ -67,7 +67,7 @@ const SearchResult = () => {
     search: triggerSearch,
     updateFilters: updateHotelFilters,
   } = useHotelSearchStore();
-  console.log("apiHotels", apiHotels);
+  // console.log("apiHotels", apiHotels);
 
   // Local UI state
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
@@ -1694,7 +1694,7 @@ const SearchResult = () => {
           className="filter-title"
           onClick={() => setIsBoardsOpen(!isBoardsOpen)}
         >
-          {tSearch("availableMeals") || "Available Meals"}
+          {tSearch("boardType") || "Board Type"}
           <Image
             src={downBlackArrowIcon}
             width="20"
