@@ -154,7 +154,6 @@ const SearchResult = () => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [isBoardsOpen, setIsBoardsOpen] = useState(true);
   const [selectedBoards, setSelectedBoards] = useState<string[]>([]);
-
   const [initialSearchDone, setInitialSearchDone] = useState(false);
 
   // Cancellation Policy filter state
@@ -188,7 +187,7 @@ const SearchResult = () => {
     const fetchBoards = async () => {
       try {
         const response = await hotelService.getBoards();
-        console.log("Boards Data:", response);
+        // console.log("Boards Data:", response);
         if (response.status && response.data && response.data.board_types) {
           setBoards(response.data.board_types);
         }
@@ -321,7 +320,7 @@ const SearchResult = () => {
   ) => {
     if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
-      console.log(item)
+      // console.log("hotel ===>", hotel)
       // Parse rate string to number, handling empty strings and invalid values
       const parseRate = (rate: string | undefined): number | null => {
         if (!rate || rate.trim() === "") return null;
@@ -346,7 +345,25 @@ const SearchResult = () => {
   };
 
   const sortedHotels = useMemo(() => {
-    let sortable = [...apiHotels];
+    // Deduplicate rates for all rooms in all hotels before filtering
+    let sortable = apiHotels.map(hotel => {
+      // Rates are primarily present in HotelItem from availability search
+      if ('rooms' in hotel && Array.isArray(hotel.rooms) && 'minRate' in hotel) {
+        const hotelItem = hotel as HotelItem;
+        return {
+          ...hotelItem,
+          rooms: hotelItem.rooms.map((room: HotelAvailabilityRoom) => ({
+            ...room,
+            rates: (room.rates || []).reduce((acc: HotelRate[], rate: HotelRate) => {
+              const isDuplicate = acc.some((r) => r.rateKey === rate.rateKey);
+              if (!isDuplicate) { acc.push(rate); }
+              return acc;
+            }, [])
+          }))
+        };
+      }
+      return hotel;
+    });
 
     // 1) Apply client-side filters (star rating, price range, property type)
     sortable = sortable.filter((hotel) => {
@@ -360,6 +377,7 @@ const SearchResult = () => {
 
       // Star rating filter (exact match to keep behavior close to API-side filtering)
       if (selectedStarRating !== null) {
+        // console.log("selectedStarRating", selectedStarRating, getStarRating(hotel));
         if (getStarRating(hotel) !== selectedStarRating) {
           return false;
         }
@@ -380,6 +398,7 @@ const SearchResult = () => {
           "accommodationTypeCode" in hotel
             ? (hotel as FavoriteHotel).accommodationTypeCode
             : null;
+        // console.log("selectedAccommodationCodes", selectedAccommodationCodes, accommodationCode);
 
         if (
           !accommodationCode ||
@@ -393,7 +412,7 @@ const SearchResult = () => {
       if (selectedZoneCodes.length > 0) {
         const hotelZoneCode =
           "zoneCode" in hotel ? (hotel as HotelItem).zoneCode : null;
-
+        // console.log("hotelZoneCode", hotelZoneCode, selectedZoneCodes);
         if (!hotelZoneCode || !selectedZoneCodes.some(code => String(code) === String(hotelZoneCode))) {
           return false;
         }
@@ -402,13 +421,11 @@ const SearchResult = () => {
       // Room Facility filter
       if (selectedRoomFacilityCodes.length > 0) {
         const hotelFacilities = "facilities" in hotel ? (hotel as HotelItem).facilities || [] : [];
+        // console.log("hotelFacilities", hotelFacilities, selectedRoomFacilityCodes);
         // Check if hotel matches all selected room facilities
         const hasAllSelectedResponse = selectedRoomFacilityCodes.every((code) => {
-          return hotelFacilities.some(f => f.facilityCode === code && f.facilityGroupCode === 60); // 60 is typically room facilities, but based on user request we are just matching codes. However, data structure has group codes.
-          // Wait, user provided specific codes. Let's just match the facilityCode regardless of group for now unless specified.
-          // Actually, the user separated them into "Hotel" and "Room" lists.
-          // Let's strict match the code.
           return hotelFacilities.some(f => f.facilityCode === code);
+          // return hotelFacilities.some(f => f.facilityCode === code);
         });
         if (!hasAllSelectedResponse) return false;
       }
@@ -416,6 +433,8 @@ const SearchResult = () => {
       // Hotel Facility filter
       if (selectedHotelFacilityCodes.length > 0) {
         const hotelFacilities = "facilities" in hotel ? (hotel as HotelItem).facilities || [] : [];
+        // console.log("hotelFacilities", hotelFacilities, selectedRoomFacilityCodes);
+
         const hasAllSelectedHotel = selectedHotelFacilityCodes.every((code) => {
           return hotelFacilities.some(f => f.facilityCode === code);
         });
@@ -429,6 +448,7 @@ const SearchResult = () => {
 
         // Helper to check if a single rate is non-refundable based on user logic
         const isRateNonRefundable = (rate: HotelRate) => {
+          // console.log("rate", rate);
           return rate.rateClass === "NRF" || !rate.cancellationPolicies || rate.cancellationPolicies.length === 0;
         };
 
