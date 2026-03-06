@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 // import LocationPicker from "../core/LocationPicker/LocationPicker";
 import DatePicker from "../core/DatePicker/DatePicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
@@ -12,7 +12,7 @@ import plusIcon from "@/assets/images/plus-icon.svg";
 import guestsIcon from "@/assets/images/guests-icon.svg";
 import "./FilterComponents.scss";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
-import type { Location, Room } from "@/store/searchFiltersStore";
+import type { Room } from "@/store/searchFiltersStore";
 
 interface FilterComponentsProps {
   onCheckAvailability?: () => void;
@@ -20,13 +20,11 @@ interface FilterComponentsProps {
 
 const FilterComponents = ({ onCheckAvailability }: FilterComponentsProps) => {
   const t = useTranslations("HotelDetails");
-  const locale = useLocale();
   // Use global search filters store
-  const { 
-    filters, 
-    setLocation, 
-    setCheckInDate, 
-    setCheckOutDate, 
+  const {
+    filters,
+    setCheckInDate,
+    setCheckOutDate,
     setRooms
   } = useSearchFiltersStore();
 
@@ -55,7 +53,6 @@ const FilterComponents = ({ onCheckAvailability }: FilterComponentsProps) => {
 
 
   // Refs for click outside detection
-  const locationPickerRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestsPickerRef = useRef<HTMLDivElement>(null);
 
@@ -118,7 +115,7 @@ const FilterComponents = ({ onCheckAvailability }: FilterComponentsProps) => {
   const getGuestsDisplayText = () => {
     // Safety check for rooms array
     const rooms = filters.rooms || [{ adults: 0, children: 0 }];
-    
+
     const totalAdults = rooms.reduce(
       (acc, room) => acc + (room?.adults || 0),
       0

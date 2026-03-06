@@ -90,15 +90,15 @@ const Header = () => {
     //   }
     // };
 
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (!target.closest(".header-language-dropdown")) {
-        setIsLanguageMenuOpen(false);
-      }
-      if (!target.closest(".profile-dropdown")) {
-        setIsProfileMenuOpen(false);
-      }
-    };
+    // const handleClickOutside = (event: MouseEvent) => {
+    //   const target = event.target as Element;
+    //   if (!target.closest(".header-language-dropdown")) {
+    //     setIsLanguageMenuOpen(false);
+    //   }
+    //   if (!target.closest(".profile-dropdown")) {
+    //     setIsProfileMenuOpen(false);
+    //   }
+    // };
 
     // Check on mount
     // checkHeaderSticky();
@@ -290,9 +290,8 @@ const Header = () => {
           </div>
           <div className="profile-language-box d-flex align-items-center">
             <div
-              className={`header-language-dropdown ${
-                isLanguageMenuOpen ? "open" : ""
-              }`}
+              className={`header-language-dropdown ${isLanguageMenuOpen ? "open" : ""
+                }`}
             >
               <button
                 className="language-btn"
@@ -361,9 +360,8 @@ const Header = () => {
             {isAuthenticated && (
               <div className="user-login-box">
                 <div
-                  className={`profile-dropdown ${
-                    isProfileMenuOpen ? "open" : ""
-                  }`}
+                  className={`profile-dropdown ${isProfileMenuOpen ? "open" : ""
+                    }`}
                 >
                   <button
                     className="profile-button"

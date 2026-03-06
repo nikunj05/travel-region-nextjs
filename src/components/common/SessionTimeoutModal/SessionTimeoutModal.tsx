@@ -2,7 +2,6 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import styles from "./SessionTimeoutModal.module.scss";
-import Image from "next/image";
 
 // You might not need a close icon for this specific modal since forcing refresh is the goal,
 // but if you want it to look EXACTLY like LoginModal, we can add it or just omit it.

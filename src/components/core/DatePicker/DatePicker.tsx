@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./DatePicker.scss";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 interface DatePickerProps {
   isOpen: boolean;
@@ -20,7 +20,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
   minDate,
 }) => {
   const t = useTranslations("DatePicker");
-  const locale = useLocale();
   const [isClient, setIsClient] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
   // const [selectingCheckout, setSelectingCheckout] = useState(false);
@@ -140,7 +139,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(newMonth.getMonth() + (direction === "next" ? 1 : -1));
     setCurrentMonth(newMonth);
-    
+
     if (direction === "next") {
       // Add to navigation history when going forward
       setNavigationHistory(prev => [...prev, newMonth]);
@@ -161,7 +160,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const days = getDaysInMonth(date);
     const month = date.getMonth();
     const year = date.getFullYear();
-    
+
     // Show navigation arrows only on the right calendar (second calendar)
     const showNavigation = !isFirstCalendar;
     // Show previous arrow only if we have navigation history (user has navigated forward)
@@ -184,7 +183,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   type="button"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               )}
@@ -195,7 +194,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   type="button"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               )}
@@ -220,11 +219,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
               <button
                 key={index}
                 type="button"
-                className={`calendar-day ${
-                  !isCurrentMonth ? "other-month" : ""
-                } ${isSelected ? "selected" : ""} ${
-                  isInRange ? "in-range" : ""
-                } ${isDisabled ? "disabled" : ""}`}
+                className={`calendar-day ${!isCurrentMonth ? "other-month" : ""
+                  } ${isSelected ? "selected" : ""} ${isInRange ? "in-range" : ""
+                  } ${isDisabled ? "disabled" : ""}`}
                 onClick={() => handleDateClick(day)}
                 disabled={isDisabled}
               >

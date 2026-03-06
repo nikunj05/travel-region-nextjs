@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import NearHotelImage from "@/assets/images/nearby-hotel-img.jpg";
 import starFillIcon from "@/assets/images/star-fill-icon.svg";
 import { useRouter } from "@/i18/navigation";
-import { buildHotelbedsImageUrl, currencyImage } from "@/constants";
+import { buildHotelbedsImageUrl } from "@/constants";
 import { buildHotelSlug } from "@/lib/hotelSlug";
 import { HotelItem } from "@/types/hotel";
 import { FavoriteHotel, HotelImage } from "@/types/favorite";
@@ -188,20 +188,76 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
       <Slider ref={sliderRef} {...settings} className="nearby-hotels-slider">
         {showPlaceholder
           ? Array.from({ length: placeholderCount }).map((_, index) => (
-              <div key={`placeholder-${index}`} className="nearby-hotels-card">
+            <div key={`placeholder-${index}`} className="nearby-hotels-card">
+              <div className="nearby-hotels-card-img">
+                <Image
+                  src={NearHotelImage}
+                  width={378}
+                  height={203}
+                  alt="Nearby hotel"
+                />
+              </div>
+              <div className="nearby-hotels-card-details">
+                <h3 className="hotel-room-name">{t("placeholderTitle")}</h3>
+                <div className="hotel-details-rating d-flex align-items-center">
+                  <div className="hotel-details-rating-star d-flex align-items-center">
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <Image
+                        key={starIndex}
+                        src={starFillIcon}
+                        width={12}
+                        height={12}
+                        alt="star"
+                        className="hotel-rating-icon"
+                      />
+                    ))}
+                  </div>
+                  <span className="rating-value-wrapper d-flex align-items-center">
+                    <span className="rating-value">
+                      {t("placeholderRating")}
+                    </span>
+                  </span>
+                </div>
+                <div className="nearby-hotels-price-info">
+                  <span className="total-price">{t("placeholderPrice")}</span>
+                  <div className="hotel-room-number">
+                    {t("includesTaxesFees")}
+                  </div>
+                </div>
+
+                <div className="nearby-hotels-room-action">
+                  <button
+                    className="button-primary room-booking-btn w-100"
+                    disabled
+                  >
+                    {t("bookNow")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+          : hotelsToDisplay.map((hotel) => {
+            const hotelCode = getHotelCode(hotel);
+            const mainImage = getMainImage(hotel) || NearHotelImage;
+            const rating = getStarRating(hotel);
+            const minRate = getHotelMinRate(hotel);
+            const hotelSlug = buildHotelSlug(getHotelName(hotel), hotelCode);
+
+            return (
+              <div key={getHotelId(hotel)} className="nearby-hotels-card">
                 <div className="nearby-hotels-card-img">
                   <Image
-                    src={NearHotelImage}
+                    src={mainImage}
                     width={378}
                     height={203}
-                    alt="Nearby hotel"
+                    alt={getHotelName(hotel)}
                   />
                 </div>
                 <div className="nearby-hotels-card-details">
-                  <h3 className="hotel-room-name">{t("placeholderTitle")}</h3>
+                  <h3 className="hotel-room-name">{getHotelName(hotel)}</h3>
                   <div className="hotel-details-rating d-flex align-items-center">
                     <div className="hotel-details-rating-star d-flex align-items-center">
-                      {Array.from({ length: 5 }).map((_, starIndex) => (
+                      {Array.from({ length: rating }).map((_, starIndex) => (
                         <Image
                           key={starIndex}
                           src={starFillIcon}
@@ -213,13 +269,31 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                       ))}
                     </div>
                     <span className="rating-value-wrapper d-flex align-items-center">
-                      <span className="rating-value">
-                        {t("placeholderRating")}
-                      </span>
+                      <span className="rating-value">{rating}</span>
                     </span>
                   </div>
                   <div className="nearby-hotels-price-info">
-                    <span className="total-price">{t("placeholderPrice")}</span>
+                    <span className="total-price">
+                      {minRate !== null ? (
+                        <span className="d-inline-flex align-items-center gap-1">
+                          <span
+                            className="currency-icon"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{
+                              __html: buildCurrencySvgMarkup("#09090b"),
+                            }}
+                            style={{ display: "inline-flex" }}
+                          />
+                          {minRate.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      ) : (
+                        t("priceUnavailable")
+                      )}
+                      {/* <span>/per night</span> */}
+                    </span>
                     <div className="hotel-room-number">
                       {t("includesTaxesFees")}
                     </div>
@@ -228,93 +302,19 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                   <div className="nearby-hotels-room-action">
                     <button
                       className="button-primary room-booking-btn w-100"
-                      disabled
+                      onClick={() =>
+                        hotelSlug &&
+                        router.push(`/hotel-details/${hotelSlug}`)
+                      }
+                      disabled={!hotelCode}
                     >
                       {t("bookNow")}
                     </button>
                   </div>
                 </div>
               </div>
-            ))
-          : hotelsToDisplay.map((hotel) => {
-              const hotelCode = getHotelCode(hotel);
-              const mainImage = getMainImage(hotel) || NearHotelImage;
-              const rating = getStarRating(hotel);
-              const minRate = getHotelMinRate(hotel);
-              const hotelSlug = buildHotelSlug(getHotelName(hotel), hotelCode);
-
-              return (
-                <div key={getHotelId(hotel)} className="nearby-hotels-card">
-                  <div className="nearby-hotels-card-img">
-                    <Image
-                      src={mainImage}
-                      width={378}
-                      height={203}
-                      alt={getHotelName(hotel)}
-                    />
-                  </div>
-                  <div className="nearby-hotels-card-details">
-                    <h3 className="hotel-room-name">{getHotelName(hotel)}</h3>
-                    <div className="hotel-details-rating d-flex align-items-center">
-                      <div className="hotel-details-rating-star d-flex align-items-center">
-                        {Array.from({ length: rating }).map((_, starIndex) => (
-                          <Image
-                            key={starIndex}
-                            src={starFillIcon}
-                            width={12}
-                            height={12}
-                            alt="star"
-                            className="hotel-rating-icon"
-                          />
-                        ))}
-                      </div>
-                      <span className="rating-value-wrapper d-flex align-items-center">
-                        <span className="rating-value">{rating}</span>
-                      </span>
-                    </div>
-                    <div className="nearby-hotels-price-info">
-                      <span className="total-price">
-                        {minRate !== null ? (
-                          <span className="d-inline-flex align-items-center gap-1">
-                            <span
-                              className="currency-icon"
-                              aria-hidden="true"
-                              dangerouslySetInnerHTML={{
-                                __html: buildCurrencySvgMarkup("#09090b"),
-                              }}
-                              style={{ display: "inline-flex" }}
-                            />
-                            {minRate.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
-                          </span>
-                        ) : (
-                          t("priceUnavailable")
-                        )}
-                        {/* <span>/per night</span> */}
-                      </span>
-                      <div className="hotel-room-number">
-                        {t("includesTaxesFees")}
-                      </div>
-                    </div>
-
-                    <div className="nearby-hotels-room-action">
-                      <button
-                        className="button-primary room-booking-btn w-100"
-                        onClick={() =>
-                          hotelSlug &&
-                          router.push(`/hotel-details/${hotelSlug}`)
-                        }
-                        disabled={!hotelCode}
-                      >
-                        {t("bookNow")}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            );
+          })}
       </Slider>
       <div className="testimonial-actions">
         <div className="testimonial-dots" ref={dotsRef}></div>

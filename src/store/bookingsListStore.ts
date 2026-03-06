@@ -37,7 +37,7 @@ interface BookingsListState {
   clearError: () => void
 }
 
-export const useBookingsListStore = create<BookingsListState>((set, get) => ({
+export const useBookingsListStore = create<BookingsListState>((set) => ({
   bookings: [],
   loading: false,
   error: null,

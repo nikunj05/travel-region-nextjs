@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Controller, UseFormReturn } from "react-hook-form";
@@ -50,11 +49,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const watchSetupRef = useRef(false);
   const lastLanguageRef = useRef<string | null>(null);
   const [countryOptions, setCountryOptions] = React.useState<SelectWithFlagOption[]>([]);
-  const [guestTypes, setGuestTypes] = useState<{ [key: string]: string }>({
-    room1: 'adult',
-    room2: 'adult',
-    room3: 'adult'
-  });
 
   const [guestCounts, setGuestCounts] = useState({
     room1: { adults: 1, children: 0 },
