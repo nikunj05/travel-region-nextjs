@@ -273,7 +273,7 @@ const SearchResult = () => {
 
     return () => clearTimeout(timeoutId);
 
-  }, [selectedBoards, initialSearchDone, loading, triggerSearch, updateHotelFilters]); // Added missing dependencies.
+  }, [selectedBoards, initialSearchDone]); // Removed loading, triggerSearch, and updateHotelFilters to prevent infinite loop.
 
   // Derived hotel lists
   const getHotelId = useCallback((hotel: HotelItem | FavoriteHotel) =>
@@ -920,7 +920,7 @@ const SearchResult = () => {
         preventDefault: () => { },
       } as React.MouseEvent<HTMLButtonElement>);
     }
-  }, [filters.location, apiHotels, loading, handleSearchClick]);
+  }, [filters.location, apiHotels, handleSearchClick]); // Removed loading to prevent loop; rely on apiHotels empty check.
 
   // Re-trigger search when locale changes (if we have valid search criteria)
   useEffect(() => {
@@ -981,7 +981,7 @@ const SearchResult = () => {
           console.error("Locale search promise error:", err);
         });
     }
-  }, [locale, loading]);
+  }, [locale]); // Removed loading to prevent infinite loop when search state changes.
 
   // Lock body scroll when mobile filter modal is open
   useEffect(() => {
