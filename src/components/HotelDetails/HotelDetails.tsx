@@ -1829,10 +1829,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </button>
                     </div> */}
                   </div>
-                  <div className="free-cancellation-section d-flex align-items-center">
+                  {/* <div className="free-cancellation-section d-flex align-items-center">
                     <span>{t("labels.freeCancellation")}</span>
                     <span>{t("labels.noRepay")}</span>
-                  </div>
+                  </div> */}
                   <div className="share-like-section d-flex align-items-center">
                     <button
                       className="share-btn favarite-btn"
@@ -2338,20 +2338,20 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                               {room.rates && room.rates.length > 0 ? (
                                 (() => {
                                   // Get unique rates based on rateKey
-                                  const uniqueRates = room.rates.reduce(
-                                    (acc: ProcessedRate[], rate) => {
-                                      const isDuplicate = acc.some(
-                                        (r) => r.rateKey === rate.rateKey
-                                      );
-                                      if (!isDuplicate) {
-                                        acc.push(rate);
-                                      }
-                                      return acc;
-                                    },
-                                    []
-                                  );
+                                  // const uniqueRates = room.rates.reduce(
+                                  //   (acc: ProcessedRate[], rate) => {
+                                  //     const isDuplicate = acc.some(
+                                  //       (r) => r.rateKey === rate.rateKey
+                                  //     );
+                                  //     if (!isDuplicate) {
+                                  //       acc.push(rate);
+                                  //     }
+                                  //     return acc;
+                                  //   },
+                                  //   []
+                                  // );
 
-                                  return uniqueRates.map((rate, rateIndex) => {
+                                  return room.rates.map((rate, rateIndex) => {
                                     const rateKey = `${room.roomCode}_${rate.rateKey}`;
                                     const selectedCount =
                                       selectedRoomCounts[rateKey] || 0;
@@ -2629,7 +2629,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                                             </div>
                                           </div>
                                         </div>
-                                        {rateIndex < uniqueRates.length - 1 && (
+                                        {rateIndex < room.rates.length - 1 && (
                                           <div className="more-room-card-deparetion"></div>
                                         )}
                                       </React.Fragment>

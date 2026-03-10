@@ -23,16 +23,16 @@ import { buildHotelSlug } from "@/lib/hotelSlug";
 // Helper function to format date range (e.g., "12 -15 Aug 2025")
 const formatDateRange = (checkIn: string | undefined, checkOut: string | undefined): string => {
   if (!checkIn || !checkOut) return "";
-  
+
   try {
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
-    
+
     const checkInDay = checkInDate.getDate();
     const checkOutDay = checkOutDate.getDate();
     const month = checkOutDate.toLocaleDateString("en-US", { month: "short" });
     const year = checkOutDate.getFullYear();
-    
+
     return `${checkInDay} - ${checkOutDay} ${month} ${year}`;
   } catch (error) {
     console.error("Error formatting date range:", error);
@@ -77,6 +77,7 @@ export default function Bookings() {
     hotel_code: "",
   });
   const [cancellingOrder, setCancellingOrder] = useState<string | null>(null);
+  const [downloadingOrder, setDownloadingOrder] = useState<string | null>(null);
   const [completingOrder, setCompletingOrder] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isCancellationModalOpen, setIsCancellationModalOpen] = useState(false);
@@ -92,7 +93,7 @@ export default function Bookings() {
     }>;
   } | null>(null);
 
-  console.log("bookings", bookings);
+  // console.log("bookings", bookings);
 
   // Sync local currentPage with store's currentPage from API
   useEffect(() => {
@@ -109,7 +110,7 @@ export default function Bookings() {
     params.page = currentPage;
     // Use per_page from API response (15) or default to 15
     params.per_page = perPage || 15;
-    
+
     fetchBookings(params);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
@@ -154,7 +155,7 @@ export default function Bookings() {
   }, [total, perPage, lastPage]);
 
   // Debug pagination
-  console.log("Pagination debug:", { total, perPage, lastPage, totalPages, currentPage });
+  // console.log("Pagination debug:", { total, perPage, lastPage, totalPages, currentPage });
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -177,10 +178,10 @@ export default function Bookings() {
       // Check if policies exist and have data
       // API response structure: { status: true, message: "...", data: { cancellation_policies: [...] } }
       const responseData = cancellationPoliciesResponse.data as CancellationPoliciesResponseData | CancellationPolicy[] | undefined;
-      const policies = (responseData && 'cancellation_policies' in responseData 
-                        ? responseData.cancellation_policies 
-                        : Array.isArray(responseData) ? responseData : []) || [];
-      
+      const policies = (responseData && 'cancellation_policies' in responseData
+        ? responseData.cancellation_policies
+        : Array.isArray(responseData) ? responseData : []) || [];
+
       if (policies && policies.length > 0) {
         // Show modal with policies
         setCancellationPoliciesData({
@@ -224,6 +225,28 @@ export default function Bookings() {
       toast.error(errorMessage);
     } finally {
       setCancellingOrder(null);
+    }
+  };
+
+  const handleDownloadPdf = async (order: string | undefined) => {
+    if (!order) {
+      toast.error("Invalid booking order. Please try again.");
+      return;
+    }
+
+    try {
+      setDownloadingOrder(order);
+      const response = await bookingService.getBookingPdf(order);
+      if (response.status && response.data.pdf_url) {
+        window.open(response.data.pdf_url, "_blank");
+      } else {
+        toast.error(response.message || "Failed to get PDF URL.");
+      }
+    } catch (err: unknown) {
+      const errorMessage = formatApiErrorMessage(err);
+      toast.error(errorMessage);
+    } finally {
+      setDownloadingOrder(null);
     }
   };
 
@@ -384,53 +407,53 @@ export default function Bookings() {
         </div>
       ) : (
         <div className="hotel-booking-card d-grid">
-        {bookings.map((booking) => {
-          const hotelName = booking.hotel_name || "Hotel";
-          const hotelLocation = booking.hotel_location || "";
+          {bookings.map((booking) => {
+            const hotelName = booking.hotel_name || "Hotel";
+            const hotelLocation = booking.hotel_location || "";
 
-          // Safely determine hotel image source
-          let hotelImageSrc: string | typeof HotelBookingImg = HotelBookingImg;
+            // Safely determine hotel image source
+            let hotelImageSrc: string | typeof HotelBookingImg = HotelBookingImg;
 
-          if (Array.isArray(booking.hotel_images) && booking.hotel_images.length > 0) {
-            const firstImage = booking.hotel_images[0];
-            if (typeof firstImage === "string") {
-              const candidate = firstImage.trim();
+            if (Array.isArray(booking.hotel_images) && booking.hotel_images.length > 0) {
+              const firstImage = booking.hotel_images[0];
+              if (typeof firstImage === "string") {
+                const candidate = firstImage.trim();
+                if (candidate && /^https?:\/\//.test(candidate)) {
+                  hotelImageSrc = candidate;
+                }
+              }
+            } else if (typeof booking.hotel_images === "string") {
+              const candidate = booking.hotel_images.trim();
               if (candidate && /^https?:\/\//.test(candidate)) {
                 hotelImageSrc = candidate;
               }
             }
-          } else if (typeof booking.hotel_images === "string") {
-            const candidate = booking.hotel_images.trim();
-            if (candidate && /^https?:\/\//.test(candidate)) {
-              hotelImageSrc = candidate;
-            }
-          }
 
-          return (
-            <div key={booking.id} className="hotel-booking-card-item">
-              <div
-                className="hotel-booking-image"
-                onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
-                style={{ cursor: "pointer" }}
-              >
-                <Image
-                  src={hotelImageSrc}
-                  alt={hotelName}
-                  width={414}
-                  height={222}
-                  className="hotel-booking-img"
-                />
-              </div>
-              <div className="hotel-booking-info">
-                <div className="hotel-title-with-rating d-flex align-items-start justify-content-between">
-                  <h2
-                    className="hotel-title"
-                    onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {hotelName}
-                  </h2>
-                  {/* <div className="hotel-review-rating d-flex align-items-center">
+            return (
+              <div key={booking.id} className="hotel-booking-card-item">
+                <div
+                  className="hotel-booking-image"
+                  onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={hotelImageSrc}
+                    alt={hotelName}
+                    width={414}
+                    height={222}
+                    className="hotel-booking-img"
+                  />
+                </div>
+                <div className="hotel-booking-info">
+                  <div className="hotel-title-with-rating d-flex align-items-start justify-content-between">
+                    <h2
+                      className="hotel-title"
+                      onClick={() => handleOpenHotelDetails(booking.hotel_code, booking.hotel_name)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {hotelName}
+                    </h2>
+                    {/* <div className="hotel-review-rating d-flex align-items-center">
                     <Image
                       src={StartIcon}
                       alt="star icon"
@@ -440,76 +463,8 @@ export default function Bookings() {
                     />
                     4.9 {t("rating")}
                   </div> */}
-                </div>
-                <div className="hotel-location d-flex align-items-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.3481 17.8071C10.9867 18.1455 10.5037 18.3346 10.0009 18.3346C9.49821 18.3346 9.01515 18.1455 8.65374 17.8071C5.34418 14.6896 0.908969 11.2071 3.07189 6.15102C4.24136 3.41727 7.04862 1.66797 10.0009 1.66797C12.9532 1.66797 15.7605 3.41727 16.93 6.15102C19.0902 11.2007 14.6658 14.7004 11.3481 17.8071Z"
-                      stroke="#71717B"
-                      strokeWidth="1.25"
-                    />
-                    <path
-                      d="M12.9173 9.16667C12.9173 10.7775 11.6115 12.0833 10.0007 12.0833C8.38982 12.0833 7.08398 10.7775 7.08398 9.16667C7.08398 7.55584 8.38982 6.25 10.0007 6.25C11.6115 6.25 12.9173 7.55584 12.9173 9.16667Z"
-                      stroke="#71717B"
-                      strokeWidth="1.25"
-                    />
-                  </svg>
-                  {hotelLocation || "—"}
-                </div>
-                <div className="date-guest-number d-flex align-items-center justify-content-between">
-                  <div className="text-with-icon d-flex align-items-center">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15 1.66797V3.33464M5 1.66797V3.33464"
-                        stroke="#71717B"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M9.99756 10.8359H10.005M9.99756 14.1693H10.005M13.3272 10.8359H13.3346M6.66797 10.8359H6.67545M6.66797 14.1693H6.67545"
-                        stroke="#71717B"
-                        strokeWidth="1.66667"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M2.91797 6.66797H17.0846"
-                        stroke="#71717B"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M2.08398 10.2027C2.08398 6.57161 2.08398 4.75607 3.12742 3.62803C4.17085 2.5 5.85023 2.5 9.20898 2.5H10.7923C14.1511 2.5 15.8305 2.5 16.8739 3.62803C17.9173 4.75607 17.9173 6.57161 17.9173 10.2027V10.6306C17.9173 14.2617 17.9173 16.0773 16.8739 17.2053C15.8305 18.3333 14.1511 18.3333 10.7923 18.3333H9.20898C5.85023 18.3333 4.17085 18.3333 3.12742 17.2053C2.08398 16.0773 2.08398 14.2617 2.08398 10.6306V10.2027Z"
-                        stroke="#71717B"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M2.5 6.66797H17.5"
-                        stroke="#71717B"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {formatDateRange(booking.check_in, booking.check_out) || "N/A"}
                   </div>
-                  <div className="text-with-icon d-flex align-items-center">
+                  <div className="hotel-location d-flex align-items-center">
                     <svg
                       width="20"
                       height="20"
@@ -518,71 +473,149 @@ export default function Bookings() {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M2.5 18.3346H17.5C17.5 14.6527 14.1421 11.668 10 11.668C5.85786 11.668 2.5 14.6527 2.5 18.3346Z"
+                        d="M11.3481 17.8071C10.9867 18.1455 10.5037 18.3346 10.0009 18.3346C9.49821 18.3346 9.01515 18.1455 8.65374 17.8071C5.34418 14.6896 0.908969 11.2071 3.07189 6.15102C4.24136 3.41727 7.04862 1.66797 10.0009 1.66797C12.9532 1.66797 15.7605 3.41727 16.93 6.15102C19.0902 11.2007 14.6658 14.7004 11.3481 17.8071Z"
                         stroke="#71717B"
                         strokeWidth="1.25"
                       />
                       <path
-                        d="M13.75 5.41797C13.75 7.48904 12.0711 9.16797 10 9.16797C7.92893 9.16797 6.25 7.48904 6.25 5.41797C6.25 3.3469 7.92893 1.66797 10 1.66797C12.0711 1.66797 13.75 3.3469 13.75 5.41797Z"
+                        d="M12.9173 9.16667C12.9173 10.7775 11.6115 12.0833 10.0007 12.0833C8.38982 12.0833 7.08398 10.7775 7.08398 9.16667C7.08398 7.55584 8.38982 6.25 10.0007 6.25C11.6115 6.25 12.9173 7.55584 12.9173 9.16667Z"
                         stroke="#71717B"
                         strokeWidth="1.25"
                       />
                     </svg>
-                    {getTotalGuests(booking.adults, booking.children)} {t("guests")}
+                    {hotelLocation || "—"}
+                  </div>
+                  <div className="date-guest-number d-flex align-items-center justify-content-between">
+                    <div className="text-with-icon d-flex align-items-center">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M15 1.66797V3.33464M5 1.66797V3.33464"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M9.99756 10.8359H10.005M9.99756 14.1693H10.005M13.3272 10.8359H13.3346M6.66797 10.8359H6.67545M6.66797 14.1693H6.67545"
+                          stroke="#71717B"
+                          strokeWidth="1.66667"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M2.91797 6.66797H17.0846"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M2.08398 10.2027C2.08398 6.57161 2.08398 4.75607 3.12742 3.62803C4.17085 2.5 5.85023 2.5 9.20898 2.5H10.7923C14.1511 2.5 15.8305 2.5 16.8739 3.62803C17.9173 4.75607 17.9173 6.57161 17.9173 10.2027V10.6306C17.9173 14.2617 17.9173 16.0773 16.8739 17.2053C15.8305 18.3333 14.1511 18.3333 10.7923 18.3333H9.20898C5.85023 18.3333 4.17085 18.3333 3.12742 17.2053C2.08398 16.0773 2.08398 14.2617 2.08398 10.6306V10.2027Z"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M2.5 6.66797H17.5"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {formatDateRange(booking.check_in, booking.check_out) || "N/A"}
+                    </div>
+                    <div className="text-with-icon d-flex align-items-center">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2.5 18.3346H17.5C17.5 14.6527 14.1421 11.668 10 11.668C5.85786 11.668 2.5 14.6527 2.5 18.3346Z"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                        />
+                        <path
+                          d="M13.75 5.41797C13.75 7.48904 12.0711 9.16797 10 9.16797C7.92893 9.16797 6.25 7.48904 6.25 5.41797C6.25 3.3469 7.92893 1.66797 10 1.66797C12.0711 1.66797 13.75 3.3469 13.75 5.41797Z"
+                          stroke="#71717B"
+                          strokeWidth="1.25"
+                        />
+                      </svg>
+                      {getTotalGuests(booking.adults, booking.children)} {t("guests")}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="hotel-bookig-action d-flex align-items-center justify-content-between">
-                {booking.status === "pending" ? (
-                  <button
-                    className="hotel-bookig-action-btn button-primary"
-                    onClick={() => handleCompleteBooking(booking.order)}
-                    disabled={completingOrder === booking.order}
-                  >
-                    {completingOrder === booking.order ? `${t("completeBooking")}...` : t("completeBooking")}
-                  </button>
-                ) : booking.status === "cancelled" ? (
-                  <button
-                    className="hotel-bookig-action-btn cancel-button"
-                    disabled
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{ marginRight: "6px" }}
+                <div className="hotel-bookig-action d-flex align-items-center justify-content-between">
+                  {booking.status === "pending" ? (
+                    <button
+                      className="hotel-bookig-action-btn button-primary"
+                      onClick={() => handleCompleteBooking(booking.order)}
+                      disabled={completingOrder === booking.order}
                     >
-                      <path
-                        d="M15 5L5 15M5 5L15 15"
-                        stroke="#EF4444"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {t("bookingCanceled")}
-                  </button>
-                ) : (
-                  <button
-                    className="hotel-bookig-action-btn cancel-button"
-                    onClick={() => handleCancelBooking(booking.order)}
-                    disabled={cancellingOrder === booking.order}
-                  >
-                    {cancellingOrder === booking.order ? `${t("cancel")}...` : t("cancel")}
-                  </button>
-                )}
-                {/* <button className="hotel-bookig-action-btn button-primary">
+                      {completingOrder === booking.order ? `${t("completeBooking")}...` : t("completeBooking")}
+                    </button>
+                  ) : booking.status === "cancelled" ? (
+                    <button
+                      className="hotel-bookig-action-btn cancel-button"
+                      disabled
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ marginRight: "6px" }}
+                      >
+                        <path
+                          d="M15 5L5 15M5 5L15 15"
+                          stroke="#EF4444"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {t("bookingCanceled")}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        className="hotel-bookig-action-btn button-primary"
+                        onClick={() => handleDownloadPdf(booking.order)}
+                        disabled={downloadingOrder === booking.order}
+                      >
+                        {downloadingOrder === booking.order ? `${t("downloading")}` : t("downloadPdf")}
+                      </button>
+                      <button
+                        className="hotel-bookig-action-btn cancel-button"
+                        onClick={() => handleCancelBooking(booking.order)}
+                        disabled={cancellingOrder === booking.order}
+                      >
+                        {cancellingOrder === booking.order ? `${t("cancel")}...` : t("cancel")}
+                      </button>
+
+                    </>
+                  )}
+                  {/* <button className="hotel-bookig-action-btn button-primary">
                   {t("modify")}
                 </button> */}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       )}
-      
+
       {/* Pagination - matching SearchResult style */}
       {!loading && totalPages > 1 && (
         <Pagination
@@ -593,101 +626,102 @@ export default function Bookings() {
       )}
 
       {/* Cancellation Policy Modal */}
-      {isCancellationModalOpen && cancellationPoliciesData && (
-        <div className="room-modal-overlay" onClick={handleCloseCancellationModal}>
-          <div className="cancellation-policy-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="room-modal-header d-flex align-items-center">
-              <button
-                className="room-modal-close p-0"
-                onClick={handleCloseCancellationModal}
-              >
-                <Image
-                  src={ClosePopupIcon}
-                  width={24}
-                  height={24}
-                  alt="close icon"
-                />
-              </button>
-              <h2 className="room-modal-title">
-                {t("cancellationPolicy") || "Cancellation Policy"}
-              </h2>
-            </div>
-
-            <div className="cancellation-policy-modal-body">
-              <div className="cancellation-policies-section">
-                <h3 className="policy-section-title">
-                  {t("cancellationCharges") || "Cancellation Charges"}
-                </h3>
-                <p className="policy-description">
-                  {t("cancellationPolicyDescription") || "The following cancellation charges will apply:"}
-                </p>
-
-                <div className="policies-list">
-                  {cancellationPoliciesData.policies.map((policy, index) => {
-                    const formattedDate = formatCancellationDate(policy.from);
-                    const amount = Number(policy.amount) || 0;
-
-                    return (
-                      <div key={policy.id} className="policy-item">
-                        <div className="policy-date-amount">
-                          <div className="policy-date">
-                            {formattedDate ? (
-                              <>
-                                <span className="policy-date-label">
-                                  {t("cancelAfter") || "Cancel after"}:
-                                </span>
-                                <span className="policy-date-value">{formattedDate}</span>
-                              </>
-                            ) : (
-                              <span className="policy-date-value">N/A</span>
-                            )}
-                          </div>
-                          <div className="policy-amount d-inline-flex align-items-center">
-                            <span className="policy-amount-label">
-                              {t("penaltyAmount") || "Penalty Amount"}:
-                            </span>
-                            <span
-                              className="currency-icon"
-                              aria-hidden="true"
-                              dangerouslySetInnerHTML={{
-                                __html: buildCurrencySvgMarkup("#09090b"),
-                              }}
-                              style={{ display: "inline-flex", margin: "0 4px" }}
-                            />
-                            <span className="policy-amount-value">
-                              {priceFormatter.format(amount)}
-                            </span>
-                          </div>
-                        </div>
-                        {index < cancellationPoliciesData.policies.length - 1 && (
-                          <div className="policy-separator"></div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+      {
+        isCancellationModalOpen && cancellationPoliciesData && (
+          <div className="room-modal-overlay" onClick={handleCloseCancellationModal}>
+            <div className="cancellation-policy-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="room-modal-header d-flex align-items-center">
+                <button
+                  className="room-modal-close p-0"
+                  onClick={handleCloseCancellationModal}
+                >
+                  <Image
+                    src={ClosePopupIcon}
+                    width={24}
+                    height={24}
+                    alt="close icon"
+                  />
+                </button>
+                <h2 className="room-modal-title">
+                  {t("cancellationPolicy") || "Cancellation Policy"}
+                </h2>
               </div>
 
-              <div className="cancellation-modal-actions">
-                <button
-                  className="button-secondary"
-                  onClick={handleCloseCancellationModal}
-                  disabled={cancellingOrder !== null}
-                >
-                  {t("cancel") || "Cancel"}
-                </button>
-                <button
-                  className="button-primary"
-                  onClick={handleConfirmCancellation}
-                  disabled={cancellingOrder !== null}
-                >
-                  {cancellingOrder ? `${t("confirmCancellation") || "Confirming"}...` : t("confirmCancellation") || "Confirm Cancellation"}
-                </button>
+              <div className="cancellation-policy-modal-body">
+                <div className="cancellation-policies-section">
+                  <h3 className="policy-section-title">
+                    {t("cancellationCharges") || "Cancellation Charges"}
+                  </h3>
+                  <p className="policy-description">
+                    {t("cancellationPolicyDescription") || "The following cancellation charges will apply:"}
+                  </p>
+
+                  <div className="policies-list">
+                    {cancellationPoliciesData.policies.map((policy, index) => {
+                      const formattedDate = formatCancellationDate(policy.from);
+                      const amount = Number(policy.amount) || 0;
+
+                      return (
+                        <div key={policy.id} className="policy-item">
+                          <div className="policy-date-amount">
+                            <div className="policy-date">
+                              {formattedDate ? (
+                                <>
+                                  <span className="policy-date-label">
+                                    {t("cancelAfter") || "Cancel after"}:
+                                  </span>
+                                  <span className="policy-date-value">{formattedDate}</span>
+                                </>
+                              ) : (
+                                <span className="policy-date-value">N/A</span>
+                              )}
+                            </div>
+                            <div className="policy-amount d-inline-flex align-items-center">
+                              <span className="policy-amount-label">
+                                {t("penaltyAmount") || "Penalty Amount"}:
+                              </span>
+                              <span
+                                className="currency-icon"
+                                aria-hidden="true"
+                                dangerouslySetInnerHTML={{
+                                  __html: buildCurrencySvgMarkup("#09090b"),
+                                }}
+                                style={{ display: "inline-flex", margin: "0 4px" }}
+                              />
+                              <span className="policy-amount-value">
+                                {priceFormatter.format(amount)}
+                              </span>
+                            </div>
+                          </div>
+                          {index < cancellationPoliciesData.policies.length - 1 && (
+                            <div className="policy-separator"></div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="cancellation-modal-actions">
+                  <button
+                    className="button-secondary"
+                    onClick={handleCloseCancellationModal}
+                    disabled={cancellingOrder !== null}
+                  >
+                    {t("cancel") || "Cancel"}
+                  </button>
+                  <button
+                    className="button-primary"
+                    onClick={handleConfirmCancellation}
+                    disabled={cancellingOrder !== null}
+                  >
+                    {cancellingOrder ? `${t("confirmCancellation") || "Confirming"}...` : t("confirmCancellation") || "Confirm Cancellation"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

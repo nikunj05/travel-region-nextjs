@@ -6,6 +6,7 @@ import minusRoundIcon from "@/assets/images/minus-round-icon.svg";
 import plusRoundIcon from "@/assets/images/plus-round-icon.svg";
 import "./GuestsPicker.scss";
 import { Room } from "../../../store/searchFiltersStore";
+import { Select } from "../Select";
 
 interface GuestsPickerProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
       const updatedRooms = rooms.map(room => {
         const childrenCount = room.children || 0;
         const currentAges = room.childrenAges || [];
-        
+
         // If children count doesn't match ages array length, fix it
         if (childrenCount !== currentAges.length) {
           if (childrenCount > currentAges.length) {
@@ -250,17 +251,16 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
                         <label className="guestspicker-age-label">
                           {t("childAge", { index: childIndex + 1 })}
                         </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="17"
-                          value={age}
-                          onChange={(e) => {
-                            const newAge = parseInt(e.target.value) || 0;
-                            updateChildAge(index, childIndex, newAge);
-                          }}
-                          className="guestspicker-age-input"
+                        <Select
+                          options={Array.from({ length: 15 }, (_, i) => ({
+                            value: i.toString(),
+                            label: i.toString(),
+                          }))}
+                          value={age.toString()}
+                          onChange={(val) => updateChildAge(index, childIndex, parseInt(val))}
                           placeholder={t("age")}
+                          className="guestspicker-age-select"
+                          wrapperClassName="guestspicker-age-select-wrapper"
                         />
                       </div>
                     );
@@ -270,8 +270,8 @@ const GuestsPicker: React.FC<GuestsPickerProps> = ({
             )}
           </div>
         ))}
-        <button 
-          className="guestspicker-add-room" 
+        <button
+          className="guestspicker-add-room"
           onClick={addRoom}
           type="button"
         >

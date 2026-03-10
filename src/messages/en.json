@@ -447,7 +447,9 @@
     "cancellationPolicyDescription": "The following cancellation charges will apply:",
     "cancelAfter": "Cancel after",
     "penaltyAmount": "Penalty amount",
-    "confirmCancellation": "Confirm Cancellation"
+    "confirmCancellation": "Confirm Cancellation",
+    "downloadPdf": "Download & Print",
+    "downloading": "Downloading..."
   },
   "PaymentMethods": {
     "pageTitle": "Payment Methods",

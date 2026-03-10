@@ -84,17 +84,27 @@ const SearchResult = () => {
   const [loadingHotelId, setLoadingHotelId] = useState<string | null>(null);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 12; // Number of hotels to load per page
+  const ITEMS_PER_PAGE = 40; // Number of hotels to load per page
   const [translatedNames, setTranslatedNames] = useState<Map<string, string>>(
+    new Map()
+  );
+  const [translatedZones, setTranslatedZones] = useState<Map<string, string>>(
+    new Map()
+  );
+  const [translatedFacilities, setTranslatedFacilities] = useState<Map<string, string>>(
+    new Map()
+  );
+  const [translatedBoards, setTranslatedBoards] = useState<Map<string, string>>(
+    new Map()
+  );
+  const [translatedPropertyTypes, setTranslatedPropertyTypes] = useState<Map<string, string>>(
     new Map()
   );
 
   // Filter states
-  const [selectedStarRating, setSelectedStarRating] = useState<number | null>(
-    null
-  );
+  const [selectedStarRatings, setSelectedStarRatings] = useState<number[]>([]);
   const [minPrice, setMinPrice] = useState<number>(0);
-  const [maxPrice, setMaxPrice] = useState<number>(5000);
+  const [maxPrice, setMaxPrice] = useState<number>(20000);
   const [activePriceSlider, setActivePriceSlider] = useState<
     "min" | "max" | null
   >(null);
@@ -375,10 +385,9 @@ const SearchResult = () => {
         }
       }
 
-      // Star rating filter (exact match to keep behavior close to API-side filtering)
-      if (selectedStarRating !== null) {
-        // console.log("selectedStarRating", selectedStarRating, getStarRating(hotel));
-        if (getStarRating(hotel) !== selectedStarRating) {
+      // Star rating filter (multi-select match)
+      if (selectedStarRatings.length > 0) {
+        if (!selectedStarRatings.includes(getStarRating(hotel))) {
           return false;
         }
       }
@@ -388,7 +397,7 @@ const SearchResult = () => {
       if (rate < minPrice) {
         return false;
       }
-      if (maxPrice < 5000 && rate > maxPrice) {
+      if (maxPrice < 20000 && rate > maxPrice) {
         return false;
       }
 
@@ -564,7 +573,7 @@ const SearchResult = () => {
     apiHotels,
     sortBy,
     filters.location,
-    selectedStarRating,
+    selectedStarRatings,
     minPrice,
     maxPrice,
     selectedAccommodationCodes,
@@ -596,25 +605,27 @@ const SearchResult = () => {
     setCurrentPage(1);
   }, [sortBy, sortedHotels.length, filters]);
 
-  // Translate hotel names using Google Translate when locale is Arabic
+  // Translate various names (Hotels, Zones, Facilities, Boards) using Google Translate when locale is Arabic
   useEffect(() => {
-    if (locale !== "ar" || sortedHotels.length === 0) {
+    if (locale !== "ar") {
       return;
     }
 
-    const translateHotels = async () => {
+    const translateItems = async (
+      items: any[],
+      getId: (item: any) => string,
+      getName: (item: any) => string,
+      translatedMap: Map<string, string>,
+      setTranslatedMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
+    ) => {
       const translations = new Map<string, string>();
 
-      const translatePromises = sortedHotels.map(async (hotel) => {
-        const hotelId =
-          "code" in hotel && hotel.code
-            ? hotel.code.toString()
-            : getHotelId(hotel).toString();
-
-        const originalName = getHotelName(hotel);
+      const translatePromises = items.map(async (item) => {
+        const id = getId(item);
+        const originalName = getName(item);
 
         // Skip if already translated
-        if (translatedNames.has(hotelId)) {
+        if (translatedMap.has(id)) {
           return;
         }
 
@@ -624,7 +635,7 @@ const SearchResult = () => {
           !originalName.match(/[\u0600-\u06FF]/) &&
           originalName.match(/[a-zA-Z]/);
 
-        if (isEnglish && originalName !== "Hotel") {
+        if (isEnglish) {
           try {
             // Use Google Translate API
             const response = await fetch(
@@ -638,7 +649,7 @@ const SearchResult = () => {
               if (data && data[0] && data[0][0] && data[0][0][0]) {
                 const translated = data[0][0][0];
                 if (translated !== originalName) {
-                  translations.set(hotelId, translated);
+                  translations.set(id, translated);
                 }
               }
             }
@@ -651,28 +662,97 @@ const SearchResult = () => {
       await Promise.all(translatePromises);
 
       if (translations.size > 0) {
-        setTranslatedNames((prev) => {
+        setTranslatedMap((prev) => {
           const updated = new Map(prev);
           translations.forEach((value, key) => {
             updated.set(key, value);
           });
-          return new Map(updated);
+          return updated;
         });
       }
     };
 
-    translateHotels();
+    // Translate Hotels
+    if (sortedHotels.length > 0) {
+      translateItems(
+        sortedHotels,
+        (hotel) =>
+          "code" in hotel && hotel.code
+            ? hotel.code.toString()
+            : getHotelId(hotel).toString(),
+        (hotel) => getHotelName(hotel),
+        translatedNames,
+        setTranslatedNames
+      );
+    }
+
+    // Translate Zones
+    if (zones.length > 0) {
+      translateItems(
+        zones,
+        (zone) => zone.code.toString(),
+        (zone) => zone.name,
+        translatedZones,
+        setTranslatedZones
+      );
+    }
+
+    // Translate Hotel Facilities
+    translateItems(
+      hotelFacilitiesList,
+      (f) => `hotel-${f.code}`,
+      (f) => f.name,
+      translatedFacilities,
+      setTranslatedFacilities
+    );
+
+    // Translate Room Facilities
+    translateItems(
+      roomFacilitiesList,
+      (f) => `room-${f.code}`,
+      (f) => f.name,
+      translatedFacilities,
+      setTranslatedFacilities
+    );
+
+    // Translate Boards
+    if (boards.length > 0) {
+      translateItems(
+        boards,
+        (b) => b.code,
+        (b) => b.name,
+        translatedBoards,
+        setTranslatedBoards
+      );
+    }
+
+    // Translate Property Types
+    if (accommodationTypes.length > 0) {
+      translateItems(
+        accommodationTypes,
+        (item) => item.code,
+        (item) => item.typeMultiDescription?.content || item.typeDescription,
+        translatedPropertyTypes,
+        setTranslatedPropertyTypes
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locale, sortedHotels.length]);
+  }, [
+    locale,
+    sortedHotels.length,
+    zones.length,
+    boards.length,
+    accommodationTypes.length,
+  ]);
 
   // Sync local filter state with store on mount
   useEffect(() => {
     const storeFilters = useHotelSearchStore.getState().filters;
-    // Sync star rating
-    setSelectedStarRating(storeFilters.starRating);
+    // Sync star rating (wrapped in array for multi-select UI)
+    setSelectedStarRatings(storeFilters.starRating ? [storeFilters.starRating] : []);
     // Sync price range (use defaults if null)
     setMinPrice(storeFilters.minPrice ?? 0);
-    setMaxPrice(storeFilters.maxPrice ?? 5000);
+    setMaxPrice(storeFilters.maxPrice ?? 20000);
     // Sync accommodation codes
     const codes = (storeFilters.accommodations || "")
       .split(",")
@@ -1099,12 +1179,12 @@ const SearchResult = () => {
     }
   };
 
-  // Handler for star rating radio button changes
+  // Handler for star rating checkbox changes
   const handleStarRatingChange = (star: number) => {
-    // If clicking the same star, unselect it
-    const newRating = selectedStarRating === star ? null : star;
-
-    setSelectedStarRating(newRating);
+    setSelectedStarRatings((prev) => {
+      const exists = prev.includes(star);
+      return exists ? prev.filter((s) => s !== star) : [...prev, star];
+    });
   };
 
   // Handler for price range changes
@@ -1153,9 +1233,9 @@ const SearchResult = () => {
 
   // Handler for clearing all filters
   const handleClearFilters = () => {
-    setSelectedStarRating(null);
+    setSelectedStarRatings([]);
     setMinPrice(0);
-    setMaxPrice(5000);
+    setMaxPrice(20000);
     setSelectedAccommodationCodes([]);
     setSelectedZoneCodes([]);
     setSelectedRoomFacilityCodes([]);
@@ -1194,7 +1274,7 @@ const SearchResult = () => {
 
   const handlePriceSliderMouseUp = () => {
     // No API call here – filters are applied client-side only
-    if (minPrice > 0 || maxPrice < 5000) {
+    if (minPrice > 0 || maxPrice < 20000) {
       handlePriceRangeChange(minPrice, maxPrice);
     }
   };
@@ -1368,14 +1448,14 @@ const SearchResult = () => {
                     ...(locale === "ar"
                       ? {
                         // RTL: calculate from right side
-                        right: `${(minPrice / 5000) * 100}%`,
+                        right: `${(minPrice / 20000) * 100}%`,
                         left: "auto",
-                        width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                        width: `${((maxPrice - minPrice) / 20000) * 100}%`,
                       }
                       : {
                         // LTR: calculate from left side
-                        left: `${(minPrice / 5000) * 100}%`,
-                        width: `${((maxPrice - minPrice) / 5000) * 100}%`,
+                        left: `${(minPrice / 20000) * 100}%`,
+                        width: `${((maxPrice - minPrice) / 20000) * 100}%`,
                       }),
                     borderRadius: "10px",
                   }}
@@ -1384,7 +1464,7 @@ const SearchResult = () => {
               <input
                 type="range"
                 min="0"
-                max="5000"
+                max="20000"
                 step="50"
                 value={minPrice}
                 onChange={handleMinPriceSliderChange}
@@ -1412,7 +1492,7 @@ const SearchResult = () => {
               <input
                 type="range"
                 min="0"
-                max="5000"
+                max="20000"
                 step="50"
                 value={maxPrice}
                 onChange={handleMaxPriceSliderChange}
@@ -1461,12 +1541,12 @@ const SearchResult = () => {
             {[5, 4, 3, 2, 1].map((stars) => (
               <label key={stars} className="filter-option">
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="star-rating-filter"
-                  checked={selectedStarRating === stars}
+                  checked={selectedStarRatings.includes(stars)}
                   onChange={() => handleStarRatingChange(stars)}
                 />
-                <span className="radio-mark"></span>
+                <span className="checkmark"></span>
                 <span className="stars">
                   {stars}
                   <span>
@@ -1575,7 +1655,9 @@ const SearchResult = () => {
                   onChange={() => handleAccommodationToggle(item.code)}
                 />
                 <span className="checkmark"></span>
-                {item.typeMultiDescription?.content || item.typeDescription}
+                {translatedPropertyTypes.get(item.code) ||
+                  item.typeMultiDescription?.content ||
+                  item.typeDescription}
               </label>
             ))}
             {accommodationTypes.length > 5 && (
@@ -1623,7 +1705,7 @@ const SearchResult = () => {
                     onChange={() => handleZoneToggle(zone.code)}
                   />
                   <span className="checkmark"></span>
-                  {zone.name}
+                  {translatedZones.get(zone.code.toString()) || zone.name}
                 </label>
               ))}
               {zones.length > 5 && (
@@ -1671,7 +1753,7 @@ const SearchResult = () => {
                   onChange={() => handleHotelFacilityToggle(facility.code)}
                 />
                 <span className="checkmark"></span>
-                {facility.name}
+                {translatedFacilities.get(`hotel-${facility.code}`) || facility.name}
               </label>
             ))}
           </div>
@@ -1702,7 +1784,7 @@ const SearchResult = () => {
                   onChange={() => handleRoomFacilityToggle(facility.code)}
                 />
                 <span className="checkmark"></span>
-                {facility.name}
+                {translatedFacilities.get(`room-${facility.code}`) || facility.name}
               </label>
             ))}
           </div>
@@ -1733,7 +1815,7 @@ const SearchResult = () => {
                   onChange={() => handleBoardToggle(board.code)}
                 />
                 <span className="checkmark"></span>
-                {board.name}
+                {translatedBoards.get(board.code) || board.name}
               </label>
             ))}
           </div>

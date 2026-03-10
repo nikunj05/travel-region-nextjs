@@ -176,30 +176,20 @@
             margin: 0px;
           }
 
-          .guestspicker-age-input {
+          .guestspicker-age-select {
             width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: $font-weight400;
-            color: $color-black-zinc-950;
-            background: $color-white;
-            transition: $transition;
-
-            &:focus {
-              outline: none;
-              border-color: $brand-color;
+            
+            .guestspicker-age-select-wrapper {
+              padding: 6px 12px;
+              border-radius: 6px;
+              border: 1px solid #e5e7eb;
+              min-height: 40px;
+              justify-content: center;
             }
 
-            &::-webkit-inner-spin-button,
-            &::-webkit-outer-spin-button {
-              -webkit-appearance: none;
-              margin: 0;
-            }
-
-            &[type="number"] {
-              -moz-appearance: textfield;
+            // Target the internal text through the global-like behavior since we can't easily change the Select internal styles
+            [class*="selectText"] {
+              font-size: 14px;
             }
           }
         }
@@ -346,9 +336,14 @@
           .guestspicker-age-input-wrapper {
             gap: 3px;
 
-            .guestspicker-age-input {
-              padding: 7px 10px;
-              font-size: 13px;
+            .guestspicker-age-select {
+              .guestspicker-age-select-wrapper {
+                padding: 5px 10px;
+                min-height: 36px;
+              }
+              [class*="selectText"] {
+                font-size: 13px;
+              }
             }
           }
         }
@@ -446,9 +441,14 @@
 
           .guestspicker-age-input-wrapper {
 
-            .guestspicker-age-input {
-              padding: 6px 8px;
-              font-size: 12px;
+            .guestspicker-age-select {
+              .guestspicker-age-select-wrapper {
+                padding: 4px 8px;
+                min-height: 32px;
+              }
+              [class*="selectText"] {
+                font-size: 12px;
+              }
             }
           }
         }

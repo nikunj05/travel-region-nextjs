@@ -18,6 +18,7 @@ export interface SelectProps {
   disabled?: boolean;
   label?: string;
   labelClassName?: string;
+  wrapperClassName?: string;
 }
 
 export const Select = ({
@@ -29,6 +30,7 @@ export const Select = ({
   disabled = false,
   label,
   labelClassName = "",
+  wrapperClassName = "",
 }: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value || "");
@@ -79,9 +81,8 @@ export const Select = ({
     <div className={`${styles.selectContainer} ${className}`}>
       <div
         ref={selectRef}
-        className={`${styles.selectWrapper} ${isOpen ? styles.open : ""} ${
-          disabled ? styles.disabled : ""
-        }`}
+        className={`${styles.selectWrapper} ${isOpen ? styles.open : ""} ${disabled ? styles.disabled : ""
+          } ${wrapperClassName}`}
       >
         {label && (
           <label className={`${styles.selectLabel} ${labelClassName}`}>
@@ -100,9 +101,8 @@ export const Select = ({
             alt="Dropdown arrow"
             width={20}
             height={20}
-            className={`${styles.selectArrow} ${
-              isOpen ? styles.arrowOpen : ""
-            }`}
+            className={`${styles.selectArrow} ${isOpen ? styles.arrowOpen : ""
+              }`}
           />
         </button>
 
@@ -111,9 +111,8 @@ export const Select = ({
             {options.map((option) => (
               <li
                 key={option.value}
-                className={`${styles.selectOption} ${
-                  selectedValue === option.value ? styles.selected : ""
-                }`}
+                className={`${styles.selectOption} ${selectedValue === option.value ? styles.selected : ""
+                  }`}
                 onClick={() => handleOptionClick(option.value)}
               >
                 {option.label}
