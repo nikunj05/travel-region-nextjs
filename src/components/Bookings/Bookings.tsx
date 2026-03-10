@@ -238,7 +238,27 @@ export default function Bookings() {
       setDownloadingOrder(order);
       const response = await bookingService.getBookingPdf(order);
       if (response.status && response.data.pdf_url) {
-        window.open(response.data.pdf_url, "_blank");
+        try {
+          // Route the cross-origin PDF URL through our Next.js API proxy to enforce download
+          const apiRoute = `/api/download-pdf?url=${encodeURIComponent(response.data.pdf_url)}&order=${order}`;
+
+          const pdfResponse = await fetch(apiRoute);
+          if (!pdfResponse.ok) throw new Error("Proxy download failed");
+
+          const blob = await pdfResponse.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = `booking-${order}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } catch (downloadError) {
+          console.error("Error downloading PDF via proxy:", downloadError);
+          // Ultimate fallback to just opening the URL natively
+          window.open(response.data.pdf_url, "_blank");
+        }
       } else {
         toast.error(response.message || "Failed to get PDF URL.");
       }
