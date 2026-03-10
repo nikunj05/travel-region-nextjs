@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
@@ -40,6 +40,11 @@ import Pagination from "../common/Pagination/Pagination";
 
 // Dynamic hotels will be sourced from useHotelSearchStore; no local interface needed here
 
+// Helper function to map locale to API language code
+const getLanguageCode = (currentLocale: string): string => {
+  return currentLocale === "ar" ? "ara" : "eng";
+};
+
 const SearchResult = () => {
   const locale = useLocale();
   const t = useTranslations("Banner");
@@ -47,11 +52,6 @@ const SearchResult = () => {
 
   // Inactivity detection (20 minutes)
   const { isInactive } = useInactivity(20 * 60 * 1000);
-
-  // Helper function to map locale to API language code
-  const getLanguageCode = (currentLocale: string): string => {
-    return currentLocale === "ar" ? "ara" : "eng";
-  };
 
   const { filters, setLocation, setCheckInDate, setCheckOutDate, setRooms } =
     useSearchFiltersStore();
@@ -273,12 +273,13 @@ const SearchResult = () => {
 
     return () => clearTimeout(timeoutId);
 
-  }, [selectedBoards]); // Only re-run when boards change.
+  }, [selectedBoards, initialSearchDone, loading, triggerSearch, updateHotelFilters]); // Added missing dependencies.
 
   // Derived hotel lists
-  const getHotelId = (hotel: HotelItem | FavoriteHotel) =>
-    "code" in hotel ? hotel.code : (hotel as HotelItem).id;
-  const getHotelName = (hotel: HotelItem | FavoriteHotel) => {
+  const getHotelId = useCallback((hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : (hotel as HotelItem).id, []);
+
+  const getHotelName = useCallback((hotel: HotelItem | FavoriteHotel) => {
     const hotelId =
       "code" in hotel && hotel.code
         ? hotel.code.toString()
@@ -305,28 +306,28 @@ const SearchResult = () => {
     }
 
     return originalName;
-  };
-  const getHotelLocation = (hotel: HotelItem | FavoriteHotel) =>
+  }, [locale, translatedNames, getHotelId]);
+
+  const getHotelLocation = useCallback((hotel: HotelItem | FavoriteHotel) =>
     (hotel as FavoriteHotel).address?.content ||
     (hotel as FavoriteHotel).city?.content ||
-    "Location";
+    "Location", []);
 
-  const getHotelCode = (hotel: HotelItem | FavoriteHotel) =>
-    "code" in hotel ? hotel.code : undefined;
+  const getHotelCode = useCallback((hotel: HotelItem | FavoriteHotel) =>
+    "code" in hotel ? hotel.code : undefined, []);
 
   // Helper function to extract star rating from categoryCode
-  const getStarRating = (hotel: HotelItem | FavoriteHotel): number => {
+  const getStarRating = useCallback((hotel: HotelItem | FavoriteHotel): number => {
     if ("categoryCode" in hotel && hotel.categoryCode) {
       // Extract number from categoryCode (e.g., "4EST" -> 4)
       const match = hotel.categoryCode.match(/^(\d+)/);
       return match ? parseInt(match[1], 10) : 5; // Default to 5 stars if no match
     }
     return 5; // Default fallback
-  };
+  }, []);
 
-  const getHotelRateValue = (
-    hotel: HotelItem | FavoriteHotel,
-    preference: "min" | "max"
+  const getHotelRateValue = useCallback((
+    hotel: HotelItem | FavoriteHotel
   ) => {
     if ("minRate" in hotel || "maxRate" in hotel) {
       const item = hotel as HotelItem;
@@ -352,7 +353,99 @@ const SearchResult = () => {
       return maxRate !== null ? maxRate : 0;
     }
     return 0;
-  };
+  }, []);
+
+  const handleSearchClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!filters.location) {
+      e.preventDefault();
+      setLocationError(t("validation.locationRequired"));
+      return;
+    }
+    setLocationError("");
+
+    // Validate that location has coordinates OR a valid code
+    const coords = filters.location?.coordinates;
+    const hasCoordinates = coords && coords.lat != null && coords.lng != null;
+    const hasDestinationCode = !!filters.location?.destination_code;
+    const hasHotelCode = !!filters.location?.hotel_code;
+
+    if (!hasCoordinates && !hasDestinationCode && !hasHotelCode) {
+      e.preventDefault();
+      setLocationError("Please select a valid location with coordinates");
+      console.error("Location missing coordinates and codes:", filters.location);
+      return;
+    }
+
+    const isCheckInMissing = !filters.checkInDate;
+    const isCheckOutMissing = !filters.checkOutDate;
+
+    // Additional date validation - ensure check-in is today or later
+    const today = getTodayAtMidnight();
+
+    if (filters.checkInDate && filters.checkInDate < today) {
+      setCheckInError(t("validation.checkInDateInvalid"));
+      return;
+    }
+
+    setCheckInError(
+      isCheckInMissing ? t("validation.checkInDateRequired") : ""
+    );
+    setCheckOutError(
+      isCheckOutMissing ? t("validation.checkOutDateRequired") : ""
+    );
+
+    if (isCheckInMissing || isCheckOutMissing) {
+      return;
+    }
+
+    // Wire dynamic filters to hotel search store and call API
+    try {
+      const latitude = hasCoordinates ? coords!.lat : null;
+      const longitude = hasCoordinates ? coords!.lng : null;
+      const destinationCode = filters.location?.destination_code || null;
+      const hotelCode = filters.location?.hotel_code || null;
+
+      console.log("Search parameters:", {
+        latitude,
+        longitude,
+        destinationCode,
+        hotelCode,
+        location: filters.location.name,
+      });
+
+      // Push current UI filters into the hotel search store
+      useHotelSearchStore
+        .getState()
+        .setDates(filters.checkInDate, filters.checkOutDate);
+      useHotelSearchStore
+        .getState()
+        .setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
+      // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
+      useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
+      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+      useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
+      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
+
+      // Execute search and log the raw response data held in the store
+      useHotelSearchStore
+        .getState()
+        .search()
+        .then(() => {
+          const { hotels, currency, error } = useHotelSearchStore.getState();
+          if (error) {
+            console.error("Hotels API error:", error);
+          } else {
+            const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
+            console.log("Hotels API result:", { hotelCount, currency });
+          }
+        })
+        .catch((err) => {
+          console.error("Search promise error:", err);
+        });
+    } catch (err) {
+      console.error("Failed to trigger hotels search:", err);
+    }
+  }, [filters, locale, t]);
 
   const sortedHotels = useMemo(() => {
     // Deduplicate rates for all rooms in all hotels before filtering
@@ -393,7 +486,7 @@ const SearchResult = () => {
       }
 
       // Price range filter (based on minRate / displayed rate)
-      const rate = getHotelRateValue(hotel, "min");
+      const rate = getHotelRateValue(hotel);
       if (rate < minPrice) {
         return false;
       }
@@ -553,15 +646,15 @@ const SearchResult = () => {
     switch (sortBy) {
       case "Price: Low to High":
         return [...sortable].sort((a, b) => {
-          const rateA = getHotelRateValue(a, "min");
-          const rateB = getHotelRateValue(b, "min");
+          const rateA = getHotelRateValue(a);
+          const rateB = getHotelRateValue(b);
           return rateA - rateB;
         });
       case "Price: High to Low":
         return [...sortable].sort((a, b) => {
           // Use minRate for both directions since that's what's displayed in UI
-          const rateA = getHotelRateValue(a, "min");
-          const rateB = getHotelRateValue(b, "min");
+          const rateA = getHotelRateValue(a);
+          const rateB = getHotelRateValue(b);
           // Ensure proper descending sort
           if (rateA === rateB) return 0;
           return rateB - rateA;
@@ -583,6 +676,9 @@ const SearchResult = () => {
     selectedHotelFacilityCodes,
     isRefundable,
     isNonRefundable,
+    getHotelName,
+    getHotelRateValue,
+    getStarRating,
   ]);
 
   // Hotels to display (paginated)
@@ -611,10 +707,10 @@ const SearchResult = () => {
       return;
     }
 
-    const translateItems = async (
-      items: any[],
-      getId: (item: any) => string,
-      getName: (item: any) => string,
+    const translateItems = async <T,>(
+      items: T[],
+      getId: (item: T) => string,
+      getName: (item: T) => string,
       translatedMap: Map<string, string>,
       setTranslatedMap: React.Dispatch<React.SetStateAction<Map<string, string>>>
     ) => {
@@ -824,7 +920,7 @@ const SearchResult = () => {
         preventDefault: () => { },
       } as React.MouseEvent<HTMLButtonElement>);
     }
-  }, [filters.location, apiHotels, loading]);
+  }, [filters.location, apiHotels, loading, handleSearchClick]);
 
   // Re-trigger search when locale changes (if we have valid search criteria)
   useEffect(() => {
@@ -1020,98 +1116,6 @@ const SearchResult = () => {
       setIsDatePickerOpen(false);
     }
     setIsGuestsPickerOpen(!isGuestsPickerOpen);
-  };
-
-  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!filters.location) {
-      e.preventDefault();
-      setLocationError(t("validation.locationRequired"));
-      return;
-    }
-    setLocationError("");
-
-    // Validate that location has coordinates OR a valid code
-    const coords = filters.location?.coordinates;
-    const hasCoordinates = coords && coords.lat != null && coords.lng != null;
-    const hasDestinationCode = !!filters.location?.destination_code;
-    const hasHotelCode = !!filters.location?.hotel_code;
-
-    if (!hasCoordinates && !hasDestinationCode && !hasHotelCode) {
-      e.preventDefault();
-      setLocationError("Please select a valid location with coordinates");
-      console.error("Location missing coordinates and codes:", filters.location);
-      return;
-    }
-
-    const isCheckInMissing = !filters.checkInDate;
-    const isCheckOutMissing = !filters.checkOutDate;
-
-    // Additional date validation - ensure check-in is today or later
-    const today = getTodayAtMidnight();
-
-    if (filters.checkInDate && filters.checkInDate < today) {
-      setCheckInError(t("validation.checkInDateInvalid"));
-      return;
-    }
-
-    setCheckInError(
-      isCheckInMissing ? t("validation.checkInDateRequired") : ""
-    );
-    setCheckOutError(
-      isCheckOutMissing ? t("validation.checkOutDateRequired") : ""
-    );
-
-    if (isCheckInMissing || isCheckOutMissing) {
-      return;
-    }
-
-    // Wire dynamic filters to hotel search store and call API
-    try {
-      const latitude = hasCoordinates ? coords!.lat : null;
-      const longitude = hasCoordinates ? coords!.lng : null;
-      const destinationCode = filters.location?.destination_code || null;
-      const hotelCode = filters.location?.hotel_code || null;
-
-      console.log("Search parameters:", {
-        latitude,
-        longitude,
-        destinationCode,
-        hotelCode,
-        location: filters.location.name,
-      });
-
-      // Push current UI filters into the hotel search store
-      useHotelSearchStore
-        .getState()
-        .setDates(filters.checkInDate, filters.checkOutDate);
-      useHotelSearchStore
-        .getState()
-        .setRooms(filters.rooms || [{ adults: 2, children: 1 }]);
-      // Set language based on current locale: 'en' -> 'eng', 'ar' -> 'ara'
-      useHotelSearchStore.getState().setLanguage(getLanguageCode(locale));
-      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
-      useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
-      useHotelSearchStore.getState().setCoordinates(latitude, longitude);
-
-      // Execute search and log the raw response data held in the store
-      useHotelSearchStore
-        .getState()
-        .search()
-        .then(() => {
-          const { hotels, currency, error } = useHotelSearchStore.getState();
-          if (error) {
-            console.error("Hotels API error:", error);
-          } else {
-            const hotelCount = Array.isArray(hotels) ? hotels.length : 0;
-            console.log("Hotels API result:", { hotelCount, currency });
-          }
-        })
-        .catch((err) => {
-          console.error("Search promise error:", err);
-        });
-    } catch (err) {
-      console.error("Failed to trigger hotels search:", err);
-    }
   };
 
   const formatDate = (date: Date | null) => {
@@ -2180,8 +2184,6 @@ const SearchResult = () => {
                       // Show actual hotel results
                       visibleHotels.map(
                         (hotel: HotelItem | FavoriteHotel, index: number) => {
-                          const isLastHotel =
-                            index === visibleHotels.length - 1;
                           return (
                             <div key={getHotelId(hotel)} className="hotel-card">
                               <div className="hotel-images">
