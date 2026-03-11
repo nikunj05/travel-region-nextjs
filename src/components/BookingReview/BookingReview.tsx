@@ -15,7 +15,6 @@ import {
   COUNTRY_CODES,
   buildCurrencySvgMarkup,
 } from "@/constants";
-import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
 import { Form } from "@/components/core/Form/Form";
 import { Input } from "@/components/core/Input/Input";
@@ -23,6 +22,7 @@ import { Textarea } from "@/components/core/Textarea/Textarea";
 import { Select } from "@/components/core/Select/Select";
 import { createBookingSchema, BookingFormData } from "@/schemas/bookingSchema";
 import { CreateBookingRequest } from "@/types/booking";
+import { HotelDetails as HotelDetailsType } from "@/types/hotel";
 import { formatDateForAPI } from "@/lib/dateUtils";
 import { SelectWithFlag, SelectWithFlagOption } from "@/components/core/SelectWithFlag/SelectWithFlag";
 import { countryService } from "@/services/countryService";
@@ -47,11 +47,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const lastLanguageRef = useRef<string | null>(null);
   const [countryOptions, setCountryOptions] = React.useState<SelectWithFlagOption[]>([]);
 
-  const [guestCounts, setGuestCounts] = useState({
-    room1: { adults: 1, children: 0 },
-    room2: { adults: 1, children: 0 },
-    room3: { adults: 1, children: 0 }
-  });
+
 
   // Access stores
   const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
@@ -322,7 +318,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     return [...genImages, ...otherImages];
   };
 
-  const getStarRating = (hotel: any): number => {
+  const getStarRating = (hotel: HotelDetailsType | null | undefined): number => {
     const categoryCode = hotel?.category?.code || "";
     if (categoryCode) {
       const match = categoryCode.match(/^(\d+)/);
@@ -356,7 +352,6 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
   const hotelName = hotelData?.name?.content || t("placeholders.hotelName");
   const hotelAddress = hotelData?.address?.content || t("placeholders.hotelAddress");
   const hotelCountry = hotelData?.country?.description?.content || hotelAddress;
-  const displayedAmenities = hotelAmenities.slice(0, 3);
 
   // Prepare single hotel image for booking payload (same one shown in UI)
   const hotelImageForBooking = useMemo(() => {
