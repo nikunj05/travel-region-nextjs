@@ -848,7 +848,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         const bPaid = b.indFee === true ? 1 : 0;
         return aPaid - bPaid;
       }) || [];
-  console.log("amenities", amenities);
+  // console.log("amenities", amenities);
   // const displayedAmenities = showAllAmenities
   //   ? amenities
   //   : amenities.filter((f) => !f.indFee).slice(0, 8);
