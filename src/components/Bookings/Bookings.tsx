@@ -303,8 +303,8 @@ export default function Bookings() {
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
         numberingSystem: "latn",
       }),
     [locale]
@@ -677,48 +677,70 @@ export default function Bookings() {
                   </p>
 
                   <div className="policies-list">
-                    {cancellationPoliciesData.policies.map((policy, index) => {
-                      const formattedDate = formatCancellationDate(policy.from);
-                      const amount = Number(policy.amount) || 0;
+                    {(() => {
+                      const displayPolicies = cancellationPoliciesData.policies.filter((policy, index, self) => {
+                        const isPast = new Date() > new Date(policy.from);
+                        return index === self.findIndex((p) => {
+                          const pIsPast = new Date() > new Date(p.from);
+                          if (isPast && pIsPast) {
+                            return p.from === policy.from;
+                          }
+                          return p.from === policy.from && p.amount === policy.amount;
+                        });
+                      });
 
-                      return (
-                        <div key={policy.id} className="policy-item">
-                          <div className="policy-date-amount">
-                            <div className="policy-date">
-                              {formattedDate ? (
-                                <>
-                                  <span className="policy-date-label">
-                                    {t("cancelAfter") || "Cancel after"}:
+                      return displayPolicies.map((policy, index) => {
+                        const formattedDate = formatCancellationDate(policy.from);
+                        const amount = Number(policy.amount) || 0;
+                        const isPast = new Date() > new Date(policy.from);
+
+                        return (
+                          <div key={policy.id} className="policy-item">
+                            <div className="policy-date-amount">
+                              <div className="policy-date">
+                                {formattedDate ? (
+                                  <>
+                                    <span className="policy-date-label">
+                                      {t("cancelAfter") || "Cancel after"}:
+                                    </span>
+                                    <span className="policy-date-value">{formattedDate}</span>
+                                  </>
+                                ) : (
+                                  <span className="policy-date-value">N/A</span>
+                                )}
+                              </div>
+                              {isPast ? (
+                                <div className="policy-amount d-inline-flex align-items-center">
+                                  <span className="policy-non-refundable" style={{ color: "#EF4444", fontWeight: 500 }}>
+                                    {t("nonRefundable") || "Non-refundable."}
                                   </span>
-                                  <span className="policy-date-value">{formattedDate}</span>
-                                </>
+                                </div>
                               ) : (
-                                <span className="policy-date-value">N/A</span>
+                                <div className="policy-amount d-inline-flex align-items-center">
+                                  <span className="policy-amount-label">
+                                    {t("penaltyAmount") || "Penalty Amount"}:
+                                  </span>
+                                  <span
+                                    className="currency-icon"
+                                    aria-hidden="true"
+                                    dangerouslySetInnerHTML={{
+                                      __html: buildCurrencySvgMarkup("#09090b"),
+                                    }}
+                                    style={{ display: "inline-flex", margin: "0 4px" }}
+                                  />
+                                  <span className="policy-amount-value">
+                                    {priceFormatter.format(amount)}
+                                  </span>
+                                </div>
                               )}
                             </div>
-                            <div className="policy-amount d-inline-flex align-items-center">
-                              <span className="policy-amount-label">
-                                {t("penaltyAmount") || "Penalty Amount"}:
-                              </span>
-                              <span
-                                className="currency-icon"
-                                aria-hidden="true"
-                                dangerouslySetInnerHTML={{
-                                  __html: buildCurrencySvgMarkup("#09090b"),
-                                }}
-                                style={{ display: "inline-flex", margin: "0 4px" }}
-                              />
-                              <span className="policy-amount-value">
-                                {priceFormatter.format(amount)}
-                              </span>
-                            </div>
+                            {/* {index < displayPolicies.length - 1 && (
+                              <div className="policy-separator"></div>
+                            )} */}
                           </div>
-                          {index < cancellationPoliciesData.policies.length - 1 && (
-                            <div className="policy-separator"></div>
-                          )}
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
 

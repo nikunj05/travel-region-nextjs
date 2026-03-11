@@ -448,8 +448,9 @@
     "cancelAfter": "Cancel after",
     "penaltyAmount": "Penalty amount",
     "confirmCancellation": "Confirm Cancellation",
-    "downloadPdf": "Download & Print",
-    "downloading": "Downloading..."
+    "downloadPdf": "Download",
+    "downloading": "Downloading...",
+    "nonRefundable": "Non-refundable."
   },
   "PaymentMethods": {
     "pageTitle": "Payment Methods",

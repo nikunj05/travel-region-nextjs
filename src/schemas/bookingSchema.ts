@@ -23,12 +23,10 @@ export const createBookingSchema = (t: (key: string, params?: Record<string, str
   const guestSchema = yup.object().shape({
     firstName: yup.string()
       .required(t('firstNameRequired'))
-      .matches(englishNameRegex, t('firstNameEnglishOnly'))
-      .min(2, t('firstNameMinLength', { min: 2 })),
+      .matches(englishNameRegex, t('firstNameEnglishOnly')),
     lastName: yup.string()
       .required(t('lastNameRequired'))
-      .matches(englishNameRegex, t('lastNameEnglishOnly'))
-      .min(2, t('lastNameMinLength', { min: 2 })),
+      .matches(englishNameRegex, t('lastNameEnglishOnly')),
     email: yup.string()
       .required(t('emailRequired'))
       .email(t('emailInvalid')),

@@ -285,8 +285,8 @@ const NearByHotels: React.FC<NearByHotelsProps> = ({ currentHotelCode }) => {
                             style={{ display: "inline-flex" }}
                           />
                           {minRate.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
                           })}
                         </span>
                       ) : (

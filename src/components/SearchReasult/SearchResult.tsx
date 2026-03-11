@@ -170,6 +170,7 @@ const SearchResult = () => {
   const [isCancellationPolicyOpen, setIsCancellationPolicyOpen] = useState(true);
   const [isRefundable, setIsRefundable] = useState(false);
   const [isNonRefundable, setIsNonRefundable] = useState(false);
+  const [isFeatured, setIsFeatured] = useState<boolean>(false);
 
   const roomFacilitiesList = [
     { code: 10, name: "Bathroom" },
@@ -274,6 +275,32 @@ const SearchResult = () => {
     return () => clearTimeout(timeoutId);
 
   }, [selectedBoards, initialSearchDone]); // Removed loading, triggerSearch, and updateHotelFilters to prevent infinite loop.
+
+  useEffect(() => {
+    if (!initialSearchDone) {
+      return;
+    }
+
+    const performSearchWithFeatured = async () => {
+      // Avoid triggering multiple searches if already loading
+      if (loading) return;
+
+      // Update the hotel search store filters with the featured status
+      updateHotelFilters({
+        featured: isFeatured ? true : null
+      });
+
+      // Trigger the search
+      await triggerSearch();
+    };
+
+    const timeoutId = setTimeout(() => {
+      performSearchWithFeatured();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+
+  }, [isFeatured, initialSearchDone]);
 
   // Derived hotel lists
   const getHotelId = useCallback((hotel: HotelItem | FavoriteHotel) =>
@@ -855,6 +882,7 @@ const SearchResult = () => {
       .map((s) => s.trim())
       .filter(Boolean);
     setSelectedAccommodationCodes(codes);
+    setIsFeatured(storeFilters.featured || false);
   }, []);
 
   // Load accommodation types on mount
@@ -1248,6 +1276,7 @@ const SearchResult = () => {
     setSelectedBoards([]);
     setIsRefundable(false);
     setIsNonRefundable(false);
+    setIsFeatured(false);
 
     // Sync with store to ensure persistence is also cleared
     updateHotelFilters({
@@ -1256,6 +1285,7 @@ const SearchResult = () => {
       maxPrice: null,
       accommodations: null,
       boards: null,
+      featured: null,
     });
   };
 
@@ -1346,6 +1376,20 @@ const SearchResult = () => {
               outline: "none",
             }}
           />
+        </div>
+      </div>
+
+      <div className="filter-section">
+        <div className="filter-options">
+          <label className="filter-option">
+            <input
+              type="checkbox"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+            />
+            <span className="checkmark"></span>
+            <span style={{ fontWeight: "600" }}>{tSearch("featured")}</span>
+          </label>
         </div>
       </div>
 

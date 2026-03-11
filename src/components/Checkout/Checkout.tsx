@@ -631,8 +631,8 @@ function CheckoutComponent() {
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
         numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }),
     [locale]
@@ -1504,11 +1504,11 @@ function CheckoutComponent() {
                   />
                   <label className="form-check-label" htmlFor="agreeToTerms">
                     {t("agreeToTerms.label")}{" "}
-                    <Link href="/terms-conditions">
+                    <Link href="/terms-conditions" target="_blank" rel="noopener noreferrer">
                       {t("agreeToTerms.terms")}
                     </Link>{" "}
                     {t("agreeToTerms.and")}{" "}
-                    <Link href="/privacy-policy">
+                    <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer">
                       {t("agreeToTerms.privacyPolicy")}
                     </Link>
                   </label>

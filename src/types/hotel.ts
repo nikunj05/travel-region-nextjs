@@ -15,6 +15,7 @@ export interface GetHotelsRequest {
   max_price?: number;
   accommodations?: string; // Comma-separated accommodation codes (e.g., "H,I")
   boards?: string; // Comma-separated board codes (e.g., "RO,HB")
+  featured?: boolean;
 }
 
 export interface HotelRateCancellationPolicy {

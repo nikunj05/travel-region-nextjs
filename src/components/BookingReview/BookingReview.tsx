@@ -5,9 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Controller, UseFormReturn } from "react-hook-form";
 import "./BookingReview.scss";
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
-import FreeBreackfast from "@/assets/images/breackfast-icon.svg";
-import SelfParking from "@/assets/images/parking-icon.svg";
-import PoolIcon from "@/assets/images/pool-icon.svg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 import { useRouter } from "next/navigation";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
@@ -325,6 +322,15 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     return [...genImages, ...otherImages];
   };
 
+  const getStarRating = (hotel: any): number => {
+    const categoryCode = hotel?.category?.code || "";
+    if (categoryCode) {
+      const match = categoryCode.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 5;
+    }
+    return 5;
+  };
+
   const getMainImage = () => {
     const sorted = getOrderedHotelImages();
     if (sorted.length === 0) {
@@ -411,6 +417,17 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     return hotelAmenities.slice(0, 2);
   }, [uniqueRooms, hotelAmenities]);
 
+  // Price formatter
+  const priceFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
+      }),
+    [locale]
+  );
+
   // Calculate price breakdown
   const priceBreakdown = useMemo(() => {
     let totalRooms = 0;
@@ -427,7 +444,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
       // Create breakdown text for each room
       roomDetails.push(
-        `${room.count} room${room.count !== 1 ? 's' : ''} x ${room.pricePerRoom.toFixed(2)}`
+        `${room.count} room${room.count !== 1 ? 's' : ''} x ${priceFormatter.format(room.pricePerRoom)}`
       );
     });
 
@@ -440,16 +457,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
     };
   }, [uniqueRooms]);
 
-  // Price formatter
-  const priceFormatter = useMemo(
-    () =>
-      new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-        numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
-      }),
-    [locale]
-  );
+
 
 
   // Show loading state while fetching hotel data
@@ -566,42 +574,24 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 <h2 className="booking-hotel-name">{hotelName}</h2>
                 <div className="booking-hotel-rating">
                   <div className="rating-stars d-flex align-items-center">
-                    <Image
-                      src={ReviewStarFill}
-                      alt="star icon"
-                      width="16"
-                      height="16"
-                    />
-                    <Image
-                      src={ReviewStarFill}
-                      alt="star icon"
-                      width="16"
-                      height="16"
-                    />
-                    <Image
-                      src={ReviewStarFill}
-                      alt="star icon"
-                      width="16"
-                      height="16"
-                    />
-                    <Image
-                      src={ReviewStarFill}
-                      alt="star icon"
-                      width="16"
-                      height="16"
-                    />
-                    <Image
-                      src={ReviewStarFill}
-                      alt="star icon"
-                      width="16"
-                      height="16"
-                    />
+                    {Array.from(
+                      { length: getStarRating(hotelData) },
+                      (_, index) => (
+                        <Image
+                          key={`${hotelId}-star-${index}`}
+                          src={ReviewStarFill}
+                          alt="star icon"
+                          width="16"
+                          height="16"
+                        />
+                      )
+                    )}
                   </div>
                   {/* <span className="rating-reviews d-flex align-items-center">
                     <span className="rating-score">4.5</span>(120 Reviews)
                   </span> */}
                 </div>
-                <div className="booking-hotel-location">
+                <div className="booking-hotel-location mb-4">
                   <svg
                     width="20"
                     height="20"
@@ -617,7 +607,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
                   <span>{hotelAddress}</span>
                 </div>
-                <div className="booking-hotel-amenities">
+                {/* <div className="booking-hotel-amenities">
                   {displayedAmenities.length > 0 ? (
                     displayedAmenities.map((facility) => (
                       <div
@@ -661,7 +651,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                       </div>
                     </>
                   )}
-                </div>
+                </div> */}
                 <div className="booking-box-action">
                   <button
                     type="button"
@@ -675,7 +665,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
             </div>
             <div className="booking-detail-box booking-stays-details">
               <h3 className="booking-details-sub-title">{t("staysDetails.title")}</h3>
-              <ul className="booking-listing-info">
+              <ul className="booking-listing-info mb-4">
                 <li className="booking-listing-item d-flex align-items-center justify-content-between">
                   <div className="booking-list-left d-flex align-items-center">
                     <svg
@@ -962,7 +952,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   </>
                 )}
               </ul>
-              {selectedRoomAmenities.length > 0 && (
+              {/* {selectedRoomAmenities.length > 0 && (
                 <div className="booking-inner-box">
                   <h4 className="booking-inner-title">{t("staysDetails.freeAmenities")}</h4>
                   {selectedRoomAmenities.map((facility, index) => (
@@ -975,7 +965,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
               <div className="booking-box-action">
                 <button
                   type="button"
@@ -1091,7 +1081,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                 </a>
               </div> */}
             </div>
-
+            {/* 
             <div className="booking-detail-box booking-cancel-cost">
               <h3 className="booking-details-sub-title">
                 {t("cancelCost.title")}
@@ -1119,7 +1109,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
             <Form<BookingFormData>
               ref={formRef}

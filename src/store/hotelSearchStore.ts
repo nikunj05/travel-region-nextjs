@@ -23,6 +23,7 @@ export interface HotelSearchFilters {
   maxPrice: number | null
   accommodations: string | null // Comma-separated accommodation codes
   boards?: string | null // Comma-separated board codes
+  featured: boolean | null
 }
 
 interface HotelSearchState {
@@ -70,6 +71,7 @@ const defaultFilters: HotelSearchFilters = {
   maxPrice: null,
   accommodations: null,
   boards: null,
+  featured: null,
 }
 
 export const useHotelSearchStore = create<HotelSearchState>()(
@@ -165,6 +167,7 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           // User requested boards to be passed to API.
           if(filters.boards) payload.boards = filters.boards;
           if(filters.accommodations) payload.accommodations = filters.accommodations;
+          if(filters.featured !== null) payload.featured = filters.featured;
 
           console.log('Hotel search API payload:', payload)
 
@@ -207,6 +210,7 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           minPrice: null,
           maxPrice: null,
           accommodations: null,
+          featured: null,
         },
       }),
       onRehydrateStorage: () => (state) => {
@@ -222,6 +226,7 @@ export const useHotelSearchStore = create<HotelSearchState>()(
           state.filters.minPrice = null
           state.filters.maxPrice = null
           state.filters.accommodations = null
+          state.filters.featured = null
         }
       },
     }

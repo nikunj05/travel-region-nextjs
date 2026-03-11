@@ -909,8 +909,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
         numberingSystem: "latn", // Force Western numerals (0-9) instead of Arabic-Indic numerals
       }),
     [locale]
@@ -1218,6 +1218,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     descriptionContent.length > descriptionPreviewLength
       ? `${descriptionContent.substring(0, descriptionPreviewLength)}...`
       : descriptionContent;
+
+  // console.log("hoteldata ==>", hotelData)
   const checkInTime = "2:00 PM";
   const checkOutTime = "11:00 AM";
   const receptionCloseTime = "12:00 PM";
@@ -1671,7 +1673,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       </a>
                     </p>
                   </section>
-                  <section className="hotel-tab-section important-tab-content">
+                  {/* <section className="hotel-tab-section important-tab-content">
                     <h2 className="tabbing-sub-title">
                       {t("sections.importantTitle")}
                     </h2>
@@ -1770,7 +1772,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                         </p>
                       </div>
                     </div>
-                  </section>
+                  </section> */}
 
 
                 </div>

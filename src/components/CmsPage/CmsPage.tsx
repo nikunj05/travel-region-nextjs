@@ -22,7 +22,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
     fetchPageBySlug,
     clearCurrentPage,
   } = useCmsStore();
-// console.log(currentPage)
+  // console.log(currentPage)
   useEffect(() => {
     fetchPageBySlug(slug);
     return () => {
@@ -43,7 +43,7 @@ export default function CmsPage({ slug }: CmsPageProps) {
       setHeadings([]);
       return;
     }
-    
+
     // Only process HTML on client side to avoid hydration mismatch
     if (typeof window === "undefined") {
       setProcessedHtml(html);
@@ -244,7 +244,19 @@ export default function CmsPage({ slug }: CmsPageProps) {
   return (
     <div className="privacy-policy-page section-space-b">
       {slug === 'privacy-policy' && (
-        <section className="banner-section-common privacy-policy-banner-section">
+        <section
+          className="banner-section-common privacy-policy-banner-section"
+          style={
+            currentPage.background_image_url
+              ? {
+                backgroundImage: `url(${currentPage.background_image_url})`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }
+              : undefined
+          }
+        >
           <div className="container">
             <div className="banner-content">
               <div className="banner-bradcumb-menu text-center">
@@ -272,15 +284,17 @@ export default function CmsPage({ slug }: CmsPageProps) {
                       </svg>
                     </span>
                     <li className="banner-bradcumb-item current-page">
-                      {t('privacyPolicyTitle')}
+                      {currentPage.title}
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="heading_section text-center">
-                <h1 className="section-title">{t('privacyPolicyTitle')}</h1>
+                {/* <h1 className="section-title">{t('privacyPolicyTitle')}</h1> */}
+                <h1 className="section-title">{currentPage.title}</h1>
                 <p className="section-description">
-                  {t('privacyPolicyDescription')}
+                  {/* {t('privacyPolicyDescription')} */}
+                  {currentPage.sub_title}
                 </p>
               </div>
             </div>
@@ -288,7 +302,19 @@ export default function CmsPage({ slug }: CmsPageProps) {
         </section>
       )}
       {slug === 'terms-conditions' && (
-        <section className="banner-section-common terms-condition-banner-section">
+        <section
+          className="banner-section-common terms-condition-banner-section"
+          style={
+            currentPage.background_image_url
+              ? {
+                backgroundImage: `url(${currentPage.background_image_url})`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }
+              : undefined
+          }
+        >
           <div className="container">
             <div className="banner-content">
               <div className="banner-bradcumb-menu text-center">
@@ -316,15 +342,18 @@ export default function CmsPage({ slug }: CmsPageProps) {
                       </svg>
                     </span>
                     <li className="banner-bradcumb-item current-page">
-                      {t('termsConditionsTitle')}
+                      {/* {t('termsConditionsTitle')} */}
+                      {currentPage.title}
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="heading_section text-center">
-                <h1 className="section-title">{t('termsConditionsTitle')}</h1>
+                {/* <h1 className="section-title">{t('termsConditionsTitle')}</h1> */}
+                <h1 className="section-title">{currentPage.title}</h1>
                 <p className="section-description">
-                  {t('termsConditionsDescription')}
+                  {/* {t('termsConditionsDescription')} */}
+                  {currentPage.sub_title}
                 </p>
               </div>
             </div>
@@ -344,9 +373,8 @@ export default function CmsPage({ slug }: CmsPageProps) {
                     className={`pvc-sidebar-item level-${h.level}`}
                   >
                     <a
-                      className={`pvc-sidebar-link ${
-                        activeId === h.id ? "active" : ""
-                      }`}
+                      className={`pvc-sidebar-link ${activeId === h.id ? "active" : ""
+                        }`}
                       href={`#${h.id}`}
                       onClick={(e) => handleTocClick(e, h.id)}
                     >

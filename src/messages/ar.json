@@ -448,8 +448,9 @@
     "cancelAfter": "إلغاء بعد",
     "penaltyAmount": "مبلغ الغرامة",
     "confirmCancellation": "تأكيد الإلغاء",
-    "downloadPdf": "تنزيل وطباعة",
-    "downloading": "جارٍ التحميل..."
+    "downloadPdf": "تنزيل",
+    "downloading": "جارٍ التحميل...",
+    "nonRefundable": "غير قابل للاسترداد."
   },
   "PaymentMethods": {
     "pageTitle": "طرق الدفع",
