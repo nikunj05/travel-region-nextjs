@@ -51,7 +51,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                   ? booking.details[0].email
                   : "";
 
-              let currentStatus = typeof booking.status === "string" ? booking.status : undefined;
+              const currentStatus = typeof booking.status === "string" ? booking.status : undefined;
               const paymentStatus = typeof booking.payment_status === "string"
                 ? booking.payment_status.toLowerCase()
                 : "";
