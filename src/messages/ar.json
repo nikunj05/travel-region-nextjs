@@ -783,7 +783,8 @@
     "yourBookingNumber": "رقم حجزك هو",
     "confirmationEmailSent": "تم إرسال بريد تأكيد إلى",
     "printConfirmation": "طباعة التأكيد",
-    "viewMyBooking": "عرض حجزي"
+    "viewMyBooking": "عرض حجزي",
+    "paymentFailedToast": "فشل الدفع."
   },
   "DatePicker": {
     "selectDate": "اختر التاريخ"

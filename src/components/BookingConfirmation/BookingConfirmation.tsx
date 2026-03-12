@@ -56,7 +56,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                 : "";
 
               if (paymentStatus === "declined" || paymentStatus === "decline") {
-                toast.error("Payment failed.");
+                toast.error(t("paymentFailedToast"));
                 currentStatus = "failed";
               }
 

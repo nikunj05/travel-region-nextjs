@@ -783,7 +783,8 @@
     "yourBookingNumber": "Your booking number is",
     "confirmationEmailSent": "A confirmation email has been sent to",
     "printConfirmation": "Print Confirmation",
-    "viewMyBooking": "View My Booking"
+    "viewMyBooking": "View My Booking",
+    "paymentFailedToast": "Payment failed."
   },
   "DatePicker": {
     "selectDate": "Select Date"
