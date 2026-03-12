@@ -17,6 +17,7 @@ interface BookingData {
   order: string;
   email: string;
   status?: string;
+  paymentStatus?: string;
 }
 
 function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
@@ -55,15 +56,11 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                 ? booking.payment_status.toLowerCase()
                 : "";
 
-              if (paymentStatus === "declined" || paymentStatus === "decline") {
-                toast.error(t("paymentFailedToast"));
-                currentStatus = "failed";
-              }
-
               setBookingData({
                 order: booking.order || bookingId,
                 email: email,
                 status: currentStatus,
+                paymentStatus: paymentStatus,
               });
             } else {
               setBookingData({
@@ -108,13 +105,13 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
       }
 
       const checkoutPayload = { order };
-      console.log("🛒 Retry Checkout Payload:", checkoutPayload);
+      // console.log("🛒 Retry Checkout Payload:", checkoutPayload);
 
       const checkoutResponse = await bookingService.checkout(checkoutPayload);
 
-      console.log("✅ Retry Checkout Response:", checkoutResponse);
-      console.log("📋 Checkout Status:", checkoutResponse.status);
-      console.log("📋 Checkout Message:", checkoutResponse.message);
+      // console.log("✅ Retry Checkout Response:", checkoutResponse);
+      // console.log("📋 Checkout Status:", checkoutResponse.status);
+      // console.log("📋 Checkout Message:", checkoutResponse.message);
       if (checkoutResponse.data) {
         console.log("📋 Checkout Data:", checkoutResponse.data);
       }
@@ -173,13 +170,19 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
         </div>
       );
     }
-
+    // console.log("status ==>", status)
+    // console.log("bookingdata ==>", bookingData)
     // Pending payment
     if (status === "pending") {
+      const isDeclined = bookingData?.paymentStatus === "declined" || bookingData?.paymentStatus === "decline";
+
       return (
         <>
-          <h1 className="card-title">
+          {/* <h1 className="card-title">
             {t("pendingPaymentTitle")}
+          </h1> */}
+          <h1 className="card-title">
+            {t("failedTitle")}
           </h1>
           <p className="card-booking-num">
             {t("bookingReference")}{" "}
@@ -187,7 +190,12 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
               #{bookingData?.order || bookingId || "N/A"}
             </span>
           </p>
-          {bookingData?.email && (
+          {isDeclined && (
+            <p className="failed-message" style={{ fontSize: "20px", color: "#FF6B6B", marginBottom: "24px" }}>
+              {t("paymentFailedToast")}
+            </p>
+          )}
+          {/* {bookingData?.email && (
             <p className="confirmation-email">
               {t("notifyEmailPending")}{" "}
               <span className="confirmation-email-address">
@@ -195,7 +203,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
               </span>{" "}
               {t("oncePaymentCompleted")}
             </p>
-          )}
+          )} */}
           <div className="booking-action d-flex align-items-center">
             <button
               className="button-primary print-button"
@@ -234,14 +242,14 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
               #{bookingData?.order || bookingId || "N/A"}
             </span>
           </p>
-          {bookingData?.email && (
+          {/* {bookingData?.email && (
             <p className="confirmation-email">
               {t("notifyEmailFailed")}{" "}
               <span className="confirmation-email-address">
                 {bookingData.email}
               </span>
             </p>
-          )}
+          )} */}
           <p className="failed-message">
             {t("failedMessage")}
           </p>
