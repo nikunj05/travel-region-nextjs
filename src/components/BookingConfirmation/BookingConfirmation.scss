@@ -13,33 +13,59 @@
     text-align: center;
     width: 100%;
 
+    .skeleton-line {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+
+    .skeleton-circle {
+      height: 140px;
+      width: 140px;
+      border-radius: 50%;
+      margin: 0 auto;
+    }
+
     // Skeleton state for loading confirmation details
     .booking-confirmation-skeleton {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
-      margin-top: 56px;
-      margin-bottom: 24px;
-
-      .skeleton-line {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-        border-radius: 6px;
-      }
+      width: 100%;
 
       .skeleton-title {
-        height: 32px;
-        width: 60%;
+        height: 38px;
+        width: 300px;
+        max-width: 80%;
+        margin: 56px 0 24px;
       }
 
       .skeleton-subtitle {
-        height: 20px;
-        width: 40%;
+        height: 28px;
+        width: 250px;
+        max-width: 60%;
+        margin-bottom: 16px;
 
         &.short {
-          width: 30%;
+          width: 350px;
+          max-width: 70%;
+          margin-bottom: 24px;
+        }
+      }
+
+      .skeleton-action-group {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+
+        .skeleton-button {
+          height: 48px;
+          width: 200px;
+          border-radius: 8px;
+          max-width: 45%;
         }
       }
     }
@@ -92,7 +118,6 @@
           svg {
             path {
               stroke: $brand-color;
-
             }
           }
         }
@@ -279,10 +304,9 @@
   }
 }
 
+// RTL Layout
 
-// RTL Layout 
-
-[dir='rtl'] {
+[dir="rtl"] {
   .booking-confirmation-page {
     .confirm-card {
       .booking-action {

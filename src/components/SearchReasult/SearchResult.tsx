@@ -12,7 +12,7 @@ import calendarIcon from "@/assets/images/calendar-icon.svg";
 import plusIcon from "@/assets/images/plus-icon.svg";
 import guestsIcon from "@/assets/images/guests-icon.svg";
 import StarFill from "@/assets/images/star-fill-icon.svg";
-import mainImage1 from "@/assets/images/property-image.jpg";
+import NoImageFallback from "@/assets/images/no-image.jpg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 // import BreaFastIcon from "@/assets/images/breackfast-icon.svg";
 // import ParkingIcon from "@/assets/images/parking-icon.svg";
@@ -171,6 +171,7 @@ const SearchResult = () => {
   const [isRefundable, setIsRefundable] = useState(false);
   const [isNonRefundable, setIsNonRefundable] = useState(false);
   const [isFeatured, setIsFeatured] = useState<boolean>(false);
+  const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
 
   const roomFacilitiesList = [
     { code: 10, name: "Bathroom" },
@@ -1388,7 +1389,7 @@ const SearchResult = () => {
               onChange={(e) => setIsFeatured(e.target.checked)}
             />
             <span className="checkmark"></span>
-            <span style={{ fontWeight: "600" }}>{tSearch("featured")}</span>
+            <span style={{ fontWeight: "500", color: "#09090b" }}>{tSearch("featured")}</span>
           </label>
         </div>
       </div>
@@ -2238,9 +2239,16 @@ const SearchResult = () => {
                                       <div className="main-image">
                                         <Image
                                           src={
-                                            images.main ||
-                                            (mainImage1 as unknown as string)
+                                            imageErrorMap[String(getHotelId(hotel))]
+                                              ? (NoImageFallback as unknown as string)
+                                              : (images.main || (NoImageFallback as unknown as string))
                                           }
+                                          onError={() => {
+                                            setImageErrorMap((prev) => ({
+                                              ...prev,
+                                              [String(getHotelId(hotel))]: true,
+                                            }));
+                                          }}
                                           alt={getHotelName(hotel) || "Hotel"}
                                           width={276}
                                           height={146}

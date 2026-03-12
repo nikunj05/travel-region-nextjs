@@ -27,7 +27,7 @@ import HotelImgPrevIcon from "@/assets/images/slider-prev-arrow-icon.svg";
 import HotelImgNextIcon from "@/assets/images/slider-next-arrow-icon.svg";
 import HotelDetailsCardImage from "@/assets/images/no-image.jpg";
 // import ReviewSlider from "../common/ReviewSlider/ReviewSlider";
-import NearByHotels from "../common/NearbyHotels/NearbyHotels";
+// import NearByHotels from "../common/NearbyHotels/NearbyHotels";
 import FaqSection from "../common/FaqSection/FaqSection";
 import RoomInfoImage from "@/assets/images/room-information-image.jpg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
@@ -3178,14 +3178,14 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 )}
               </div>
             </section>
-            <section className="nearby-hotel-section">
+            {/* <section className="nearby-hotel-section">
               <h2 className="hotel-section-title">
                 {t("sections.similarHotelsTitle")}
               </h2>
               <div className="near-hotel-container">
                 <NearByHotels currentHotelCode={hotelData?.code} />
               </div>
-            </section>
+            </section> */}
             <section className="hotel-faq-section">
               <div className="faq-container">
                 <FaqSection />

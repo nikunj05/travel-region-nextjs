@@ -108,6 +108,7 @@ export interface BookingDetailsData {
     id?: number;
     order: string;
     status?: string;
+    payment_status?: string;
     details?: BookingDetail[];
     room_details?: RoomDetailWithComments[];
     special_requests?: string;

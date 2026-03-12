@@ -50,13 +50,20 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
                   ? booking.details[0].email
                   : "";
 
+              let currentStatus = typeof booking.status === "string" ? booking.status : undefined;
+              const paymentStatus = typeof booking.payment_status === "string"
+                ? booking.payment_status.toLowerCase()
+                : "";
+
+              if (paymentStatus === "declined" || paymentStatus === "decline") {
+                toast.error("Payment failed.");
+                currentStatus = "failed";
+              }
+
               setBookingData({
                 order: booking.order || bookingId,
                 email: email,
-                status:
-                  typeof booking.status === "string"
-                    ? booking.status
-                    : undefined,
+                status: currentStatus,
               });
             } else {
               setBookingData({
@@ -150,16 +157,19 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
     }
   };
 
-  const renderContent = () => {
-    const isLoadingState = loading || !delayCompleted;
+  const isLoadingState = loading || !delayCompleted;
 
-    // While waiting for API + minimum delay, show a skeleton instead of text
+  const renderContent = () => {
     if (isLoadingState) {
       return (
         <div className="booking-confirmation-skeleton">
           <div className="skeleton-line skeleton-title" />
           <div className="skeleton-line skeleton-subtitle" />
           <div className="skeleton-line skeleton-subtitle short" />
+          <div className="skeleton-action-group">
+            <div className="skeleton-line skeleton-button" />
+            <div className="skeleton-line skeleton-button" />
+          </div>
         </div>
       );
     }
@@ -402,7 +412,11 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
           <div className="container">
             <div className="confirm-wrap">
               <div className="confirm-card">
-                {status === "failed" ||
+                {isLoadingState ? (
+                  <div className="ico-box">
+                    <div className="skeleton-line skeleton-circle" />
+                  </div>
+                ) : status === "failed" ||
                   status === "cancelled" ||
                   status === "canceled" ||
                   status === "not_found" ? null : status === "pending" ? (
