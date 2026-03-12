@@ -784,7 +784,9 @@
     "confirmationEmailSent": "تم إرسال بريد تأكيد إلى",
     "printConfirmation": "طباعة التأكيد",
     "viewMyBooking": "عرض حجزي",
-    "paymentFailedToast": "فشل الدفع."
+    "paymentFailedToast": "فشل الدفع. يرجى التحقق من تفاصيل الدفع والمحاولة مرة أخرى.",
+    "canceledTitle": "تم الغاء الحجز",
+    "canceledMessage": "تم إلغاء الحجز الخاص بك."
   },
   "DatePicker": {
     "selectDate": "اختر التاريخ"

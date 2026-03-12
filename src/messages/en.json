@@ -784,7 +784,9 @@
     "confirmationEmailSent": "A confirmation email has been sent to",
     "printConfirmation": "Print Confirmation",
     "viewMyBooking": "View My Booking",
-    "paymentFailedToast": "Payment failed."
+    "paymentFailedToast": "Payment failed. Please check your payment details and try again.",
+    "canceledTitle": "Booking Canceled",
+    "canceledMessage": "Your booking has been canceled."
   },
   "DatePicker": {
     "selectDate": "Select Date"
