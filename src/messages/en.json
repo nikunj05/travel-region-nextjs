@@ -77,7 +77,12 @@
     "hotel": "Hotel",
     "resort": "Resort",
     "apartment": "Apartment",
-    "villa": "Villa",
+    "hostel": "Hostel",
+    "villa": "Vacation home or villa",
+    "roomOnly": "ROOM ONLY",
+    "bedAndBreakfast": "BED AND BREAKFAST",
+    "halfBoard": "HALF BOARD",
+    "fullBoard": "FULL BOARD",
     "nearBeach": "Near Beach",
     "cityCenter": "City Center",
     "featured": "Featured"

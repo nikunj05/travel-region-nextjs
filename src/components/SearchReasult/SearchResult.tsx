@@ -201,7 +201,17 @@ const SearchResult = () => {
         const response = await hotelService.getBoards();
         // console.log("Boards Data:", response);
         if (response.status && response.data && response.data.board_types) {
-          setBoards(response.data.board_types);
+          const fetchedBoards = response.data.board_types;
+          const getBoardWeight = (name: string) => {
+            const upper = name.toUpperCase();
+            if (upper.includes("ROOM ONLY")) return 1;
+            if (upper.includes("BED AND BREAKFAST")) return 2;
+            if (upper.includes("HALF BOARD")) return 3;
+            if (upper.includes("FULL BOARD")) return 4;
+            return 5;
+          };
+          fetchedBoards.sort((a, b) => getBoardWeight(a.name) - getBoardWeight(b.name));
+          setBoards(fetchedBoards);
         }
       } catch (error) {
         console.error("Error fetching boards:", error);
@@ -897,6 +907,8 @@ const SearchResult = () => {
         const filteredList = list.filter((item: AccommodationType) =>
           allowedCodes.includes(item.code)
         );
+        const orderedCodes = ["H", "W", "S", "A", "V"];
+        filteredList.sort((a: AccommodationType, b: AccommodationType) => orderedCodes.indexOf(a.code) - orderedCodes.indexOf(b.code));
         setAccommodationTypes(filteredList);
       } catch (e) {
         console.error("Failed to load accommodation types", e);
@@ -1704,9 +1716,16 @@ const SearchResult = () => {
                   onChange={() => handleAccommodationToggle(item.code)}
                 />
                 <span className="checkmark"></span>
-                {translatedPropertyTypes.get(item.code) ||
-                  item.typeMultiDescription?.content ||
-                  item.typeDescription}
+                {(() => {
+                  if (item.code === "H") return tSearch("hotel");
+                  if (item.code === "W") return tSearch("resort");
+                  if (item.code === "A") return tSearch("apartment");
+                  if (item.code === "V") return tSearch("villa");
+                  if (item.code === "S") return tSearch("hostel");
+                  return translatedPropertyTypes.get(item.code) ||
+                    item.typeMultiDescription?.content ||
+                    item.typeDescription;
+                })()}
               </label>
             ))}
             {accommodationTypes.length > 5 && (
@@ -1864,7 +1883,14 @@ const SearchResult = () => {
                   onChange={() => handleBoardToggle(board.code)}
                 />
                 <span className="checkmark"></span>
-                {translatedBoards.get(board.code) || board.name}
+                {(() => {
+                  const bName = board.name.toUpperCase();
+                  if (bName.includes("ROOM ONLY")) return tSearch("roomOnly");
+                  if (bName.includes("BED AND BREAKFAST")) return tSearch("bedAndBreakfast");
+                  if (bName.includes("HALF BOARD")) return tSearch("halfBoard");
+                  if (bName.includes("FULL BOARD")) return tSearch("fullBoard");
+                  return translatedBoards.get(board.code) || board.name;
+                })()}
               </label>
             ))}
           </div>
