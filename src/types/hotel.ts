@@ -319,6 +319,14 @@ export interface GetHotelDetailsResponse {
   };
 }
 
+export interface GetHotelImagesResponse {
+  status: boolean;
+  message: string;
+  data: {
+    images: HotelImage[];
+  };
+}
+
 export interface FavoriteHotelRequest {
   hotelId: number;
 }

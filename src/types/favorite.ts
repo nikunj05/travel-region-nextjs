@@ -9,11 +9,17 @@ export interface HotelImage {
     };
   };
   imageTypeCode?: string;
+  image_type_code?: string;
   order?: number;
   visualOrder?: number;
+  visual_order?: number;
   roomCode?: string;
+  room_code?: string;
   roomType?: string;
+  room_type?: string;
   characteristicCode?: string;
+  characteristic_code?: string;
+  hotel_code?: string;
 }
 
 export interface HotelPhone {

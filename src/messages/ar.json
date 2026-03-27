@@ -85,13 +85,15 @@
     "fullBoard": "جميع الوجبات",
     "nearBeach": "بالقرب من الشاطئ",
     "cityCenter": "مركز المدينة",
-    "featured": "مميز"
+    "featured": "مميز",
+    "totalWithTaxes": "الإجمالي مع الضرائب",
+    "morePhotos": "المزيد من الصور"
   },
   "NearbyHotels": {
     "placeholderTitle": "فندق قريب",
     "placeholderRating": "5.0",
     "placeholderPrice": "$0/لكل ليلة",
-    "includesTaxesFees": "يشمل الضرائب والرسوم",
+    "includesTaxesFees": "يشمل الضرائب",
     "bookNow": "احجز الآن",
     "priceUnavailable": "السعر غير متوفر"
   },
@@ -214,7 +216,7 @@
       "noRepay": "لا حاجة للدفع مقدماً",
       "bestValue": "أفضل قيمة",
       "sleeps": "يتسع لـ {count}",
-      "totalWithTaxesAndFees": "الإجمالي مع الضرائب والرسوم",
+      "totalWithTaxesAndFees": "الإجمالي مع الضرائب",
       "night": "ليلة",
       "nights": "ليالٍ",
       "subtotal": "المجموع الفرعي",
@@ -258,7 +260,7 @@
       "totalPrice": "السعر الإجمالي"
     },
     "cancellationPopover": {
-      "title": "رسوم الإلغاء",
+      "title": "تكاليف الإلغاء",
       "getFullRefundOf": "احصل على استرداد كامل بقيمة",
       "refundableAmount": "مبلغ قابل للاسترداد",
       "dateTimeNote": "يتم احتساب التاريخ والوقت بناءً على التوقيت المحلي لوجهة السفر.",
@@ -448,8 +450,8 @@
     "completeBooking": "إتمام الدفع",
     "bookingCanceled": "تم إلغاء الحجز",
     "cancellationPolicy": "سياسة الإلغاء",
-    "cancellationCharges": "رسوم الإلغاء",
-    "cancellationPolicyDescription": "ستطبق رسوم الإلغاء التالية:",
+    "cancellationCharges": "تكاليف الإلغاء",
+    "cancellationPolicyDescription": "ستطبق تكاليف الإلغاء التالية:",
     "cancelAfter": "إلغاء بعد",
     "penaltyAmount": "مبلغ الغرامة",
     "confirmCancellation": "تأكيد الإلغاء",
@@ -680,7 +682,7 @@
     "summary": {
       "hotelFare": "أجرة الفندق",
       "totalPrice": "السعر الإجمالي",
-      "includedAllTaxes": "يشمل جميع الضرائب والرسوم",
+      "includedAllTaxes": "يشمل جميع الضرائب",
       "guest": "ضيف",
       "guests": "ضيوف",
       "night": "ليلة",
@@ -739,7 +741,7 @@
     "summary": {
       "hotelFare": "أجرة الفندق",
       "totalPrice": "السعر الإجمالي",
-      "includedAllTaxes": "يشمل جميع الضرائب والرسوم",
+      "includedAllTaxes": "يشمل جميع الضرائب",
       "guest": "ضيف",
       "guests": "ضيوف",
       "night": "ليلة",

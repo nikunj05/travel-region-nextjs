@@ -19,6 +19,8 @@ import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
 // import PoolIcon from "@/assets/images/pool-icon.svg";
 import FilterBtnIcon from "@/assets/images/filter-icon.svg";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
+import { Heart, Camera } from "lucide-react";
+import SearchResultGalleryModal from "../common/SearchResultGalleryModal/SearchResultGalleryModal";
 import "./SearchResult.scss";
 import {
   useSearchFiltersStore,
@@ -100,6 +102,33 @@ const SearchResult = () => {
   const [translatedPropertyTypes, setTranslatedPropertyTypes] = useState<Map<string, string>>(
     new Map()
   );
+
+  // Gallery Modal State
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [selectedHotelForGallery, setSelectedHotelForGallery] = useState<HotelItem | FavoriteHotel | null>(null);
+  const [galleryImages, setGalleryImages] = useState<HotelImage[]>([]);
+  const [isGalleryLoading, setIsGalleryLoading] = useState(false);
+
+  const handleGalleryOpen = async (hotel: HotelItem | FavoriteHotel) => {
+    setSelectedHotelForGallery(hotel);
+    setIsGalleryOpen(true);
+    setGalleryImages([]); // Reset images
+    setIsGalleryLoading(true);
+
+    // Fetch and console log images
+    try {
+      const hotelCode = typeof hotel.code === 'number' ? hotel.code : (hotel as FavoriteHotel).code;
+      const response = await hotelService.getHotelImages(hotelCode);
+      console.log("==> Hotel Images API Response:", response);
+      if (response.status && response.data.images) {
+        setGalleryImages(response.data.images);
+      }
+    } catch (error) {
+      console.error("==> Failed to fetch hotel images:", error);
+    } finally {
+      setIsGalleryLoading(false);
+    }
+  };
 
   // Filter states
   const [selectedStarRatings, setSelectedStarRatings] = useState<number[]>([]);
@@ -724,7 +753,7 @@ const SearchResult = () => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return sortedHotels.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [sortedHotels, currentPage]);
-
+  // console.log("visibleHotels", visibleHotels);
   const totalPages = Math.ceil(sortedHotels.length / ITEMS_PER_PAGE);
 
   // Refs for click outside detection
@@ -2187,7 +2216,7 @@ const SearchResult = () => {
                       ) : (
                         <>
                           {tSearch("showingHotels", {
-                            count: sortedHotels.length,
+                            count: visibleHotels.length,
                             total: apiTotal ?? apiHotels.length,
                             location: filters.location
                               ? filters.location.name
@@ -2280,6 +2309,15 @@ const SearchResult = () => {
                                           height={146}
                                           className="property-main-img"
                                         />
+                                        <div className="image-overlay" onClick={() => handleGalleryOpen(hotel)}>
+                                          {/* <button className="favorite-btn" onClick={(e) => e.stopPropagation()}>
+                                            <Heart size={18} />
+                                          </button> */}
+                                          <div className="more-photos-wrapper">
+                                            <Camera size={24} />
+                                            <span>{tSearch("morePhotos")}</span>
+                                          </div>
+                                        </div>
                                       </div>
                                     </>
                                   );
@@ -2425,15 +2463,6 @@ const SearchResult = () => {
                                   <div className="hotel-footer">
                                     <div className="hotel-price">
                                       <span className="price-amount">
-                                        {/* <span>
-                                        {('currency' in hotel && (hotel as HotelItem).currency) || 'US$'} {""} 
-                                        <Image
-                                          src={currencyImage}
-                                          width={16}
-                                          height={16}
-                                          alt="currency icon"
-                                        />
-                                      </span>*/}
                                         <span
                                           className="currency-icon"
                                           aria-hidden="true"
@@ -2447,6 +2476,7 @@ const SearchResult = () => {
                                           (hotel as HotelItem).minRate) ||
                                           179}
                                       </span>
+                                      <span className="price-label">{tSearch("totalWithTaxes")}</span>
                                       {/* <span className="price-period">{tSearch('perNight')}</span> */}
                                     </div>
                                     <button
@@ -2543,6 +2573,16 @@ const SearchResult = () => {
               </div>
             </div>
           </div>
+        )}
+        {/* Gallery Modal */}
+        {selectedHotelForGallery && (
+          <SearchResultGalleryModal
+            isOpen={isGalleryOpen}
+            onClose={() => setIsGalleryOpen(false)}
+            hotelName={getHotelName(selectedHotelForGallery)}
+            hotelImages={galleryImages.length > 0 ? galleryImages : selectedHotelForGallery.images}
+            isLoading={isGalleryLoading}
+          />
         )}
       </div>
     </main>

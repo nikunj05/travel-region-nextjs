@@ -504,7 +504,9 @@
 
             .main-image {
               width: 100%;
+              position: relative;
               overflow: hidden;
+              cursor: pointer;
 
               img {
                 width: 100%;
@@ -512,11 +514,75 @@
                 min-height: 146px;
                 max-height: 146px;
                 object-fit: cover;
-                transition: $transition;
+                transition: transform 0.4s cubic-bezier(0.1, 0, 0.3, 1);
+              }
 
-                &:hover {
-                  transform: scale(1.08);
-                  border-color: $brand-color;
+              .image-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.45);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: $color-white;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 2;
+
+                .favorite-btn {
+                  position: absolute;
+                  top: 12px;
+                  left: 12px;
+                  background: rgba(230, 230, 230, 0.9);
+                  border: none;
+                  border-radius: 50%;
+                  width: 36px;
+                  height: 36px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: #ff6900;
+                  transition: $transition;
+                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+                  &:hover {
+                    background: $color-white;
+                    transform: scale(1.1);
+                    color: darken(#ff6900, 10%);
+                  }
+                }
+
+                .more-photos-wrapper {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  gap: 10px;
+                  transform: translateY(10px);
+                  transition: transform 0.3s ease;
+
+                  span {
+                    font-size: 15px;
+                    font-weight: 500;
+                    letter-spacing: 0.3px;
+                  }
+                }
+              }
+
+              &:hover {
+                img {
+                  transform: scale(1.1);
+                }
+
+                .image-overlay {
+                  opacity: 1;
+
+                  .more-photos-wrapper {
+                    transform: translateY(0);
+                  }
                 }
               }
             }
@@ -588,6 +654,7 @@
                 text-decoration: none;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
+                line-clamp: 2;
                 /* number of lines */
                 -webkit-box-orient: vertical;
                 overflow: hidden;
@@ -683,38 +750,41 @@
 
                 .hotel-price {
                   display: flex;
-                  justify-content: flex-end;
                   flex-direction: column;
+                  align-items: flex-end;
                   width: 100%;
                   text-align: end;
                   gap: 0px;
                   margin-bottom: 24px;
-                  font-size: 30px;
-                  font-weight: $font-weight600;
                   color: $color-black-zinc-950;
-                  display: flex;
-                  gap: 5px;
-                  align-items: baseline;
-                  justify-content: end;
 
-                  .currency-icon {
-                    svg {
-                      path {
-                        fill: #09090b;
+                  .price-amount {
+                    font-size: 30px;
+                    font-weight: $font-weight600;
+                    display: flex;
+                    gap: 5px;
+                    align-items: baseline;
+
+                    .currency-icon {
+                      svg {
+                        path {
+                          fill: #09090b;
+                        }
                       }
                     }
                   }
 
-                  .property-currency {
+                  .price-label {
                     font-size: 14px;
                     color: $color-black-zinc-500;
                     font-weight: $font-weight400;
+                    margin-top: -2px;
                   }
-                }
 
-                .price-period {
-                  font-size: 12px;
-                  color: $color-black-zinc-500;
+                  .price-period {
+                    font-size: 12px;
+                    color: $color-black-zinc-500;
+                  }
                 }
               }
 
@@ -1653,13 +1723,6 @@
   .slider-track {
     pointer-events: none;
   }
-
-  // RTL Support for price slider
-  &.rtl-slider {
-    .price-range-input {
-      // Inputs use direction: rtl in RTL mode
-    }
-  }
 }
 
 // RTL Layout adjustments for price range
@@ -1668,30 +1731,6 @@
     .pricing-range-slider {
       // Swap visual positions of min/max in RTL
       flex-direction: row-reverse;
-    }
-
-    .price-slider-container {
-      .slider-track {
-        // Track positioning
-      }
-
-      .slider-range {
-        // Range fills from right in RTL (handled inline)
-      }
-
-      .price-range-input {
-        // Inputs use direction: rtl (handled inline)
-        // This reverses the slider behavior naturally
-
-        // Ensure thumbs are visible and work correctly in RTL
-        &::-webkit-slider-thumb {
-          // Thumb positioning is handled by browser in RTL
-        }
-
-        &::-moz-range-thumb {
-          // Thumb positioning is handled by browser in RTL
-        }
-      }
     }
   }
 }

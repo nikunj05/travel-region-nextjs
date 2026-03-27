@@ -3504,7 +3504,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                 </div> */}
               </div>
               <div className="modal-room-pricing">
-                <div className="modal-room-refund">
+                {/* <div className="modal-room-refund">
                   <div className="refund-item d-flex align-items-center">
                     <svg
                       width="20"
@@ -3554,7 +3554,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       {selectedRoomRefundDateLabel}
                     </span>
                   ) : null}
-                </div>
+                </div> */}
                 <div className="modal-room-price-info">
                   {/* <div className="discount-price">
                     <span className="discount">$51 off</span>

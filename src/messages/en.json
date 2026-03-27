@@ -85,13 +85,15 @@
     "fullBoard": "FULL BOARD",
     "nearBeach": "Near Beach",
     "cityCenter": "City Center",
-    "featured": "Featured"
+    "featured": "Featured",
+    "totalWithTaxes": "Total with taxes",
+    "morePhotos": "More photos"
   },
   "NearbyHotels": {
     "placeholderTitle": "Nearby Hotel",
     "placeholderRating": "5.0",
     "placeholderPrice": "$0/per night",
-    "includesTaxesFees": "Includes taxes & fees",
+    "includesTaxesFees": "Includes taxes",
     "bookNow": "Book Now",
     "priceUnavailable": "Price unavailable"
   },
@@ -214,7 +216,7 @@
       "noRepay": "No Prepayment Needed",
       "bestValue": "Best Value",
       "sleeps": "Sleeps {count}",
-      "totalWithTaxesAndFees": "Total with taxes & fees",
+      "totalWithTaxesAndFees": "Total with taxes",
       "night": "night",
       "nights": "nights",
       "subtotal": "Subtotal",
@@ -258,7 +260,7 @@
       "totalPrice": "Total Price"
     },
     "cancellationPopover": {
-      "title": "Cancellation Fees",
+      "title": "Cancellation Charges",
       "getFullRefundOf": "Get a full refund of",
       "refundableAmount": "Refundable Amount",
       "dateTimeNote": "Date and times are calculated based on the local time of the destination.",
@@ -680,7 +682,7 @@
     "summary": {
       "hotelFare": "Hotel Fare",
       "totalPrice": "Total Price",
-      "includedAllTaxes": "Includes all taxes and fees",
+      "includedAllTaxes": "Includes all taxes",
       "guest": "Guest",
       "guests": "Guests",
       "night": "night",
@@ -739,7 +741,7 @@
     "summary": {
       "hotelFare": "Hotel Fare",
       "totalPrice": "Total Price",
-      "includedAllTaxes": "Includes all taxes and fees",
+      "includedAllTaxes": "Includes all taxes",
       "guest": "Guest",
       "guests": "Guests",
       "night": "night",

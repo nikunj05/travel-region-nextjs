@@ -4185,10 +4185,7 @@
             }
 
             .room-vertical-separetion {
-              border-right: 0px;
-              border-bottom: 1px solid #d1d5dc;
-              width: 100%;
-              height: 1px;
+              display: none;
             }
 
             .hotel-room-booking-action {
@@ -4251,10 +4248,7 @@
               }
 
               .room-card-more-saperation {
-                border-right: 0px;
-                border-bottom: 1px solid #d1d5dc;
-                width: 100%;
-                height: 1px;
+                display: none;
               }
             }
           }

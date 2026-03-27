@@ -8,9 +8,19 @@ import {
   GetHotelLocationsRequest,
   GetHotelLocationsResponse,
   GetBoardsResponse,
+  GetHotelImagesResponse,
 } from '@/types/hotel';
 
 export const hotelService = {
+  getHotelImages: async (hotelId: string | number): Promise<GetHotelImagesResponse> => {
+    try {
+      const response = await api.get<GetHotelImagesResponse>(`/hotels/${hotelId}/images`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getHotels: async (payload: GetHotelsRequest): Promise<GetHotelsResponse> => {
     try {
       const response = await api.post<GetHotelsResponse, GetHotelsRequest>(`/hotels`, payload);
