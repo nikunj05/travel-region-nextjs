@@ -93,7 +93,7 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
         {/* Header */}
         <div className="gallery-header">
           <div className="header-left">
-            <Hotel className="hotel-icon" size={24} />
+            <svg className="hotel-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2f2f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
             <div className="header-text">
               <h3>{hotelName}</h3>
               <p>Photo gallery</p>
@@ -114,7 +114,7 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
             <div className="main-image-wrapper">
               {/* Category Dropdown Overlay */}
               <div className="category-dropdown-wrapper">
-                <button 
+                <button
                   className="category-trigger"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
@@ -160,10 +160,10 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
               {filteredImages.length > 1 && (
                 <>
                   <button className="nav-btn prev" onClick={handlePrevious}>
-                    <ChevronLeft size={32} />
+                    <ChevronLeft size={24} />
                   </button>
                   <button className="nav-btn next" onClick={handleNext}>
-                    <ChevronRight size={32} />
+                    <ChevronRight size={24} />
                   </button>
                 </>
               )}
@@ -176,8 +176,8 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
           <div className="gallery-thumbnails">
             <div className="thumbnail-track">
               {filteredImages.map((img, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`thumb-item ${index === currentImageIndex ? "active" : ""}`}
                   onClick={() => setCurrentImageIndex(index)}
                 >
