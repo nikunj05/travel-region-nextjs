@@ -690,10 +690,12 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
           }
         }
 
-        // Step 4: Fallback to general hotel images (GEN or HAB without roomCode)
-        const generalHotelImages = (hotelData.images || []).filter(
-          (img) => (img.type?.code === "GEN" || (img.type?.code === "HAB" && !img.roomCode)) && img.path
-        );
+        // Step 4: Fallback to general hotel images (e.g., GEN, HAB, COM, PIS, or any non-room specific image)
+        const generalHotelImages = (hotelData.images || []).filter((img) => {
+          const code = img.type?.code || img.imageTypeCode;
+          // Include if it's a general type OR if it doesn't have a specific roomCode assignment
+          return (code === "GEN" || code === "HAB" || !img.roomCode) && img.path;
+        });
 
         const targetImages = finalRawImages.length > 0 ? finalRawImages : generalHotelImages;
 
