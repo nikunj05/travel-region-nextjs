@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Camera, Hotel, ChevronDown } from "lucide-react";
 import "./SearchResultGalleryModal.scss";
@@ -15,23 +16,6 @@ interface SearchResultGalleryModalProps {
   isLoading?: boolean;
 }
 
-const categoryMap: { [key: string]: string } = {
-  GEN: "General",
-  HAB: "Room",
-  DEP: "Sports/Leisure",
-  RES: "Restaurant",
-  COM: "Common area",
-  CON: "Meeting room",
-  EXT: "Exterior",
-  LOB: "Lobby",
-  PZC: "Pool",
-  SPA: "Spa",
-  BAR: "Bar",
-  BEA: "Beach",
-  ENT: "Entertainment",
-  GYM: "Gym",
-};
-
 const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
   isOpen,
   onClose,
@@ -39,28 +23,40 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
   hotelImages = [],
   isLoading = false,
 }) => {
+  const t = useTranslations("Gallery");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState("All categories");
+  const [selectedCategoryKey, setSelectedCategoryKey] = useState("all");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const getCategoryName = (img: HotelImage) => {
-    const code = img.image_type_code || img.imageTypeCode;
-    if (code && categoryMap[code]) return categoryMap[code];
-    return img.type?.description?.content || "Other";
+  const getCategoryKey = (img: HotelImage) => {
+    return img.image_type_code || img.imageTypeCode || img.type?.description?.content || "other";
   };
 
-  // Group images by category
-  const categories = hotelImages.reduce((acc, img) => {
-    const category = getCategoryName(img);
-    if (!acc.includes(category)) acc.push(category);
+  const getCategoryDisplay = (key: string) => {
+    if (key === "all") return t("allCategories");
+
+    // List of category codes we have translations for in the Gallery.categories namespace
+    const knownCodes = ["GEN", "HAB", "DEP", "RES", "COM", "CON", "EXT", "LOB", "PZC", "PIS", "SPA", "BAR", "BEA", "ENT", "GYM", "OTH", "other"];
+
+    if (knownCodes.includes(key)) {
+      return t(`categories.${key}`);
+    }
+
+    return key;
+  };
+
+  // Group images by category keys
+  const categoryKeys = hotelImages.reduce((acc, img) => {
+    const key = getCategoryKey(img);
+    if (!acc.includes(key)) acc.push(key);
     return acc;
-  }, ["All categories"]);
+  }, ["all"]);
 
-  const filteredImages = selectedCategory === "All categories"
+  const filteredImages = selectedCategoryKey === "all"
     ? hotelImages
-    : hotelImages.filter(img => getCategoryName(img) === selectedCategory);
+    : hotelImages.filter(img => getCategoryKey(img) === selectedCategoryKey);
 
-  const currentImage = filteredImages[currentImageIndex] || hotelImages[0];
+  const currentImage = filteredImages[currentImageIndex] || (hotelImages.length > 0 ? hotelImages[0] : null);
 
   const handlePrevious = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? filteredImages.length - 1 : prev - 1));
@@ -72,7 +68,7 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
 
   useEffect(() => {
     setCurrentImageIndex(0);
-  }, [selectedCategory]);
+  }, [selectedCategoryKey]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,10 +89,10 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
         {/* Header */}
         <div className="gallery-header">
           <div className="header-left">
-            <svg className="hotel-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2f2f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+            <svg className="hotel-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2f2f2f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
             <div className="header-text">
               <h3>{hotelName}</h3>
-              <p>Photo gallery</p>
+              <p>{t("title")}</p>
             </div>
           </div>
           <button className="close-btn" onClick={onClose}>
@@ -118,17 +114,17 @@ const SearchResultGalleryModal: React.FC<SearchResultGalleryModalProps> = ({
                   className="category-trigger"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  {selectedCategory}
+                  {getCategoryDisplay(selectedCategoryKey)}
                   <ChevronDown size={16} />
                 </button>
                 {isDropdownOpen && (
                   <ul className="category-menu">
-                    {categories.map(cat => (
-                      <li key={cat} onClick={() => {
-                        setSelectedCategory(cat);
+                    {categoryKeys.map((key: string) => (
+                      <li key={key} onClick={() => {
+                        setSelectedCategoryKey(key);
                         setIsDropdownOpen(false);
                       }}>
-                        {cat}
+                        {getCategoryDisplay(key)}
                       </li>
                     ))}
                   </ul>

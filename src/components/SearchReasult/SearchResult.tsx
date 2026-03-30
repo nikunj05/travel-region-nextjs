@@ -201,6 +201,7 @@ const SearchResult = () => {
   const [isNonRefundable, setIsNonRefundable] = useState(false);
   const [isFeatured, setIsFeatured] = useState<boolean>(false);
   const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
+  const [imageRetryIndexMap, setImageRetryIndexMap] = useState<Record<string, number>>({});
 
   const roomFacilitiesList = [
     { code: 10, name: "Bathroom" },
@@ -2291,22 +2292,35 @@ const SearchResult = () => {
                             <div key={getHotelId(hotel)} className="hotel-card">
                               <div className="hotel-images">
                                 {(() => {
-                                  const images = getMainAndThumbImages(hotel);
-                                  console.log("images", images);
+                                  const hotelId = String(getHotelId(hotel));
+                                  const hotelImages = getOrderedHotelImages(hotel);
+                                  const currentRetryIndex = imageRetryIndexMap[hotelId] || 0;
+                                  const hasFailedAll = imageErrorMap[hotelId];
+                                  const currentImage = hotelImages[currentRetryIndex];
+
                                   return (
                                     <>
                                       <div className="main-image">
                                         <Image
                                           src={
-                                            imageErrorMap[String(getHotelId(hotel))]
+                                            hasFailedAll || !currentImage
                                               ? (NoImageFallback as unknown as string)
-                                              : (images.main || (NoImageFallback as unknown as string))
+                                              : buildHotelbedsImageUrl(currentImage.path)
                                           }
                                           onError={() => {
-                                            setImageErrorMap((prev) => ({
-                                              ...prev,
-                                              [String(getHotelId(hotel))]: true,
-                                            }));
+                                            if (hotelImages.length > currentRetryIndex + 1) {
+                                              // Try the next image in the sequence
+                                              setImageRetryIndexMap((prev) => ({
+                                                ...prev,
+                                                [hotelId]: currentRetryIndex + 1,
+                                              }));
+                                            } else {
+                                              // We've exhausted all images, show fallback
+                                              setImageErrorMap((prev) => ({
+                                                ...prev,
+                                                [hotelId]: true,
+                                              }));
+                                            }
                                           }}
                                           alt={getHotelName(hotel) || "Hotel"}
                                           width={276}
@@ -2314,9 +2328,6 @@ const SearchResult = () => {
                                           className="property-main-img"
                                         />
                                         <div className="image-overlay" onClick={() => handleGalleryOpen(hotel)}>
-                                          {/* <button className="favorite-btn" onClick={(e) => e.stopPropagation()}>
-                                            <Heart size={18} />
-                                          </button> */}
                                           <div className="more-photos-wrapper">
                                             <Camera size={24} />
                                             <span>{tSearch("morePhotos")}</span>

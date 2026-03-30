@@ -795,6 +795,29 @@
     "canceledTitle": "Booking Canceled",
     "canceledMessage": "Your booking has been canceled."
   },
+  "Gallery": {
+    "title": "Photo gallery",
+    "allCategories": "All categories",
+    "other": "Other",
+    "categories": {
+      "GEN": "General",
+      "HAB": "Room",
+      "DEP": "Sports/Leisure",
+      "RES": "Restaurant",
+      "COM": "Common area",
+      "CON": "Meeting room",
+      "EXT": "Exterior",
+      "LOB": "Lobby",
+      "PZC": "Pool",
+      "PIS": "Pool",
+      "OTH": "Other",
+      "SPA": "Spa",
+      "BAR": "Bar",
+      "BEA": "Beach",
+      "ENT": "Entertainment",
+      "GYM": "Gym"
+    }
+  },
   "DatePicker": {
     "selectDate": "Select Date"
   },

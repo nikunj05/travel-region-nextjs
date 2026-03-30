@@ -664,7 +664,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
 
         // Step 3: Smart matching (Closest type match)
         if (finalRawImages.length === 0) {
-          let bestMatchImages: any[] = [];
+          let bestMatchImages: HotelImage[] = [];
           let bestScore = -1;
 
           (hotelData.rooms || []).forEach((otherRoom) => {
