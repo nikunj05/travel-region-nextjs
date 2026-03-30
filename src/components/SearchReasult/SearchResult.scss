@@ -560,7 +560,7 @@
                   display: flex;
                   flex-direction: column;
                   align-items: center;
-                  gap: 10px;
+                  gap: 6px;
                   transform: translateY(10px);
                   transition: transform 0.3s ease;
 
@@ -778,7 +778,6 @@
                     font-size: 14px;
                     color: $color-black-zinc-500;
                     font-weight: $font-weight400;
-                    margin-top: -2px;
                   }
 
                   .price-period {
@@ -1406,6 +1405,21 @@
                   min-height: 160px;
                   max-height: 160px;
                 }
+
+                .image-overlay {
+                  .more-photos-wrapper {
+                    gap: 4px;
+
+                    svg {
+                      width: 20px;
+                      height: 20px;
+                    }
+
+                    span {
+                      font-size: 13px;
+                    }
+                  }
+                }
               }
 
               .thumbnail-images {
@@ -1446,7 +1460,15 @@
                   }
                 }
 
-
+                .hotel-location {
+                  span {
+                    -webkit-line-clamp: 2;
+                    line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    display: -webkit-box;
+                    overflow: hidden;
+                  }
+                }
 
                 .hotel-amenities {
                   gap: 10px;
@@ -1486,6 +1508,10 @@
                       .property-currency {
                         font-size: 12px;
                       }
+                    }
+
+                    .price-label {
+                      font-size: 13px;
                     }
                   }
 
