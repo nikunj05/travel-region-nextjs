@@ -177,6 +177,48 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [selectedRoomRates, setSelectedRoomRates] = useState<{
     [key: string]: string;
   }>({});
+
+  // Helper to normalize room names for grouped matching
+  const normalizeRoomType = (name: string): string => {
+    const n = name.toLowerCase();
+    if (n.includes("suite")) return "suite";
+    if (n.includes("deluxe")) return "deluxe";
+    if (n.includes("executive") || n.includes("club")) return "executive";
+    if (n.includes("superior")) return "superior";
+    if (n.includes("standard") || n.includes("classic") || n.includes("promo"))
+      return "standard";
+    if (n.includes("family")) return "family";
+    if (n.includes("studio")) return "studio";
+    if (n.includes("apartment")) return "apartment";
+    if (n.includes("villa")) return "villa";
+    return "room"; // Base generic type
+  };
+
+  // Helper to score room matches
+  const getRoomMatchScore = (rName: string, tName: string) => {
+    const r = rName.toLowerCase();
+    const t = tName.toLowerCase();
+    let score = 0;
+    // Match main types (High priority)
+    const coreTypes = [
+      "suite",
+      "deluxe",
+      "executive",
+      "superior",
+      "standard",
+      "villa",
+    ];
+    coreTypes.forEach((type) => {
+      if (r.includes(type) && t.includes(type)) score += 10;
+    });
+    // Match features (Lower priority)
+    const features = ["king", "queen", "twin", "double", "single", "view"];
+    features.forEach((f) => {
+      if (r.includes(f) && t.includes(f)) score += 2;
+    });
+    return score;
+  };
+
   const [openRoomTypeAccordion, setOpenRoomTypeAccordion] = useState<
     string | null
   >(null);
@@ -592,10 +634,70 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   // Process and combine rooms with images and facilities
   useEffect(() => {
     if (hotelData && hotelData.rooms) {
+      type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
       const roomsWithDetails = hotelData.rooms.map((room) => {
-        // Filter images for this specific room by matching roomCode exactly
-        const roomImages = (hotelData.images || [])
-          .filter((img) => img.roomCode === room.roomCode && img.path)
+        const roomName = (room as RoomWithOptionalRates).name || room.description || "";
+        const normalizedType = normalizeRoomType(roomName);
+
+        // Step 1: Exact roomCode match
+        let finalRawImages = (hotelData.images || []).filter(
+          (img) => img.roomCode === room.roomCode && img.path
+        );
+
+        // Step 2: Same normalized type fallback within the same hotel
+        if (finalRawImages.length === 0) {
+          // Find all images belonging to other rooms of the same normalized type
+          const sameTypeRooms = (hotelData.rooms || []).filter(r => 
+            r.roomCode !== room.roomCode && 
+            normalizeRoomType((r as RoomWithOptionalRates).name || r.description || "") === normalizedType
+          );
+          
+          if (sameTypeRooms.length > 0) {
+            const sameTypeImages = (hotelData.images || []).filter(img => 
+              sameTypeRooms.some(str => str.roomCode === img.roomCode) && img.path
+            );
+            if (sameTypeImages.length > 0) {
+              finalRawImages = sameTypeImages;
+            }
+          }
+        }
+
+        // Step 3: Smart matching (Closest type match)
+        if (finalRawImages.length === 0) {
+          let bestMatchImages: any[] = [];
+          let bestScore = -1;
+
+          (hotelData.rooms || []).forEach((otherRoom) => {
+            if (otherRoom.roomCode === room.roomCode) return;
+            const otherImages = (hotelData.images || []).filter(
+              (img) => img.roomCode === otherRoom.roomCode && img.path
+            );
+            if (otherImages.length > 0) {
+              const score = getRoomMatchScore(
+                (otherRoom as RoomWithOptionalRates).name || otherRoom.description || "",
+                roomName
+              );
+              if (score > bestScore) {
+                bestScore = score;
+                bestMatchImages = otherImages;
+              }
+            }
+          });
+
+          if (bestScore > 5) {
+            // Only use if we have a reasonably confident match
+            finalRawImages = bestMatchImages;
+          }
+        }
+
+        // Step 4: Fallback to general hotel images (GEN or HAB without roomCode)
+        const generalHotelImages = (hotelData.images || []).filter(
+          (img) => (img.type?.code === "GEN" || (img.type?.code === "HAB" && !img.roomCode)) && img.path
+        );
+
+        const targetImages = finalRawImages.length > 0 ? finalRawImages : generalHotelImages;
+
+        const roomImages = targetImages
           .map((img) => ({
             path: img.path,
             fullUrl: buildHotelbedsImageUrl(img.path),
@@ -607,10 +709,10 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             roomType: img.roomType || "",
           }))
           .sort((a, b) => {
-            // Sort by order first, then by visualOrder
             const orderDiff = a.order - b.order;
             return orderDiff !== 0 ? orderDiff : a.visualOrder - b.visualOrder;
           });
+        // --- END IMAGE HANDLING STRATEGY ---
 
         // Extract room facilities with full details
         const facilities = (room.roomFacilities || []).map((facility) => ({
@@ -638,7 +740,6 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         }));
 
         // Extract rates information if available (rates may come from availability API)
-        type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
         const ratesSource: HotelRate[] =
           (room as RoomWithOptionalRates).rates || [];
         const rates: ProcessedRate[] = ratesSource.map((rate) => {

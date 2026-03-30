@@ -1079,12 +1079,15 @@ const SearchResult = () => {
     const otherImages = images
       .filter((img) => img.imageTypeCode !== "GEN")
       .sort((a, b) => getOrderValue(a) - getOrderValue(b));
+    // console.log("genImages", genImages);
+    // console.log("otherImages", otherImages);
     // Return prioritized list (GEN first, then others)
     return [...genImages, ...otherImages];
   };
 
   const getMainAndThumbImages = (hotel: HotelItem | FavoriteHotel) => {
     const sorted = getOrderedHotelImages(hotel);
+    // console.log("sorted", sorted);
     if (sorted.length === 0) {
       return {
         main: null,
@@ -2289,6 +2292,7 @@ const SearchResult = () => {
                               <div className="hotel-images">
                                 {(() => {
                                   const images = getMainAndThumbImages(hotel);
+                                  console.log("images", images);
                                   return (
                                     <>
                                       <div className="main-image">
