@@ -1654,6 +1654,27 @@
               .property-card-action {
                 .hotel-footer {
                   flex-direction: row;
+                  gap: 5px;
+                }
+              }
+
+              .hotel-info-with-action-card {
+                gap: 4px;
+
+                .hotel-info {
+                  .hotel-name {
+                    font-size: 14px;
+                  }
+                }
+
+                .property-card-action {
+                  .hotel-footer {
+                    .hotel-price {
+                      .price-label {
+                        font-size: 11px;
+                      }
+                    }
+                  }
                 }
               }
             }
