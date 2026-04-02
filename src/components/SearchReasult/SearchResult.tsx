@@ -423,12 +423,42 @@ const SearchResult = () => {
     return 0;
   }, []);
 
+  // Handler for clearing all filters
+  const handleClearFilters = useCallback(() => {
+    setSelectedStarRatings([]);
+    setMinPrice(0);
+    setMaxPrice(20000);
+    setSelectedAccommodationCodes([]);
+    setSelectedZoneCodes([]);
+    setSelectedRoomFacilityCodes([]);
+    setSelectedHotelFacilityCodes([]);
+    setHotelNameFilter("");
+    setSelectedBoards([]);
+    setIsRefundable(false);
+    setIsNonRefundable(false);
+    setIsFeatured(false);
+
+    // Sync with store to ensure persistence is also cleared
+    updateHotelFilters({
+      starRating: null,
+      minPrice: null,
+      maxPrice: null,
+      accommodations: null,
+      boards: null,
+      featured: null,
+    });
+  }, [updateHotelFilters]);
+
   const handleSearchClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     if (!filters.location) {
       e.preventDefault();
       setLocationError(t("validation.locationRequired"));
       return;
     }
+
+    // Clear previous UI filters when starting a new search
+    handleClearFilters();
+
     setLocationError("");
 
     // Validate that location has coordinates OR a valid code
@@ -513,7 +543,7 @@ const SearchResult = () => {
     } catch (err) {
       console.error("Failed to trigger hotels search:", err);
     }
-  }, [filters, locale, t]);
+  }, [filters, locale, t, handleClearFilters]);
 
   const sortedHotels = useMemo(() => {
     // Deduplicate rates for all rooms in all hotels before filtering
@@ -1309,31 +1339,6 @@ const SearchResult = () => {
     });
   };
 
-  // Handler for clearing all filters
-  const handleClearFilters = () => {
-    setSelectedStarRatings([]);
-    setMinPrice(0);
-    setMaxPrice(20000);
-    setSelectedAccommodationCodes([]);
-    setSelectedZoneCodes([]);
-    setSelectedRoomFacilityCodes([]);
-    setSelectedHotelFacilityCodes([]);
-    setHotelNameFilter("");
-    setSelectedBoards([]);
-    setIsRefundable(false);
-    setIsNonRefundable(false);
-    setIsFeatured(false);
-
-    // Sync with store to ensure persistence is also cleared
-    updateHotelFilters({
-      starRating: null,
-      minPrice: null,
-      maxPrice: null,
-      accommodations: null,
-      boards: null,
-      featured: null,
-    });
-  };
 
   // Price slider handlers
   const handleMinPriceSliderChange = (
