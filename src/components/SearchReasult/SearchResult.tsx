@@ -57,7 +57,7 @@ const SearchResult = () => {
 
   const { filters, setLocation, setCheckInDate, setCheckOutDate, setRooms } =
     useSearchFiltersStore();
-  console.log("filters", filters);
+  // console.log("fi  lters", filters);
 
   // Dynamic hotels from API (hotel search store)
   const {
@@ -119,7 +119,7 @@ const SearchResult = () => {
     try {
       const hotelCode = typeof hotel.code === 'number' ? hotel.code : (hotel as FavoriteHotel).code;
       const response = await hotelService.getHotelImages(hotelCode);
-      console.log("==> Hotel Images API Response:", response);
+      // console.log("==> Hotel Images API Response:", response);
       if (response.status && response.data.images) {
         setGalleryImages(response.data.images);
       }
@@ -470,7 +470,7 @@ const SearchResult = () => {
     if (!hasCoordinates && !hasDestinationCode && !hasHotelCode) {
       e.preventDefault();
       setLocationError("Please select a valid location with coordinates");
-      console.error("Location missing coordinates and codes:", filters.location);
+      // console.error("Location missing coordinates and codes:", filters.location);
       return;
     }
 
@@ -503,13 +503,13 @@ const SearchResult = () => {
       const destinationCode = filters.location?.destination_code || null;
       const hotelCode = filters.location?.hotel_code || null;
 
-      console.log("Search parameters:", {
-        latitude,
-        longitude,
-        destinationCode,
-        hotelCode,
-        location: filters.location.name,
-      });
+      // console.log("Search parameters:", {
+      //   latitude,
+      //   longitude,
+      //   destinationCode,
+      //   hotelCode,
+      //   location: filters.location.name,
+      // });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
@@ -662,7 +662,7 @@ const SearchResult = () => {
           for (const room of rooms) {
             if (room.rates && room.rates.length > 0) {
               for (const rate of room.rates) {
-                console.log(`Hotel ${hotel.name} - Rate class: ${rate.rateClass}, Policies: ${rate.cancellationPolicies?.length}`, rate);
+                // console.log(`Hotel ${hotel.name} - Rate class: ${rate.rateClass}, Policies: ${rate.cancellationPolicies?.length}`, rate);
                 if (isRateNonRefundable(rate)) {
                   hasNonRefundableRate = true;
                 } else {
@@ -2180,28 +2180,36 @@ const SearchResult = () => {
                   />
                 </div>
 
-                <button className="search-button" onClick={handleSearchClick}>
-                  <svg
-                    width="24"
-                    height="25"
-                    viewBox="0 0 24 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M17.5 17.5586L22 22.0586"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M20 11.0586C20 6.08803 15.9706 2.05859 11 2.05859C6.02944 2.05859 2 6.08803 2 11.0586C2 16.0292 6.02944 20.0586 11 20.0586C15.9706 20.0586 20 16.0292 20 11.0586Z"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <button
+                  className={`search-button ${loading ? "loading" : ""}`}
+                  onClick={handleSearchClick}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="button-spinner"></div>
+                  ) : (
+                    <svg
+                      width="24"
+                      height="25"
+                      viewBox="0 0 24 25"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M17.5 17.5586L22 22.0586"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M20 11.0586C20 6.08803 15.9706 2.05859 11 2.05859C6.02944 2.05859 2 6.08803 2 11.0586C2 16.0292 6.02944 20.0586 11 20.0586C15.9706 20.0586 20 16.0292 20 11.0586Z"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
@@ -2221,7 +2229,10 @@ const SearchResult = () => {
                   <div className="search-header-left">
                     <div className="search-results-info">
                       {loading ? (
-                        <span>{tSearch("searchingHotels")}</span>
+                        <>
+                          <div className="skeleton-line info-skeleton"></div>
+                          <div className="skeleton-line info-skeleton"></div>
+                        </>
                       ) : (
                         <>
                           {tSearch("showingHotels", {
@@ -2246,39 +2257,52 @@ const SearchResult = () => {
                     </div>
                   </div>
                   <div className="search-header-right">
-                    <div className="mobile-filter-button d-lg-none ">
-                      <button
-                        className="filter-button button-primary "
-                        onClick={handleMobileFilterOpen}
-                      >
-                        <span className="filter-icon-with-text">
-                          <Image
-                            src={FilterBtnIcon}
-                            alt="filter icon"
-                            width={20}
-                            height={20}
-                            className="sort-filter-icon"
+                    {loading ? (
+                      <>
+                        <div className="mobile-filter-skeleton d-lg-none">
+                          <div className="skeleton-line filter-skeleton-box"></div>
+                        </div>
+                        <div className="sort-by-skeleton">
+                          <div className="skeleton-line sort-skeleton-box"></div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="mobile-filter-button d-lg-none ">
+                          <button
+                            className="filter-button button-primary "
+                            onClick={handleMobileFilterOpen}
+                          >
+                            <span className="filter-icon-with-text">
+                              <Image
+                                src={FilterBtnIcon}
+                                alt="filter icon"
+                                width={20}
+                                height={20}
+                                className="sort-filter-icon"
+                              />
+                              {tSearch("filter")}
+                            </span>
+                            <Image
+                              src={downBlackArrowIcon}
+                              alt="arrow icon"
+                              width={20}
+                              height={20}
+                              className="sort-filter-icon"
+                            />
+                          </button>
+                        </div>
+                        <div className="sort-by-select-option">
+                          <Select
+                            options={sortOptions}
+                            value={sortBy}
+                            onChange={setSortBy}
+                            label={tSearch("sortBy")}
+                            className="sort-dropdown"
                           />
-                          {tSearch("filter")}
-                        </span>
-                        <Image
-                          src={downBlackArrowIcon}
-                          alt="arrow icon"
-                          width={20}
-                          height={20}
-                          className="sort-filter-icon"
-                        />
-                      </button>
-                    </div>
-                    <div className="sort-by-select-option">
-                      <Select
-                        options={sortOptions}
-                        value={sortBy}
-                        onChange={setSortBy}
-                        label={tSearch("sortBy")}
-                        className="sort-dropdown"
-                      />
-                    </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

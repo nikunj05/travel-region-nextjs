@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { buildCurrencySvgMarkup } from "@/constants";
+import PopularSkeleton from "../common/LoadingSkeleton/PopularSkeleton";
 
 const Popular = () => {
   const t = useTranslations("PopularSection");
@@ -58,7 +59,7 @@ const Popular = () => {
       try {
         setIsLoading(true);
         const res = await destinationService.getPopularDestinations();
-        console.log("Popular destinations:", res.data.destinations);
+        // console.log("Popular destinations:", res.data.destinations);
         setDestinations(res.data.destinations || []);
       } catch (error) {
         console.error("Failed to fetch popular destinations", error);
@@ -114,104 +115,7 @@ const Popular = () => {
         </div>
         <div className="destination-card-mian">
           {isLoading ? (
-            <>
-              <div className="destination-card d-flex card-first-row">
-                <div className="destination-card-items">
-                  <div
-                    className="destination-card-image"
-                    style={{ width: 789, height: 408, background: "#f0f0f0" }}
-                  />
-                  <div
-                    className="property-location-tag"
-                    style={{ width: 180, height: 24, background: "#f0f0f0" }}
-                  />
-                  <div className="destination-card-inner-content">
-                    <div
-                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
-                    />
-                    <div
-                      style={{
-                        width: 120,
-                        height: 28,
-                        background: "#f0f0f0",
-                        marginTop: 8,
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="destination-card-items">
-                  <div
-                    className="destination-card-image"
-                    style={{ width: 379, height: 408, background: "#f0f0f0" }}
-                  />
-                  <div
-                    className="property-location-tag"
-                    style={{ width: 160, height: 24, background: "#f0f0f0" }}
-                  />
-                  <div className="destination-card-inner-content">
-                    <div
-                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
-                    />
-                    <div
-                      style={{
-                        width: 120,
-                        height: 28,
-                        background: "#f0f0f0",
-                        marginTop: 8,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="destination-card d-flex">
-                <div className="destination-card-items">
-                  <div
-                    className="destination-card-image"
-                    style={{ width: 379, height: 408, background: "#f0f0f0" }}
-                  />
-                  <div
-                    className="property-location-tag"
-                    style={{ width: 160, height: 24, background: "#f0f0f0" }}
-                  />
-                  <div className="destination-card-inner-content">
-                    <div
-                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
-                    />
-                    <div
-                      style={{
-                        width: 120,
-                        height: 28,
-                        background: "#f0f0f0",
-                        marginTop: 8,
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="destination-card-items">
-                  <div
-                    className="destination-card-image"
-                    style={{ width: 789, height: 408, background: "#f0f0f0" }}
-                  />
-                  <div
-                    className="property-location-tag"
-                    style={{ width: 180, height: 24, background: "#f0f0f0" }}
-                  />
-                  <div className="destination-card-inner-content">
-                    <div
-                      style={{ width: 140, height: 20, background: "#f0f0f0" }}
-                    />
-                    <div
-                      style={{
-                        width: 120,
-                        height: 28,
-                        background: "#f0f0f0",
-                        marginTop: 8,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </>
+            <PopularSkeleton />
           ) : (
             <>
               <div className="destination-card d-flex card-first-row">

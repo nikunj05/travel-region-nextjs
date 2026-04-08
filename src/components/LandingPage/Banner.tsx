@@ -21,6 +21,7 @@ import {
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { getTodayAtMidnight } from "@/lib/dateUtils";
 import { useSettingsStore } from "@/store/settingsStore";
+import BannerSkeleton from "../common/LoadingSkeleton/BannerSkeleton";
 
 const Banner = () => {
   const t = useTranslations("Banner");
@@ -193,7 +194,7 @@ const Banner = () => {
     e.preventDefault();
 
     // Set loading state
-    // setIsSearching(true); // This will be handled by the search result page
+    setIsSearching(true);
 
     try {
       const latitude = hasCoordinates ? coords!.lat : null;
@@ -201,13 +202,13 @@ const Banner = () => {
       const destinationCode = filters.location?.destination_code || null;
       const hotelCode = filters.location?.hotel_code || null;
 
-      console.log("Search parameters:", {
-        latitude,
-        longitude,
-        destinationCode,
-        hotelCode,
-        location: filters.location?.name
-      });
+      // console.log("Search parameters:", {
+      //   latitude,
+      //   longitude,
+      //   destinationCode,
+      //   hotelCode,
+      //   location: filters.location?.name
+      // });
 
       // Push current UI filters into the hotel search store
       useHotelSearchStore
@@ -218,20 +219,18 @@ const Banner = () => {
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
       useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
 
-      // Don't execute search here; just navigate
-      // await useHotelSearchStore.getState().search();
-
       // Navigate to search result page (client-side to preserve state)
       router.push("/search-result");
     } catch (err) {
       console.error("Failed to set search store state:", err);
       // Still navigate even if there's an error setting state
       router.push("/search-result");
+    } finally {
+      // We don't necessarily need to set it to false if we are navigating away,
+      // but it's good practice in case the navigation is cancelled or slow.
+      // However, if we set it to false immediately, the spinner might flash too quickly.
+      // Usually, we leave it true until the page changes.
     }
-    // finally {
-    // Reset loading state
-    // setIsSearching(false);
-    // }
   };
 
   const toggleGuestsDropdown = () => {
@@ -309,6 +308,10 @@ const Banner = () => {
       ? formatDate(filters.checkOutDate)
       : t("addDate");
   };
+
+  if (!setting) {
+    return <BannerSkeleton />;
+  }
 
   return (
     <section

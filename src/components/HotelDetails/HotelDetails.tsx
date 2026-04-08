@@ -235,8 +235,8 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     useFavoriteStore();
   const { setBookingData, clearTravelerDetails } = useBookingStore();
 
-  console.log("hotelData", hotelData);
-  console.log("processedRooms", processedRooms);
+  // console.log("hotelData", hotelData);
+  // console.log("processedRooms", processedRooms);
   const router = useRouter();
   const pathname = usePathname();
   const [currentMainImageIndex, setCurrentMainImageIndex] = useState(0);
@@ -647,13 +647,13 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
         // Step 2: Same normalized type fallback within the same hotel
         if (finalRawImages.length === 0) {
           // Find all images belonging to other rooms of the same normalized type
-          const sameTypeRooms = (hotelData.rooms || []).filter(r => 
-            r.roomCode !== room.roomCode && 
+          const sameTypeRooms = (hotelData.rooms || []).filter(r =>
+            r.roomCode !== room.roomCode &&
             normalizeRoomType((r as RoomWithOptionalRates).name || r.description || "") === normalizedType
           );
-          
+
           if (sameTypeRooms.length > 0) {
-            const sameTypeImages = (hotelData.images || []).filter(img => 
+            const sameTypeImages = (hotelData.images || []).filter(img =>
               sameTypeRooms.some(str => str.roomCode === img.roomCode) && img.path
             );
             if (sameTypeImages.length > 0) {
@@ -939,7 +939,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       setActiveTab(tab);
     }
   };
-  console.log("hotel total amenities", hotelData?.facilities);
+  // console.log("hotel total amenities", hotelData?.facilities);
 
   const amenities =
     hotelData?.facilities?.filter(
