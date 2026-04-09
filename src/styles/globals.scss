@@ -285,17 +285,31 @@ img {
 .heading_section {
   margin-bottom: 48px;
 
-  .section-title {
+  .section-title,
+  h1 {
     font-size: 48px;
     color: $color-black;
     font-weight: $font-weight600;
     margin: 0 0 16px;
   }
 
-  .section-description {
+  .section-description,
+  p {
     font-size: 16px;
     color: $color-black-zinc-500;
     margin: 0px;
+
+    &.color {
+      color: var(--color) !important;
+    }
+
+    strong {
+      font-weight: $font-weight700;
+    }
+  }
+
+  .color {
+    color: var(--color) !important;
   }
 
   .mx-width-790 {
@@ -601,15 +615,39 @@ img {
     .heading_section {
       margin-bottom: 44px;
 
-      .section-title {
+      .section-title,
+      h1 {
         font-size: 72px;
         font-weight: $font-weight700;
         color: $color-white;
+        margin: 0 0 16px;
       }
 
-      .section-description {
+      .section-description,
+      p {
         font-size: 18px;
         color: $color-white;
+        margin: 0px;
+
+        // If p is the only child (e.g. backend sends only <p> with title content)
+        // Make it look like a title
+        &:first-child:last-child {
+          font-size: 72px;
+          font-weight: $font-weight700;
+          margin-bottom: 24px;
+        }
+
+        &.color {
+          color: var(--color) !important;
+        }
+
+        strong {
+          font-weight: $font-weight700;
+        }
+      }
+
+      .color {
+        color: var(--color) !important;
       }
     }
 

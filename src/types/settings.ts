@@ -30,6 +30,7 @@ export interface AppSetting {
   home_hero_image_mobile?: string | null;
   home_title?: string | null;
   home_subtitle?: string | null;
+  home_hero_content?: string | null;
   faq_background_color?: FaqBackgroundColor | null;
 }
 

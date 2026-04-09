@@ -94,8 +94,8 @@ const Banner = () => {
   const heroImageMobile = (setting?.home_hero_image_mobile && setting.home_hero_image_mobile.trim())
     ? setting.home_hero_image_mobile
     : (heroImageTablet || heroImage);
-  const heroTitle = (setting?.home_title && setting.home_title.trim());
-  const heroSubtitle = (setting?.home_subtitle && setting.home_subtitle.trim());
+  const heroHeroContent = (setting?.home_hero_content && setting.home_hero_content.trim());
+
 
   const toggleLocationDropdown = () => {
     // Close other dropdowns when opening location dropdown
@@ -327,10 +327,10 @@ const Banner = () => {
       <div className="container">
         <div className="banner-overlay"></div>
         <div className="banner-content">
-          <div className="heading_section">
-            <h1 className="section-title">{heroTitle}</h1>
-            <p className="section-description">{heroSubtitle}</p>
-          </div>
+          <div
+            className="heading_section"
+            dangerouslySetInnerHTML={{ __html: heroHeroContent || "" }}
+          />
           <div className="banner-property-filter">
             <h3 className="property-filter-title">{t("exploreJourney")}</h3>
             <div className="choose-location-and-date d-grid">
