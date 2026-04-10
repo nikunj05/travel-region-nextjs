@@ -174,7 +174,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
     // console.log("bookingdata ==>", bookingData)
     // Pending payment
     if (status === "pending") {
-      const isDeclined = bookingData?.paymentStatus === "declined" || bookingData?.paymentStatus === "decline";
+      // const isDeclined = bookingData?.paymentStatus === "declined" || bookingData?.paymentStatus === "decline";
 
       return (
         <>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight, Camera, Hotel, ChevronDown } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import "./SearchResultGalleryModal.scss";
 import { buildHotelbedsImageUrl } from "@/constants";
 import { HotelImage } from "@/types/favorite";
