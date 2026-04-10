@@ -910,6 +910,13 @@
             &:nth-child(3) {
               width: 100%;
             }
+
+            .datepicker-dropdown {
+              width: 100%;
+              min-width: auto;
+              max-width: 100%;
+              left: 50%;
+            }
           }
         }
 

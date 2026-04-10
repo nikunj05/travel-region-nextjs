@@ -239,6 +239,7 @@
 
     .testimonial-actions {
       .testimonial-arrows {
+
         .slick-prev,
         .slick-next {
           svg {
@@ -529,12 +530,14 @@
 
     .page-footer {
       .footer-copy-right {
+
         .copy-right-text,
         .copy-right-links {
           text-align: right;
         }
       }
     }
+
     .home-banner-section {
       .banner-content {
         .banner-property-filter {
@@ -544,14 +547,21 @@
                 padding-left: 0px;
                 padding-right: 42px;
               }
+
               .filter-dropdown {
                 padding: 3.5px 42px 8px 14px;
+
                 .filter-dropdown-inner {
                   img {
                     left: auto;
                     right: 14px;
                   }
                 }
+              }
+
+              .datepicker-dropdown {
+                left: auto;
+                right: 50%;
               }
             }
           }
