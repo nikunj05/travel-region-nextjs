@@ -619,14 +619,14 @@ img {
       h1 {
         font-size: 72px;
         font-weight: $font-weight700;
-        color: $color-white;
+        color: $color-black;
         margin: 0 0 16px;
       }
 
       .section-description,
       p {
         font-size: 18px;
-        color: $color-white;
+        color: $color-black;
         margin: 0px;
 
         // If p is the only child (e.g. backend sends only <p> with title content)
