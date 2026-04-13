@@ -781,6 +781,9 @@
     display: block;
 
     .banner-content {
+      .heading_section * {
+        display: none;
+      }
       .heading_section {
         background-image: var(--hero-bg-mobile);
         background-repeat: no-repeat;
@@ -1469,6 +1472,7 @@
 
   .home-banner-section {
     .banner-content {
+     
       .banner-property-filter {
         .choose-location-and-date {
           .choose-location-items {

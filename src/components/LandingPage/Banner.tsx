@@ -30,7 +30,7 @@ const Banner = () => {
 
   // App settings store (hydrated from server) for dynamic hero content
   const setting = useSettingsStore((s) => s.setting);
-  // console.log('setting from store', setting);
+  console.log('setting from store', setting);
 
   // Use the search filters store
   const {
