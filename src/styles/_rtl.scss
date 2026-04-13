@@ -501,6 +501,21 @@
   }
 }
 
+@media (min-width: 768px) {
+  [dir="rtl"] {
+    .home-banner-section {
+      .banner-content {
+        .banner-property-filter {
+          .banner-filter-action {
+            margin-right: 0px;
+            margin-left: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 767.55px) {
   [dir="rtl"] {
     .header {

@@ -650,6 +650,30 @@
   }
 }
 
+@media (min-width: 768px) {
+  .home-banner-section {
+    .banner-content {
+      .banner-property-filter {
+        padding: 0px;
+        background: transparent;
+
+        .choose-location-and-date {
+          padding: 16px;
+          margin: 0 0 15px 0;
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.70);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+        }
+
+        .banner-filter-action {
+          margin-right: 16px;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 767.55px) {
 
   // Global css start
@@ -784,6 +808,7 @@
       .heading_section * {
         display: none;
       }
+
       .heading_section {
         background-image: var(--hero-bg-mobile);
         background-repeat: no-repeat;
@@ -1472,7 +1497,7 @@
 
   .home-banner-section {
     .banner-content {
-     
+
       .banner-property-filter {
         .choose-location-and-date {
           .choose-location-items {
