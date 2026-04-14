@@ -10,7 +10,8 @@ import locationFillIcon from "@/assets/images/location-fill-icon.svg";
 import hotelsAvailableIcon from "@/assets/images/hotels-available-icon.svg";
 import { destinationService } from "@/services/destinationService";
 import type { PopularDestinationItem } from "@/types/destination";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
+import { useLocale } from "next-intl";
 import { useHotelSearchStore } from "@/store/hotelSearchStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { buildCurrencySvgMarkup } from "@/constants";
@@ -23,6 +24,7 @@ const Popular = () => {
   >([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const router = useRouter();
+  const locale = useLocale();
   const setLocation = useSearchFiltersStore((s) => s.setLocation);
 
   const renderPricing = (price?: PopularDestinationItem["hotel_min_price"]) => {
@@ -94,7 +96,7 @@ const Popular = () => {
 
     useHotelSearchStore.getState().clearResults();
 
-    useHotelSearchStore.getState().setLanguage("eng");
+    useHotelSearchStore.getState().setLanguage(locale === "ar" ? "ara" : "eng");
     // Clear coordinates and set destination code
     useHotelSearchStore.getState().setCoordinates(null, null);
     useHotelSearchStore.getState().setCodes(destinationCode, null);

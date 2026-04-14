@@ -14,7 +14,7 @@ import { formatApiErrorMessage } from "@/lib/formatApiError";
 import Pagination from "@/components/common/Pagination/Pagination";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
 import { useLocale } from "next-intl";
 import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import { buildCurrencySvgMarkup } from "@/constants";

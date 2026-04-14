@@ -10,9 +10,10 @@ import UserImage from "@/assets/images/userIcon.svg";
 import closeBtnIcon from "@/assets/images/close-btn-icon.svg";
 // import englishFlagIcon from "@/assets/images/english-flag-icon.svg";
 // import arabicFlagIcon from "@/assets/images/united-arab-emirates-svgrepo-com.svg";
-import Link from "next/link";
+import { Link } from "@/i18/navigation";
 import { useSettingsStore } from "@/store/settingsStore";
 import { useAuth } from "@/hooks/useAuth";
+import { User, Settings, LogOut } from "lucide-react";
 
 const Header = () => {
   const t = useTranslations("Header");
@@ -90,30 +91,25 @@ const Header = () => {
     //   }
     // };
 
-    // const handleClickOutside = (event: MouseEvent) => {
-    //   const target = event.target as Element;
-    //   if (!target.closest(".header-language-dropdown")) {
-    //     setIsLanguageMenuOpen(false);
-    //   }
-    //   if (!target.closest(".profile-dropdown")) {
-    //     setIsProfileMenuOpen(false);
-    //   }
-    // };
-
-    // Check on mount
-    // checkHeaderSticky();
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest(".header-language-dropdown")) {
+        setIsLanguageMenuOpen(false);
+      }
+      if (!target.closest(".profile-dropdown")) {
+        setIsProfileMenuOpen(false);
+      }
+    };
 
     // Add event listeners only on client side
-    // if (typeof window !== "undefined") {
-    //   window.addEventListener("scroll", checkHeaderSticky);
-    //   document.addEventListener("click", handleClickOutside);
+    if (typeof window !== "undefined") {
+      document.addEventListener("click", handleClickOutside);
 
-    //   // Cleanup event listeners on unmount
-    //   return () => {
-    //     window.removeEventListener("scroll", checkHeaderSticky);
-    //     document.removeEventListener("click", handleClickOutside);
-    //   };
-    // }
+      // Cleanup event listeners on unmount
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
   }, [pathname]);
 
   // Handle mobile menu body class toggle
@@ -395,26 +391,38 @@ const Header = () => {
                   </button>
 
                   <div className="profile-menu">
+                    {/* <div className="user-info">
+                      <p className="user-name">{user?.first_name} {user?.last_name}</p>
+                      <p className="user-email">{user?.email}</p>
+                    </div> */}
+                    {/* <div className="menu-divider"></div> */}
                     <Link
                       href="/profile"
                       onClick={() => setIsProfileMenuOpen(false)}
+                      className="menu-item"
                     >
+                      <User size={18} />
                       {t("myProfile")}
                     </Link>
                     <Link
                       href="/settings"
                       onClick={() => setIsProfileMenuOpen(false)}
+                      className="menu-item"
                     >
+                      <Settings size={18} />
                       {t("settings")}
                     </Link>
+                    <div className="menu-divider"></div>
                     <a
                       href="#"
+                      className="menu-item logout-item"
                       onClick={(e) => {
                         e.preventDefault();
                         logout();
                         setIsProfileMenuOpen(false);
                       }}
                     >
+                      <LogOut size={18} />
                       {t("logout")}
                     </a>
                   </div>

@@ -10,7 +10,6 @@ import "../BookingReview/BookingReview.scss";
 // import visaCardIcon from "@/assets/images/visa-card-icon.svg";
 // import AmericanExpressIcon from "@/assets/images/american-card-icon.svg";
 import BookingHotelInfoImage from "@/assets/images/booking-hotel-info-image.jpg";
-import { useRouter } from "next/navigation";
 import { useBookingStore, SelectedRoom } from "@/store/bookingStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
@@ -36,7 +35,7 @@ import {
   BookingDetail,
   RoomDetailWithComments,
 } from "@/types/booking";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18/navigation";
 import { SelectWithFlag, SelectWithFlagOption } from "@/components/core/SelectWithFlag/SelectWithFlag";
 import { countryService } from "@/services/countryService";
 

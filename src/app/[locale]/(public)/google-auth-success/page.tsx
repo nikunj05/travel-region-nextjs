@@ -67,7 +67,7 @@ export default function GoogleAuthSuccessPage() {
         // }
 
         // Redirect to return URL or default to profile
-        const redirectPath = returnUrl || "/profile";
+        const redirectPath = returnUrl || "/";
         
         // Use replace instead of push to prevent back navigation to this page
         router.replace(redirectPath);

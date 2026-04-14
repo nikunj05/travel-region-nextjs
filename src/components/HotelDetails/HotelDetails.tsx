@@ -34,7 +34,7 @@ import ClosePopupIcon from "@/assets/images/close-btn-icon.svg";
 import ImageModal from "../common/ImageModal/ImageModal";
 import LoginModal from "../common/LoginModal/LoginModal";
 import { AuthContext } from "@/context/AuthContext";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/i18/navigation";
 import AmenityIcon from "../common/AmenityIcon/AmenityIcon";
 import { HotelImage } from "@/types/favorite";
 import {

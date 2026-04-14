@@ -6,7 +6,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import "./BookingReview.scss";
 import mainImage from "@/assets/images/hotel-details-img1.jpg";
 import ReviewStarFill from "@/assets/images/star-fill-icon.svg";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
 import { useHotelDetailsStore } from "@/store/hotelDetailsStore";
 import { useSearchFiltersStore } from "@/store/searchFiltersStore";
 import { useBookingStore } from "@/store/bookingStore";

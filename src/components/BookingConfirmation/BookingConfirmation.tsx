@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./BookingConfirmation.scss";
 import Image from "next/image";
 import BookingConfirmIcon from "@/assets/images/booking-confirmed-icon.svg";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { bookingService } from "@/services/bookingService";
 import { toast } from "react-toastify";

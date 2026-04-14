@@ -12,8 +12,7 @@ import guestsIcon from "@/assets/images/guests-icon.svg";
 import DatePicker from "../core/DatePicker/DatePicker";
 import LocationPicker from "../core/LocationPicker/LocationPicker";
 import GuestsPicker from "../core/GuestsPicker/GuestsPicker";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18/navigation";
 import {
   useSearchFiltersStore,
   Location,
@@ -215,7 +214,7 @@ const Banner = () => {
         .getState()
         .setDates(filters.checkInDate, filters.checkOutDate);
       useHotelSearchStore.getState().setRooms(filters.rooms || [{ adults: 2, children: 0, childrenAges: [] }]);
-      useHotelSearchStore.getState().setLanguage("eng"); // Default to English initially
+      useHotelSearchStore.getState().setLanguage(locale === "ar" ? "ara" : "eng");
       useHotelSearchStore.getState().setCoordinates(latitude, longitude);
       useHotelSearchStore.getState().setCodes(destinationCode, hotelCode);
 

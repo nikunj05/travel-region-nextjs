@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useContext } from "react";
-import Link from "next/link";
+import { Link } from "@/i18/navigation";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18/navigation";
+import { useLocale } from "next-intl";
 import { AuthContext } from "@/context/AuthContext";
 import "./LoginModal.scss";
 import Image from "next/image";
@@ -27,6 +28,7 @@ const LoginModal = ({
   const t = useTranslations("LoginModal");
   const authContext = useContext(AuthContext);
   const router = useRouter();
+  const locale = useLocale();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +116,7 @@ const LoginModal = ({
                 sessionStorage.setItem("authReturnUrl", returnUrl);
               }
               signIn("google", {
-                callbackUrl: `/google-auth-success`,
+                callbackUrl: `/${locale}/google-auth-success`,
               });
             }}
           >
