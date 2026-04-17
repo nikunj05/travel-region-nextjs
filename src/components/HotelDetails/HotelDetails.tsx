@@ -1459,7 +1459,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     prepareBookingData();
 
     // Navigate to booking review page with hotel ID
-    router.push(`/${locale}/booking-review/${hotelId}`);
+    router.push(`/booking-review/${hotelId}`);
   };
 
   return (
