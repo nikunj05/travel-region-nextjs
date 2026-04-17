@@ -296,7 +296,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
 
     // Redirect to checkout page after successful booking
     if (response && response.status) {
-      router.push(`/${locale}/checkout`);
+      router.push(`/checkout`);
     }
   };
 
@@ -651,7 +651,7 @@ const BookingReviewPage = ({ hotelId }: BookingReviewPageProps) => {
                   <button
                     type="button"
                     className="booking-edit-btn"
-                    onClick={() => router.push(`/${locale}/search-result`)}
+                    onClick={() => router.push(`/search-result`)}
                   >
                     {t("changeHotel")}
                   </button>

@@ -350,7 +350,7 @@ function CheckoutComponent() {
           window.location.href = redirectUrl;
         } else {
           // Fallback to confirmation page if no redirect URL
-          router.push(`/${locale}/booking-confirmation`);
+          router.push(`/booking-confirmation`);
         }
       } else {
         toast.error(

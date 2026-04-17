@@ -121,7 +121,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
         if (redirectUrl) {
           window.location.href = redirectUrl;
         } else {
-          router.push(`/${locale}/booking-confirmation`);
+          router.push(`/booking-confirmation`);
         }
       } else {
         toast.error(checkoutResponse.message || "Checkout failed. Please try again.");
@@ -393,7 +393,7 @@ function BookingConfirmationComp({ bookingId }: BookingConfirmationCompProps) {
           </button>
           <button
             className="button-primary view-button"
-            onClick={() => router.push(`/${locale}/bookings`)}
+            onClick={() => router.push(`/bookings`)}
           >
             {t("viewMyBooking")}
             <svg
