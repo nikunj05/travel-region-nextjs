@@ -170,7 +170,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showAllAmenities] = useState(false);
-  const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
+  // const [processedRooms, setProcessedRooms] = useState<ProcessedRoom[]>([]);
   const [selectedRoomCounts, setSelectedRoomCounts] = useState<{
     [key: string]: number;
   }>({});
@@ -230,7 +230,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const [translatedHotelName, setTranslatedHotelName] = useState<string | null>(
     null
   );
-  const { hotel: hotelData, loading, fetchHotel } = useHotelDetailsStore();
+  const { hotel: hotelData, loading, fetchHotel, error } = useHotelDetailsStore();
   const { favorites, addFavorite, removeFavorite, fetchFavorites } =
     useFavoriteStore();
   const { setBookingData, clearTravelerDetails } = useBookingStore();
@@ -415,6 +415,208 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
       }));
     }
   };
+
+  // Process and combine rooms with images and facilities
+  const processedRooms = useMemo(() => {
+    if (!hotelData || !hotelData.rooms) {
+      return [];
+    }
+
+    type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
+    const roomsWithDetails = hotelData.rooms.map((room) => {
+      const roomName = (room as RoomWithOptionalRates).name || room.description || "";
+      const normalizedType = normalizeRoomType(roomName);
+
+      // Step 1: Exact roomCode match
+      let finalRawImages = (hotelData.images || []).filter(
+        (img) => img.roomCode === room.roomCode && img.path
+      );
+
+      // Step 2: Same normalized type fallback within the same hotel
+      if (finalRawImages.length === 0) {
+        // Find all images belonging to other rooms of the same normalized type
+        const sameTypeRooms = (hotelData.rooms || []).filter(r =>
+          r.roomCode !== room.roomCode &&
+          normalizeRoomType((r as RoomWithOptionalRates).name || r.description || "") === normalizedType
+        );
+
+        if (sameTypeRooms.length > 0) {
+          const sameTypeImages = (hotelData.images || []).filter(img =>
+            sameTypeRooms.some(str => str.roomCode === img.roomCode) && img.path
+          );
+          if (sameTypeImages.length > 0) {
+            finalRawImages = sameTypeImages;
+          }
+        }
+      }
+
+      // Step 3: Smart matching (Closest type match)
+      if (finalRawImages.length === 0) {
+        let bestMatchImages: HotelImage[] = [];
+        let bestScore = -1;
+
+        (hotelData.rooms || []).forEach((otherRoom) => {
+          if (otherRoom.roomCode === room.roomCode) return;
+          const otherImages = (hotelData.images || []).filter(
+            (img) => img.roomCode === otherRoom.roomCode && img.path
+          );
+          if (otherImages.length > 0) {
+            const score = getRoomMatchScore(
+              (otherRoom as RoomWithOptionalRates).name || otherRoom.description || "",
+              roomName
+            );
+            if (score > bestScore) {
+              bestScore = score;
+              bestMatchImages = otherImages;
+            }
+          }
+        });
+
+        if (bestScore > 5) {
+          // Only use if we have a reasonably confident match
+          finalRawImages = bestMatchImages;
+        }
+      }
+
+      // Step 4: Fallback to general hotel images (e.g., GEN, HAB, COM, PIS, or any non-room specific image)
+      const generalHotelImages = (hotelData.images || []).filter((img) => {
+        const code = img.type?.code || img.imageTypeCode;
+        // Include if it's a general type OR if it doesn't have a specific roomCode assignment
+        return (code === "GEN" || code === "HAB" || !img.roomCode) && img.path;
+      });
+
+      const targetImages = finalRawImages.length > 0 ? finalRawImages : generalHotelImages;
+
+      const roomImages = targetImages
+        .map((img) => ({
+          path: img.path,
+          fullUrl: buildHotelbedsImageUrl(img.path),
+          type: img.type?.code || "Unknown",
+          typeDescription: img.type?.description?.content || "",
+          order: img.order || img.visualOrder || 0,
+          visualOrder: img.visualOrder || 0,
+          characteristicCode: img.characteristicCode || "",
+          roomType: img.roomType || "",
+        }))
+        .sort((a, b) => {
+          const orderDiff = a.order - b.order;
+          return orderDiff !== 0 ? orderDiff : a.visualOrder - b.visualOrder;
+        });
+      // --- END IMAGE HANDLING STRATEGY ---
+
+      // Extract room facilities with full details
+      const facilities = (room.roomFacilities || []).map((facility) => ({
+        code: facility.facilityCode,
+        groupCode: facility.facilityGroupCode,
+        description: facility.description?.content || "",
+        hasLogic: facility.indLogic || false,
+        hasFee: facility.indFee || false,
+        number: facility.number || null,
+        isYesOrNo: facility.indYesOrNo || false,
+        voucher: facility.voucher || false,
+      }));
+
+      // Extract room stays info with facilities
+      const roomStays = (room.roomStays || []).map((stay) => ({
+        type: stay.stayType,
+        order: stay.order,
+        description: stay.description || "",
+        facilities: (stay.roomStayFacilities || []).map((f) => ({
+          code: f.facilityCode,
+          groupCode: f.facilityGroupCode,
+          description: f.description?.content || "",
+          number: f.number || null,
+        })),
+      }));
+
+      // Extract rates information if available (rates may come from availability API)
+      const ratesSource: HotelRate[] =
+        (room as RoomWithOptionalRates).rates || [];
+      const rates: ProcessedRate[] = ratesSource.map((rate) => {
+        const taxes: HotelRateTaxes = rate.taxes
+          ? {
+              allIncluded: rate.taxes.allIncluded ?? false,
+              taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
+            }
+          : { allIncluded: false, taxes: [] };
+
+        return {
+          rateKey: rate.rateKey || "",
+          rateClass: rate.rateClass || "",
+          rateType: rate.rateType || "",
+          net: Number(rate.net) || 0,
+          sellingRate: rate.sellingRate ?? 0,
+          hotelSellingRate: rate.hotelSellingRate ?? 0,
+          boardCode: rate.boardCode || "",
+          boardName: rate.boardName || "",
+          cancellationPolicies: rate.cancellationPolicies || [],
+          adults: rate.adults || 0,
+          children: rate.children || 0,
+          rooms: rate.rooms || 1,
+          allotment: rate.allotment || 0,
+          commissionAmount: rate.commissionAmount || "0",
+          commission_percentage: rate.commission_percentage || "0",
+          convertedRate: rate.convertedRate || "0",
+          currency: rate.currency || "SAR",
+          originalNet: rate.originalNet || "0",
+          offers: rate.offers || [],
+          packaging: rate.packaging ?? false,
+          paymentType: rate.paymentType || "",
+          rateCommentsId: rate.rateCommentsId || "",
+          taxes,
+          taxesRate: rate.taxesRate || "0",
+        };
+      });
+
+      return {
+        // Basic room information
+        roomCode: room.roomCode,
+        name: (room as RoomWithOptionalRates).name || room.description || "",
+        description: room.description || "",
+
+        // Room type details
+        type: room.type?.code || "",
+        typeDescription: room.type?.description?.content || "",
+
+        // Room characteristic details
+        characteristic: room.characteristic?.code || "",
+        characteristicDescription:
+          room.characteristic?.description?.content || "",
+
+        // Room metadata
+        isParentRoom: room.isParentRoom || false,
+        PMSRoomCode: room.PMSRoomCode || "",
+
+        // Capacity information
+        capacity: {
+          minPax: room.minPax || 1,
+          maxPax: room.maxPax || 1,
+          minAdults: room.minAdults || 1,
+          maxAdults: room.maxAdults || 1,
+          maxChildren: room.maxChildren || 0,
+        },
+
+        // Images associated with this room
+        images: roomImages,
+        imageCount: roomImages.length,
+        mainImage: roomImages.length > 0 ? roomImages[0].fullUrl : null,
+
+        // Facilities associated with this room
+        facilities: facilities,
+        facilityCount: facilities.length,
+
+        // Room stays information
+        roomStays: roomStays,
+
+        // Rates information
+        rates: rates,
+        rateCount: rates.length,
+      };
+    });
+
+    // Filter out rooms that don't have any rates
+    return roomsWithDetails.filter((room) => room.rates.length > 0);
+  }, [hotelData]);
 
   // Calculate booking summary
   const bookingSummary = useMemo(() => {
@@ -631,210 +833,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
     }
   }, [nearbyHotelsCount, nearbyHotelsLoading, searchFilters, locale]);
 
-  // Process and combine rooms with images and facilities
-  useEffect(() => {
-    if (hotelData && hotelData.rooms) {
-      type RoomWithOptionalRates = HotelRoom & Partial<HotelAvailabilityRoom>;
-      const roomsWithDetails = hotelData.rooms.map((room) => {
-        const roomName = (room as RoomWithOptionalRates).name || room.description || "";
-        const normalizedType = normalizeRoomType(roomName);
 
-        // Step 1: Exact roomCode match
-        let finalRawImages = (hotelData.images || []).filter(
-          (img) => img.roomCode === room.roomCode && img.path
-        );
-
-        // Step 2: Same normalized type fallback within the same hotel
-        if (finalRawImages.length === 0) {
-          // Find all images belonging to other rooms of the same normalized type
-          const sameTypeRooms = (hotelData.rooms || []).filter(r =>
-            r.roomCode !== room.roomCode &&
-            normalizeRoomType((r as RoomWithOptionalRates).name || r.description || "") === normalizedType
-          );
-
-          if (sameTypeRooms.length > 0) {
-            const sameTypeImages = (hotelData.images || []).filter(img =>
-              sameTypeRooms.some(str => str.roomCode === img.roomCode) && img.path
-            );
-            if (sameTypeImages.length > 0) {
-              finalRawImages = sameTypeImages;
-            }
-          }
-        }
-
-        // Step 3: Smart matching (Closest type match)
-        if (finalRawImages.length === 0) {
-          let bestMatchImages: HotelImage[] = [];
-          let bestScore = -1;
-
-          (hotelData.rooms || []).forEach((otherRoom) => {
-            if (otherRoom.roomCode === room.roomCode) return;
-            const otherImages = (hotelData.images || []).filter(
-              (img) => img.roomCode === otherRoom.roomCode && img.path
-            );
-            if (otherImages.length > 0) {
-              const score = getRoomMatchScore(
-                (otherRoom as RoomWithOptionalRates).name || otherRoom.description || "",
-                roomName
-              );
-              if (score > bestScore) {
-                bestScore = score;
-                bestMatchImages = otherImages;
-              }
-            }
-          });
-
-          if (bestScore > 5) {
-            // Only use if we have a reasonably confident match
-            finalRawImages = bestMatchImages;
-          }
-        }
-
-        // Step 4: Fallback to general hotel images (e.g., GEN, HAB, COM, PIS, or any non-room specific image)
-        const generalHotelImages = (hotelData.images || []).filter((img) => {
-          const code = img.type?.code || img.imageTypeCode;
-          // Include if it's a general type OR if it doesn't have a specific roomCode assignment
-          return (code === "GEN" || code === "HAB" || !img.roomCode) && img.path;
-        });
-
-        const targetImages = finalRawImages.length > 0 ? finalRawImages : generalHotelImages;
-
-        const roomImages = targetImages
-          .map((img) => ({
-            path: img.path,
-            fullUrl: buildHotelbedsImageUrl(img.path),
-            type: img.type?.code || "Unknown",
-            typeDescription: img.type?.description?.content || "",
-            order: img.order || img.visualOrder || 0,
-            visualOrder: img.visualOrder || 0,
-            characteristicCode: img.characteristicCode || "",
-            roomType: img.roomType || "",
-          }))
-          .sort((a, b) => {
-            const orderDiff = a.order - b.order;
-            return orderDiff !== 0 ? orderDiff : a.visualOrder - b.visualOrder;
-          });
-        // --- END IMAGE HANDLING STRATEGY ---
-
-        // Extract room facilities with full details
-        const facilities = (room.roomFacilities || []).map((facility) => ({
-          code: facility.facilityCode,
-          groupCode: facility.facilityGroupCode,
-          description: facility.description?.content || "",
-          hasLogic: facility.indLogic || false,
-          hasFee: facility.indFee || false,
-          number: facility.number || null,
-          isYesOrNo: facility.indYesOrNo || false,
-          voucher: facility.voucher || false,
-        }));
-
-        // Extract room stays info with facilities
-        const roomStays = (room.roomStays || []).map((stay) => ({
-          type: stay.stayType,
-          order: stay.order,
-          description: stay.description || "",
-          facilities: (stay.roomStayFacilities || []).map((f) => ({
-            code: f.facilityCode,
-            groupCode: f.facilityGroupCode,
-            description: f.description?.content || "",
-            number: f.number || null,
-          })),
-        }));
-
-        // Extract rates information if available (rates may come from availability API)
-        const ratesSource: HotelRate[] =
-          (room as RoomWithOptionalRates).rates || [];
-        const rates: ProcessedRate[] = ratesSource.map((rate) => {
-          const taxes: HotelRateTaxes = rate.taxes
-            ? {
-              allIncluded: rate.taxes.allIncluded ?? false,
-              taxes: Array.isArray(rate.taxes.taxes) ? rate.taxes.taxes : [],
-            }
-            : { allIncluded: false, taxes: [] };
-
-          return {
-            rateKey: rate.rateKey || "",
-            rateClass: rate.rateClass || "",
-            rateType: rate.rateType || "",
-            net: Number(rate.net) || 0,
-            sellingRate: rate.sellingRate ?? 0,
-            hotelSellingRate: rate.hotelSellingRate ?? 0,
-            boardCode: rate.boardCode || "",
-            boardName: rate.boardName || "",
-            cancellationPolicies: rate.cancellationPolicies || [],
-            adults: rate.adults || 0,
-            children: rate.children || 0,
-            rooms: rate.rooms || 1,
-            allotment: rate.allotment || 0,
-            commissionAmount: rate.commissionAmount || "0",
-            commission_percentage: rate.commission_percentage || "0",
-            convertedRate: rate.convertedRate || "0",
-            currency: rate.currency || "SAR",
-            originalNet: rate.originalNet || "0",
-            offers: rate.offers || [],
-            packaging: rate.packaging ?? false,
-            paymentType: rate.paymentType || "",
-            rateCommentsId: rate.rateCommentsId || "",
-            taxes,
-            taxesRate: rate.taxesRate || "0",
-          };
-        });
-
-        return {
-          // Basic room information
-          roomCode: room.roomCode,
-          name: (room as RoomWithOptionalRates).name || room.description || "",
-          description: room.description || "",
-
-          // Room type details
-          type: room.type?.code || "",
-          typeDescription: room.type?.description?.content || "",
-
-          // Room characteristic details
-          characteristic: room.characteristic?.code || "",
-          characteristicDescription:
-            room.characteristic?.description?.content || "",
-
-          // Room metadata
-          isParentRoom: room.isParentRoom || false,
-          PMSRoomCode: room.PMSRoomCode || "",
-
-          // Capacity information
-          capacity: {
-            minPax: room.minPax || 1,
-            maxPax: room.maxPax || 1,
-            minAdults: room.minAdults || 1,
-            maxAdults: room.maxAdults || 1,
-            maxChildren: room.maxChildren || 0,
-          },
-
-          // Images associated with this room
-          images: roomImages,
-          imageCount: roomImages.length,
-          mainImage: roomImages.length > 0 ? roomImages[0].fullUrl : null,
-
-          // Facilities associated with this room
-          facilities: facilities,
-          facilityCount: facilities.length,
-
-          // Room stays information
-          roomStays: roomStays,
-
-          // Rates information
-          rates: rates,
-          rateCount: rates.length,
-        };
-      });
-
-      // Filter out rooms that don't have any rates
-      const roomsWithRates = roomsWithDetails.filter(
-        (room) => room.rates.length > 0
-      );
-
-      // Store processed rooms in state
-      setProcessedRooms(roomsWithRates);
-    }
-  }, [hotelData]);
   const handleOpenModal = (room: ProcessedRoom) => {
     setSelectedRoom(room);
     setIsModalOpen(true);
@@ -1465,7 +1464,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   return (
     <main className="hotel-details-page padding-top-100 section-space-b">
       <div className="container">
-        {loading && (
+        {(loading || (!hotelData && !error)) && (
           <SkeletonTheme baseColor="#f3f4f6" highlightColor="#e5e7eb">
             <div className="hotel-details-skeleton" aria-hidden>
               <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -1580,7 +1579,24 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
             </div>
           </SkeletonTheme>
         )}
-        {!loading && (
+        {error && !hotelData && (
+          <div className="container" style={{ padding: "100px 20px", textAlign: "center" }}>
+            <h2 style={{ color: "#FB2C36", marginBottom: "16px" }}>{t("toast.failedToFetchDetails") || "Failed to load hotel details"}</h2>
+            <p>{error}</p>
+            <button
+              className="button-primary mt-4"
+              onClick={() => {
+                if (hotelId) {
+                  const languageCode = getLanguageCode(locale);
+                  fetchHotel({ hotelId, language: languageCode });
+                }
+              }}
+            >
+              {t("actions.retry") || "Retry"}
+            </button>
+          </div>
+        )}
+        {!loading && hotelData && (
           <>
             {/* Breadcrumbs */}
             {/* <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -2006,7 +2022,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
               {/* room-list calss remove and add */}
               <div className="hotel-room-with-total">
                 <div className="room-list-vertical">
-                  {processedRooms.length === 0 ? (
+                  {processedRooms.length === 0 && !loading ? (
                     <div
                       className="no-rooms-available-message"
                       style={{
