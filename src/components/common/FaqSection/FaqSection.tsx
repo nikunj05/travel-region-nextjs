@@ -8,6 +8,8 @@ import React, {
 import { useTranslations, useLocale } from "next-intl";
 import { faqService } from "@/services/faqService";
 import { FaqItem, FaqCategory } from "@/types/faq";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import "./FaqSection.scss";
 
 const PlusIcon = () => (
@@ -51,6 +53,7 @@ const FaqSection = () => {
   const locale = useLocale();
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchFaqs = useCallback(async () => {
     try {
@@ -67,10 +70,12 @@ const FaqSection = () => {
         );
       setFaqItems(fetchedFaqs);
       setActiveIndex(fetchedFaqs.length > 0 ? 0 : null);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching FAQs:", error);
       setFaqItems([]);
       setActiveIndex(null);
+      setLoading(false);
     }
   }, [locale]);
 
@@ -103,7 +108,24 @@ const FaqSection = () => {
       </div>
 
       <div className="faq-container">
-        {faqItems.length > 0 ? (
+        {loading ? (
+          <>
+            <div style={{ flex: 1 }} className="faq-column">
+              {[...Array(4)].map((_, i) => (
+                <div key={`faq-sk-l-${i}`} className="faq-item skeleton">
+                  <Skeleton height={56} borderRadius={8} />
+                </div>
+              ))}
+            </div>
+            <div style={{ flex: 1 }} className="faq-column">
+              {[...Array(4)].map((_, i) => (
+                <div key={`faq-sk-r-${i}`} className="faq-item skeleton">
+                  <Skeleton height={56} borderRadius={8} />
+                </div>
+              ))}
+            </div>
+          </>
+        ) : faqItems.length > 0 ? (
           <>
             {/* Left Column */}
             <div style={{ flex: 1 }} className="faq-column">

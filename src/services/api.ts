@@ -18,7 +18,7 @@ if (!resolvedBaseUrl) {
   // Create a custom axios instance
   const axiosInstance = axios.create({
     baseURL: resolvedBaseUrl,
-    timeout: 50000,
+    timeout: 80000,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

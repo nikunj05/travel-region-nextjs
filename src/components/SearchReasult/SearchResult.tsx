@@ -1264,13 +1264,49 @@ const SearchResult = () => {
   //   });
   // };
 
-  const handleViewDetailsClick = (
-    hotelCode: string | number | undefined,
-    hotelName: string | undefined
-  ) => {
+  const handleViewDetailsClick = (hotel: HotelItem | FavoriteHotel) => {
+    const hotelCode = getHotelCode(hotel);
+    const hotelName = getHotelName(hotel);
+    
     if (!hotelCode) return;
 
     const hotelId = hotelCode.toString();
+    
+    // Store basic hotel data for hydration in the details page
+    // This allows the details page to show basic info immediately while full details are loading
+    try {
+      // Proactive cleanup: Remove any existing temporary hotel data to keep localStorage clean
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('hotel_basic_')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      const basicHotelData = {
+        code: hotelCode,
+        name: { content: hotelName },
+        category: { code: "categoryCode" in hotel ? hotel.categoryCode : "5EST" },
+        address: { content: getHotelLocation(hotel) },
+        coordinates: {
+          latitude: "coordinates" in hotel 
+            ? Number(hotel.coordinates.latitude) 
+            : parseFloat((hotel as any).latitude || "0"),
+          longitude: "coordinates" in hotel 
+            ? Number(hotel.coordinates.longitude) 
+            : parseFloat((hotel as any).longitude || "0")
+        },
+        images: (hotel.images || []).map(img => ({
+          path: img.path,
+          type: { code: img.imageTypeCode || "GEN" }
+        })),
+        description: { content: null } // No description in search results, allow fallback
+      };
+      
+      localStorage.setItem(`hotel_basic_${hotelId}`, JSON.stringify(basicHotelData));
+    } catch (e) {
+      console.warn("Failed to manage localStorage hydration data:", e);
+    }
+
     setLoadingHotelId(hotelId);
     const hotelSlug = buildHotelSlug(hotelName, hotelId);
     try {
@@ -2526,10 +2562,7 @@ const SearchResult = () => {
                                     <button
                                       className="view-details-button button-primary w-100"
                                       onClick={() =>
-                                        handleViewDetailsClick(
-                                          getHotelCode(hotel),
-                                          getHotelName(hotel)
-                                        )
+                                        handleViewDetailsClick(hotel)
                                       }
                                       disabled={
                                         loadingHotelId ===

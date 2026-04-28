@@ -16,6 +16,7 @@ interface HotelDetailsState {
   error: string | null
 
   fetchHotel: (params: FetchParams) => Promise<void>
+  setHotel: (hotel: HotelDetailsType | null) => void
   clear: () => void
 }
 
@@ -48,6 +49,8 @@ export const useHotelDetailsStore = create<HotelDetailsState>((set) => ({
       set({ error: (err as Error)?.message || 'Failed to fetch hotel details', loading: false })
     }
   },
+
+  setHotel: (hotel: HotelDetailsType | null) => set({ hotel }),
 
   clear: () => set({ hotel: null, error: null }),
 }))
