@@ -1311,7 +1311,11 @@ const SearchResult = () => {
     const hotelSlug = buildHotelSlug(hotelName, hotelId);
     try {
       // Open hotel details page in a new tab
-      const url = `/${locale}/hotel-details/${hotelSlug}`;
+      // Pass basic info in URL to enable instant SSR rendering and avoid skeleton flash
+      const hotelNameEncoded = encodeURIComponent(hotelName);
+      const hotelAddressEncoded = encodeURIComponent(getHotelLocation(hotel));
+      const hotelImage = hotel.images?.[0]?.path || "";
+      const url = `/${locale}/hotel-details/${hotelSlug}?n=${hotelNameEncoded}&a=${hotelAddressEncoded}&img=${encodeURIComponent(hotelImage)}`;
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("Navigation error:", error);

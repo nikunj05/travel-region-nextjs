@@ -60,6 +60,9 @@ import SessionTimeoutModal from "../common/SessionTimeoutModal/SessionTimeoutMod
 
 interface HotelDetailsProps {
   hotelId: string;
+  initialName?: string;
+  initialAddress?: string;
+  initialImage?: string;
 }
 
 interface ProcessedRoomImage {
@@ -152,7 +155,12 @@ interface ProcessedRate {
   taxesRate: string;
 }
 
-const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
+const HotelDetails = ({
+  hotelId,
+  initialName,
+  initialAddress,
+  initialImage,
+}: HotelDetailsProps) => {
   const t = useTranslations("HotelDetails");
   const locale = useLocale();
   const { isInactive } = useInactivity(20 * 60 * 1000);
@@ -1354,9 +1362,11 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
   const hotelName =
     translatedHotelName ||
     hotelData?.name?.content ||
+    initialName ||
     (<Skeleton width="80%" height={36} />);
   const hotelAddress =
     hotelData?.address?.content ||
+    initialAddress ||
     (<Skeleton width="60%" height={20} />);
   const starRating = getStarRating();
   const descriptionPreviewLength = 300;
@@ -1627,6 +1637,22 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                       {t("showAllPhotos")} ({sortedImages.length})
                     </button>
                   </div>
+                ) : initialImage ? (
+                  <div className="main-image">
+                    <div className="slider-image-wrapper">
+                      <div className="slider-item">
+                        <Image
+                          src={buildHotelbedsImageUrl(initialImage)}
+                          width={892}
+                          height={424}
+                          alt={hotelName}
+                          className="hotel-details-main-image"
+                          priority
+                          unoptimized
+                        />
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div className="main-image">
                     <Skeleton height={424} width="100%" borderRadius={8} />
@@ -1682,7 +1708,7 @@ const HotelDetails = ({ hotelId }: HotelDetailsProps) => {
                   <h2 className="tabbing-sub-title">
                     {t("sections.descriptionTitle")}
                   </h2>
-                  {loading && !hotelData?.description?.content ? (
+                  {!hotelData?.description?.content ? (
                     <div className="description-skeleton mb-4">
                       <Skeleton height={20} width="100%" className="mb-2" />
                       <Skeleton height={20} width="95%" className="mb-2" />
