@@ -1290,10 +1290,10 @@ const SearchResult = () => {
         coordinates: {
           latitude: "coordinates" in hotel 
             ? Number(hotel.coordinates.latitude) 
-            : parseFloat((hotel as any).latitude || "0"),
+            : "latitude" in hotel ? Number(hotel.latitude) : 0,
           longitude: "coordinates" in hotel 
             ? Number(hotel.coordinates.longitude) 
-            : parseFloat((hotel as any).longitude || "0")
+            : "longitude" in hotel ? Number(hotel.longitude) : 0
         },
         images: (hotel.images || []).map(img => ({
           path: img.path,
