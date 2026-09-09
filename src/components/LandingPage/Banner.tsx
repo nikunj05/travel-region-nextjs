@@ -308,9 +308,9 @@ const Banner = () => {
       : t("addDate");
   };
 
-  if (!setting) {
-    return <BannerSkeleton />;
-  }
+  // Only show skeleton briefly on first load if setting hasn't arrived yet,
+  // but don't block forever — in production the API may fail silently.
+  // The banner renders with graceful fallbacks if setting is null.
 
   return (
     <section
